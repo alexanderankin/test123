@@ -71,6 +71,9 @@ public final class ModifierSet {
     public static final int STRICTFP = 0x0800;      // Declared strictfp; floating-point mode is FP-strict
     public static final int ANNOTATION = 0x1000;    // There is an annotation in the modifiers
     public static final int DEFAULT = 0x2000;
+    
+    
+    private int myModifiers = 0;
 
     public static int visibilityRank( int modifiers ) {
         if ( isPublic( modifiers ) ) {
@@ -172,7 +175,7 @@ public final class ModifierSet {
         if ( modifiers == 0 ) {
             return "";
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuffer sb = new StringBuffer(64);
         if ( ModifierSet.isAbstract( modifiers ) ) {
             sb.append( "abstract " );
         }
@@ -243,6 +246,15 @@ public final class ModifierSet {
             }
         }
         return modifier;
+    }
+    
+    public void addModifier(String m) {
+        int value = ModifierSet.getModifiers(m);
+        myModifiers += value;
+    }
+    
+    public int getModifiers() {
+        return myModifiers;
     }
 }
 

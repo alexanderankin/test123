@@ -207,14 +207,20 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     // temporary property to be able to switch between Java 8 parser
                     // and Java 9 parser while Java 9 parser is work in progress
                     if ("true".equals(jEdit.getProperty("javasidekick.useJava9"))) {
+                        System.out.println("+++++ listener is java 9");
                         Java9SideKickListener listener = new Java9SideKickListener();
+                        System.out.println("+++++ listener created");
                         walker.walk( listener, tree );
+                        System.out.println("+++++ tree walking complete");
                         
                         // build the tree
                         compilationUnit = listener.getCompilationUnit();
+                        System.out.println("+++++ compilationUnit fetched");
                         compilationUnit.setResults( listener.getResults() );
+                        System.out.println("+++++ results set");
                     }
                     else {
+                        System.out.println("+++++ listener is java 8");
                         Java8SideKickListener listener = new Java8SideKickListener();
                         walker.walk( listener, tree );
                         
@@ -284,6 +290,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
         } catch ( Exception e ) {       // NOPMD
             // there can be a lot of exceptions thrown if parse on keystroke is
             // enabled for code completion.
+            e.printStackTrace();
         } finally {
             try {
                 input.close();

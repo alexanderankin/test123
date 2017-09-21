@@ -12,6 +12,11 @@ import sidekick.java.node.*;
 import static sidekick.java.parser.antlr.Java8Parser.*;
 import sidekick.util.Location;
 
+
+// TODO: make a new Modifier node, derive from TigerNode, eliminate the old
+// 'int' way of identifying modifiers. New Modifier node will hold all modifiers
+// as an attribute of the parent nodes being modified, adjust the set and get
+// modifier methods to use this new node.
 public class Java9SideKickListener extends Java8BaseListener {
 
     Deque<TigerNode> stack = new ArrayDeque<TigerNode>();
@@ -74,6 +79,7 @@ public class Java9SideKickListener extends Java8BaseListener {
     public void dumpStack(String name) {
         System.out.println("+++++ dump: " + name);
         dumpStack();
+        System.out.println("+++++ +++++ +++++");
     }
 
     @Override public void exitIdentifier(@NotNull Java8Parser.IdentifierContext ctx) {
@@ -410,9 +416,10 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	identifier
      * 	|	packageName '.' identifier
      * 	;
-     * TODO: ??? this is not used in the grammar at all. Remove it?
+     * QUESTION: this is not used in the grammar at all. Remove it?
      */
     @Override public void exitPackageName(@NotNull Java8Parser.PackageNameContext ctx) {
+        // nothing to do
     }
 
     /**
@@ -511,6 +518,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	;
      */
     @Override public void exitCompilationUnit(@NotNull Java8Parser.CompilationUnitContext ctx) { 
+        System.out.println("+++++ in compilation unit");
         cuNode = new CUNode();
         setLocations(cuNode, ctx);
         
@@ -674,7 +682,9 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	;
      */
     @Override public void exitTypeDeclaration(@NotNull Java8Parser.TypeDeclarationContext ctx) { 
-        // nothing to do here, one of the choices should already be on the stack
+        if (";".equals(ctx.getText())) {
+            stack.pop();    // ;   
+        }
     }
 
     // TODO: need to treat module declaration similary to compilation unit
@@ -790,7 +800,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      *     ;
      */
     @Override public void exitRequiresModifier(@NotNull Java8Parser.RequiresModifierContext ctx) {
-        // TODO: check, one of these choices should be on the stack as a terminal
+        // nothing to do
     }
 
     /**
@@ -819,141 +829,1075 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	enumDeclaration
      * 	;
      */
-    @Override public void exitClassDeclaration(@NotNull Java8Parser.ClassDeclarationContext ctx) { }
+    @Override public void exitClassDeclaration(@NotNull Java8Parser.ClassDeclarationContext ctx) { 
+        // nothing to do
+    }
     
     /**
      * normalClassDeclaration
      * 	:	classModifiers 'class' identifier typeParameters? superclass? superinterfaces? classBody
      * 	;
      */
-    @Override public void exitNormalClassDeclaration(@NotNull Java8Parser.NormalClassDeclarationContext ctx) { }
+    @Override public void exitNormalClassDeclaration(@NotNull Java8Parser.NormalClassDeclarationContext ctx) { 
+        TigerNode body = stack.pop();
+        TigerNode superInterfaces = ctx.superinterfaces() == null ? null : stack.pop();
+        TigerNode superClass = ctx.superclass() == null ? null : stack.pop();
+        TigerNode params = ctx.typeParameters() == null ? null : stack.pop();
+        TigerNode id = stack.pop();
+        stack.pop();    // class
+        TigerNode mods = stack.pop();
+        ClassNode node = new ClassNode(id.getName(), mods.getModifiers());
+        setLocations(node, ctx);
+        if (mods.getChildCount() > 0) {
+            for (int i = 0; i < mods.getChildCount(); i++) {
+                TigerNode child = mods.getChildAt(i);
+                if (child instanceof AnnotationNode) {
+                    node.addAnnotation((AnnotationNode)child);   
+                }
+            }
+        }
+        node.addChildren(params, superClass, superInterfaces, body);
+        stack.push(node);
+    }
+    
+    /**
+     * classModifiers
+     *     :   classModifier*
+     *     ;
+     */
+    @Override public void exitClassModifiers(@NotNull Java8Parser.ClassModifiersContext ctx) { 
+        TigerNode list = new TigerNode();
+        if (ctx.classModifier() != null) {
+            setLocations(list, ctx);
+            ModifierSet m = new ModifierSet();
+            for (int i = 0; i < ctx.classModifier().size(); i++) {
+                TigerNode node = stack.pop();   // annotation or modifier
+                if (node instanceof AnnotationNode) {
+                    list.addAnnotation((AnnotationNode)node);   
+                    m.addModifier("annotation");
+                }
+                else {
+                    m.addModifier(node.getName());   
+                }
+            }
+            list.setModifiers(m.getModifiers());
+        }
+        stack.push(list);
+    }
+    
+    /**
+     * classModifier
+     * 	:	annotation
+     * 	|	'public'
+     * 	|	'protected'
+     * 	|	'private'
+     * 	|	'abstract'
+     * 	|	'static'
+     * 	|	'final'
+     * 	|	'strictfp'
+     * 	;
+     */
+    @Override public void exitClassModifier(@NotNull Java8Parser.ClassModifierContext ctx) {
+        // nothing to do
+    }
+    
+    /**
+     * typeParameters
+     * 	:	'<' typeParameterList '>'
+     * 	;
+     */
+    @Override public void exitTypeParameters(@NotNull Java8Parser.TypeParametersContext ctx) {
+        stack.pop();    // >
+        TigerNode list = stack.pop();
+        setLocations(list, ctx);
+        stack.pop();    // <
+        stack.push(list);
+    }
+    
+    /**
+     * typeParameterList
+     * 	:	typeParameter (',' typeParameter)*
+     * 	;
+     */
+    @Override public void exitTypeParameterList(@NotNull Java8Parser.TypeParameterListContext ctx) { 
+        TigerNode list = new TigerNode();
+        setLocations(list, ctx);
+        for (int i = 0; i < ctx.typeParameter().size(); i++) {
+            list.addChild(stack.pop());
+            if (i < ctx.typeParameter().size() - 1) {
+                stack.pop();    // ,   
+            }
+        }
+        stack.push(list);
+    }
+    
+    /**
+     * superclass
+     * 	:	'extends' classType
+     * 	;
+     */
+    @Override public void exitSuperclass(@NotNull Java8Parser.SuperclassContext ctx) {
+        TigerNode ext = new TigerNode();
+        setLocations(ext, ctx);
+        TigerNode type = stack.pop();
+        ext.addChild(type);
+        stack.pop();    // extends
+        stack.push(ext);
+    }
+    
+    /**
+     * superinterfaces
+     * 	:	'implements' interfaceTypeList
+     * 	;
+     */
+    @Override public void exitSuperinterfaces(@NotNull Java8Parser.SuperinterfacesContext ctx) { 
+        TigerNode impl = new TigerNode();
+        setLocations(impl, ctx);
+        TigerNode list = stack.pop();
+        impl.addChildren(list.getChildren());
+        stack.pop();    // implements
+        stack.push(impl);
+    }
+    
+    /**
+     * interfaceTypeList
+     * 	:	interfaceType (',' interfaceType)*
+     * 	;
+     */
+    @Override public void exitInterfaceTypeList(@NotNull Java8Parser.InterfaceTypeListContext ctx) { 
+        TigerNode list = new TigerNode();
+        setLocations(list, ctx);
+        for (int i = 0; i < ctx.interfaceType().size(); i++) {
+            list.addChild(stack.pop());
+            if (i < ctx.interfaceType().size() - 1) {
+                stack.pop();    // ,   
+            }
+        }
+        stack.push(list);
+    }
+    
+    /**
+     * classBody
+     * 	:	'{' classBodyDeclaration* '}'
+     * 	;
+     */
+    @Override public void exitClassBody(@NotNull Java8Parser.ClassBodyContext ctx) { 
+        stack.pop();    // }
+        BlockNode block = new BlockNode();
+        setLocations(block, ctx);
+        if (ctx.classBodyDeclaration() != null) {
+            for (int i = 0; i < ctx.classBodyDeclaration().size(); i++) {
+                block.addChild(stack.pop());   
+            }
+        }
+        stack.pop();    // {
+        stack.push(block);
+    }
+    
+    /**
+     * classBodyDeclaration
+     * 	:	classMemberDeclaration
+     * 	|	instanceInitializer
+     * 	|	staticInitializer
+     * 	|	constructorDeclaration
+     * 	;
+     */
+    @Override public void exitClassBodyDeclaration(@NotNull Java8Parser.ClassBodyDeclarationContext ctx) {
+        // nothing to do
+    }
+    
+    /**
+     * classMemberDeclaration
+     * 	:	fieldDeclaration
+     * 	|	methodDeclaration
+     * 	|	classDeclaration
+     * 	|	interfaceDeclaration
+     * 	|	';'
+     * 	;
+     */
+    @Override public void exitClassMemberDeclaration(@NotNull Java8Parser.ClassMemberDeclarationContext ctx) { 
+        if (";".equals(ctx.getText())) {
+            stack.pop();    // ;   
+        }
+    }
+    
+    /**
+     * fieldDeclaration
+     * 	:	fieldModifiers unannType variableDeclaratorList ';'
+     * 	;
+     */
+    @Override public void exitFieldDeclaration(@NotNull Java8Parser.FieldDeclarationContext ctx) { 
+        stack.pop();    // ;
+        TigerNode list = stack.pop();
+        TigerNode type = stack.pop();
+        setLocations(type, ctx);
+        TigerNode mods = stack.pop();
+        type.addAnnotations(mods.getAnnotation());
+        type.setModifiers(mods.getModifiers());
+        type.addChildren(list.getChildren());
+        stack.push(type);
+    }
+    
+    /**
+     * fieldModifiers
+     *     :   fieldModifier*
+     *     ;
+     * TODO: fix this, see methodModifiers
+     */
+    @Override public void exitFieldModifiers(@NotNull Java8Parser.FieldModifiersContext ctx) { 
+        TigerNode list = new TigerNode();
+        if (ctx.fieldModifier() != null) {
+            setLocations(list, ctx);
+            ModifierSet m = new ModifierSet();
+            for (int i = 0; i < ctx.fieldModifier().size(); i++) {
+                TigerNode node = stack.pop();   // annotation or modifier
+                if (node instanceof AnnotationNode) {
+                    list.addAnnotation((AnnotationNode)node);   
+                    m.addModifier("annotation");
+                }
+                else {
+                    m.addModifier(node.getName());   
+                }
+            }
+            list.setModifiers(m.getModifiers());
+        }
+        stack.push(list);
+    }
+    
+    /**
+     * fieldModifier
+     * 	:	annotation
+     * 	|	'public'
+     * 	|	'protected'
+     * 	|	'private'
+     * 	|	'static'
+     * 	|	'final'
+     * 	|	'transient'
+     * 	|	'volatile'
+     * 	;
+     */
+    @Override public void exitFieldModifier(@NotNull Java8Parser.FieldModifierContext ctx) {
+        // nothing to do
+    }
+    
+    /**
+     * variableDeclaratorList
+     * 	:	variableDeclarator (',' variableDeclarator)*
+     * 	;
+     */
+    @Override public void exitVariableDeclaratorList(@NotNull Java8Parser.VariableDeclaratorListContext ctx) { 
+        TigerNode list = new TigerNode();
+        setLocations(list, ctx);
+        for (int i = 0; i < ctx.variableDeclarator().size(); i++) {
+            list.addChild(stack.pop());
+            if (i < ctx.variableDeclarator().size() - 1) {
+                stack.pop();    // ,   
+            }
+        }
+        stack.push(list);
+    }
+    
+    /**
+     * variableDeclarator
+     * 	:	variableDeclaratorId ('=' variableInitializer)?
+     * 	;
+     */
+    @Override public void exitVariableDeclarator(@NotNull Java8Parser.VariableDeclaratorContext ctx) {
+        TigerNode value = null;
+        if (ctx.variableInitializer() != null) {
+            value = stack.pop();
+            stack.pop();    // =
+        }
+        TigerNode id = stack.pop();
+        setLocations(id, ctx);
+        id.addChild(value);
+        stack.push(id);
+    }
+    
+    /**
+     * variableDeclaratorId
+     * 	:	identifier dims?
+     * 	;
+     */
+    @Override public void exitVariableDeclaratorId(@NotNull Java8Parser.VariableDeclaratorIdContext ctx) { 
+        TigerNode dims = ctx.dims() == null ? null : stack.pop();
+        TigerNode id = stack.pop();
+        setLocations(id, ctx);
+        id.addChild(dims);
+        stack.push(id);
+    }
+    
+    /**
+     * variableInitializer
+     * 	:	expression
+     * 	|	arrayInitializer
+     * 	;
+     */
+    @Override public void exitVariableInitializer(@NotNull Java8Parser.VariableInitializerContext ctx) { 
+        // nothing to do
+    }
+    
+    /**
+     * unannType
+     * 	:	unannPrimitiveType
+     * 	|	unannReferenceType
+     * 	;
+     */
+    @Override public void exitUnannType(@NotNull Java8Parser.UnannTypeContext ctx) { 
+        // nothing to do
+    }
+    
+    /**
+     * unannPrimitiveType
+     * 	:	numericType
+     * 	|	'boolean'
+     * 	;
+     */
+    @Override public void exitUnannPrimitiveType(@NotNull Java8Parser.UnannPrimitiveTypeContext ctx) { 
+        // nothing to do
+    }
+    
+    /**
+     * unannReferenceType
+     * 	:	unannClassOrInterfaceType
+     * 	|	unannTypeVariable
+     * 	|	unannArrayType
+     * 	;
+     */
+    @Override public void exitUnannReferenceType(@NotNull Java8Parser.UnannReferenceTypeContext ctx) { 
+        // nothing to do
+    }
+    
+    /**
+     * unannClassOrInterfaceType
+     * 	:	(	unannClassType_lfno_unannClassOrInterfaceType
+     * 		|	unannInterfaceType_lfno_unannClassOrInterfaceType
+     * 		)
+     * 		(	unannClassType_lf_unannClassOrInterfaceType
+     * 		|	unannInterfaceType_lf_unannClassOrInterfaceType
+     * 		)*
+     * 	;
+     */
+    @Override public void exitUnannClassOrInterfaceType(@NotNull Java8Parser.UnannClassOrInterfaceTypeContext ctx) { 
+        TigerNode temp = null;
+        if (ctx.unannInterfaceType_lf_unannClassOrInterfaceType() != null) {
+            for (int i = 0; i < ctx.unannInterfaceType_lf_unannClassOrInterfaceType().size(); i++) {
+                temp.addChild(stack.pop());   
+            }
+        }
+        if (ctx.unannClassType_lf_unannClassOrInterfaceType() != null) {
+            for (int i = 0; i < ctx.unannClassType_lf_unannClassOrInterfaceType().size(); i++) {
+                temp.addChild(stack.pop());   
+            }
+        }
+        TigerNode type = stack.pop();  // unannClassType_lfno_unannClassOrInterfaceType or unannInterfaceType_lfno_unannClassOrInterfaceType
+        setLocations(type, ctx);
+        if (temp != null) {
+            type.addChildren(temp.getChildren());   
+        }
+        stack.push(type);
+    }
+    
+    /**
+     * unannClassType
+     * 	:	                                        identifier typeArguments?
+     * 	|	unannClassOrInterfaceType '.' annotationIdentifier typeArguments?
+     * 	;
+     */
+    @Override public void exitUnannClassType(@NotNull Java8Parser.UnannClassTypeContext ctx) { 
+        TigerNode args = ctx.typeArguments() == null ? null : stack.pop();
+        TigerNode id = stack.pop();
+        setLocations(id, ctx);
+        if (ctx.unannClassOrInterfaceType() != null) {
+            stack.pop();    // .
+            TigerNode type = stack.pop();
+            id.addChild(type);
+        }
+        id.addChild(args);
+        stack.push(id);
+    }
+    
+    /**
+     * unannClassType_lf_unannClassOrInterfaceType
+     * 	:	'.' annotationIdentifier typeArguments?
+     * 	;
+     */
+    @Override public void exitUnannClassType_lf_unannClassOrInterfaceType(@NotNull Java8Parser.UnannClassType_lf_unannClassOrInterfaceTypeContext ctx) { 
+        TigerNode args = ctx.typeArguments() == null ? null : stack.pop();
+        TigerNode id = stack.pop();
+        stack.pop();    // .
+        TigerNode node = new TigerNode();
+        setLocations(node, ctx);
+        node.addChildren(id, args);
+        stack.push(node);
+    }
+    
+    /**
+     * unannClassType_lfno_unannClassOrInterfaceType
+     * 	:	identifier typeArguments?
+     * 	;
+     */
+    @Override public void exitUnannClassType_lfno_unannClassOrInterfaceType(@NotNull Java8Parser.UnannClassType_lfno_unannClassOrInterfaceTypeContext ctx) {
+        TigerNode args = ctx.typeArguments() == null ? null : stack.pop();
+        TigerNode id = stack.pop();
+        setLocations(id, ctx);
+        id.addChild(args);
+        stack.push(id);
+    }
+    
+    /**
+     * unannInterfaceType
+     * 	:	unannClassType
+     * 	;
+     */
+    @Override public void exitUnannInterfaceType(@NotNull Java8Parser.UnannInterfaceTypeContext ctx) { 
+        // nothing to do
+    }
+    
+    /**
+     * unannInterfaceType_lf_unannClassOrInterfaceType
+     * 	:	unannClassType_lf_unannClassOrInterfaceType
+     * 	;
+     */
+    @Override public void exitUnannInterfaceType_lf_unannClassOrInterfaceType(@NotNull Java8Parser.UnannInterfaceType_lf_unannClassOrInterfaceTypeContext ctx) { 
+        // nothing to do
+    }
+    
+    /**
+     * unannInterfaceType_lfno_unannClassOrInterfaceType
+     * 	:	unannClassType_lfno_unannClassOrInterfaceType
+     * 	;
+     */
+    @Override public void exitUnannInterfaceType_lfno_unannClassOrInterfaceType(@NotNull Java8Parser.UnannInterfaceType_lfno_unannClassOrInterfaceTypeContext ctx) { 
+        // nothing to do
+    }
+    
+    /**
+     * unannTypeVariable
+     * 	:	identifier
+     * 	;
+     */
+    @Override public void exitUnannTypeVariable(@NotNull Java8Parser.UnannTypeVariableContext ctx) { 
+        // nothing to do
+    }
+    
+    /**
+     * unannArrayType
+     * 	:	unannPrimitiveType dims
+     * 	|	unannClassOrInterfaceType dims
+     * 	|	unannTypeVariable dims
+     * 	;
+     */
+    @Override public void exitUnannArrayType(@NotNull Java8Parser.UnannArrayTypeContext ctx) { 
+        TigerNode dims = stack.pop();
+        TigerNode type = stack.pop();
+        setLocations(type, ctx);
+        type.addChild(dims);
+        stack.push(type);
+    }
+    
+    /**
+     * methodDeclaration
+     * 	:	methodModifiers methodHeader methodBody
+     * 	;
+     */
+    @Override public void exitMethodDeclaration(@NotNull Java8Parser.MethodDeclarationContext ctx) { 
+        dumpStack("exitMethodDeclaration");
+        TigerNode body = stack.pop();
+        TigerNode header = stack.pop();
+        TigerNode modifiers = stack.pop();
+        MethodNode method = new MethodNode();
+        method.setName(header.getName());
+        setLocations(method, ctx);
+        method.addChildren(modifiers, header, body);
+        
+        // copy any 'throws' nodes contained in the methodHeader to the MethodNode
+        if (header.getChildCount() > 0) {
+            for (int i = 0; i < header.getChildCount(); i++) {
+                TigerNode child = header.getChildAt(i);
+                if (child instanceof ThrowsNode) {
+                    method.addChild(child);   
+                }
+            }
+        }
+        
+        stack.push(method);
+    }
+    
+    /**
+     * methodModifiers
+     *     :   methodModifier*
+     *     ;
+     * TODO: fix this. This is not necessary, and is a work-around for a flaw in the grammar. See the Java8.g4 file for details.
+     */
+    @Override public void exitMethodModifiers(@NotNull Java8Parser.MethodModifiersContext ctx) { 
+        TigerNode list = new TigerNode();
+        if (ctx.methodModifier() != null) {
+            setLocations(list, ctx);
+            ModifierSet m = new ModifierSet();
+            for (int i = 0; i < ctx.methodModifier().size(); i++) {
+                TigerNode node = stack.pop();   // annotation or modifier
+                if (node instanceof AnnotationNode) {
+                    list.addAnnotation((AnnotationNode)node);   
+                    m.addModifier("annotation");
+                }
+                else {
+                    m.addModifier(node.getName());   
+                }
+            }
+            list.setModifiers(m.getModifiers());
+        }
+        stack.push(list);
+    }
+    
+    /**
+     * methodModifier
+     * 	:	annotation
+     * 	|	'public'
+     * 	|	'protected'
+     * 	|	'private'
+     * 	|	'abstract'
+     * 	|	'static'
+     * 	|	'final'
+     * 	|	'synchronized'
+     * 	|	'native'
+     * 	|	'strictfp'
+     * 	;
+     */
+    @Override public void exitMethodModifier(@NotNull Java8Parser.MethodModifierContext ctx) { 
+        // nothing to do here
+    }
+    
+    /**
+     * methodHeader
+     * 	:	                           result methodDeclarator throws_?
+     * 	|	typeParameters annotation* result methodDeclarator throws_?
+     * 	;
+     */
+    @Override public void exitMethodHeader(@NotNull Java8Parser.MethodHeaderContext ctx) { 
+        TigerNode throws_ = ctx.throws_() == null ? null : stack.pop();
+        MethodNode decl = (MethodNode)stack.pop();
+        setLocations(decl, ctx);
+        TigerNode result = stack.pop();
+        if (ctx.annotation() != null) {
+            for (int i = 0; i < ctx.annotation().size(); i++) {
+                decl.addAnnotation((AnnotationNode)stack.pop());   
+            }
+        }
+        TigerNode params = ctx.typeParameters() == null ? null : stack.pop();
+        decl.addChildren(params, result);
+        if (throws_ != null) {
+            decl.setThrows(throws_.getChildren());   
+        }
+        stack.push(decl);
+    }
+    
+    /**
+     * result
+     * 	:	unannType
+     * 	|	'void'
+     * 	;
+     */
+    @Override public void exitResult(@NotNull Java8Parser.ResultContext ctx) { 
+        // nothing to do here
+        dumpStack("exitResult");
+    }
+    
+    /**
+     * methodDeclarator
+     * 	:	identifier '(' formalParameterList? ')' dims?
+     * 	;
+     */
+    @Override public void exitMethodDeclarator(@NotNull Java8Parser.MethodDeclaratorContext ctx) {
+        dumpStack("exitMethodDeclarator");
+        TigerNode dims = ctx.dims() == null ? null : stack.pop();
+        stack.pop();    // )
+        TigerNode params = ctx.formalParameterList() == null ? null : stack.pop();
+        stack.pop();    // (
+        TigerNode id = stack.pop();
+        MethodNode m = new MethodNode();
+        setLocations(m, ctx);
+        m.setName(id.getName());
+        m.addChildren(params, dims);
+        stack.push(m);
+    }
+    
+    /**
+     * formalParameterList
+     * 	:	formalParameters ',' lastFormalParameter
+     * 	|	lastFormalParameter
+     * 	;
+     */
+    @Override public void exitFormalParameterList(@NotNull Java8Parser.FormalParameterListContext ctx) { 
+        if (ctx.formalParameters() != null) {
+            // first choice
+            TigerNode last = stack.pop();
+            stack.pop();    // ,
+            TigerNode param = stack.pop();
+            TigerNode list = new TigerNode();
+            setLocations(list, ctx);
+            list.addChildren(last, param);
+            stack.push(list);
+        }
+    }
+    
+    /**
+     * formalParameters
+     * 	:	formalParameter (',' formalParameter)*
+     * 	|	receiverParameter (',' formalParameter)*
+     * 	;
+     */
+    @Override public void exitFormalParameters(@NotNull Java8Parser.FormalParametersContext ctx) { 
+        TigerNode params = new TigerNode();
+        setLocations(params, ctx);
+        if (ctx.formalParameter() != null) {
+            for (int i = 0; i < ctx.formalParameter().size(); i++) {
+                params.addChild(stack.pop());
+                if (i < ctx.formalParameter().size() - 1) {
+                    stack.pop();    // ,   
+                }
+            }
+        }
+        if (ctx.receiverParameter() != null) {
+            stack.pop();    // ,
+            params.addChild(stack.pop());      
+        }
+        stack.push(params);
+    }
 
-    @Override public void exitClassModifiers(@NotNull Java8Parser.ClassModifiersContext ctx) { }
+    /**
+     * formalParameter
+     * 	:	variableModifier* unannType variableDeclaratorId
+     * 	;
+     */
+    @Override public void exitFormalParameter(@NotNull Java8Parser.FormalParameterContext ctx) { 
+        TigerNode var = stack.pop();
+        TigerNode unannType = stack.pop();
+        setLocations(unannType, ctx);
+        if (ctx.variableModifier() != null) {
+            ModifierSet m = new ModifierSet();
+            for (int i = 0; i < ctx.variableModifier().size(); i++) {
+                TigerNode node = stack.pop();   // annotation or modifier
+                if (node instanceof AnnotationNode) {
+                    unannType.addAnnotation((AnnotationNode)node);   
+                    m.addModifier("annotation");
+                }
+                else {
+                    m.addModifier(node.getName());   
+                }
+            }
+            unannType.setModifiers(m.getModifiers());
+        }
+        unannType.addChild(var);
+        stack.push(unannType);
+    }
+    
+    /**
+     * variableModifier
+     * 	:	annotation
+     * 	|	'final'
+     * 	;
+     */
+    @Override public void exitVariableModifier(@NotNull Java8Parser.VariableModifierContext ctx) { 
+        // nothing to do here
+    }
+    
+    /**
+     * lastFormalParameter
+     * 	:	variableModifier* unannType annotation* '...' variableDeclaratorId
+     * 	|	formalParameter
+     * 	;
+     */
+    @Override public void exitLastFormalParameter(@NotNull Java8Parser.LastFormalParameterContext ctx) { 
+        if (ctx.variableDeclaratorId() != null) {
+            // first choice
+            TigerNode var = stack.pop();
+            stack.pop();    // ...
+            List<AnnotationNode> annotations = null;
+            if (ctx.annotation() != null) {
+                annotations = new ArrayList<AnnotationNode>();
+                for (int i = 0; i < ctx.annotation().size(); i++) {
+                    annotations.add((AnnotationNode)stack.pop());   
+                }
+            }
+            TigerNode type = stack.pop();
+            setLocations(type, ctx);
+            if (annotations != null) {
+                type.addAnnotations(annotations);   
+            }
+            type.addChild(var);
+            stack.push(type);
+        }
+        // nothing to do for formalParameter
+    }
+    
+    /**
+     * receiverParameter
+     * 	:	annotation* unannType (identifier '.')? 'this'
+     * 	;
+     */
+    @Override public void exitReceiverParameter(@NotNull Java8Parser.ReceiverParameterContext ctx) { 
+        TigerNode this_ = stack.pop();
+        TigerNode identifier = null;
+        if (ctx.identifier() != null) {
+            stack.pop();    // .
+            identifier = stack.pop();
+        }
+        TigerNode type = stack.pop();
+        setLocations(type, ctx);
+        if (ctx.annotation() != null) {
+            for (int i = 0; i < ctx.annotation().size(); i++) {
+                type.addAnnotation((AnnotationNode)stack.pop()); 
+            }
+        }
+        type.addChildren(identifier, this_);
+        stack.push(type);
+    }
+    
+    /**
+     * throws_
+     * 	:	'throws' exceptionTypeList
+     * 	;
+     */
+    @Override public void exitThrows_(@NotNull Java8Parser.Throws_Context ctx) { 
+        TigerNode list = stack.pop();
+        setLocations(list, ctx);
+        stack.pop();    // throws
+        stack.push(list);
+    }
+    
+    /**
+     * exceptionTypeList
+     * 	:	exceptionType (',' exceptionType)*
+     * 	;
+     * Push a list of ThrowsNodes onto the stack.
+     */
+    @Override public void exitExceptionTypeList(@NotNull Java8Parser.ExceptionTypeListContext ctx) { 
+        TigerNode list = new TigerNode("exceptionTypeList");
+        setLocations(list, ctx);
+        for (int i = 0; i < ctx.exceptionType().size(); i++) {
+            TigerNode type = stack.pop();
+            ThrowsNode tn = new ThrowsNode(type.getName());
+            tn.setStartLocation(type.getStartLocation());
+            tn.setEndLocation(type.getEndLocation());
+            list.addChild(tn);   
+        }
+        stack.push(list);
+    }
+    
+    /**
+     * exceptionType
+     * 	:	classType
+     * 	|	typeVariable
+     * 	;
+     */
+    @Override public void exitExceptionType(@NotNull Java8Parser.ExceptionTypeContext ctx) { 
+        // nothing to do
+    }
+    
+    /**
+     * methodBody
+     * 	:	block
+     * 	|	';'
+     * 	;
+     */
+    @Override public void exitMethodBody(@NotNull Java8Parser.MethodBodyContext ctx) { 
+        dumpStack("exitMethodBody");
+        //if (";".equals(ctx.getText())) {
+        //    stack.pop();    // ;   
+        //}
+    }
+    
+    /**
+     * instanceInitializer
+     * 	:	block
+     * 	;
+     */
+    @Override public void exitInstanceInitializer(@NotNull Java8Parser.InstanceInitializerContext ctx) {
+        // nothing to do
+    }
+    
+    /**
+     * staticInitializer
+     * 	:	'static' block
+     * 	;
+     */
+    @Override public void exitStaticInitializer(@NotNull Java8Parser.StaticInitializerContext ctx) { 
+        TigerNode block = stack.pop();
+        setLocations(block, ctx);
+        stack.pop();    // static
+        block.setModifiers(ModifierSet.getModifiers("static"));
+        stack.pop();
+        stack.push(block);
+    }
+    
+    /**
+     * constructorDeclaration
+     * 	:	constructorModifiers constructorDeclarator throws_? constructorBody
+     * 	;
+     */
+    @Override public void exitConstructorDeclaration(@NotNull Java8Parser.ConstructorDeclarationContext ctx) { 
+        ConstructorNode constructor = new ConstructorNode();
+        setLocations(constructor, ctx);
+        TigerNode body = stack.pop();   // body
+        TigerNode throws_ = ctx.throws_() == null ? null : stack.pop();
+        if (throws_ != null) {
+            constructor.setThrows(throws_.getChildren());   
+        }
+        TigerNode declarator = stack.pop();
+        constructor.setName(declarator.getName());
+        TigerNode modifiers = stack.pop();
+        constructor.addAnnotations(modifiers.getAnnotation());
+        constructor.setModifiers(modifiers.getModifiers());
+        constructor.addChildren(declarator, throws_, body);
+        stack.push(constructor);
+    }
 
-    @Override public void exitClassModifier(@NotNull Java8Parser.ClassModifierContext ctx) { }
-
-    @Override public void exitTypeParameters(@NotNull Java8Parser.TypeParametersContext ctx) { }
-
-    @Override public void exitTypeParameterList(@NotNull Java8Parser.TypeParameterListContext ctx) { }
-
-    @Override public void exitSuperclass(@NotNull Java8Parser.SuperclassContext ctx) { }
-
-    @Override public void exitSuperinterfaces(@NotNull Java8Parser.SuperinterfacesContext ctx) { }
-
-    @Override public void exitInterfaceTypeList(@NotNull Java8Parser.InterfaceTypeListContext ctx) { }
-
-    @Override public void exitClassBody(@NotNull Java8Parser.ClassBodyContext ctx) { }
-
-    @Override public void exitClassBodyDeclaration(@NotNull Java8Parser.ClassBodyDeclarationContext ctx) { }
-
-    @Override public void exitClassMemberDeclaration(@NotNull Java8Parser.ClassMemberDeclarationContext ctx) { }
-
-    @Override public void exitFieldDeclaration(@NotNull Java8Parser.FieldDeclarationContext ctx) { }
-
-    @Override public void exitFieldModifiers(@NotNull Java8Parser.FieldModifiersContext ctx) { }
-
-    @Override public void exitFieldModifier(@NotNull Java8Parser.FieldModifierContext ctx) { }
-
-    @Override public void exitVariableDeclaratorList(@NotNull Java8Parser.VariableDeclaratorListContext ctx) { }
-
-    @Override public void exitVariableDeclarator(@NotNull Java8Parser.VariableDeclaratorContext ctx) { }
-
-    @Override public void exitVariableDeclaratorId(@NotNull Java8Parser.VariableDeclaratorIdContext ctx) { }
-
-    @Override public void exitVariableInitializer(@NotNull Java8Parser.VariableInitializerContext ctx) { }
-
-    @Override public void exitUnannType(@NotNull Java8Parser.UnannTypeContext ctx) { }
-
-    @Override public void exitUnannPrimitiveType(@NotNull Java8Parser.UnannPrimitiveTypeContext ctx) { }
-
-    @Override public void exitUnannReferenceType(@NotNull Java8Parser.UnannReferenceTypeContext ctx) { }
-
-    @Override public void exitUnannClassOrInterfaceType(@NotNull Java8Parser.UnannClassOrInterfaceTypeContext ctx) { }
-
-    @Override public void exitUnannClassType(@NotNull Java8Parser.UnannClassTypeContext ctx) { }
-
-    @Override public void exitUnannClassType_lf_unannClassOrInterfaceType(@NotNull Java8Parser.UnannClassType_lf_unannClassOrInterfaceTypeContext ctx) { }
-
-    @Override public void exitUnannClassType_lfno_unannClassOrInterfaceType(@NotNull Java8Parser.UnannClassType_lfno_unannClassOrInterfaceTypeContext ctx) { }
-
-    @Override public void exitUnannInterfaceType(@NotNull Java8Parser.UnannInterfaceTypeContext ctx) { }
-
-    @Override public void exitUnannInterfaceType_lf_unannClassOrInterfaceType(@NotNull Java8Parser.UnannInterfaceType_lf_unannClassOrInterfaceTypeContext ctx) { }
-
-    @Override public void exitUnannInterfaceType_lfno_unannClassOrInterfaceType(@NotNull Java8Parser.UnannInterfaceType_lfno_unannClassOrInterfaceTypeContext ctx) { }
-
-    @Override public void exitUnannTypeVariable(@NotNull Java8Parser.UnannTypeVariableContext ctx) { }
-
-    @Override public void exitUnannArrayType(@NotNull Java8Parser.UnannArrayTypeContext ctx) { }
-
-    @Override public void exitMethodDeclaration(@NotNull Java8Parser.MethodDeclarationContext ctx) { }
-
-    @Override public void exitMethodModifiers(@NotNull Java8Parser.MethodModifiersContext ctx) { }
-
-    @Override public void exitMethodModifier(@NotNull Java8Parser.MethodModifierContext ctx) { }
-
-    @Override public void exitMethodHeader(@NotNull Java8Parser.MethodHeaderContext ctx) { }
-
-    @Override public void exitResult(@NotNull Java8Parser.ResultContext ctx) { }
-
-    @Override public void exitMethodDeclarator(@NotNull Java8Parser.MethodDeclaratorContext ctx) { }
-
-    @Override public void exitFormalParameterList(@NotNull Java8Parser.FormalParameterListContext ctx) { }
-
-    @Override public void exitFormalParameters(@NotNull Java8Parser.FormalParametersContext ctx) { }
-
-    @Override public void exitFormalParameter(@NotNull Java8Parser.FormalParameterContext ctx) { }
-
-    @Override public void exitVariableModifier(@NotNull Java8Parser.VariableModifierContext ctx) { }
-
-    @Override public void exitLastFormalParameter(@NotNull Java8Parser.LastFormalParameterContext ctx) { }
-
-    @Override public void exitReceiverParameter(@NotNull Java8Parser.ReceiverParameterContext ctx) { }
-
-    @Override public void exitThrows_(@NotNull Java8Parser.Throws_Context ctx) { }
-
-    @Override public void exitExceptionTypeList(@NotNull Java8Parser.ExceptionTypeListContext ctx) { }
-
-    @Override public void exitExceptionType(@NotNull Java8Parser.ExceptionTypeContext ctx) { }
-
-    @Override public void exitMethodBody(@NotNull Java8Parser.MethodBodyContext ctx) { }
-
-    @Override public void exitInstanceInitializer(@NotNull Java8Parser.InstanceInitializerContext ctx) { }
-
-    @Override public void exitStaticInitializer(@NotNull Java8Parser.StaticInitializerContext ctx) { }
-
-    @Override public void exitConstructorDeclaration(@NotNull Java8Parser.ConstructorDeclarationContext ctx) { }
-
-    @Override public void exitConstructorModifiers(@NotNull Java8Parser.ConstructorModifiersContext ctx) { }
-
-    @Override public void exitConstructorModifier(@NotNull Java8Parser.ConstructorModifierContext ctx) { }
-
-    @Override public void exitConstructorDeclarator(@NotNull Java8Parser.ConstructorDeclaratorContext ctx) { }
-
-    @Override public void exitSimpleTypeName(@NotNull Java8Parser.SimpleTypeNameContext ctx) { }
-
-    @Override public void exitConstructorBody(@NotNull Java8Parser.ConstructorBodyContext ctx) { }
-
-    @Override public void exitExplicitConstructorInvocation(@NotNull Java8Parser.ExplicitConstructorInvocationContext ctx) { }
-
-    @Override public void exitEnumDeclaration(@NotNull Java8Parser.EnumDeclarationContext ctx) { }
-
-    @Override public void exitEnumBody(@NotNull Java8Parser.EnumBodyContext ctx) { }
-
-    @Override public void exitEnumConstantList(@NotNull Java8Parser.EnumConstantListContext ctx) { }
-
-    @Override public void exitEnumConstant(@NotNull Java8Parser.EnumConstantContext ctx) { }
-
-    @Override public void exitEnumConstantModifier(@NotNull Java8Parser.EnumConstantModifierContext ctx) { }
-
-    @Override public void exitEnumBodyDeclarations(@NotNull Java8Parser.EnumBodyDeclarationsContext ctx) { }
-
-    @Override public void exitInterfaceDeclaration(@NotNull Java8Parser.InterfaceDeclarationContext ctx) { }
+    /**
+     * constructorModifiers
+     *     :   constructorModifier*
+     *     ;
+     */
+    @Override public void exitConstructorModifiers(@NotNull Java8Parser.ConstructorModifiersContext ctx) { 
+        TigerNode list = new TigerNode();
+        if (ctx.constructorModifier() != null) {
+            setLocations(list, ctx);
+            ModifierSet m = new ModifierSet();
+            for (int i = 0; i < ctx.constructorModifier().size(); i++) {
+                TigerNode node = stack.pop();   // annotation or modifier
+                if (node instanceof AnnotationNode) {
+                    list.addAnnotation((AnnotationNode)node);   
+                    m.addModifier("annotation");
+                }
+                else {
+                    m.addModifier(node.getName());   
+                }
+            }
+            list.setModifiers(m.getModifiers());
+        }
+        stack.push(list);
+    }
+    
+    /**
+     * constructorModifier
+     * 	:	annotation
+     * 	|	'public'
+     * 	|	'protected'
+     * 	|	'private'
+     * 	;
+     */
+    @Override public void exitConstructorModifier(@NotNull Java8Parser.ConstructorModifierContext ctx) { 
+    }
+    
+    /**
+     * constructorDeclarator
+     * 	:	typeParameters? simpleTypeName '(' formalParameterList? ')'
+     * 	;
+     */
+    @Override public void exitConstructorDeclarator(@NotNull Java8Parser.ConstructorDeclaratorContext ctx) { 
+        stack.pop();    // )
+        TigerNode list = ctx.formalParameterList() == null ? null : stack.pop();
+        stack.pop();    // (
+        TigerNode name = stack.pop();
+        setLocations(name, ctx);
+        TigerNode parameters = ctx.typeParameters() == null ? null : stack.pop();
+        name.addChildren(list, parameters);
+        stack.push(name);
+    }
+    
+    /**
+     * simpleTypeName
+     * 	:	identifier
+     * 	;
+     */
+    @Override public void exitSimpleTypeName(@NotNull Java8Parser.SimpleTypeNameContext ctx) { 
+        // nothing to do
+    }
+    
+    /**
+     * constructorBody
+     * 	:	'{' explicitConstructorInvocation? blockStatements? '}'
+     * 	;
+     */
+    @Override public void exitConstructorBody(@NotNull Java8Parser.ConstructorBodyContext ctx) {
+        BlockNode block = new BlockNode();
+        setLocations(block, ctx);
+        setLocations(block, ctx);
+        stack.pop();    // }
+        if (ctx.blockStatements() != null) {
+            TigerNode stmts = stack.pop();
+            block.addChildren(stmts.getChildren());
+        }
+        block.addChild(ctx.explicitConstructorInvocation() == null ? null : stack.pop());
+        stack.pop();    // {
+        
+    }
+    
+    /**
+     * explicitConstructorInvocation
+     * 	:	                   typeArguments? 'this' '(' argumentList? ')' ';'
+     * 	|	                   typeArguments? SUPER  '(' argumentList? ')' ';'
+     * 	|	expressionName '.' typeArguments? SUPER  '(' argumentList? ')' ';'
+     * 	|	primary        '.' typeArguments? SUPER  '(' argumentList? ')' ';'
+     * 	;
+     */
+    @Override public void exitExplicitConstructorInvocation(@NotNull Java8Parser.ExplicitConstructorInvocationContext ctx) { 
+        stack.pop();    // ;
+        stack.pop();    // )
+        TigerNode list = ctx.argumentList() == null ? null : stack.pop();
+        stack.pop();    // 'this' or SUPER
+        TigerNode args = ctx.typeArguments() == null ? null : stack.pop();
+        TigerNode name = null;
+        if (ctx.expressionName() != null || ctx.primary() != null) {
+            name = stack.pop();
+        }
+        else {
+            name = new TigerNode();
+        }
+        setLocations(name, ctx);
+        name.addChildren(args, list);
+        stack.push(name);
+    }
+    
+    /**
+     * enumDeclaration
+     * 	:	classModifiers 'enum' identifier superinterfaces? enumBody
+     * 	;
+     */
+    @Override public void exitEnumDeclaration(@NotNull Java8Parser.EnumDeclarationContext ctx) { 
+        TigerNode body = stack.pop();
+        TigerNode interfaces = ctx.superinterfaces() == null ? null : stack.pop();
+        TigerNode identifier = stack.pop();
+        TigerNode enum_ = new TigerNode("enum");
+        setLocations(enum_, ctx);
+        TigerNode mods = stack.pop();
+        enum_.setModifiers(mods.getModifiers());
+        if (mods.getChildCount() > 0) {
+            for (int i = 0; i < mods.getChildCount(); i++) {
+                TigerNode child = mods.getChildAt(i);
+                if (child instanceof AnnotationNode) {
+                    enum_.addAnnotation((AnnotationNode)child);   
+                }
+            }
+        }
+        enum_.addChildren(identifier, interfaces, body);
+        stack.push(enum_);
+    }
+    
+    /**
+     * enumBody
+     * 	:	'{' enumConstantList? COMMA? enumBodyDeclarations? '}'
+     * 	;
+     */
+    @Override public void exitEnumBody(@NotNull Java8Parser.EnumBodyContext ctx) { 
+        TigerNode enumBody = new TigerNode();
+        setLocations(enumBody, ctx);
+        stack.pop();    // }
+        TigerNode declarations = ctx.enumBodyDeclarations() == null ? null : stack.pop();
+        if (ctx.COMMA() != null){
+            stack.pop();    // COMMA
+        }
+        TigerNode list = ctx.enumConstantList() == null ? null : stack.pop();
+        stack.pop();    // {
+        enumBody.addChildren(declarations, list);
+        stack.push(enumBody);
+    }
+    
+    /**
+     * enumConstantList
+     * 	:	enumConstant (',' enumConstant)*
+     * 	;
+     */
+    @Override public void exitEnumConstantList(@NotNull Java8Parser.EnumConstantListContext ctx) { 
+        TigerNode list = new TigerNode();
+        setLocations(list, ctx);
+        for (int i = 0; i < ctx.enumConstant().size(); i++) {
+            list.addChild(stack.pop());
+            if (i < ctx.enumConstant().size() - 1) {
+                stack.pop();    // ,   
+            }
+        }
+    }
+    
+    /**
+     * enumConstant
+     * 	:	enumConstantModifier* identifier ('(' argumentList? ')')? classBody?
+     * 	;
+     */
+    @Override public void exitEnumConstant(@NotNull Java8Parser.EnumConstantContext ctx) { 
+        TigerNode body = stack.pop();
+        TigerNode list = null;
+        if (ctx.argumentList() != null) {
+            stack.pop();    // )
+            list = stack.pop();
+            stack.pop();    // (
+        }
+        TigerNode id = stack.pop();
+        setLocations(id, ctx);
+        if (ctx.enumConstantModifier() != null) {
+            ModifierSet m = new ModifierSet();
+            for (int i = 0; i < ctx.enumConstantModifier().size(); i++) {
+                TigerNode node = stack.pop();   // annotation
+                if (node instanceof AnnotationNode) {
+                    id.addAnnotation((AnnotationNode)node);   
+                    m.addModifier("annotation");
+                }
+                else {
+                    m.addModifier(node.getName());   
+                }
+            }
+            id.setModifiers(m.getModifiers());
+        }
+        id.addChildren(list, body);
+        stack.push(id);
+    }
+    
+    /**
+     * enumConstantModifier
+     * 	:	annotation
+     * 	;
+     */
+    @Override public void exitEnumConstantModifier(@NotNull Java8Parser.EnumConstantModifierContext ctx) { 
+        // nothing to do
+    }
+    
+    /**
+     * enumBodyDeclarations
+     * 	:	';' classBodyDeclaration*
+     * 	;
+     */
+    @Override public void exitEnumBodyDeclarations(@NotNull Java8Parser.EnumBodyDeclarationsContext ctx) { 
+        if (ctx.classBodyDeclaration() != null) {
+            TigerNode list = new TigerNode();
+            setLocations(list, ctx);
+            for (int i = 0; i < ctx.classBodyDeclaration().size(); i++) {
+                list.addChild(stack.pop());   
+            }
+            stack.pop();    // ;
+            stack.push(list);
+        }
+        else {
+            stack.pop();    // ;   
+        }
+    }
+    
+    /**
+     * interfaceDeclaration
+     * 	:	normalInterfaceDeclaration
+     * 	|	annotationTypeDeclaration
+     * 	;
+     */
+    @Override public void exitInterfaceDeclaration(@NotNull Java8Parser.InterfaceDeclarationContext ctx) {
+        // nothing to do
+    }
     
     /**
      * normalInterfaceDeclaration
      * 	:	interfaceModifiers 'interface' identifier typeParameters? extendsInterfaces? interfaceBody
      * 	;
+     * TODO: this should be:
+     *      interfaceModifier* 'interface' identifier typeParameters? extendsInterfaces? interfaceBody
+     * There is no need for interfaceModifiers
      */
     @Override public void exitNormalInterfaceDeclaration(@NotNull Java8Parser.NormalInterfaceDeclarationContext ctx) {
         TigerNode body = stack.pop();
@@ -964,10 +1908,8 @@ public class Java9SideKickListener extends Java8BaseListener {
         setLocations(node, ctx);
         stack.pop();    // interface
         TigerNode modifiers = stack.pop();
-        if (modifiers.hasChildren()) {
-            // TODO: figure out modifiers, next line is NOT the way to do it!
-            node.addChild(modifiers);
-        }
+        node.addAnnotations(modifiers.getAnnotation());
+        node.setModifiers(modifiers.getModifiers());
         node.addChildren(typeParameters, extendsInterfaces, body);
         stack.push(node);
     }
@@ -976,15 +1918,24 @@ public class Java9SideKickListener extends Java8BaseListener {
      * interfaceModifiers
      *     : interfaceModifier*
      *     ;
-     * This is not necessary, and is a work-around for a flaw in the grammar. See the Java8.g4 file for details.
+     * TODO: fix this. This is not necessary, and is a work-around for a flaw in the grammar. See the Java8.g4 file for details.
      */
     @Override public void exitInterfaceModifiers(@NotNull Java8Parser.InterfaceModifiersContext ctx) { 
         TigerNode list = new TigerNode();
         if (ctx.interfaceModifier() != null) {
             setLocations(list, ctx);
+            ModifierSet m = new ModifierSet();
             for (int i = 0; i < ctx.interfaceModifier().size(); i++) {
-                list.addChild(stack.pop());   
+                TigerNode node = stack.pop();   // annotation or modifier
+                if (node instanceof AnnotationNode) {
+                    list.addAnnotation((AnnotationNode)node);   
+                    m.addModifier("annotation");
+                }
+                else {
+                    m.addModifier(node.getName());   
+                }
             }
+            list.setModifiers(m.getModifiers());
         }
         stack.push(list);
     }
@@ -1065,9 +2016,18 @@ public class Java9SideKickListener extends Java8BaseListener {
         setLocations(type, ctx);
         type.addChild(list);
         if (ctx.constantModifier() != null) {
-            for(int i = 0; i < ctx.constantModifier().size(); i++) {
-                type.addChild(stack.pop());   
+            ModifierSet m = new ModifierSet();
+            for (int i = 0; i < ctx.constantModifier().size(); i++) {
+                TigerNode node = stack.pop();   // annotation or modifier
+                if (node instanceof AnnotationNode) {
+                    type.addAnnotation((AnnotationNode)node);   
+                    m.addModifier("annotation");
+                }
+                else {
+                    m.addModifier(node.getName());   
+                }
             }
+            type.setModifiers(m.getModifiers());
         }
         stack.push(type);
     }
@@ -1081,7 +2041,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	;
      */
     @Override public void exitConstantModifier(@NotNull Java8Parser.ConstantModifierContext ctx) {
-        // TODO: nothing to do here?
+        // nothing to do
     }
 
     /**
@@ -1094,9 +2054,18 @@ public class Java9SideKickListener extends Java8BaseListener {
         TigerNode header = stack.pop();
         setLocations(header, ctx);
         if (ctx.interfaceMethodModifier() != null) {
-            for(int i = 0; i < ctx.interfaceMethodModifier().size(); i++) {
-                header.addChild(stack.pop());   
+            ModifierSet m = new ModifierSet();
+            for (int i = 0; i < ctx.interfaceMethodModifier().size(); i++) {
+                TigerNode node = stack.pop();   // annotation or modifier
+                if (node instanceof AnnotationNode) {
+                    header.addAnnotation((AnnotationNode)node);   
+                    m.addModifier("annotation");
+                }
+                else {
+                    m.addModifier(node.getName());   
+                }
             }
+            header.setModifiers(m.getModifiers());
         }
         header.addChild(body);
         stack.push(header);
@@ -1114,7 +2083,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	;
      */
     @Override public void exitInterfaceMethodModifier(@NotNull Java8Parser.InterfaceMethodModifierContext ctx) { 
-        // TODO: nothing to do here?
+        // nothing to do
     }
     
     /**
@@ -1123,19 +2092,28 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	;
      */
     @Override public void exitAnnotationTypeDeclaration(@NotNull Java8Parser.AnnotationTypeDeclarationContext ctx) { 
-        TigerNode body = stack.pop();
+        TigerNode annotationTypeBody = stack.pop();
         TigerNode identifier = stack.pop();
         stack.pop();    // interface
         stack.pop();    // *
-        TigerNode node = new TigerNode("interface");
-        setLocations(node, ctx);
+        TigerNode body = new TigerNode("interface");
+        setLocations(body, ctx);
         if (ctx.interfaceModifier() != null) {
-            for(int i = 0; i < ctx.interfaceModifier().size(); i++) {
-                node.addChild(stack.pop());   
+            ModifierSet m = new ModifierSet();
+            for (int i = 0; i < ctx.interfaceModifier().size(); i++) {
+                TigerNode node = stack.pop();   // annotation or modifier
+                if (node instanceof AnnotationNode) {
+                    body.addAnnotation((AnnotationNode)node);   
+                    m.addModifier("annotation");
+                }
+                else {
+                    m.addModifier(node.getName());   
+                }
             }
+            body.setModifiers(m.getModifiers());
         }
-        node.addChildren(identifier, body);
-        stack.push(node);
+        body.addChildren(identifier, annotationTypeBody);
+        stack.push(body);
     }
     
     /**
@@ -1181,10 +2159,20 @@ public class Java9SideKickListener extends Java8BaseListener {
         setLocations(type, ctx);
         type.addChild(identifier);
         if (ctx.annotationTypeElementModifier() != null) {
+            ModifierSet m = new ModifierSet();
             for (int i = 0; i < ctx.annotationTypeElementModifier().size(); i++) {
-                type.addChild(stack.pop());   
+                TigerNode node = stack.pop();   // annotation or modifier
+                if (node instanceof AnnotationNode) {
+                    type.addAnnotation((AnnotationNode)node);   
+                    m.addModifier("annotation");
+                }
+                else {
+                    m.addModifier(node.getName());   
+                }
             }
+            type.setModifiers(m.getModifiers());
         }
+        type.addChild(dims);
         stack.push(type);
     }
     
@@ -1196,7 +2184,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	;
      */
     @Override public void exitAnnotationTypeElementModifier(@NotNull Java8Parser.AnnotationTypeElementModifierContext ctx) { 
-        // TODO: anthing to do here?
+        // nothing to do
     }
     
     /**
@@ -1424,17 +2412,12 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'{' blockStatements? '}'
      * 	;
      */
-    @Override public void exitBlock(@NotNull Java8Parser.BlockContext ctx) { 
+    @Override public void exitBlock(@NotNull Java8Parser.BlockContext ctx) {
         stack.pop();    // }
-        TigerNode block = null;
-        if (ctx.blockStatements() != null) {
-            block = stack.pop();
-            setLocations(block, ctx);
-        }
+        BlockNode block = ctx.blockStatements() == null ? new BlockNode() : (BlockNode)stack.pop();
+        setLocations(block, ctx);
         stack.pop();    // {
-        if (block != null) {
-            stack.push(block);
-        }
+        stack.push(block);
     }
     
     /**
@@ -1443,7 +2426,8 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	;
      */
     @Override public void exitBlockStatements(@NotNull Java8Parser.BlockStatementsContext ctx) { 
-        TigerNode block = new TigerNode();
+        dumpStack("exitBlockStatements");
+        BlockNode block = new BlockNode();
         for (int i = 0; i < ctx.blockStatement().size(); i++) {
             block.addChild(stack.pop());   
         }
@@ -1476,7 +2460,27 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	variableModifier* unannType variableDeclaratorList
      * 	;
      */
-    @Override public void exitLocalVariableDeclaration(@NotNull Java8Parser.LocalVariableDeclarationContext ctx) { }
+    @Override public void exitLocalVariableDeclaration(@NotNull Java8Parser.LocalVariableDeclarationContext ctx) { 
+        TigerNode list = stack.pop();
+        TigerNode unannType = stack.pop();
+        setLocations(unannType, ctx);
+        if (ctx.variableModifier() != null) {
+            ModifierSet m = new ModifierSet();
+            for (int i = 0; i < ctx.variableModifier().size(); i++) {
+                TigerNode node = stack.pop();   // annotation or modifier
+                if (node instanceof AnnotationNode) {
+                    unannType.addAnnotation((AnnotationNode)node);   
+                    m.addModifier("annotation");
+                }
+                else {
+                    m.addModifier(node.getName());   
+                }
+            }
+            unannType.setModifiers(m.getModifiers());
+        }
+        unannType.addChild(list);
+        stack.push(unannType);
+    }
     
     /**
      * statement
@@ -1502,7 +2506,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	;
      */
     @Override public void exitStatementNoShortIf(@NotNull Java8Parser.StatementNoShortIfContext ctx) { 
-        // nothind to do
+        // nothing to do
     }
     
     /**
@@ -1689,7 +2693,6 @@ public class Java9SideKickListener extends Java8BaseListener {
         TigerNode labels = null;
         if (ctx.switchLabel() != null) {
             labels = new TigerNode();
-            // TODO: need range on labels
             for (int i = 0; i < ctx.switchLabel().size(); i++) {
                 labels.addChild(stack.pop());
             }
@@ -1697,13 +2700,13 @@ public class Java9SideKickListener extends Java8BaseListener {
         TigerNode group = null;
         if (ctx.switchBlockStatementGroup() != null) {
             group = new TigerNode();
-            // TODO: need range on group
             for (int i = 0; i < ctx.switchBlockStatementGroup().size(); i++) {
                 group.addChild(stack.pop());
             }
         }
         stack.pop();    // {
         TigerNode block = new BlockNode();
+        setLocations(block, ctx);
         block.addChildren(group, labels);
         stack.push(block);
     }
@@ -1946,18 +2949,25 @@ public class Java9SideKickListener extends Java8BaseListener {
         stack.pop();    // ;
         TigerNode id = stack.pop();
         TigerNode unannType = stack.pop();
-        TigerNode modifiers = null;
         if (ctx.variableModifier() != null) {
-            modifiers = new TigerNode();
+            ModifierSet m = new ModifierSet();
             for (int i = 0; i < ctx.variableModifier().size(); i++) {
-                modifiers.addChild(stack.pop());
+                TigerNode node = stack.pop();   // annotation or modifier
+                if (node instanceof AnnotationNode) {
+                    unannType.addAnnotation((AnnotationNode)node);   
+                    m.addModifier("annotation");
+                }
+                else {
+                    m.addModifier(node.getName());   
+                }
             }
+            unannType.setModifiers(m.getModifiers());
         }
         stack.pop();    // (
         stack.pop();    // for
         TigerNode for_ = new TigerNode("for");
         setLocations(for_, ctx);
-        for_.addChildren(modifiers, unannType, id, expression, stmt);
+        for_.addChildren(unannType, id, expression, stmt);
         stack.push(for_);
     }
     
@@ -1973,18 +2983,25 @@ public class Java9SideKickListener extends Java8BaseListener {
         stack.pop();    // ;
         TigerNode id = stack.pop();
         TigerNode unannType = stack.pop();
-        TigerNode modifiers = null;
         if (ctx.variableModifier() != null) {
-            modifiers = new TigerNode();
+            ModifierSet m = new ModifierSet();
             for (int i = 0; i < ctx.variableModifier().size(); i++) {
-                modifiers.addChild(stack.pop());
+                TigerNode node = stack.pop();   // annotation or modifier
+                if (node instanceof AnnotationNode) {
+                    unannType.addAnnotation((AnnotationNode)node);   
+                    m.addModifier("annotation");
+                }
+                else {
+                    m.addModifier(node.getName());   
+                }
             }
+            unannType.setModifiers(m.getModifiers());
         }
         stack.pop();    // (
         stack.pop();    // for
         TigerNode for_ = new TigerNode("for");
         setLocations(for_, ctx);
-        for_.addChildren(modifiers, unannType, id, expression, stmt);
+        for_.addChildren(unannType, id, expression, stmt);
         stack.push(for_);
     }
     
@@ -2025,12 +3042,13 @@ public class Java9SideKickListener extends Java8BaseListener {
      */
     @Override public void exitReturnStatement(@NotNull Java8Parser.ReturnStatementContext ctx) { 
         stack.pop();    // ;
-        TigerNode expression = stack.pop();
-        stack.pop();    // throw
+        TigerNode expression = ctx.expression() == null ? null : stack.pop();
+        stack.pop();    // return
         TigerNode rtn = new TigerNode("return");
         setLocations(rtn, ctx);
         rtn.addChild(expression);
         stack.push(rtn);
+        dumpStack("exitReturn");
     }
     
     /**
@@ -2147,9 +3165,18 @@ public class Java9SideKickListener extends Java8BaseListener {
         TigerNode catchType = stack.pop();
         setLocations(catchType, ctx);
         if (ctx.variableModifier() != null) {
+            ModifierSet m = new ModifierSet();
             for (int i = 0; i < ctx.variableModifier().size(); i++) {
-                catchType.addChild(stack.pop());
+                TigerNode node = stack.pop();   // annotation or modifier
+                if (node instanceof AnnotationNode) {
+                    catchType.addAnnotation((AnnotationNode)node);   
+                    m.addModifier("annotation");
+                }
+                else {
+                    m.addModifier(node.getName());   
+                }
             }
+            catchType.setModifiers(m.getModifiers());
         }
         catchType.addChild(variableDeclaratorId);
         stack.push(catchType);
@@ -2259,9 +3286,18 @@ public class Java9SideKickListener extends Java8BaseListener {
         unannType.addChild(variable);
         unannType.addChild(expression);
         if (ctx.variableModifier() != null) {
+            ModifierSet m = new ModifierSet();
             for (int i = 0; i < ctx.variableModifier().size(); i++) {
-                unannType.addChild(stack.pop());   
+                TigerNode node = stack.pop();   // annotation or modifier
+                if (node instanceof AnnotationNode) {
+                    unannType.addAnnotation((AnnotationNode)node);   
+                    m.addModifier("annotation");
+                }
+                else {
+                    m.addModifier(node.getName());   
+                }
             }
+            unannType.setModifiers(m.getModifiers());
         }
     }
     
@@ -3299,6 +4335,7 @@ public class Java9SideKickListener extends Java8BaseListener {
         setLocations(expression, ctx);
         expression.addChild(parameters);
         expression.addChild(body);
+        stack.push(expression);
     }
     
     /**
@@ -3649,7 +4686,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      *     ;
      */
     @Override public void exitShiftOperator(@NotNull Java8Parser.ShiftOperatorContext ctx) { 
-        // nothing to do?
+        // nothing to do
     }
     
     /**
@@ -3808,7 +4845,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	;
      */
     @Override public void exitPostIncrementExpression_lf_postfixExpression(@NotNull Java8Parser.PostIncrementExpression_lf_postfixExpressionContext ctx) { 
-        // nothing to do?
+        // nothing to do
     }
     
     /**

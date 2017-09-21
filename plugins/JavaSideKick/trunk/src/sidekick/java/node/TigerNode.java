@@ -90,9 +90,9 @@ public class TigerNode extends Asset implements SideKickElement {
     private String name;
 
 
-    // modifiers, see ModifierSet
+    // TODO: deprecate this. modifiers, see ModifierSet
     private int modifiers = 0;
-
+    
     // start end end locations for this node in the source file
     private Location startLocation = new Location();
     private Location endLocation = startLocation;
@@ -200,7 +200,7 @@ public class TigerNode extends Asset implements SideKickElement {
     public int getModifiers() {
         return modifiers;
     }
-
+    
     /**
      * Ordinal is used for sorting nodes, can also be used as a type identifier.
      * Subclasses should override to set appropriate ordinal.
