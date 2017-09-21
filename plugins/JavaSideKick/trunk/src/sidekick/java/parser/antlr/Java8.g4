@@ -402,6 +402,7 @@ normalClassDeclaration
 	:	classModifiers 'class' identifier typeParameters? superclass? superinterfaces? classBody
 	;
 	
+// TODO: why is this? Why not change above to classModifier*?	
 classModifiers
     :   classModifier*
     ;
