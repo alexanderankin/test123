@@ -387,9 +387,9 @@ public class Java8SideKickListener extends Java8BaseListener {
             SuperinterfacesContext superInterfacesContext = ctx.superinterfaces();
             InterfaceTypeListContext interfaceTypeListContext = superInterfacesContext.interfaceTypeList();
             List<InterfaceTypeContext> interfaceTypeContexts = ( List <InterfaceTypeContext> )interfaceTypeListContext.interfaceType();
-            List<Type> interfaceTypes = new ArrayList<Type>();
+            List<TigerNode> interfaceTypes = new ArrayList<TigerNode>();
             for ( InterfaceTypeContext itc : interfaceTypeContexts ) {
-                Type type = new Type( itc.getText() );
+                TigerNode type = new TigerNode( itc.getText() );
                 setLocations( type, itc );
                 interfaceTypes.add( type );
             }

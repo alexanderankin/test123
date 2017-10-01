@@ -1586,8 +1586,13 @@ TigerNode ClassOrInterfaceDeclaration(Modifier m):
         if (kids != null && kids.getChildren() != null)
             node.addChildren(kids.getChildren());
         node.setTypeParams(type_params);
-        if (extends_list != null)
-            node.setExtendsList(extends_list);
+        if (extends_list != null) {
+            List<Type> types = new ArrayList<Type>(extends_list.size());
+            for (TigerNode tn : extends_list) {
+                types.add( new Type(tn.getName()));
+            }
+            node.setExtendsList(types);
+        }
         if (implements_list != null)
             node.setImplementsList(implements_list);
         if (annotations != null) {
