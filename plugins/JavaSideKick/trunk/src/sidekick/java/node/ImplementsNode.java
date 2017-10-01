@@ -36,10 +36,12 @@ public class ImplementsNode extends Type {
     
     public ImplementsNode(String name) {
         super(name);   
+        setVisible(true);
     }
     
     public ImplementsNode( Type type ) {
         super(type);
+        setVisible(true);
     }
 
     public int getOrdinal() {

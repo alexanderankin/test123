@@ -469,6 +469,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
         if ( !node.isVisible() ) {            // visibility based on the node itself
             return false;
         }
+        if ( node.getOrdinal() == Integer.MAX_VALUE) {
+            return false;   
+        }
         if ( node.getOrdinal() == TigerNode.BLOCK ) {
             return false;
         }
