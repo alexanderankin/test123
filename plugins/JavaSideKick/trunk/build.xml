@@ -147,7 +147,7 @@
    ========================================================================= -->
     <target name="dist"
             description="Compiles, jars, puts the jar in the jEdit jars directory."
-            depends="init,compile,prep_files">
+            depends="init,clean,compile,prep_files">
 
 
         <!-- make the plugin jar file -->
