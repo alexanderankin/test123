@@ -34,7 +34,8 @@ public class ConstructorNode extends TigerNode implements Parameterizable {
     String typeParams = null;
     List<Parameter> formalParams = null;
 
-    public ConstructorNode() { }
+    public ConstructorNode() { 
+    }
 
     public ConstructorNode( String name, int modifiers, String typeParams, List<Parameter> formalParams ) {
         super( name, modifiers );

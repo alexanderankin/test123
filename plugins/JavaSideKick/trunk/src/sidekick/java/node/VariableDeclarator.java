@@ -42,5 +42,14 @@ public class VariableDeclarator extends FieldNode {
     public int getOrdinal() {
         return VARIABLE;
     }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getName());
+        sb.append(":");
+        sb.append(getRealType());
+        return sb.toString();
+    }
 }
 

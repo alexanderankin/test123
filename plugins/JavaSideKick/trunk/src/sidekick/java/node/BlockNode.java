@@ -40,6 +40,16 @@ public class BlockNode extends TigerNode {
     public int getOrdinal() {
         return TigerNode.BLOCK;
     }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("block {\n");
+        for (int i = 0; i < getChildCount(); i++) {
+            sb.append(getChildAt(i).toString()).append('\n');   
+        }
+        sb.append("}\n");
+        return sb.toString();
+    }
 }
 
 
