@@ -72,6 +72,8 @@ public class ClassNode extends TigerNode {
             return;   
         }
         ExtendsNode e = new ExtendsNode(t.getName());
+        e.setStartLocation(t.getStartLocation());
+        e.setEndLocation(t.getEndLocation());
         addChild(e);
     }
 

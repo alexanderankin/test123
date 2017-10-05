@@ -374,6 +374,7 @@ public class Java9SideKickListener extends Java8BaseListener {
     @Override public void exitTypeBound(@NotNull Java8Parser.TypeBoundContext ctx) { 
         if (ctx.typeVariable() != null) {
             TigerNode type = stack.pop();
+            setLocations(type, ctx);
             stack.pop();    // extends
             stack.push(type);
         }
@@ -807,9 +808,12 @@ public class Java9SideKickListener extends Java8BaseListener {
         }
 
         // create the module node
-        TigerNode moduleNode = new TigerNode("module " + sb.toString());
+        ModuleNode moduleNode = new ModuleNode(sb.toString());
+        moduleNode.setVisible(true);
         setLocations(moduleNode, ctx);
         for (TigerNode statement : statements) {
+            statement.setVisible(true);
+            statement.setModifiers(ModifierSet.PUBLIC);
             moduleNode.addChild(statement);   
         }
 
@@ -944,7 +948,9 @@ public class Java9SideKickListener extends Java8BaseListener {
                 }
             }
         }
-        node.setExtends(superClass);
+        if (superClass != null) {
+            node.setExtends(superClass);
+        }
         if (superInterfaces != null) {
             node.setImplementsList(superInterfaces.getChildren());
         }
@@ -1436,11 +1442,12 @@ public class Java9SideKickListener extends Java8BaseListener {
     @Override public void exitMethodDeclaration(@NotNull Java8Parser.MethodDeclarationContext ctx) { 
         
         TigerNode body = stack.pop();
-        TigerNode header = stack.pop();
+        MethodNode header = (MethodNode)stack.pop();
         TigerNode modifiers = stack.pop();
         MethodNode method = new MethodNode();
         method.setName(header.getName());
         method.setModifiers(modifiers.getModifiers());
+        method.setReturnType(header.getReturnType());
         setLocations(method, ctx);
         if (header.hasChildren()) {
             // need throws and annotations
@@ -1524,13 +1531,15 @@ public class Java9SideKickListener extends Java8BaseListener {
         MethodNode decl = (MethodNode)stack.pop();
         setLocations(decl, ctx);
         TigerNode result = stack.pop();
+        Type returnType = new Type(result.getName());
+        decl.setReturnType(returnType);
         if (ctx.annotation() != null) {
             for (int i = 0; i < ctx.annotation().size(); i++) {
                 decl.addAnnotation((AnnotationNode)stack.pop());   
             }
         }
         TigerNode params = ctx.typeParameters() == null ? null : stack.pop();
-        decl.addChildren(params, result);
+        decl.addChild(params);
         if (throws_ != null) {
             decl.setThrows(throws_.getChildren());   
         }
@@ -2865,11 +2874,12 @@ public class Java9SideKickListener extends Java8BaseListener {
         TigerNode block = stack.pop();
         stack.pop();    // )
         TigerNode expression = stack.pop();
-        stack.pop();    // )
+        stack.pop();    // (
         stack.pop();    // switch
         TigerNode node = new TigerNode("switch");
         setLocations(node, ctx);
-        node.addChildren(expression, block);
+        node.addChild(expression);
+        node.addChildren(block.getChildren());
         stack.push(node);
     }
     
@@ -2879,24 +2889,25 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	;
      */
     @Override public void exitSwitchBlock(@NotNull Java8Parser.SwitchBlockContext ctx) { 
-        TigerNode labels = null;
-        if (ctx.switchLabel() != null) {
-            labels = new TigerNode();
-            for (int i = 0; i < ctx.switchLabel().size(); i++) {
-                labels.addChild(stack.pop());
-            }
-        }
-        TigerNode group = null;
-        if (ctx.switchBlockStatementGroup() != null) {
-            group = new TigerNode();
-            for (int i = 0; i < ctx.switchBlockStatementGroup().size(); i++) {
-                group.addChild(stack.pop());
-            }
-        }
-        stack.pop();    // {
         TigerNode block = new BlockNode();
         setLocations(block, ctx);
-        block.addChildren(group, labels);
+
+        stack.pop();    // }
+        
+        if (ctx.switchLabel() != null) {
+            for (int i = 0; i < ctx.switchLabel().size(); i++) {
+                block.addChild(stack.pop());
+            }
+        }
+        
+        if (ctx.switchBlockStatementGroup() != null) {
+            for (int i = 0; i < ctx.switchBlockStatementGroup().size(); i++) {
+                TigerNode labels = stack.pop();
+                block.addChildren(labels.getChildren());
+            }
+        }
+        
+        stack.pop();    // {
         stack.push(block);
     }
     
@@ -2945,6 +2956,7 @@ public class Java9SideKickListener extends Java8BaseListener {
             stack.push(case_);
         }
         else {
+            stack.pop();    // default
             TigerNode default_ = new TigerNode("default");
             setLocations(default_, ctx);
             stack.push(default_);
