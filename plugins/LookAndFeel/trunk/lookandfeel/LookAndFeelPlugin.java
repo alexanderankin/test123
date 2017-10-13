@@ -176,8 +176,13 @@ public class LookAndFeelPlugin extends EBPlugin {
         Window[] windows = Window.getWindows();
         for ( Window window : windows ) {
             if ( window != null ) {
-                SwingUtilities.updateComponentTreeUI( window );
-                updateAllDialogComponentTreeUIs( window );
+            	try {
+					SwingUtilities.updateComponentTreeUI( window );
+					updateAllDialogComponentTreeUIs( window );
+                }
+                catch (Exception e) {
+                	e.printStackTrace();	
+                }
             }
         }
     }
@@ -190,11 +195,12 @@ public class LookAndFeelPlugin extends EBPlugin {
     private static void updateAllDialogComponentTreeUIs( Window win ) {
         Window[] children = win.getOwnedWindows();
         for ( int i = 0; i < children.length; i++ ) {
-            if ( win instanceof Frame ) {
+        	Window child = children[i];
+            if ( child instanceof Frame ) {
                 continue;
             }
-            SwingUtilities.updateComponentTreeUI( win );
-            updateAllDialogComponentTreeUIs( win );
+            SwingUtilities.updateComponentTreeUI( child );
+            updateAllDialogComponentTreeUIs( child );
         }
     }
 
