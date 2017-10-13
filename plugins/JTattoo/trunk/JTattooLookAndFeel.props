@@ -1,11 +1,11 @@
 plugin.lookandfeel.JTattooLookAndFeelPlugin.name=JTattooLookAndFeel
 plugin.lookandfeel.JTattooLookAndFeelPlugin.author=Dale Anson
-plugin.lookandfeel.JTattooLookAndFeelPlugin.version=7.1.00
+plugin.lookandfeel.JTattooLookAndFeelPlugin.version=1.6.11
 plugin.lookandfeel.JTattooLookAndFeelPlugin.docs=index.html
 plugin.lookandfeel.JTattooLookAndFeelPlugin.activate=startup
-plugin.lookandfeel.JTattooLookAndFeelPlugin.depend.0=jdk 1.7
-plugin.lookandfeel.JTattooLookAndFeelPlugin.depend.1=jedit 05.02.01.00
-plugin.lookandfeel.JTattooLookAndFeelPlugin.depend.2=plugin lookandfeel.LookAndFeelPlugin 1.8.0
+plugin.lookandfeel.JTattooLookAndFeelPlugin.depend.0=jdk 1.8
+plugin.lookandfeel.JTattooLookAndFeelPlugin.depend.1=jedit 05.04.00.00
+plugin.lookandfeel.JTattooLookAndFeelPlugin.depend.2=plugin lookandfeel.LookAndFeelPlugin 1.9.1
 plugin.lookandfeel.JTattooLookAndFeelPlugin.jars=JTattoo-1.6.11.jar
 plugin.lookandfeel.JTattooLookAndFeelPlugin.description=The JTattoo Look and Feel plugin provides the JTattoo Look and Feel to jEdit.
 
