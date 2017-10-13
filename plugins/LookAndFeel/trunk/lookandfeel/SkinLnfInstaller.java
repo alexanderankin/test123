@@ -1,3 +1,4 @@
+
 /*
  * SkinLnfInstaller.java - Look And Feel plugin
  * Copyright (C) 2002 Calvin Yu
@@ -20,42 +21,49 @@
  */
 package lookandfeel;
 
+
 import com.l2fprod.gui.plaf.skin.Skin;
 import com.l2fprod.gui.plaf.skin.SkinLookAndFeel;
+
 import javax.swing.JCheckBox;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
-import javax.swing.UnsupportedLookAndFeelException;
 
 
 /**
  * Installs the skin look and feel.  See <a href="http://www.l2fprod.com">http://www.l2fprod.com</a>.
  */
-public class SkinLnfInstaller implements LookAndFeelInstaller
-{
+public class SkinLnfInstaller implements LookAndFeelInstaller {
 
-	public final static String THEMEPACK_PROP = "lookandfeel.skin.themepack";
-	public final static String XTRA_SCROLLBARS_PROP = "lookandfeel.skin.xtra-scrollbars";
+	public static final String THEMEPACK_PROP = "lookandfeel.skin.themepack";
+	public static final String XTRA_SCROLLBARS_PROP = "lookandfeel.skin.xtra-scrollbars";
 
 	public String getName() {
-		return "Skin";		
+		return "Skin";
 	}
-	
+
 	/**
 	 * Install a non standard look and feel.
 	 */
-	public void install() throws UnsupportedLookAndFeelException
-	{
+	public void install() throws UnsupportedLookAndFeelException {
 		try {
-			Skin theme = SkinLookAndFeel.loadThemePack(jEdit.getProperty(THEMEPACK_PROP));
-			SkinLookAndFeel.setSkin(theme);
+			Skin theme = SkinLookAndFeel.loadThemePack( jEdit.getProperty( THEMEPACK_PROP ) );
+			SkinLookAndFeel.setSkin( theme );
 			UIManager.setLookAndFeel( new SkinLookAndFeel() );
-			UIManager.put("ScrollBar.alternateLayout",
-				jEdit.getBooleanProperty(XTRA_SCROLLBARS_PROP, false) ? Boolean.TRUE : null);
+			UIManager.put( "ScrollBar.alternateLayout",
+			jEdit.getBooleanProperty( XTRA_SCROLLBARS_PROP, false ) ? Boolean.TRUE : null );
+
+			// this is a workaround for the SkinLF; it doesn't find the
+			// the UI classes for overridden components
+			UIManager.put( org.gjt.sp.jedit.menu.EnhancedMenu.class, new javax.swing.JMenu().getUI() );
+			UIManager.put( org.gjt.sp.jedit.menu.EnhancedMenuItem.class, new javax.swing.JMenuItem().getUI() );
+			UIManager.put( org.gjt.sp.jedit.menu.EnhancedCheckBoxMenuItem.class, new javax.swing.JCheckBoxMenuItem().getUI() );
 		}
-		catch(Exception e) {
-			throw new UnsupportedLookAndFeelException(e.getMessage());
+		catch ( Exception e ) {
+			throw new UnsupportedLookAndFeelException( e.getMessage() );
 		}
 	}
 
@@ -63,54 +71,53 @@ public class SkinLnfInstaller implements LookAndFeelInstaller
 	 * Returns a component used to configure the look and feel.
 	 */
 	public AbstractOptionPane getOptionPane() {
-		return new OptionComponent();	
+		return new OptionComponent();
 	}
+
+
+
 
 	/**
 	 * The configuration component.
 	 */
-	class OptionComponent extends AbstractOptionPane
-	{
+	class OptionComponent extends AbstractOptionPane {
+
 		private PathComponent themePack;
 		private JCheckBox xtraScrollbars;
 
 		/**
 		 * Create a new <code>OptionComponent</code>.
 		 */
-		public OptionComponent()
-		{
-			super("Skin");
+		public OptionComponent() {
+			super( "Skin" );
 			init();
 		}
 
 		/**
 		 * Layout this component.
 		 */
-		public void _init()
-		{
-			themePack = new PathComponent(THEMEPACK_PROP, true);
-			addComponent(jEdit.getProperty(THEMEPACK_PROP + ".label"), themePack);
-			addComponent(GUIUtils.createLinkLabelComponent(
-				jEdit.getProperty(THEMEPACK_PROP + ".link.label"),
-				jEdit.getProperty(THEMEPACK_PROP + ".link.href")));
-			xtraScrollbars = new JCheckBox(jEdit.getProperty(XTRA_SCROLLBARS_PROP + ".label"));
-			if (jEdit.getBooleanProperty(XTRA_SCROLLBARS_PROP, false)) {
-				xtraScrollbars.setSelected(true);
+		public void _init() {
+			themePack = new PathComponent( THEMEPACK_PROP, true );
+			addComponent( jEdit.getProperty( THEMEPACK_PROP + ".label" ), themePack );
+			addComponent( GUIUtils.createLinkLabelComponent(
+			jEdit.getProperty( THEMEPACK_PROP + ".link.label" ),
+			jEdit.getProperty( THEMEPACK_PROP + ".link.href" ) ) );
+			xtraScrollbars = new JCheckBox( jEdit.getProperty( XTRA_SCROLLBARS_PROP + ".label" ) );
+			if ( jEdit.getBooleanProperty( XTRA_SCROLLBARS_PROP, false ) ) {
+				xtraScrollbars.setSelected( true );
 			}
-			addComponent(xtraScrollbars);
+			addComponent( xtraScrollbars );
 		}
 
 		/**
 		 * Save this configuration.
 		 */
-		public void _save()
-		{
-			if (themePack.assertPath(false)) {
-				jEdit.setProperty(THEMEPACK_PROP, themePack.getPath());
+		public void _save() {
+			if ( themePack.assertPath( false ) ) {
+				jEdit.setProperty( THEMEPACK_PROP, themePack.getPath() );
 			}
-			jEdit.setBooleanProperty(XTRA_SCROLLBARS_PROP,
-				xtraScrollbars.isSelected());
+			jEdit.setBooleanProperty( XTRA_SCROLLBARS_PROP,
+			xtraScrollbars.isSelected() );
 		}
 	}
-
 }

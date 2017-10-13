@@ -12,7 +12,7 @@
     <title>Look And Feel plugin user's guide</title>
 
     <copyright>
-      <year>1999-2015</year>
+      <year>1999-2017</year>
       <holder>Dirk M&ouml;bius, David Huttleston Jr., Jamie LaScolea, Calvin Yu, Dale Anson</holder>
     </copyright>
 
@@ -48,6 +48,14 @@
     plugin.  This plugin will load the Substance Look and Feel plugin and any
     other available look and feel plugins automatically.
     </para>
+    
+    <para>
+    <emphasis>
+    Note that several of the look and feels listed below are no longer maintained
+    and links to their project pages may be broken. Several require theme packs
+    that may no longer be available. 
+    </emphasis>
+    </para>
   </chapter>
 
 
@@ -78,7 +86,8 @@
       If the Javassist plugin is installed and used as a java agent (see the
       Javassist plugin for details), then this option will appear as a checkbox,
       which will allow you to turn off the annoying system beep. Maybe. Again,
-      see the Javassist plugin documentation for details and wait for jEdit 5.4.
+      see the Javassist plugin documentation for details. This requires at least
+      jEdit 5.4 to work.
     </para>
     </sect1>
     <sect1 id="useAuditoryCues">
@@ -125,6 +134,11 @@
 
   <chapter id="skin">
     <title>The Skin Look And Feel (v1.2.10)</title>
+    <para>
+    <emphasis>This look and feel is no longer maintained and the links below no
+    longer work. This is retained only for people who may be using this look and
+    feel and have previously downloaded skins.</emphasis>
+    </para>
     <para>
     The Skin Look And Feel allows you to customize jEdit's look and feel based
     on themes.  A theme is (roughly) a set of images, colors and properties,
@@ -217,7 +231,7 @@
     themes will use metal themes to configure various options like colors.
   </para>
     <para>
-    Themes can be downloaded <ulink url="http://www.oyoaha.com/themes">here</ulink>.
+    Themes can be downloaded <ulink url="https://sourceforge.net/projects/oalnf/files/oalnf/3.0/">here</ulink>.
   </para>
     <para>
     To install, select the themes you want to use from the
@@ -227,12 +241,12 @@
   </para>
     <para>
     More information on the Oyoaha look and feel can be found at
-    <ulink url="http://www.oyoaha.com">http://www.oyoaha.com</ulink>
+    <ulink url="https://sourceforge.net/projects/oalnf/">http://www.oyoaha.com</ulink>
     </para>
     <sect1 id="oyoaha-license">
       <title>License</title>
       <para>
-      The Oyoaha license can be found <ulink url="http://www.oyoaha.com/lookandfeel/download.html">here</ulink>.
+      Oyoaha is licensed with the <ulink url="https://sourceforge.net/directory/license:apache/">Apache license</ulink>.
     </para>
     </sect1>
   </chapter>

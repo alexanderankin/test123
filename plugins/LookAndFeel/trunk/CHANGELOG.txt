@@ -1,6 +1,10 @@
 CHANGELOG for LookAndFeel plugin
 ================================
 
+Version 1.9.1
+-------------
+* Fix for updating component tree UIs, child components were not being updated.
+
 Version 1.9
 -----------
 * Don't change look and feel from options pane unless the user has actually
