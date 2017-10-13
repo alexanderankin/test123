@@ -22,6 +22,7 @@ public class JTattooLnfInstaller implements LookAndFeelInstaller {
         "Hifi",
         "Luna",
         "McWin",
+        "Mint",
         "Noire",
         "Smart",
         "Texture"
