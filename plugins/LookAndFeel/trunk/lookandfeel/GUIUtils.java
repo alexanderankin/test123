@@ -1,3 +1,4 @@
+
 /*
  * GUIUtils.java
  * Copyright (c) 2002 Calvin Yu
@@ -18,29 +19,25 @@
  */
 package lookandfeel;
 
+
 import java.awt.Component;
-import java.awt.FlowLayout;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
+
 import javax.swing.Box;
+import javax.swing.JLabel;
+
 
 /**
  * GUI convience methods.
  */
-public class GUIUtils
-{
+public class GUIUtils {
 
-   /**
-    * Create a link label component.
-    */
-   public static Component createLinkLabelComponent(String msg, String link)
-   {
-      //JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-      Box panel = Box.createHorizontalBox();
-      panel.add(new JLabel(msg));
-      panel.add(new HrefLinkComponent(" " + link, link));
-      //panel.add(new JLabel(link));
-      return panel;
-   }
-
+    /**
+     * Create a link label component.
+     */
+    public static Component createLinkLabelComponent( String msg, String link ) {
+        Box panel = Box.createHorizontalBox();
+        panel.add( new JLabel( msg ) );
+        panel.add( new HrefLinkComponent( " " + link, link ) );
+        return panel;
+    }
 }
