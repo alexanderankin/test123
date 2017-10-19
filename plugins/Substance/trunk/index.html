@@ -10,7 +10,7 @@
       <div  style="background:#ccccff">
         <h2>Substance Look and Feel</h2>
         <b>Author: Dale Anson</b><br/>
-        <b>Version: 7.3.1, 28 Dec 2015</b>
+        <b>Version: 7.4.7.1.00, Oct 2017</b>
       </div>
         <p>This plugin provides the Substance Look and Feel to
         jEdit. Substance is perhaps the best looking look and feel for
@@ -33,37 +33,34 @@
         from the Look and Feel dropdown. You will have the option to choose from
         these themes:
         <ul>
-         <li>Autumn</li>
-         <li>Business</li>
-         <li>BusinessBlackSteel</li>
-         <li>BusinessBlueSteel</li>
-         <li>Cerulean (added in 7.2)</li>                 
-         <li>ChallengerDeep</li>                          
-         <li>Creme</li>                                   
-         <li>CremeCoffee</li>                             
-         <li>Dust</li>                                    
-         <li>DustCoffee</li>                              
-         <li>EmeraldDusk</li>                             
-         <li>Gemini</li>                                  
-         <li>Graphite</li>                                
-         <li>GraphiteAqua</li>                            
-         <li>GraphiteGlassLookAndFeel</li>                
-         <li>Magellan</li>                                
-         <li><s>Magma</s> (removed in 6.0)</li>                  
-         <li>Mariner (added in 6.1)</li>                  
-         <li>MistAqua</li>                                
-         <li>MistSilver</li>                              
-         <li>Moderate</li>                                
-         <li>Nebula</li>                                  
-         <li>NebulaBrickWall</li>                         
-         <li>OfficeBlack2007 (added in 6.1)</li>          
-         <li>OfficeBlue2007</li>                          
-         <li>OfficeSilver2007</li>                        
-         <li>Raven</li>                                   
-         <li><s>RavenGraphite</s> (removed in 6.0)</li>          
-         <li><s>RavenGraphiteGlass</s> (removed in 6.0)</li>     
-         <li>Sahara</li>
-         <li>Twilight</li>
+        <li>Autumn</li>
+        <li>BusinessBlackSteel</li>
+        <li>BusinessBlueSteel</li>
+        <li>Business</li>
+        <li>Cerulean</li>
+        <li>CremeCoffee</li>
+        <li>Creme</li>
+        <li>DustCoffee</li>
+        <li>Dust</li>
+        <li>Gemini</li>
+        <li>GraphiteAqua</li>
+        <li>GraphiteChalk</li>
+        <li>GraphiteGlass</li>
+        <li>GraphiteGold</li>
+        <li>Graphite</li>
+        <li>Magellan</li>
+        <li>Mariner</li>
+        <li>MistAqua</li>
+        <li>MistSilver</li>
+        <li>Moderate</li>
+        <li>NebulaBrickWall</li>
+        <li>Nebula</li>
+        <li>OfficeBlack2007</li>
+        <li>OfficeBlue2007</li>
+        <li>OfficeSilver2007</li>
+        <li>Raven</li>
+        <li>Sahara</li>
+        <li>Twilight</li>
         
         </ul>
         </p>
@@ -189,15 +186,21 @@
         <p><img src="screenshots/twilight-zenburn.png"></p>
         
         <h3 id="about" style="background:#7FB2FF">About Substance:</h3>
-        <p>The Substance project has been forked <s>and is being actively 
-        maintained</s>:</p>
-        <p>https://github.com/Insubstantial/insubstantial</p>
-        <p>Unfortunately, Substance is no longer being actively maintained.
-        Further updates to Substance such as bug fixes will be provided in
-        this plugin but not in the Substance project itself.</p>
+        <p>The Substance project has been resurrected by the original author,
+        Kirill Grouchnikov. The latest release was on Oct 17. 2017. The version
+        number of this plugin is a little odd, since it was following the forked
+        Insubstantial project, which has died, but moved version numbers ahead.
+        The next release from Kirill will be 8.0, so the version number of this 
+        plugin will track with that when it happens.</p>
         
         <h3 id="changes" style="background:#7FB2FF">Changes</h3>
         <ul>
+         <li>Version 7.4.7.1.00, updated to Substance 7.1:
+            <ol>
+               <li>Removed dependency on laf-widget.jar and laf-plugin.jar as 
+               those are now incorporated directly into substance.jar.</li>
+            </ol>
+         </li>
          <li>Version 7.3.1, 28 Dec 2015, Bug fixes:
             <ol>
                <li>Fixed null pointer exception in SubstanceColorSchemeUtilities.</li>
