@@ -533,12 +533,12 @@ public class JavaParser extends SideKickParser implements EBComponent {
             int sortBy = optionValues.getSortBy();
             switch ( sortBy ) {                // NOPMD, no breaks are necessary here
                 case OptionValues.SORT_BY_LINE:
-                    Integer my_line = new Integer( tna.getStartLocation().line );
-                    Integer other_line = new Integer( tnb.getStartLocation().line );
+                    Integer my_line = Integer.valueOf( tna.getStartLocation().line );
+                    Integer other_line = Integer.valueOf( tnb.getStartLocation().line );
                     return my_line.compareTo( other_line );
                 case OptionValues.SORT_BY_VISIBILITY:
-                    Integer my_vis = new Integer( ModifierSet.visibilityRank( tna.getModifiers() ) );
-                    Integer other_vis = new Integer( ModifierSet.visibilityRank( tnb.getModifiers() ) );
+                    Integer my_vis = Integer.valueOf( ModifierSet.visibilityRank( tna.getModifiers() ) );
+                    Integer other_vis = Integer.valueOf( ModifierSet.visibilityRank( tnb.getModifiers() ) );
                     int comp = my_vis.compareTo( other_vis );
                     return comp == 0 ? compareNames( tna, tnb ) : comp;
                 case OptionValues.SORT_BY_NAME:
@@ -549,8 +549,8 @@ public class JavaParser extends SideKickParser implements EBComponent {
 
         private int compareNames( TigerNode tna, TigerNode tnb ) {
             // sort by name
-            Integer my_ordinal = new Integer( tna.getOrdinal() );
-            Integer other_ordinal = new Integer( tnb.getOrdinal() );
+            Integer my_ordinal = Integer.valueOf( tna.getOrdinal() );
+            Integer other_ordinal = Integer.valueOf( tnb.getOrdinal() );
             int comp = my_ordinal.compareTo( other_ordinal );
             return comp == 0 ? tna.getName().toLowerCase().compareTo( tnb.getName().toLowerCase() ) : comp;
         }
