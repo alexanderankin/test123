@@ -1729,8 +1729,12 @@ public class Java9SideKickListener extends Java8BaseListener {
     @Override public void exitExceptionTypeList(@NotNull Java8Parser.ExceptionTypeListContext ctx) { 
         TigerNode list = new TigerNode("exceptionTypeList");
         setLocations(list, ctx);
-        for (int i = 0; i < ctx.exceptionType().size(); i++) {
+        int count = ctx.exceptionType().size();
+        for (int i = 0; i < count; i++) {
             TigerNode type = stack.pop();
+            if (count > 1 && i < count - 1) {
+                stack.pop();    // ,   
+            }
             ThrowsNode tn = new ThrowsNode(type.getName());
             tn.setStartLocation(type.getStartLocation());
             tn.setEndLocation(type.getEndLocation());
