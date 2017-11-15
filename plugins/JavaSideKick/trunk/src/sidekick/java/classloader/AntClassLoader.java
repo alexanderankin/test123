@@ -991,8 +991,7 @@ public class AntClassLoader extends ClassLoader {
             try {
                 Object domain = getProtectionDomain.invoke( AntClassLoader.class, new Object [0]  );
                 Object[] args = new Object[] {
-                    classname, classData, new Integer( 0 ),
-                    new Integer( classData.length ), domain
+                    classname, classData, Integer.valueOf( 0 ), Integer.valueOf( classData.length ), domain
                 };
                 return ( Class )defineClassProtectionDomain.invoke( this, args );
             }
