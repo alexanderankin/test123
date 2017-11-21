@@ -5021,11 +5021,17 @@ public class Java9SideKickListener extends Java8BaseListener {
         TigerNode temp = null;
         if (ctx.postIncrementExpression_lf_postfixExpression() != null) {
             for (int i = 0; i < ctx.postIncrementExpression_lf_postfixExpression().size(); i++) {
+                if (temp == null) {
+                    temp = new TigerNode();   
+                }
                 temp.addChild(stack.pop());   
             }
         }
         if (ctx.postDecrementExpression_lf_postfixExpression() != null) {
             for (int i = 0; i < ctx.postDecrementExpression_lf_postfixExpression().size(); i++) {
+                if (temp == null) {
+                    temp = new TigerNode();   
+                }
                 temp.addChild(stack.pop());   
             }
         }
