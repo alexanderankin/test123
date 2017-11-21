@@ -2738,7 +2738,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	;
      */
     @Override public void exitEmptyStatement(@NotNull Java8Parser.EmptyStatementContext ctx) { 
-        stack.pop();    // ;
+        //stack.pop();    // ;
     }
     
     /**
