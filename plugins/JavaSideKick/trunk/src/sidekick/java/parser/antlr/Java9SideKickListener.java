@@ -584,49 +584,55 @@ public class Java9SideKickListener extends Java8BaseListener {
       * 	;
       */
     @Override public void exitCompilationUnit(@NotNull Java8Parser.CompilationUnitContext ctx) { 
-        cuNode = new CUNode();
-        setLocations(cuNode, ctx);
-        
-        stack.pop();    // EOF
-        
-        // module declaration
-        if (ctx.moduleDeclaration() != null) {
-            cuNode.addChild(stack.pop());
-        }
-        
-        // type declarations
-        if (ctx.typeDeclaration() != null) {
-            for (int i = 0; i < ctx.typeDeclaration().size(); i++) {
-                TigerNode child = stack.pop();
-                // System.out.println("+++++ dump child: " + child.dump());
-                cuNode.addChild(child);   
+        try {
+            cuNode = new CUNode();
+            setLocations(cuNode, ctx);
+            
+            stack.pop();    // EOF
+            
+            // module declaration
+            if (ctx.moduleDeclaration() != null) {
+                cuNode.addChild(stack.pop());
             }
-        }
-        
-        // import declarations
-        if (ctx.importDeclaration() != null) {
-            ImportNode importNode = new ImportNode("Imports");
-            Location importStart = new Location();
-            Location importEnd = new Location();
-            for (int i = 0; i < ctx.importDeclaration().size(); i++) {
-                TigerNode child = stack.pop();
-                importNode.addChild(child);
-                if (importStart.compareTo(child.getStartLocation()) > 0) {
-                    importStart = child.getStartLocation();
-                }
-                if (importEnd.compareTo(child.getEndLocation()) < 0) {
-                    importEnd = child.getEndLocation();   
+            
+            // type declarations
+            if (ctx.typeDeclaration() != null) {
+                for (int i = 0; i < ctx.typeDeclaration().size(); i++) {
+                    TigerNode child = stack.pop();
+                    // System.out.println("+++++ dump child: " + child.dump());
+                    cuNode.addChild(child);   
                 }
             }
-            importNode.setStartLocation(importStart);
-            importNode.setEndLocation(importEnd);
-            cuNode.setImportNode(importNode);
+            
+            // import declarations
+            if (ctx.importDeclaration() != null) {
+                ImportNode importNode = new ImportNode("Imports");
+                Location importStart = new Location();
+                Location importEnd = new Location();
+                for (int i = 0; i < ctx.importDeclaration().size(); i++) {
+                    TigerNode child = stack.pop();
+                    importNode.addChild(child);
+                    if (importStart.compareTo(child.getStartLocation()) > 0) {
+                        importStart = child.getStartLocation();
+                    }
+                    if (importEnd.compareTo(child.getEndLocation()) < 0) {
+                        importEnd = child.getEndLocation();   
+                    }
+                }
+                importNode.setStartLocation(importStart);
+                importNode.setEndLocation(importEnd);
+                cuNode.setImportNode(importNode);
+            }
+            
+            // package declaration
+            if (ctx.packageDeclaration() != null) {
+                TigerNode packageNode = stack.pop();
+                cuNode.setPackage(packageNode);
+            }
+            
         }
-        
-        // package declaration
-        if (ctx.packageDeclaration() != null) {
-            TigerNode packageNode = stack.pop();
-            cuNode.setPackage(packageNode);
+        catch(Exception e) {
+            e.printStackTrace();
         }
     }
 
