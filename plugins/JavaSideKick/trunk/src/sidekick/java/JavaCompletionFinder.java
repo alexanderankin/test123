@@ -87,7 +87,6 @@ public class JavaCompletionFinder {
 		}
 
 		SideKickParsedData.setParsedData( view, skpd );
-
 		if ( skpd instanceof JavaSideKickParsedData ) {
 			data = ( JavaSideKickParsedData ) skpd;
 		}
@@ -899,14 +898,18 @@ public class JavaCompletionFinder {
 			List<TigerNode> children = tn.getChildren();
 			if ( children != null ) {
 				for (TigerNode child : children) {
+				    if (child == null)
+				        continue;
 					if ( child instanceof FieldNode ) {     // LocalVariableNode is a subclass of FieldNode
 						FieldNode lvn = ( FieldNode ) child;
-						for (TigerNode var : lvn.getChildren()) {
-							if (var instanceof VariableDeclarator) {
-								VariableDeclarator vn = (VariableDeclarator) var;
-								if (!vn.isPrimitive() && vn.getName().equals(name))
-									return lvn;
-							}
+						if (lvn.hasChildren()) {
+                            for (TigerNode var : lvn.getChildren()) {
+                                if (var instanceof VariableDeclarator) {
+                                    VariableDeclarator vn = (VariableDeclarator) var;
+                                    if (!vn.isPrimitive() && vn.getName().equals(name))
+                                        return lvn;
+                                }
+                            }
 						}
 						/*
 						if ( !lvn.isPrimitive() && lvn.getName().equals( name ) ) {
