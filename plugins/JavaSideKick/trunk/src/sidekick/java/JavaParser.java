@@ -48,31 +48,31 @@ import sidekick.java.parser.antlr.*;
 
 public class JavaParser extends SideKickParser implements EBComponent {
 
-    // {{{ Private members
+
     private View currentView = null;
     private OptionValues optionValues = new OptionValues();
     private JavaCompletionFinder completionFinder = null;
 
     // which type of parser, java or javacc
     private int parser_type = JAVA_PARSER;
-    // }}}
+    
 
-    // {{{ Static members
+
     public static final int JAVA_PARSER = 1;
     public static final int JAVACC_PARSER = 2;
-    public static final int JAVA_8_PARSER = 3;
+    public static final int JAVA_9_PARSER = 3;
     public static final String COMPILATION_UNIT = "javasidekick.compilationUnit";
-    // }}}
+    public static final String JSK_PARSED_DATA = "javasidekick.parsedData";
+    
 
-    // {{{ JavaParser()
     /**
      * Defaults to parsing java files.
      */
     public JavaParser() {
         this( JAVA_PARSER );
-    }    // }}}
+    }    
 
-    // {{{ JavaParser(int)
+
     /**
      * @param type one of 'java' or 'javacc'
      */
@@ -83,13 +83,11 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 parser_type = JAVACC_PARSER;
                 break;
             default:
-                //boolean useAntlrParser = jEdit.getBooleanProperty("sidekick.java.useAntlrParser", false);
-                //parser_type = useAntlrParser ? JAVA_8_PARSER : JAVA_PARSER;
-                parser_type = JAVA_8_PARSER;
+                parser_type = JAVA_9_PARSER;
         }
-    }    // }}}
+    }    
 
-    // {{{ activate(EditPane) : void
+
     /**
      * This method is called when a buffer using this parser is selected
      * in the specified view.
@@ -99,15 +97,15 @@ public class JavaParser extends SideKickParser implements EBComponent {
     public void activate( EditPane editPane ) {
         super.activate( editPane );
         currentView = editPane.getView();
-    }    // }}}
+    }    
 
-    // {{{ deactivate(EditPane) : void
+
     public void deactivate( EditPane editPane ) {
         completionFinder = null;
         super.deactivate( editPane );
-    }    // }}}
+    }    
 
-    // {{{ handleMessage(EBMessage) : void
+
     /**
      * Reparse if the option settings have changed.
      */
@@ -121,13 +119,13 @@ public class JavaParser extends SideKickParser implements EBComponent {
             }
             EditBus.send( new SideKickUpdate( currentView ) );
         }
-    }    // }}}
+    }    
     
     public int getParserType() {
         return parser_type;   
     }
 
-    // {{{ parse() : SideKickParsedData
+
     /**
      * Parse the current buffer in the current view.
      */
@@ -136,21 +134,14 @@ public class JavaParser extends SideKickParser implements EBComponent {
             currentView = jEdit.getActiveView();
         }
         return parse( currentView.getBuffer(), null );
-    }    // }}}
+    }    
 
-    // {{{ parse(Buffer, DefaultErrorSource) : SideKickParsedData
+
     /**
      * Parse the contents of the given buffer.
      * @param buffer the buffer to parse
      */
     public SideKickParsedData parse( Buffer buffer, DefaultErrorSource errorSource ) {
-        /// DONE: remove this when the Antlr parser is complete
-        //boolean useAntlrParser = jEdit.getBooleanProperty("sidekick.java.useAntlrParser", false);
-        if (parser_type != JAVACC_PARSER) {
-            parser_type = JAVA_8_PARSER; //useAntlrParser ? JAVA_8_PARSER : JAVA_PARSER;   
-        }
-        ///
-        
         Reader input = null;
         String filename = buffer.getPath();
         SideKickParsedData parsedData = new JavaSideKickParsedData( filename );
@@ -181,7 +172,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     compilationUnit.setResults( tigerParser.getResults() );
                     errorList = tigerParser.getErrors();
                     break;
-                default:    //case JAVA_8_PARSER:
+                default:    //case JAVA_9_PARSER:
                     // use the Antlr parser for java files
                     // set up the Antlr parser to read the buffer
                     input = new StringReader( contents );
@@ -232,15 +223,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
                         errorList.add(errorNode);
                     }
                     break;
-                /*
-                // DONE: remove this when the antlr parser is complete
-                default:
-                    // use the javacc parser for java files
-                    TigerParser parser = new TigerParser( input );
-                    compilationUnit = parser.getJavaRootNode( tab_size );
-                    compilationUnit.setResults( parser.getResults() );
-                    errorList = parser.getErrors();
-                */
             }
             
             // for debugging, set "javasidekick.dump" to "true" as a jEdit
@@ -284,7 +266,8 @@ public class JavaParser extends SideKickParser implements EBComponent {
         } catch ( Exception e ) {       // NOPMD
             // there can be a lot of exceptions thrown if parse on keystroke is
             // enabled for code completion.
-            e.printStackTrace();
+            ///e.printStackTrace();
+            return (SideKickParsedData)buffer.getProperty(JSK_PARSED_DATA);
         } finally {
             try {
                 input.close();
@@ -302,10 +285,11 @@ public class JavaParser extends SideKickParser implements EBComponent {
         if ( ! complete_on && errorSource != null ) {
             handleErrors( errorSource, errorList, buffer );
         }
+        buffer.setProperty(JSK_PARSED_DATA, parsedData);
         return parsedData;
-    }    // }}}
+    }    
 
-    // {{{ handleErrors(DefaultErrorSource, TigerParser, Buffer) : void
+
     /**
      * The parser accumulates errors as it parses.  This method passed them all to
      * the ErrorList plugin.
@@ -352,9 +336,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 errorSource.addError( ErrorSource.ERROR, buffer.getPath(), range.startLine, range.startColumn, range.endColumn, e.getMessage() );
             }
         }
-    }    // }}}
+    }    
 
-    // {{{ addChildren(DefaultMutableTreeNode, Buffer, ExpansionModel) : void
+
     private void addChildren( DefaultMutableTreeNode node, Buffer buffer, ExpansionModel expansionModel ) {
         TigerNode parent = ( TigerNode ) node.getUserObject();
         List<TigerNode> children = parent.getChildren();
@@ -393,9 +377,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 }
             }
         }
-    }    // }}}
+    }    
 
-    // {{{ setChildPositions(Buffer, TigerNode) : void
+
     private void setChildPositions( Buffer buffer, TigerNode tn ) {
         for ( int i = 0; i < tn.getChildCount(); i++ ) {
             TigerNode child = tn.getChildAt( i );
@@ -406,9 +390,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
         tn.setStart(ElementUtil.createStartPosition(buffer, tn));
         tn.setEnd(ElementUtil.createEndPosition(buffer, tn));
             
-    }    // }}}
+    }    
 
-    // {{{ getExceptionLocation(ParseException) : Range
+
     /**
      * @return attempts to return a Location indicating the location of a parser
      * exception.  If the ParseException contains a Token reference, all is well,
@@ -443,7 +427,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
             e.printStackTrace();
             return new Range();
         }
-    }    // }}}
+    }    
     
     private Range getExceptionLocation( ParserException pe) {
         Location start = new Location(pe.getLineNumber(), pe.getColumn());
@@ -453,7 +437,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
     
     
 
-    // {{{ canShow(TigerNode) : boolean
+
     // single place to check the filter settings, that is, check to see if it
     // is okay to show a particular node
     private boolean canShow( TigerNode node ) {
@@ -491,9 +475,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
             return optionValues.getShowThrows();
         }
         return true;
-    }    // }}}
+    }    
 
-    // {{{ isVisible(TigerNode) : boolean
+
     // check if a node should be visible based on the 'top level' or 'member visible' settings
     private boolean isVisible( TigerNode tn ) {
         if ( ( tn.getOrdinal() == TigerNode.CLASS || tn.getOrdinal() == TigerNode.INTERFACE || tn.getOrdinal() == TigerNode.MODULE) && 
@@ -519,7 +503,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
             default:
                 return true;
         }
-    }    // }}}
+    }    
 
     private Comparator<TigerNode> nodeSorter = new Comparator<TigerNode>() {
         /**

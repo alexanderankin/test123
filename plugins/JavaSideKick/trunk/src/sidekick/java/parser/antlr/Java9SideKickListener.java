@@ -632,7 +632,10 @@ public class Java9SideKickListener extends Java8BaseListener {
             
         }
         catch(Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            if (e instanceof RuntimeException) {
+                throw e;   
+            }
         }
     }
 
