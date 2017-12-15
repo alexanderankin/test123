@@ -3,7 +3,7 @@
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2003, 2016 Matthieu Casanova
+ * Copyright (C) 2003, 2017 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,25 +20,25 @@
  */
 
 options {
-  LOOKAHEAD = 1;
-  CHOICE_AMBIGUITY_CHECK = 2;
-  OTHER_AMBIGUITY_CHECK = 1;
-  STATIC = false;
-  DEBUG_PARSER = false;
-  DEBUG_LOOKAHEAD = false;
-  DEBUG_TOKEN_MANAGER = false;
-  ERROR_REPORTING = true;
-  JAVA_UNICODE_ESCAPE = false;
-  UNICODE_INPUT = true;/*  */
-  IGNORE_CASE = true;
-  USER_TOKEN_MANAGER = false;
-  USER_CHAR_STREAM = false;
-  BUILD_PARSER = true;
-  BUILD_TOKEN_MANAGER = true;
-  SANITY_CHECK = true;
-  FORCE_LA_CHECK = false;
-  COMMON_TOKEN_ACTION = true;
-  TOKEN_EXTENDS = "gatchan.phpparser.parser.PHPToken";
+	LOOKAHEAD = 1;
+	CHOICE_AMBIGUITY_CHECK = 2;
+	OTHER_AMBIGUITY_CHECK = 1;
+	STATIC = false;
+	DEBUG_PARSER = false;
+	DEBUG_LOOKAHEAD = false;
+	DEBUG_TOKEN_MANAGER = false;
+	ERROR_REPORTING = true;
+	JAVA_UNICODE_ESCAPE = false;
+	UNICODE_INPUT = true;/*  */
+	IGNORE_CASE = true;
+	USER_TOKEN_MANAGER = false;
+	USER_CHAR_STREAM = false;
+	BUILD_PARSER = true;
+	BUILD_TOKEN_MANAGER = true;
+	SANITY_CHECK = true;
+	FORCE_LA_CHECK = false;
+	COMMON_TOKEN_ACTION = true;
+	TOKEN_EXTENDS = "gatchan.phpparser.parser.PHPToken";
 }
 
 PARSER_BEGIN(PHPParser)
@@ -875,7 +875,7 @@ PHPEchoBlock phpEchoBlock():
 	{
 		createNewHTMLCode();
 	}
-	expr = Expression() [ <SEMICOLON> ]
+	expr = expression() [ <SEMICOLON> ]
 	try
 	{
 		echoEndToken = <PHPEND>
@@ -2043,7 +2043,7 @@ VariableDeclaration field():
 					identifierToken.endColumn);
 			}
 		|
-			lbrace = <LBRACE> expr = Expression() rbrace = <RBRACE>
+			lbrace = <LBRACE> expr = expression() rbrace = <RBRACE>
 			{
 				variable = new Variable(expr,
 					lbrace.sourceStart,
@@ -2150,7 +2150,7 @@ VariableDeclaration VariableDeclaratorNoSuffix() :
 					identifierToken.endColumn);
 			}
 		|
-			lbrace = <LBRACE> expr = Expression() rbrace = <RBRACE>
+			lbrace = <LBRACE> expr = expression() rbrace = <RBRACE>
 			{
 				variable = new Variable(expr,
 					lbrace.sourceStart,
@@ -2374,7 +2374,7 @@ Variable Var():
 		} //}}}
 
 	|
-		token = <LBRACE> expression = Expression() token2 = <RBRACE>
+		token = <LBRACE> expression = expression() token2 = <RBRACE>
 		{
 			variable = new Variable(expression,
 				token.sourceStart,
@@ -2457,9 +2457,9 @@ ArrayVariableDeclaration ArrayVariable():
 	Token arrayAssignToken;
 }
 {
-	expr = Expression()
+	expr = expression()
 	[
-		arrayAssignToken = <ARRAYASSIGN> expr2 = Expression()
+		arrayAssignToken = <ARRAYASSIGN> expr2 = expression()
 		{
 			int sourceEnd,endLine,endColumn;
 			if (expr2 == null) 
@@ -2484,8 +2484,8 @@ ArrayVariableDeclaration ArrayVariable():
 
 //}}}
 
-//{{{ ArrayInitializer()
-ArrayVariableDeclaration[] ArrayInitializer():
+//{{{ arrayInitializer() method
+ArrayVariableDeclaration[] arrayInitializer():
 {
 	ArrayVariableDeclaration expr;
 	List<ArrayVariableDeclaration> list = new ArrayList<ArrayVariableDeclaration>();
@@ -2514,7 +2514,6 @@ ArrayVariableDeclaration[] ArrayInitializer():
 		return vars;
 	}
 } //}}}
-
 
 //}}}
 
@@ -2963,12 +2962,10 @@ FormalParameter formalParameter():
 	int startOffset = -1;
 	int startLine = -1;
 	int startColumn = -1;
+	Token typeToken;
 }
 {
 	[
-		{
-			Token typeToken;
-		}
 		(
 			typeToken = superClassOrInterface()
 			{
@@ -3080,18 +3077,24 @@ ConstantIdentifier Type():
 
 //{{{ EXPRESSIONS
 
-//{{{ Expression()
-Expression Expression():
+//{{{ expression() method
+Expression expression():
 {
 	Expression expr;
 }
 {
 	(
 		expr = PrintExpression()
+		{
+			return expr;
+		}
 	|
 		try
 		{
 			expr = ConditionalExpression()
+			{
+				return expr;
+			}
 		}
 		catch (ParseException e)
 		{
@@ -3110,9 +3113,6 @@ Expression Expression():
 			return new DummyExpression(e.currentToken);
 		}
 	)
-	{
-		return expr;
-	}
 } //}}}
 
 //{{{ assignment()
@@ -3223,10 +3223,10 @@ Expression ConditionalExpression():
 	[
 		<HOOK>
 		(
-			<COLON> expr3 = Expression()
+			<COLON> expr3 = expression()
 		|
-			expr2 = Expression()
-			<COLON> expr3 = Expression()
+			expr2 = expression()
+			<COLON> expr3 = expression()
 		)
 
 	]
@@ -3892,7 +3892,7 @@ Expression UnaryExpressionNotPlusMinus():
 	expr = CastExpression()         {return expr;}
 	| expr = PostfixExpression()      {return expr;}
 	| expr = Literal()                {return expr;}
-	| <LPAREN> expr = Expression()
+	| <LPAREN> expr = expression()
 	try
 	{
 		<RPAREN>
@@ -4239,7 +4239,7 @@ ArrayInitializer ArrayDeclarator():
 }
 {
 	(
-		arrayToken = <ARRAY> vars = ArrayInitializer()
+		arrayToken = <ARRAY> vars = arrayInitializer()
 		{
 			return new ArrayInitializer(vars,
 				arrayToken.sourceStart,
@@ -4250,17 +4250,19 @@ ArrayInitializer ArrayDeclarator():
 				token.endColumn);
 		}
 	|
-		lbracketToken = <LBRACKET> 
-			expr = Expression()
+		lbracketToken = <LBRACKET>
+		[
+			expr = expression()
 			{
 				varList.add(new ArrayVariableDeclaration(i++,expr));
 			}
 			(
-				<COMMA> expr = Expression()
+				<COMMA> expr = expression()
 				{
 					varList.add(new ArrayVariableDeclaration(i++,expr));
 				}
-			)* 
+			)*
+		]
 		rbracketToken = <RBRACKET>
 		{
 			return new ArrayInitializer(varList.toArray(new ArrayVariableDeclaration[varList.size()]),
@@ -4421,7 +4423,7 @@ ClassAccess classAccess(Expression prefix):
 	{
 		(
 			 //{{{ ->{expression}
-			 lbrace = <LBRACE> expression = Expression() rbrace = <RBRACE>
+			 lbrace = <LBRACE> expression = expression() rbrace = <RBRACE>
 			 {
 				 expression = new Variable(expression,
 							   lbrace.sourceStart,
@@ -4526,7 +4528,7 @@ ArrayDeclarator arrayDeclarator(Expression prefix) :
 {
 	(
 		open = <LBRACKET>
-	 	[ expression = Expression() ]
+	 	[ expression = expression() ]
 	 	try
 	 	{
 	 		close = <RBRACKET>
@@ -4537,7 +4539,7 @@ ArrayDeclarator arrayDeclarator(Expression prefix) :
 	 	}
 	|
 		open = <LBRACE>
-		[ expression = Expression() ]
+		[ expression = expression() ]
 		try
 		{
 			close = <RBRACE>
@@ -4605,7 +4607,6 @@ StringLiteral heredoc():
 	Token startToken;
 	Token endToken;
 	String endImage;
-	String startImage;
 }
 {
 	heredocStart = <HEREDOCSTARTTOKEN>
@@ -4613,7 +4614,6 @@ StringLiteral heredoc():
 	{
 		startToken = <IDENTIFIER>
 		{
-			startImage = startToken.image;
 			if(heredocStart.sourceEnd != startToken.sourceStart)
 			{
 				//{{{ Parse error
@@ -4629,7 +4629,38 @@ StringLiteral heredoc():
 					heredocStart.endColumn+1,
 					startToken.beginColumn-1)); //}}}
 			}
-		}
+			while (true)
+			{
+				endToken = getNextToken();
+				if (endToken.kind == EOF)
+				{
+					fireParseError("unexpected EOF","",endToken);
+					break;
+				}
+	
+				if (endToken.beginLine == startToken.beginLine)
+				{
+					fireParseError("unexpected token","identifier",endToken);
+					continue;
+				}
+				if (endToken.beginColumn != 1)
+					continue;
+				endImage = (endToken.image.charAt(endToken.image.length()-1) == ';') ? endToken.image.substring(0,endToken.image.length()-2) : endToken.image;
+				if (endImage.equals(startToken.image))
+				{
+					break;
+				}
+			}
+			token_source.SwitchTo(PHPPARSING);
+			//  return new StringLiteral(jj_input_stream.getCurrentBuffer().substring(startToken.sourceEnd+1,endToken.sourceStart-1),
+			return new StringLiteral("",
+				startToken.sourceEnd+1,
+				endToken.sourceStart-1,
+				startToken.beginLine,
+				endToken.endLine,
+				startToken.beginColumn,
+				endToken.endColumn);
+			}
 	}
 	catch (ParseException e)
 	{
@@ -4652,39 +4683,6 @@ StringLiteral heredoc():
 			jj_input_stream.getEndLine(),
 			jj_input_stream.getBeginColumn(),
 			jj_input_stream.getEndColumn());
-	}
-	{
-		while (true)
-		{
-			endToken = getNextToken();
-			if (endToken.kind == EOF)
-			{
-				fireParseError("unexpected EOF","",endToken);
-				break;
-			}
-
-			if (endToken.beginLine == startToken.beginLine)
-			{
-				fireParseError("unexpected token","identifier",endToken);
-				continue;
-			}
-			if (endToken.beginColumn != 1)
-				continue;
-			endImage = (endToken.image.charAt(endToken.image.length()-1) == ';') ? endToken.image.substring(0,endToken.image.length()-2) : endToken.image;
-			if (endImage.equals(startImage))
-			{
-				break;
-			}
-		}
-		token_source.SwitchTo(PHPPARSING);
-		//  return new StringLiteral(jj_input_stream.getCurrentBuffer().substring(startToken.sourceEnd+1,endToken.sourceStart-1),
-		return new StringLiteral("",
-			startToken.sourceEnd+1,
-			endToken.sourceStart-1,
-			startToken.beginLine,
-			endToken.endLine,
-			startToken.beginColumn,
-			endToken.endColumn);
 	}
 } //}}}
 
@@ -4847,7 +4845,7 @@ Expression _argument():
 }
 {
 	(
-		arg = Expression()
+		arg = expression()
 	|
 		arg = closureDeclaration()
 	)
@@ -4928,7 +4926,7 @@ ThrowStatement throwStatement() :
 }
 {
 	throwToken = <THROW>
-	expr = Expression()
+	expr = expression()
 	try
 	{
 		semicolonToken = <SEMICOLON>
@@ -5124,7 +5122,24 @@ Statement expressionStatement():
 {
 	try
 	{
-		statement = Expression()
+		statement = expression()
+		try
+		{
+			token = <SEMICOLON>
+			{
+				statement.setSourceEnd(token.sourceEnd);
+			}
+		}
+		catch (ParseException e)
+		{
+			if (e.currentToken.next.kind != PHPEND)
+			{
+				fireParseError("';' expected", ";", e.currentToken);
+			}
+		}
+		{
+			return statement;
+		}
 	}
 	catch (ParseException e)
 	{
@@ -5146,23 +5161,6 @@ Statement expressionStatement():
 			token.endLine,
 			e.currentToken.beginColumn,
 			token.endColumn);
-	}
-	try
-	{
-		token = <SEMICOLON>
-		{
-			statement.setSourceEnd(token.sourceEnd);
-		}
-	}
-	catch (ParseException e)
-	{
-		if (e.currentToken.next.kind != PHPEND)
-		{
-			fireParseError("';' expected", ";", e.currentToken);
-		}
-	}
-	{
-		return statement;
 	}
 } //}}}
 
@@ -5298,7 +5296,7 @@ Define defineStatement():
 	}
 	try
 	{
-		defineName = Expression()
+		defineName = expression()
 		{
 			pos = defineName.getSourceEnd()+1;
 		}
@@ -5325,7 +5323,7 @@ Define defineStatement():
 	}
 	try
 	{
-		defineValue = Expression()
+		defineValue = expression()
 		{
 			pos = defineValue.getSourceEnd()+1;
 		}
@@ -5468,7 +5466,7 @@ InclusionExpression IncludeExpression():
 		|
 			expr = Literal()
 		|
-			<LPAREN> expr = Expression()
+			<LPAREN> expr = expression()
 		try
 		{
 			<RPAREN>
@@ -5543,7 +5541,7 @@ PrintExpression PrintExpression():
 	Token printToken;
 }
 {
-	printToken = <PRINT> expr = Expression()
+	printToken = <PRINT> expr = expression()
 	{
 		return new PrintExpression(expr,printToken.sourceStart,
 			expr.getSourceEnd(),printToken.beginLine,
@@ -5704,7 +5702,7 @@ EchoStatement EchoStatement():
 	echoToken = <ECHO>
 
 	//{{{ expression
-	expr = Expression()
+	expr = expression()
 	{
 		if (expr != null)
 			expressions.add(expr);
@@ -5713,7 +5711,7 @@ EchoStatement EchoStatement():
 
 	//{{{ [,expression]*
 	(
-		<COMMA> expr = Expression()
+		<COMMA> expr = expression()
 		{
 			if (expr != null)
 				expressions.add(expr);
@@ -6200,12 +6198,12 @@ Expression[] LocalVariableDeclaration() :
 	Expression var;
 }
 {
-	var = Expression()
+	var = expression()
 	{
 		list.add(var);
 	}
 	(
-		<COMMA> var = Expression() {list.add(var);}
+		<COMMA> var = expression() {list.add(var);}
 	)*
 	{
 		Expression[] vars = new Expression[list.size()];
@@ -6282,7 +6280,7 @@ SwitchStatement SwitchStatement():
 	}
 	try
 	{
-		variable = Expression()
+		variable = expression()
 		{
 			pos = variable.getSourceEnd()+1;
 		}
@@ -6530,7 +6528,7 @@ AbstractCase switchLabel0():
 //{{{ SwitchLabel()
 /**
  * A SwitchLabel.
- * case Expression() :
+ * case expression() :
  * default :
  * @return the if it was a case and null if not
  */
@@ -6543,7 +6541,7 @@ Expression SwitchLabel():
 	token = <CASE>
 	try
 	{
-		expr = Expression()
+		expr = expression()
 	}
 	catch (ParseException e)
 	{
@@ -6624,7 +6622,7 @@ Break BreakStatement():
 {
 	token = <BREAK> {pos = token.sourceEnd+1;}
 	[
-		expression = Expression()
+		expression = expression()
 		{
 			pos = expression.getSourceEnd()+1;
 		}
@@ -6681,7 +6679,7 @@ Expression condition(String keyword):
 			e.currentToken.endColumn,
 			e.currentToken.endColumn+1));
 	}
-	condition = Expression()
+	condition = expression()
 	try
 	{
 		<RPAREN>
@@ -7161,7 +7159,7 @@ ForeachStatement ForeachStatement():
 	//{{{ Expression
 	try
 	{
-		expression = Expression()
+		expression = expression()
 		{
 			pos       = expression.getSourceEnd()+1;
 			endLine   = expression.getEndLine();
@@ -7372,7 +7370,7 @@ ForStatement ForStatement():
 			e.currentToken.endColumn));
 	}
 	[ initializations = ForInit() ] <SEMICOLON>
-	[ condition = Expression() ] <SEMICOLON>
+	[ condition = expression() ] <SEMICOLON>
 	[ increments = StatementExpressionList() ] <RPAREN>
 	(
 		action = Statement()
@@ -7494,12 +7492,12 @@ Expression[] StatementExpressionList():
 	Expression expr;
 }
 {
-	expr = Expression()
+	expr = expression()
 	{
 		list.add(expr);
 	}
 	(
-		<COMMA> Expression()
+		<COMMA> expression()
 		{
 			list.add(expr);
 		}
@@ -7519,7 +7517,7 @@ Continue ContinueStatement():
 	Token semicolonToken = null;
 }
 {
-	continueToken = <CONTINUE> [ expr = Expression() ]
+	continueToken = <CONTINUE> [ expr = expression() ]
 	try
 	{
 		semicolonToken = <SEMICOLON>
@@ -7571,7 +7569,7 @@ ReturnStatement ReturnStatement():
 {
 	returnToken = <RETURN>
 	[
-		expr = Expression()
+		expr = expression()
 		{
 			end       = expr.getSourceEnd();
 			endLine   = expr.getEndLine();
