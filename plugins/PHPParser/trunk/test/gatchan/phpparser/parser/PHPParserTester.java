@@ -41,13 +41,13 @@ public class PHPParserTester extends TestCase implements PHPParserListener
 
 	public void testNew()
 	{
-
 	}
 
 
 	public void testParserSuccess()
 	{
-    PHPParserPlugin.phpFunctionList = new PHPFunctionList();
+    	PHPParserPlugin.phpFunctionList = new PHPFunctionList();
+		checkPHP("$a = [];");
 		checkPHP("$a = [1, 2, 3, 4];");
 		checkPHP("try {\n" + "}\n" + "catch (Exception $e) {\n" + "}");
 		checkPHP("$a = \"\\n\\n\";");
