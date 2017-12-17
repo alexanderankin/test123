@@ -46,7 +46,17 @@ public class PHPParserTester extends TestCase implements PHPParserListener
 
 	public void testParserSuccess()
 	{
-    	PHPParserPlugin.phpFunctionList = new PHPFunctionList();
+    checkPHP("$a = 1234;");
+    checkPHP("$a = 0b1110;");
+    checkPHP("$a = 0x11F0;");
+    PHPParserPlugin.phpFunctionList = new PHPFunctionList();
+		checkPHP("trait ezcReflectionReturnInfo {\n" +
+        "    function getReturnType() { /*1*/ }\n" +
+        "    function getReturnDescription() { /*2*/ }\n" +
+        "}");
+		checkPHP("class ezcReflectionMethod extends ReflectionMethod {\n" +
+        "    use ezcReflectionReturnInfo;\n" +
+        "}");
 		checkPHP("$a = [];");
 		checkPHP("$a = [1, 2, 3, 4];");
 		checkPHP("try {\n" + "}\n" + "catch (Exception $e) {\n" + "}");
