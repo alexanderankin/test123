@@ -47,9 +47,7 @@ package gatchan.phpparser.parser;
 //{{{ Imports
 import java.util.ArrayList;
 import java.io.*;
-import java.util.List;
-import java.util.Collection;
-import java.util.Stack;
+import java.util.*;
 
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.ast.*;
@@ -510,23 +508,22 @@ MORE :
 }
 //}}}
 
-
 //{{{ KEYWORDS
 <PHPPARSING> TOKEN:
 {
-  <CLASS:	"class">
+  <CLASS:		"class">
 | <FUNCTION:	"function">
 | <NAMESPACE:	"namespace"> : IN_NAMESPACE
-| <USE:		"use">
-| <VAR:		"var">
-| <IF:		"if">
-| <ELSEIF:	"elseif">
-| <ELSE:	"else">
-| <ARRAY:	"array">
-| <BREAK:	"break">
-| <LIST:	"list">
+| <USE:			"use">
+| <VAR:			"var">
+| <IF:			"if">
+| <ELSEIF:		"elseif">
+| <ELSE:		"else">
+| <ARRAY:		"array">
+| <BREAK:		"break">
+| <LIST:		"list">
+| <TRAIT:		"trait">
 } //}}}
-
 
 //{{{ LANGUAGE CONSTRUCT
 <PHPPARSING> TOKEN :
@@ -559,7 +556,6 @@ MORE :
 | <FOREACH            : "foreach">
 | <AS                 : "as" >
 } //}}}
-
 
 <PHPPARSING,IN_VARIABLE> TOKEN :
 {
@@ -596,7 +592,6 @@ MORE :
 | <INTEGER : "integer">
 } //}}}
 
-
 //{{{ Misc token
 <PHPPARSING,IN_VARIABLE> TOKEN:
 {
@@ -606,7 +601,6 @@ MORE :
 | <HOOK:	"?"> : PHPPARSING
 | <COLON:	":"> : PHPPARSING
 } //}}}
-
 
 //{{{ OPERATORS
 <PHPPARSING,IN_VARIABLE> TOKEN :
@@ -631,7 +625,6 @@ MORE :
 | <XOR            : "XOR"> : PHPPARSING
 | <_ANDL          : "AND"> : PHPPARSING
 } //}}}
-
 
 //{{{ LITERALS
 <PHPPARSING> TOKEN :
@@ -712,7 +705,6 @@ MORE :
 }
 //}}}
 
-
 //{{{ SEPARATORS
 <PHPPARSING,IN_VARIABLE> TOKEN :
 {
@@ -765,14 +757,11 @@ MORE :
 }
 //}}}
 
-
 <IN_NAMESPACE,PHPPARSING> TOKEN:
 {
 	<NAMESPACE_NAME: ((<LETTER>|<SPECIAL>) (<LETTER>|<DIGIT>|<SPECIAL>|<BACKSLASH>)*)> : PHPPARSING
 }
 //}}}
-
-
 
 //{{{ PHP Structures
 
@@ -1403,7 +1392,6 @@ ClassConstant _classConstant(Token startToken):
 	}
 } //}}}
 
-
 //{{{ interfaceMethodDeclaration(Liscodifiers)
 /**
  * A Method Declaration.
@@ -1438,9 +1426,111 @@ MethodDeclaration interfaceMethodDeclaration(List<Modifier> modifiers):
 	}
 } //}}}
 
+//{{{ traitDeclaration() method
+/**
+ * A trait declaration.
+ * trait <IDENTIFIER> trait body
+ *
+ * @return a TraitDeclaration
+ */
+TraitDeclaration traitDeclaration():
+{
+	TraitHeader header;
+	TraitDeclaration declaration;
+}
+{
+	header = traitHeader()
+	{
+		declaration = new TraitDeclaration(currentSegment,
+			header,
+			header.getSourceStart(),
+			header.getSourceEnd(),
+			header.getBeginLine(),
+			header.getEndLine(),
+			header.getBeginColumn(),
+			header.getEndColumn());
+		currentSegment.add(declaration);
+		currentSegment = declaration;
+		scope = new Scope();
+		scopeStack.push(scope);
+	}
+	traitBody(declaration)
+	{
+		currentSegment = currentSegment.getParent();
+		scope = scopeStack.pop();
+		pushOnAstNodes(declaration);
+		return declaration;
+	}
+} //}}}
+
+//{{{ traitHeader() method
+TraitHeader traitHeader():
+{
+	Token traitToken;
+	Token traitName = null;
+}
+{
+	traitToken = <TRAIT>
+	//{{{ identifier
+	try
+	{
+		traitName = <IDENTIFIER>
+	}
+	catch (ParseException e)
+	{
+		fireParseError("identifier expected","identifier",e.currentToken.next);
+	} //}}}
+	{
+		return new TraitHeader(namespace, path, traitToken, new ObjectIdentifier(traitName));
+	}
+}//}}}
+
+//{{{ traitBody() method
+void traitBody(TraitDeclaration declaration):
+{
+	Token lBraceToken;
+	Token rBraceToken;
+	MethodDeclaration method;
+}
+{
+	try
+	{
+		lBraceToken = <LBRACE>
+		{
+			declaration.setBodyLineStart(lBraceToken.beginLine);
+			declaration.setBodyColumnStart(lBraceToken.beginColumn);
+		}
+	}
+	catch (ParseException e)
+	{
+		fireParseError("'{' expected", "{", e.currentToken);
+	}
+	(
+		method = methodDeclaration(CONST_METHOD, Collections.emptyList())
+		{
+			declaration.addMethod(method);
+		}
+	)*
+	try
+	{
+		rBraceToken = <RBRACE>
+		{
+			declaration.setBodyLineEnd(rBraceToken.endLine);
+			declaration.setBodyColumnEnd(rBraceToken.endColumn);
+		}
+	}
+	catch (ParseException e)
+	{
+		fireParseError("'}' expected", "}", e.currentToken.next);
+		rBraceToken = error_skipto(RBRACE);
+		declaration.setBodyLineEnd(rBraceToken.endLine);
+		declaration.setBodyColumnEnd(rBraceToken.endColumn);
+	}
+} //}}}
+
 //{{{ Class methods
 
-//{{{ classDeclaration()
+//{{{ classDeclaration() method
 /**
  * A Class declaration.
  * class <IDENTIFIER> [extends <IDENTIFIER>] Class body
@@ -1451,7 +1541,7 @@ ClassDeclaration classDeclaration():
 {
 	ClassHeader classHeader;
 	ClassDeclaration classDeclaration;
-	Token abstractToken = null;
+	Token abstractToken;
 	Token finalToken = null;
 }
 {
@@ -1734,7 +1824,7 @@ void abstractClassBody(ClassDeclaration classDeclaration) :
   }
 } //}}}
 
-//{{{ classBodyDeclaration(ClassDeclaration classDeclaration)
+//{{{ classBodyDeclaration() method
 /**
  * A class can contain only methods and fields.
  */
@@ -1746,6 +1836,9 @@ void classBodyDeclaration(ClassDeclaration classDeclaration):
 	List<Modifier> modifiers = new ArrayList<Modifier>();
 	List<FieldDeclaration> fields;
 	List<ClassConstant> classConstants;
+	Token useToken;
+	Token traitIdentifier;
+	Token semi;
 }
 {
 	(
@@ -1755,6 +1848,25 @@ void classBodyDeclaration(ClassDeclaration classDeclaration):
 			{
 				classDeclaration.addConstant(classConstant);
 			}
+		}
+	|
+		useToken = <USE>
+		try
+		{
+			traitIdentifier = <IDENTIFIER>
+		}
+		catch (ParseException e)
+		{
+			fireParseError("identifier expected","identifier",e.currentToken.next);
+			error_skipto(SEMICOLON);
+		}
+		try
+		{
+			<SEMICOLON>
+		}
+		catch (ParseException e)
+		{
+			fireParseError("semicolon expected", ";", e.currentToken);
 		}
 	|
 		//{{{ modifiers
@@ -1797,7 +1909,6 @@ void classBodyDeclaration(ClassDeclaration classDeclaration):
 		{
 			fireParseError("unexpected token " + e.currentToken.image, "", e.currentToken);
 		} //}}}
-
 	|
 		fieldList  = fieldDeclaration()
 		{
@@ -6112,54 +6223,56 @@ Statement BlockStatement():
 	Statement statement = null;
 }
 {
-(
-	try
-	{
-		statement = Statement()
+	(
+		try
 		{
-			if (phpDocument == currentSegment)
-				pushOnAstNodes(statement);
+			statement = Statement()
+			{
+				if (phpDocument == currentSegment)
+					pushOnAstNodes(statement);
+			}
 		}
-	}
-	catch (ParseException e)
-	{
-		Token semicolumn = error_skipto(SEMICOLON);
-		Token nextToken = e.currentToken.next;
-		if (nextToken == semicolumn)
+		catch (ParseException e)
 		{
-			//{{{ Parse Error
-			fireParseError(new PHPParseErrorEvent(ERROR,
-				path,
-				"statement expected",
-				"statement",
-				nextToken.image,
-				nextToken.sourceEnd,
-				semicolumn.sourceStart,
-				nextToken.endLine,
-				semicolumn.beginLine,
-				nextToken.endColumn,
-				semicolumn.beginColumn)); //}}}
+			Token semicolumn = error_skipto(SEMICOLON);
+			Token nextToken = e.currentToken.next;
+			if (nextToken == semicolumn)
+			{
+				//{{{ Parse Error
+				fireParseError(new PHPParseErrorEvent(ERROR,
+					path,
+					"statement expected",
+					"statement",
+					nextToken.image,
+					nextToken.sourceEnd,
+					semicolumn.sourceStart,
+					nextToken.endLine,
+					semicolumn.beginLine,
+					nextToken.endColumn,
+					semicolumn.beginColumn)); //}}}
+			}
+			else
+			{
+				fireParseError("statement expected","statement",nextToken);
+			}
 		}
-		else
+		|
+		statement = traitDeclaration()
+		|
+		statement = classDeclaration()
+		|
+		statement = interfaceDeclaration()
+		|
+		statement = methodDeclaration(CONST_FUNCTION,null)
 		{
-			fireParseError("statement expected","statement",nextToken);
+			if (phpDocument == currentSegment) pushOnAstNodes(statement);
+			currentSegment.add((MethodDeclaration) statement);
+			//((MethodDeclaration) statement).analyzeCode(this);
 		}
-	}
-	|
-	statement = classDeclaration()
-	|
-	statement = interfaceDeclaration()
-	|
-	statement = methodDeclaration(CONST_FUNCTION,null)
+	)
 	{
-		if (phpDocument == currentSegment) pushOnAstNodes(statement);
-		currentSegment.add((MethodDeclaration) statement);
-		//((MethodDeclaration) statement).analyzeCode(this);
+		return statement;
 	}
-)
-{
-	return statement;
-}
 } //}}}
 
 //{{{ BlockStatementNoBreak()

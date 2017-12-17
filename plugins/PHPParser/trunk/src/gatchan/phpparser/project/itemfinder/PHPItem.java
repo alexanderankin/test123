@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2003-2010 Matthieu Casanova
+ * Copyright (C) 2003-2017 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,6 +37,7 @@ public interface PHPItem
 	int INCLUDE = 128;
 	int VARIABLE = 256;
 	int CLASS_CONSTANT = 512;
+	int TRAIT = 1024;
 
 	int getItemType();
 
