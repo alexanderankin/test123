@@ -41,11 +41,13 @@ public class PHPParserTester extends TestCase implements PHPParserListener
 
 	public void testNew()
 	{
+    checkPHP("$foo = ['bar' => 'xxx'];");
 	}
 
 
 	public void testParserSuccess()
 	{
+    checkPHP("$foo = ['bar' => 'xxx'];");
     checkPHP("$a = 1234;");
     checkPHP("$a = 0b1110;");
     checkPHP("$a = 0x11F0;");
