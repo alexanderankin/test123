@@ -2535,7 +2535,7 @@ Variable Var():
   } //}}}
 |
   //{{{ array
-  expr = ArrayDeclarator()
+  expr = arrayDeclarator()
   {
 	  return expr;
   } //}}}
@@ -2562,9 +2562,8 @@ Variable Var():
 
 //{{{ Arrays
 
-//{{{ ArrayVariable() method
-
-ArrayVariableDeclaration ArrayVariable():
+//{{{ arrayVariable() method
+ArrayVariableDeclaration arrayVariable():
 {
 	Expression expr;
 	Expression expr2;
@@ -2594,9 +2593,7 @@ ArrayVariableDeclaration ArrayVariable():
 	{
 		return new ArrayVariableDeclaration(expr,expr.getSourceEnd(),expr.getBeginLine(),expr.getEndLine(),expr.getBeginColumn(),expr.getEndColumn());
 	}
-}
-
-//}}}
+} //}}}
 
 //{{{ arrayInitializer() method
 ArrayVariableDeclaration[] arrayInitializer():
@@ -2607,12 +2604,12 @@ ArrayVariableDeclaration[] arrayInitializer():
 {
 	<LPAREN>
 	[
-		expr = ArrayVariable()
+		expr = arrayVariable()
 		{
 			list.add(expr);
 		}
 		(
-			LOOKAHEAD(2) <COMMA> expr = ArrayVariable()
+			LOOKAHEAD(2) <COMMA> expr = arrayVariable()
 			{
 				list.add(expr);
 			}
@@ -4099,7 +4096,7 @@ Expression primaryExpression():
 	|
 		expr = cloning()
 	|
-		expr = ArrayDeclarator()
+		expr = arrayDeclarator()
 	|
 		expr = listExpression()
 	|
@@ -4175,7 +4172,7 @@ Expression suffix(Expression expr):
 		|
 			expr = classAccess(expr)
 		|
-			expr = arrayDeclarator(expr)
+			expr = arrayDeclaratorSuffix(expr)
 	)
 	{
 		return expr;
@@ -4335,24 +4332,24 @@ Expression cloning():
 	}
 } //}}}
 
-//{{{ ArrayDeclarator()
+//{{{ arrayDeclarator() method
 /**
  * An array declarator.
  * array(vars)
  * @return an array
  */
-ArrayInitializer ArrayDeclarator():
+ArrayInitializer arrayDeclarator():
 {
 	ArrayVariableDeclaration[] vars;
 	Token arrayToken;
 	Token lbracketToken;
 	Token rbracketToken;
-	Expression expr;
+	ArrayVariableDeclaration expr;
 	List<ArrayVariableDeclaration> varList = new ArrayList<ArrayVariableDeclaration>();
-	int i = 0;
 }
 {
 	(
+		//{{{ array()
 		arrayToken = <ARRAY> vars = arrayInitializer()
 		{
 			return new ArrayInitializer(vars,
@@ -4362,18 +4359,20 @@ ArrayInitializer ArrayDeclarator():
 				token.endLine,
 				arrayToken.beginColumn,
 				token.endColumn);
-		}
+		} //}}}
+
 	|
+		//{{{ [...]
 		lbracketToken = <LBRACKET>
 		[
-			expr = expression()
+			expr = arrayVariable()
 			{
-				varList.add(new ArrayVariableDeclaration(i++,expr));
+				varList.add(expr);
 			}
 			(
-				<COMMA> expr = expression()
+				<COMMA> expr = arrayVariable()
 				{
-					varList.add(new ArrayVariableDeclaration(i++,expr));
+					varList.add(expr);
 				}
 			)*
 		]
@@ -4386,7 +4385,8 @@ ArrayInitializer ArrayDeclarator():
 				rbracketToken.endLine,
 				lbracketToken.beginColumn,
 				rbracketToken.endColumn);
-		}
+		} //}}}
+
 	)
 } //}}}
 
@@ -4421,7 +4421,7 @@ AbstractVariable VariableSuffix(Expression prefix):
 	|
 		abstractVariable = staticClassAccess(prefix)
 	|
-		abstractVariable = arrayDeclarator(prefix)
+		abstractVariable = arrayDeclaratorSuffix(prefix)
 	)
 	{
 		return abstractVariable;
@@ -4631,8 +4631,8 @@ ClassAccess classAccess(Expression prefix):
 	}
 } //}}}
 
-//{{{ arrayDeclarator(Expression prefix)
-ArrayDeclarator arrayDeclarator(Expression prefix) :
+//{{{ arrayDeclaratorSuffix(Expression prefix) method
+ArrayDeclarator arrayDeclaratorSuffix(Expression prefix):
 {
 	Token open;
 	Token close = null;
@@ -7305,7 +7305,7 @@ ForeachStatement ForeachStatement():
 	//{{{ ArrayVariable
 	try
 	{
-		variable = ArrayVariable()
+		variable = arrayVariable()
 		{
 			pos       = variable.getSourceEnd()+1;
 			endLine   = variable.getEndLine();
