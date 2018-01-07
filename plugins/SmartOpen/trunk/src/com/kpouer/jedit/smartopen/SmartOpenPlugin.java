@@ -3,7 +3,7 @@
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011-2016 Matthieu Casanova
+ * Copyright © 2011-2017 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -42,6 +42,7 @@ import javax.swing.Timer;
 import com.kpouer.jedit.smartopen.indexer.IndexFilesTask;
 import com.kpouer.jedit.smartopen.indexer.IndexProjectTask;
 import com.kpouer.jedit.smartopen.indexer.IndexProjectUpdateTask;
+import com.kpouer.jedit.smartopen.indexer.IndexRecentFilesTask;
 import common.gui.itemfinder.ItemFinder;
 import common.gui.itemfinder.ItemFinderPanel;
 import common.gui.itemfinder.ItemFinderWindow;
@@ -50,6 +51,7 @@ import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.BufferChanging;
+import org.gjt.sp.jedit.msg.DynamicMenuChanged;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -189,15 +191,19 @@ public class SmartOpenPlugin extends EditPlugin
 		}
 		else
 		{
-			if (itemFinder != null)
-				itemFinder.close();
-			itemFinder = new FileIndex(null);
-			if (smartToolbar != null)
-				smartToolbar.setFileIndex(itemFinder);
+      resetIndex(null);
 			Task task = new IndexFilesTask();
 			ThreadUtilities.runInBackground(task);
 		}
+    indexRecent();
 	} //}}}
+
+  //{{{ indexRecent() method
+  private static void indexRecent()
+  {
+    Task indexRecent = new IndexRecentFilesTask();
+    ThreadUtilities.runInBackground(indexRecent);
+  } //}}}
 
 	//{{{ indexProject() method
 	private static void indexProject(VPTProject activeProject)
@@ -209,11 +215,7 @@ public class SmartOpenPlugin extends EditPlugin
 
 		if (activeProject != null)
 		{
-			if (itemFinder != null)
-				itemFinder.close();
-			itemFinder = new FileIndex(activeProject);
-			if (smartToolbar != null)
-				smartToolbar.setFileIndex(itemFinder);
+      resetIndex(activeProject);
 
 			//reindex only for in-memory storage
 			//if(jEdit.getBooleanProperty("options.smartopen.memoryindex")){
@@ -228,7 +230,15 @@ public class SmartOpenPlugin extends EditPlugin
 		}
 	} //}}}
 
-	//{{{ stop() method
+  //{{{ resetIndex() method
+  private static void resetIndex(VPTProject activeProject) {
+    itemFinder.close();
+    itemFinder = new FileIndex(activeProject);
+    if (smartToolbar != null)
+      smartToolbar.setFileIndex(itemFinder);
+  } //}}}
+
+  //{{{ stop() method
 	@Override
 	public void stop()
 	{
@@ -278,6 +288,16 @@ public class SmartOpenPlugin extends EditPlugin
 		}
 		indexFiles();
 	} //}}}
+
+  //{{{ dynamicMenuChanged() method
+  @EditBus.EBHandler
+  public void dynamicMenuChanged(DynamicMenuChanged dynamicMenuChanged)
+  {
+    if ("recent-files".equals(dynamicMenuChanged.getMenuName()))
+    {
+      indexFiles();
+    }
+  } //}}}
 
 	//{{{ bufferChanging() method
 	@EditBus.EBHandler

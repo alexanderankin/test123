@@ -31,6 +31,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.LongAdder;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
@@ -217,42 +219,27 @@ public class FileIndex implements Closeable
 	 */
 	public void addFiles(FileProvider fileProvider, boolean append)
 	{
-		long added = 0;
+		LongAdder added = new LongAdder();
 		long start = System.currentTimeMillis();
 		Pattern exclude = SmartOpenOptionPane.globToPattern(jEdit.getProperty("options.smartopen.ExcludeGlobs"));
 		synchronized (LOCK)
 		{
 			try(IndexWriter writer = new IndexWriter(directory, getIndexWriterConfig()))
 			{
-				Collection<String> knownFiles;
-				knownFiles = append ? Collections.emptyList() : Collections.synchronizedCollection(getExistingFiles());
-
-				added = fileProvider.stream().parallel()
-						.filter(path -> !exclude.matcher(path).matches())
-						.map(new Function<String, Void>()
-				{
-					@Override
-					public Void apply(String path)
-					{
-						if (knownFiles.contains(path))
-							knownFiles.remove(path);
-						else
-							addDocument(writer, path);
-						return null;
-					}
-				}).count();
+        Collection<String> knownFiles = append ? Collections.emptyList() : Collections.synchronizedCollection(getExistingFiles());
+        fileProvider.stream().parallel()
+            .filter(path -> !exclude.matcher(path).matches())
+            .forEach(path -> {
+              if (knownFiles.contains(path))
+                knownFiles.remove(path);
+              else
+                addDocument(writer, path);
+              added.increment();
+            });
 
 				// iterate over documents that are still here but are not part of the project anymore
-				knownFiles.stream().parallel()
-						.map(new Function<String, Void>()
-				{
-					@Override
-					public Void apply(String remainingFile)
-					{
-						deleteDocument(writer, remainingFile);
-						return null;
-					}
-				}).count();
+        knownFiles.parallelStream()
+            .forEach(remainingFile -> deleteDocument(writer, remainingFile));
 			}
 			catch (IOException e)
 			{
@@ -268,7 +255,7 @@ public class FileIndex implements Closeable
 			Log.log(Log.ERROR, this, e);
 		}
 		long end = System.currentTimeMillis();
-		Log.log(Log.MESSAGE, this, "Added " + added + " files in "+(end - start) + "ms");
+		Log.log(Log.MESSAGE, this, "Added " + added.longValue() + " files in "+(end - start) + "ms");
 	} //}}}
 
 	//{{{ addDocument() method
@@ -351,16 +338,11 @@ public class FileIndex implements Closeable
 			try (IndexWriter writer = new IndexWriter(directory, getIndexWriterConfig()))
 			{
 				removed = fileProvider.stream().parallel()
-						.map(new Function<String, Void>()
-				{
-					@Override
-					public Void apply(String path)
-					{
-						observer.setStatus(path);
-						deleteDocument(writer, path);
-						return null;
-					}
-				}).count();
+						.map((Function<String, Void>) path -> {
+              observer.setStatus(path);
+              deleteDocument(writer, path);
+              return null;
+            }).count();
 			}
 			catch (IOException e)
 			{
