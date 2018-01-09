@@ -191,19 +191,19 @@ public class SmartOpenPlugin extends EditPlugin
 		}
 		else
 		{
-      resetIndex(null);
+			resetIndex(null);
 			Task task = new IndexFilesTask();
 			ThreadUtilities.runInBackground(task);
 		}
-    indexRecent();
+		indexRecent();
 	} //}}}
 
-  //{{{ indexRecent() method
-  private static void indexRecent()
-  {
-    Task indexRecent = new IndexRecentFilesTask();
-    ThreadUtilities.runInBackground(indexRecent);
-  } //}}}
+	//{{{ indexRecent() method
+	private static void indexRecent()
+	{
+		Task indexRecent = new IndexRecentFilesTask();
+		ThreadUtilities.runInBackground(indexRecent);
+} //}}}
 
 	//{{{ indexProject() method
 	private static void indexProject(VPTProject activeProject)
@@ -215,7 +215,7 @@ public class SmartOpenPlugin extends EditPlugin
 
 		if (activeProject != null)
 		{
-      resetIndex(activeProject);
+		resetIndex(activeProject);
 
 			//reindex only for in-memory storage
 			//if(jEdit.getBooleanProperty("options.smartopen.memoryindex")){
@@ -230,15 +230,16 @@ public class SmartOpenPlugin extends EditPlugin
 		}
 	} //}}}
 
-  //{{{ resetIndex() method
-  private static void resetIndex(VPTProject activeProject) {
-    itemFinder.close();
-    itemFinder = new FileIndex(activeProject);
-    if (smartToolbar != null)
-      smartToolbar.setFileIndex(itemFinder);
-  } //}}}
+	//{{{ resetIndex() method
+	private static void resetIndex(VPTProject activeProject)
+	{
+		itemFinder.close();
+		itemFinder = new FileIndex(activeProject);
+		if (smartToolbar != null)
+			smartToolbar.setFileIndex(itemFinder);
+	} //}}}
 
-  //{{{ stop() method
+	//{{{ stop() method
 	@Override
 	public void stop()
 	{
@@ -289,15 +290,15 @@ public class SmartOpenPlugin extends EditPlugin
 		indexFiles();
 	} //}}}
 
-  //{{{ dynamicMenuChanged() method
-  @EditBus.EBHandler
-  public void dynamicMenuChanged(DynamicMenuChanged dynamicMenuChanged)
-  {
-    if ("recent-files".equals(dynamicMenuChanged.getMenuName()))
-    {
-      indexFiles();
-    }
-  } //}}}
+	//{{{ dynamicMenuChanged() method
+	@EditBus.EBHandler
+	public void dynamicMenuChanged(DynamicMenuChanged dynamicMenuChanged)
+	{
+		if ("recent-files".equals(dynamicMenuChanged.getMenuName()))
+		{
+			indexFiles();
+		}
+	} //}}}
 
 	//{{{ bufferChanging() method
 	@EditBus.EBHandler
