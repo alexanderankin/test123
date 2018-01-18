@@ -379,7 +379,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
             if ( hunk.first0 > line_number ) {
                 // after this line, didn't find a line with a corresponding hunk
                 if ( jEdit.getBooleanProperty( "jdiff.beep-on-error" ) ) {
-                    leftTextArea.getToolkit().beep();
+                    UIManager.getLookAndFeel().provideErrorFeedback(null);
                 }
                 break;
             }
@@ -460,7 +460,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
             if ( hunk.first1 > line_number ) {
                 // after this line, didn't find a line with a corresponding hunk
                 if ( jEdit.getBooleanProperty( "jdiff.beep-on-error" ) ) {
-                    rightTextArea.getToolkit().beep();
+                    UIManager.getLookAndFeel().provideErrorFeedback(null);
                 }
                 break;
             }

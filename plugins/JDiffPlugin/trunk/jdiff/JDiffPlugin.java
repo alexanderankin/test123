@@ -24,9 +24,9 @@ import java.awt.Color;
 
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
+import org.gjt.sp.util.SyntaxUtilities;
 
 import jdiff.util.DualDiffUtil;
 
@@ -62,18 +62,10 @@ public class JDiffPlugin extends EBPlugin {
 
     public static void propertiesChanged() {
         // colors
-        overviewChangedColor = GUIUtilities.parseColor(
-                    jEdit.getProperty( "jdiff.overview-changed-color", "#FFFF90" )
-                );
-        overviewDeletedColor = GUIUtilities.parseColor(
-                    jEdit.getProperty( "jdiff.overview-deleted-color", "#FF9090" )
-                );
-        overviewInsertedColor = GUIUtilities.parseColor(
-                    jEdit.getProperty( "jdiff.overview-inserted-color", "#D9FF90" )
-                );
-        overviewInvalidColor = GUIUtilities.parseColor(
-                    jEdit.getProperty( "jdiff.overview-invalid-color", "#909090" )
-                );
+        overviewChangedColor = SyntaxUtilities.parseColor(jEdit.getProperty( "jdiff.overview-changed-color", "#FFFF90" ), Color.decode("#FFFF90"));
+        overviewDeletedColor = SyntaxUtilities.parseColor(jEdit.getProperty( "jdiff.overview-deleted-color", "#FF9090" ), Color.decode("#FF9090"));
+        overviewInsertedColor = SyntaxUtilities.parseColor(jEdit.getProperty( "jdiff.overview-inserted-color", "#D9FF90" ), Color.decode("#D9FF90"));
+        overviewInvalidColor = SyntaxUtilities.parseColor(jEdit.getProperty( "jdiff.overview-invalid-color", "#909090" ), Color.decode("#909090"));
         leftCursorColor = jEdit.getColorProperty( "jdiff.left-cursor-color", jEdit.getColorProperty( "view.caretColor", Color.BLACK ) );
         rightCursorColor = jEdit.getColorProperty( "jdiff.right-cursor-color", jEdit.getColorProperty( "view.caretColor", Color.BLACK ) );
     }

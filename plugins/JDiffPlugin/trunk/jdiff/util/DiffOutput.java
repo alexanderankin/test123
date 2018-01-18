@@ -57,7 +57,11 @@ public abstract class DiffOutput {
 
 
     protected void writeLine(String prefix, Object line) throws IOException {
-        out.write(prefix + line.toString() + this.lineSeparator);
+        String s = prefix + line.toString();
+        if (!s.endsWith(this.lineSeparator)) {
+            s += this.lineSeparator;
+        }
+        out.write(s);    
     }
 
 
