@@ -121,6 +121,8 @@ public class Diff {
         fd[ fdiagoff + fmid ] = xoff;
         bd[ bdiagoff + bmid ] = xlim;
 
+        // I don't even want to get into this code, but sometimes this loop
+        // doesn't end.
         for ( int c = 1;; ++c ) {
             int d;                        /* Active diagonal. */
             boolean big_snake = false;
@@ -750,7 +752,7 @@ public class Diff {
             for ( int i = 0; i < data.length; ++i ) {
                 Integer ir = ( Integer ) h.get( data[ i ] );
                 if ( ir == null )
-                    h.put( data[ i ], new Integer( equivs[ i ] = equiv_max++ ) );
+                    h.put( data[ i ], Integer.valueOf( equivs[ i ] = equiv_max++ ) );
                 else
                     equivs[ i ] = ir.intValue();
             }

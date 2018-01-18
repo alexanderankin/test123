@@ -1,7 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <html>
 <head>
-<meta name="generator" content="HTML Tidy, see www.w3.org">
 <title>JDiff Plugin</title>
 </head>
 <body>
@@ -23,6 +22,7 @@ jEdit.</p>
 <a href="#usage">Usage</a><br>
 <a href="#display">Display</a><br>
 <a href="#other_commands">Other commands</a><br>
+<a href="#patches">Patches</a><br>
 <a href="#options">Options</a><br>
 <a href="#license">License</a><br>
 <a href="#feedback">Feedback</a><br>
@@ -309,9 +309,28 @@ whitespace" option for the current diff</p>
 
 <li>
 <p><b>Normal Diff Output</b>: generates a diff file using the
-normal method</p>
+normal method (also see <a href="patches">Patches</a> below)</p>
 </li>
 </ul>
+
+<hr>
+<a name="patches">
+JDiff provides a "Normal Diff Output" command. This produces a diff in 
+"normal" format, which can be read by various patch utilities to apply the
+diff to a file. There are some limitations to this format:
+<ul>
+<li>Only one file at a time is supported, it is not currently possible to
+patch multiple files at once.</li>
+<li>When applying a normal patch via the "Apply Patch..." command, the patch is 
+applied to the current buffer. Note that normal patch files do not specify
+the name of the file to be patched, so it is quite easy to apply a patch 
+to the wrong file. Beware!</li>
+</ul>
+<p>
+JDiff also supports applying a "unified" patch, such as that produced by
+Subversion. Again, there is a limitation in that only one file can be patched
+at a time.
+</p>
 
 <hr>
 <a name="options">
@@ -486,6 +505,14 @@ Sourceforge Bug Tracker at <a href=
 <h3>History</h3>
 
 <ul>
+<li>
+<p>
+Version 3.3.0 (Dale Anson)<br>
+- Fix for applying normal diff, line numbers were off by one.<br>
+- Fix for displaying normal diff, now it is in an untitled buffer.<br>
+- Small bug fixes and code clean up.<br>
+</p>
+</li>
 <li>
 <p>
 Version 3.2.0 (Dale Anson)<br>

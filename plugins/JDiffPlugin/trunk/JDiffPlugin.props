@@ -7,9 +7,9 @@ plugin.jdiff.JDiffPlugin.docs=docs/index.html
 plugin.jdiff.JDiffPlugin.description=JDiffPlugin is a visual diff and merge utility for jEdit.
 
 # Dependencies
-plugin.jdiff.JDiffPlugin.depend.0=jdk 1.6
-plugin.jdiff.JDiffPlugin.depend.1=jedit 04.05.99.00
-plugin.jdiff.JDiffPlugin.depend.2=plugin CommonControlsPlugin 1.5
+plugin.jdiff.JDiffPlugin.depend.0=jdk 1.8
+plugin.jdiff.JDiffPlugin.depend.1=jedit 05.04.99.00
+plugin.jdiff.JDiffPlugin.depend.2=plugin CommonControlsPlugin 1.7.4
 plugin.jdiff.JDiffPlugin.activate=defer
 
 # Menu

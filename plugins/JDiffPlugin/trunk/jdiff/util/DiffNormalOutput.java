@@ -51,8 +51,8 @@ public class DiffNormalOutput extends DiffOutput {
         }
 
         // Determine range of line numbers involved in each file.
-        int first0 = hunk.first0;
-        int first1 = hunk.first1;
+        int first0 = hunk.first0 - 1;   // -1 to adjust to 0-based line numbers
+        int first1 = hunk.first1 - 1;
         int last0 = hunk.first0 + hunk.lines0 - 1;
         int last1 = hunk.first1 + hunk.lines1 - 1;
 

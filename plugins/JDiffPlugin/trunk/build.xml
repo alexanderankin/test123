@@ -81,8 +81,9 @@
                 nowarn="off"
                 destdir="${classes.dir}"
                 srcdir="${src.dir}"
-                target="1.5"
-                source="1.5">
+                target="${compiler.target}"
+                source="${compiler.source}"
+                includeAntRuntime="false">
             <classpath refid="classpathref" />
             <compilerarg value="-Xlint:unchecked"/>
         </javac>

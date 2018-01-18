@@ -183,7 +183,7 @@ public class DualDiffDialog extends JDialog {
                 GUIUtilities.error(
                     view,
                     "jdiff.file-not-found",
-                    new Object[] { new Integer( errCount ) }
+                    new Object[] { Integer.valueOf( errCount ) }
                 );
                 return ;
             }
@@ -200,7 +200,7 @@ public class DualDiffDialog extends JDialog {
                 GUIUtilities.error(
                     view,
                     "jdiff.file-not-opened",
-                    new Object[] { new Integer( 0 ) }
+                    new Object[] { Integer.valueOf( 0 ) }
                 );
                 return ;
             }
@@ -208,7 +208,7 @@ public class DualDiffDialog extends JDialog {
                 GUIUtilities.error(
                     view,
                     "jdiff.file-not-opened",
-                    new Object[] { new Integer( 1 ) }
+                    new Object[] { Integer.valueOf( 1 ) }
                 );
                 return ;
             }

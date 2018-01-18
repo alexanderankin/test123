@@ -518,14 +518,14 @@ public class DualDiff implements EBComponent {
                 }
 
                 if (textArea0.getFirstLine() != line && jEdit.getBooleanProperty(DualDiffManager.BEEP_ON_ERROR)) {
-                    textArea0.getToolkit().beep();
+                    UIManager.getLookAndFeel().provideErrorFeedback(null);
                 }
                 return ;
             }
         }
 
         if (jEdit.getBooleanProperty(DualDiffManager.BEEP_ON_ERROR)) {
-            textArea1.getToolkit().beep();
+            UIManager.getLookAndFeel().provideErrorFeedback(null);
         }
     }
 
@@ -572,14 +572,14 @@ public class DualDiff implements EBComponent {
                 }
 
                 if (textArea1.getFirstLine() != line && jEdit.getBooleanProperty(DualDiffManager.BEEP_ON_ERROR)) {
-                    textArea1.getToolkit().beep();
+                    UIManager.getLookAndFeel().provideErrorFeedback(null);
                 }
                 return ;
             }
         }
 
         if (jEdit.getBooleanProperty(DualDiffManager.BEEP_ON_ERROR)) {
-            textArea1.getToolkit().beep();
+            UIManager.getLookAndFeel().provideErrorFeedback(null);
         }
     }
 
@@ -631,7 +631,7 @@ public class DualDiff implements EBComponent {
                     }
 
                     if (textArea0.getFirstLine() != line && jEdit.getBooleanProperty(DualDiffManager.BEEP_ON_ERROR)) {
-                        textArea0.getToolkit().beep();
+                        UIManager.getLookAndFeel().provideErrorFeedback(null);
                     }
                     return ;
                 }
@@ -639,7 +639,7 @@ public class DualDiff implements EBComponent {
         }
 
         if (jEdit.getBooleanProperty(DualDiffManager.BEEP_ON_ERROR)) {
-            textArea0.getToolkit().beep();
+            UIManager.getLookAndFeel().provideErrorFeedback(null);
         }
     }
 
@@ -691,7 +691,7 @@ public class DualDiff implements EBComponent {
                     }
 
                     if (textArea1.getFirstLine() != line && jEdit.getBooleanProperty(DualDiffManager.BEEP_ON_ERROR)) {
-                        textArea1.getToolkit().beep();
+                        UIManager.getLookAndFeel().provideErrorFeedback(null);
                     }
                     return ;
                 }
@@ -699,7 +699,7 @@ public class DualDiff implements EBComponent {
         }
 
         if (jEdit.getBooleanProperty(DualDiffManager.BEEP_ON_ERROR)) {
-            textArea1.getToolkit().beep();
+            UIManager.getLookAndFeel().provideErrorFeedback(null);
         }
     }
     
@@ -740,7 +740,7 @@ public class DualDiff implements EBComponent {
         }
 
         if (textArea0.getFirstLine() != line && jEdit.getBooleanProperty(DualDiffManager.BEEP_ON_ERROR)) {
-            textArea0.getToolkit().beep();
+            UIManager.getLookAndFeel().provideErrorFeedback(null);
         }
     }
     
@@ -781,7 +781,7 @@ public class DualDiff implements EBComponent {
         }
 
         if (textArea1.getFirstLine() != line && jEdit.getBooleanProperty(DualDiffManager.BEEP_ON_ERROR)) {
-            textArea1.getToolkit().beep();
+            UIManager.getLookAndFeel().provideErrorFeedback(null);
         }
     }
     
@@ -826,7 +826,7 @@ public class DualDiff implements EBComponent {
         }
 
         if (textArea0.getFirstLine() != line && jEdit.getBooleanProperty(DualDiffManager.BEEP_ON_ERROR)) {
-            textArea0.getToolkit().beep();
+            UIManager.getLookAndFeel().provideErrorFeedback(null);
         }
     }
     
@@ -871,7 +871,7 @@ public class DualDiff implements EBComponent {
         }
 
         if (textArea1.getFirstLine() != line && jEdit.getBooleanProperty(DualDiffManager.BEEP_ON_ERROR)) {
-            textArea1.getToolkit().beep();
+            UIManager.getLookAndFeel().provideErrorFeedback(null);
         }
     }
     
