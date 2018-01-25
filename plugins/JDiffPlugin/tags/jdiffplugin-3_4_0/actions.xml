@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+    <ACTION NAME="toggle-dual-diff">
+        <CODE>
+            jdiff.DualDiffManager.toggleFor(view);
+        </CODE>
+        <IS_SELECTED>
+            return jdiff.DualDiffManager.isEnabledFor(view);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="jdiff.show-dual-diff-dialog">
+        <CODE>
+            new jdiff.DualDiffDialog(view);
+        </CODE>
+    </ACTION>
+
+
+    <ACTION NAME="jdiff.refresh-diff">
+        <CODE>
+            jdiff.DualDiffManager.refreshFor(view);
+        </CODE>
+    </ACTION>
+
+
+    <ACTION NAME="jdiff.toggle-ignore-case">
+        <CODE>
+            jdiff.DualDiffManager.toggleIgnoreCaseFor(view);
+        </CODE>
+        <IS_SELECTED>
+            return jdiff.DualDiffManager.getIgnoreCaseFor(view);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="jdiff.toggle-trim-whitespace">
+        <CODE>
+            jdiff.DualDiffManager.toggleTrimWhitespaceFor(view);
+        </CODE>
+        <IS_SELECTED>
+            return jdiff.DualDiffManager.getTrimWhitespaceFor(view);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="jdiff.toggle-ignore-amount-whitespace">
+        <CODE>
+            jdiff.DualDiffManager.toggleIgnoreAmountOfWhitespaceFor(view);
+        </CODE>
+        <IS_SELECTED>
+            return jdiff.DualDiffManager.getIgnoreAmountOfWhitespaceFor(view);
+        </IS_SELECTED>
+    </ACTION>
+
+    <ACTION NAME="jdiff.toggle-ignore-line-separators">
+        <CODE>
+            jdiff.DualDiffManager.toggleIgnoreLineSeparatorsFor(view);
+        </CODE>
+        <IS_SELECTED>
+            return jdiff.DualDiffManager.getIgnoreLineSeparatorsFor(view);
+        </IS_SELECTED>
+    </ACTION>
+
+    <ACTION NAME="jdiff.toggle-ignore-all-whitespace">
+        <CODE>
+            jdiff.DualDiffManager.toggleIgnoreAllWhitespaceFor(view);
+        </CODE>
+        <IS_SELECTED>
+            return jdiff.DualDiffManager.getIgnoreAllWhitespaceFor(view);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="jdiff.next-diff">
+        <CODE>
+            jdiff.DualDiffManager.nextDiff(editPane);
+        </CODE>
+    </ACTION>
+
+
+    <ACTION NAME="jdiff.prev-diff">
+        <CODE>
+            jdiff.DualDiffManager.prevDiff(editPane);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="jdiff.first-diff">
+        <CODE>
+            jdiff.DualDiffManager.firstDiff(editPane);
+        </CODE>
+    </ACTION>
+
+
+    <ACTION NAME="jdiff.last-diff">
+        <CODE>
+            jdiff.DualDiffManager.lastDiff(editPane);
+        </CODE>
+    </ACTION>
+
+
+    <ACTION NAME="jdiff.diff-normal-output">
+        <CODE>
+            jdiff.DualDiffManager.diffNormalOutput(view);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="jdiff.apply-patch">
+        <CODE>
+            jdiff.DualDiffManager.applyPatch(view);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="jdiff.move-right">
+        <CODE>
+            jdiff.DualDiffManager.moveRight(editPane);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="jdiff.move-left">
+        <CODE>
+            jdiff.DualDiffManager.moveLeft(editPane);
+        </CODE>
+    </ACTION>
+</ACTIONS>
