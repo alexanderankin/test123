@@ -53,6 +53,13 @@ public class LookAndFeelPlugin extends EBPlugin {
 	public void start() {
 		try {
 			loadSystemInstallers();
+			
+			// update jEdit GlobalOptions/Appearance to let the user know to use this plugin
+			// to adjust the look and feel
+			UIManager.LookAndFeelInfo[] infos = new UIManager.LookAndFeelInfo[1];
+			infos[0] = new UIManager.LookAndFeelInfo(jEdit.getProperty("lookandfeel.useLookAndFeelPlugin", "Use Look And Feel plugin"), "");
+			UIManager.setInstalledLookAndFeels( infos );
+			
 			String lnf = jEdit.getProperty( "lookandfeel.lookandfeel" );
 			if ( LookAndFeelPlugin.isEmpty( lnf ) ) {
 				return;
@@ -105,6 +112,7 @@ public class LookAndFeelPlugin extends EBPlugin {
 		if ( installer == null ) {
 			return;
 		}
+
 		SwingUtilities.invokeLater( () -> {
 			try {
 
@@ -207,11 +215,7 @@ public class LookAndFeelPlugin extends EBPlugin {
 	public static String[] getAvailableLookAndFeels() {
 
 		// look and feels provided by the system
-		UIManager.LookAndFeelInfo[] systemLnfs = UIManager.getInstalledLookAndFeels();
-		String[] systemNames = new String [systemLnfs.length];
-		for ( int i = 0; i < systemLnfs.length; i++ ) {
-			systemNames[i] = systemLnfs[i].getName();
-		}
+		String[] systemNames = systemInstallers.keySet().toArray(new String[0]);
 
 		// look and feels provided by this plugin or other plugins
 		String[] pluginNames = ServiceManager.getServiceNames( LookAndFeelInstaller.SERVICE_NAME );

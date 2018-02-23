@@ -42,8 +42,10 @@
     </SERVICE>                                     
     <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="Tonic">
         new lookandfeel.TonicLnfInstaller();       
-    </SERVICE>                                     
+    </SERVICE>   
+    <!--
     <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="None">
         new lookandfeel.NoneLnfInstaller();
     </SERVICE>
+    -->
 </SERVICES>

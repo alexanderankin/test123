@@ -1,3 +1,4 @@
+
 /*
  * NoneLnfInstaller.java - Look And Feel plugin
  * Copyright (C) 2002 Calvin Yu
@@ -20,24 +21,26 @@
  */
 package lookandfeel;
 
+
 import org.gjt.sp.jedit.AbstractOptionPane;
+
 
 /**
  * A class for installing nothing.
  */
-public class NoneLnfInstaller implements LookAndFeelInstaller
-{
+public class NoneLnfInstaller implements LookAndFeelInstaller {
 
 	public String getName() {
 		return "None";
 	}
-	
+
 	/**
 	 * Install a non standard look and feel.
 	 */
-	public void install() {}
+	public void install() {
+	}
 
 	public AbstractOptionPane getOptionPane() {
-		return null;	
+		return null;
 	}
 }
