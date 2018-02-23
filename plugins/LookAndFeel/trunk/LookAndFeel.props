@@ -1,6 +1,6 @@
 plugin.lookandfeel.LookAndFeelPlugin.name=LookAndFeel
 plugin.lookandfeel.LookAndFeelPlugin.author=Dirk Moebius, Jamie LaScolea, David Huttleston Jr., Calvin Yu, Nilo J. Gonzalez, Dale Anson
-plugin.lookandfeel.LookAndFeelPlugin.version=1.9.1
+plugin.lookandfeel.LookAndFeelPlugin.version=1.9.2
 plugin.lookandfeel.LookAndFeelPlugin.docs=index.html
 plugin.lookandfeel.LookAndFeelPlugin.activate=startup
 plugin.lookandfeel.LookAndFeelPlugin.depend.0=jdk 1.8
@@ -19,6 +19,7 @@ lookandfeel.allowBeep.label=Allow system beep
 lookandfeel.useAuditoryCues.label=Use auditory cues
 lookandfeel.chooseeditorscheme.label=Choose Editor Scheme
 lookandfeel.chooseeditorschemetooltip.label=Allows setting color scheme for text area and supported plugins.
+lookandfeel.useLookAndFeelPlugin=Use Look And Feel plugin
 
 lookandfeel.message.restart.title=Look And Feel plugin
 lookandfeel.message.restart.message=\
