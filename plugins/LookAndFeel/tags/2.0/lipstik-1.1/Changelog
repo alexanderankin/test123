@@ -1,0 +1,6 @@
+[17.03.2008] minor bugfixes. changes since 1.0-stable:
+
+* fixed jre 1.4 compatibility issue (Andrey Khalyavin)
+* fixed multiple toolbars misbehaviour (Andrey Khalyavin)
+
+
