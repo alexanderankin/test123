@@ -49,17 +49,20 @@ public class LookAndFeelPlugin extends EBPlugin {
 	private static String lnfClassname = null;
 	// <name, installer>, a list of installers for the system provided look and feels.
 	private static Map<String, LookAndFeelInstaller> systemInstallers;
+	// remember the system look and feels to be able to restore them when the
+	// plugin is unloaded or removed
+	private static UIManager.LookAndFeelInfo[] systemLnfs;
 
 	public void start() {
 		try {
 			loadSystemInstallers();
-			
+
 			// update jEdit GlobalOptions/Appearance to let the user know to use this plugin
 			// to adjust the look and feel
-			UIManager.LookAndFeelInfo[] infos = new UIManager.LookAndFeelInfo[1];
-			infos[0] = new UIManager.LookAndFeelInfo(jEdit.getProperty("lookandfeel.useLookAndFeelPlugin", "Use Look And Feel plugin"), "");
+			UIManager.LookAndFeelInfo[] infos = new UIManager.LookAndFeelInfo [1];
+			infos[0] = new UIManager.LookAndFeelInfo( jEdit.getProperty( "lookandfeel.useLookAndFeelPlugin", "Use Look And Feel plugin" ), "" );
 			UIManager.setInstalledLookAndFeels( infos );
-			
+
 			String lnf = jEdit.getProperty( "lookandfeel.lookandfeel" );
 			if ( LookAndFeelPlugin.isEmpty( lnf ) ) {
 				return;
@@ -85,18 +88,22 @@ public class LookAndFeelPlugin extends EBPlugin {
 	}
 
 	public void handleMessage( EBMessage msg ) {
-		if ( loadedInitialLnF && isStillLoaded() ) {
-			LookAndFeelInstaller installer = getInstaller( lnfClassname );
-			if ( installer == null ) {
-				return;
-			}
-			installLookAndFeel( installer );
-		}
 		if ( msg instanceof PluginUpdate ) {
 			PluginUpdate pu = ( PluginUpdate )msg;
 			if ( PluginUpdate.LOADED.equals( pu.getWhat() ) ) {
 				start();
 			}
+			else if ( PluginUpdate.UNLOADED.equals( pu.getWhat() ) || PluginUpdate.DEACTIVATED.equals( pu.getWhat() ) || PluginUpdate.REMOVED.equals( pu.getWhat() ) ) {
+				// restore the system look and feels
+				UIManager.setInstalledLookAndFeels( systemLnfs );
+			}
+		}
+		else if ( loadedInitialLnF && isStillLoaded() ) {
+			LookAndFeelInstaller installer = getInstaller( lnfClassname );
+			if ( installer == null ) {
+				return;
+			}
+			installLookAndFeel( installer );
 		}
 	}
 
@@ -113,7 +120,7 @@ public class LookAndFeelPlugin extends EBPlugin {
 			return;
 		}
 
-		SwingUtilities.invokeLater( () -> {
+		SwingUtilities.invokeLater( ()-> {
 			try {
 
 				// jEdit.unsetProperty("lookAndFeel");
@@ -215,7 +222,7 @@ public class LookAndFeelPlugin extends EBPlugin {
 	public static String[] getAvailableLookAndFeels() {
 
 		// look and feels provided by the system
-		String[] systemNames = systemInstallers.keySet().toArray(new String[0]);
+		String[] systemNames = systemInstallers.keySet().toArray( new String [0]  );
 
 		// look and feels provided by this plugin or other plugins
 		String[] pluginNames = ServiceManager.getServiceNames( LookAndFeelInstaller.SERVICE_NAME );
@@ -240,8 +247,8 @@ public class LookAndFeelPlugin extends EBPlugin {
 	}
 
 	private void loadSystemInstallers() {
+		systemLnfs = UIManager.getInstalledLookAndFeels();
 		systemInstallers = new HashMap<String, LookAndFeelInstaller>();
-		UIManager.LookAndFeelInfo[] systemLnfs = UIManager.getInstalledLookAndFeels();
 		for ( UIManager.LookAndFeelInfo info : systemLnfs ) {
 			systemInstallers.put( info.getName(), new SystemLookAndFeelInstaller( info ) );
 		}
