@@ -1,11 +1,19 @@
+
 package lookandfeel;
 
+
 import java.awt.Font;
+import java.awt.Insets;
+
+import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.plaf.DimensionUIResource;
+
 import org.gjt.sp.jedit.AbstractOptionPane;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.FontSelector;
+import org.gjt.sp.jedit.jEdit;
+
 
 public class SystemLookAndFeelInstaller implements LookAndFeelInstaller {
 
@@ -27,11 +35,13 @@ public class SystemLookAndFeelInstaller implements LookAndFeelInstaller {
      * if there is nothing to configure for this look and feel.
      */
     public AbstractOptionPane getOptionPane() {
+
         // return a pane for Metal only, all others return null. For Metal,
         // need to show the font properties like in Global Options/Appearance.
         if ( info.getClassName().equals( "javax.swing.plaf.metal.MetalLookAndFeel" ) ) {
             return new OptionComponent();
-        } else {
+        }
+        else {
             return null;
         }
     }
@@ -42,16 +52,34 @@ public class SystemLookAndFeelInstaller implements LookAndFeelInstaller {
     public void install() throws UnsupportedLookAndFeelException {
         try {
             UIManager.setLookAndFeel( info.getClassName() );
+            if ( info.getName().equals( "Nimbus" ) ) {
+
+                // Nimbus has bugs, this fixes the problem with the scroll bars.
+                // The bugs seem to have been fixed in OpenJDK 9, but not in Oracle java 9. Odd.
+                // See: https://stackoverflow.com/questions/11493273/scroll-horizontally-in-jtable-with-nimbus-look-and-feel
+                // https://bugs.openjdk.java.net/browse/JDK-8072677
+                // and jEdit tracker #3368
+                LookAndFeel laf = UIManager.getLookAndFeel();
+                laf.getDefaults().put( "ScrollBar.maximumThumbSize", new DimensionUIResource( 4096, 4096 ) );
+                // this sort of fixes the button issue, sometimes, with the right version of java 8
+                laf.getDefaults().put( "Button.contentMargins", new Insets( 0, 0, 0, 0 ) );
+                UIManager.setLookAndFeel( laf );
+            }
             UIManager.put( "ClassLoader", ClassLoader.getSystemClassLoader() );
-        } catch ( Exception e ) {
+        }
+        catch ( Exception e ) {
             throw new UnsupportedLookAndFeelException( e.getMessage() );
         }
     }
+
+
+
 
     /**
      * The configuration component for the Metal look and feel.
      */
     class OptionComponent extends AbstractOptionPane {
+
         private FontSelector primaryFont;
         private FontSelector secondaryFont;
 
@@ -67,6 +95,7 @@ public class SystemLookAndFeelInstaller implements LookAndFeelInstaller {
          * Layout this component.
          */
         public void _init() {
+
             /* Primary Metal L&F font */
             Font pf = jEdit.getFontProperty( "metal.primary.font" );
             primaryFont = new FontSelector( pf );
@@ -85,10 +114,10 @@ public class SystemLookAndFeelInstaller implements LookAndFeelInstaller {
             jEdit.setFontProperty( "metal.secondary.font", secondaryFont.getFont() );
             try {
                 SystemLookAndFeelInstaller.this.install();
-            } catch ( Exception e ) {
+            }
+            catch ( Exception e ) {
                 e.printStackTrace();
             }
         }
     }
-
 }
