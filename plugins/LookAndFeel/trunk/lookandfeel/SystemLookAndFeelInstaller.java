@@ -5,6 +5,7 @@ package lookandfeel;
 import java.awt.Font;
 import java.awt.Insets;
 
+import javax.swing.JCheckBox;
 import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -39,7 +40,12 @@ public class SystemLookAndFeelInstaller implements LookAndFeelInstaller {
         // return a pane for Metal only, all others return null. For Metal,
         // need to show the font properties like in Global Options/Appearance.
         if ( info.getClassName().equals( "javax.swing.plaf.metal.MetalLookAndFeel" ) ) {
-            return new OptionComponent();
+            return new MetalOptionComponent();
+        }
+        else if ( info.getClassName().equals( "javax.swing.plaf.nimbus.NimbusLookAndFeel" ) ) {
+
+            // added this to handle some optional settings to work around nimbus bugs
+            return new NimbusOptionComponent();
         }
         else {
             return null;
@@ -61,6 +67,7 @@ public class SystemLookAndFeelInstaller implements LookAndFeelInstaller {
                 // and jEdit tracker #3368
                 LookAndFeel laf = UIManager.getLookAndFeel();
                 laf.getDefaults().put( "ScrollBar.maximumThumbSize", new DimensionUIResource( 4096, 4096 ) );
+
                 // this sort of fixes the button issue, sometimes, with the right version of java 8
                 laf.getDefaults().put( "Button.contentMargins", new Insets( 0, 0, 0, 0 ) );
                 UIManager.setLookAndFeel( laf );
@@ -78,15 +85,12 @@ public class SystemLookAndFeelInstaller implements LookAndFeelInstaller {
     /**
      * The configuration component for the Metal look and feel.
      */
-    class OptionComponent extends AbstractOptionPane {
+    class MetalOptionComponent extends AbstractOptionPane {
 
         private FontSelector primaryFont;
         private FontSelector secondaryFont;
 
-        /**
-         * Create a new <code>OptionComponent</code>.
-         */
-        public OptionComponent() {
+        public MetalOptionComponent() {
             super( "Metal" );
             init();
         }
@@ -112,6 +116,50 @@ public class SystemLookAndFeelInstaller implements LookAndFeelInstaller {
         public void _save() {
             jEdit.setFontProperty( "metal.primary.font", primaryFont.getFont() );
             jEdit.setFontProperty( "metal.secondary.font", secondaryFont.getFont() );
+            try {
+                SystemLookAndFeelInstaller.this.install();
+            }
+            catch ( Exception e ) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
+
+    /**
+     * The configuration component for the Nimbus look and feel.
+     */
+    class NimbusOptionComponent extends AbstractOptionPane {
+
+        private JCheckBox useScrollBarHack;
+        private JCheckBox useButtonHack;
+
+        public NimbusOptionComponent() {
+            super( "Nimbus" );
+            init();
+        }
+
+        /**
+         * Layout this component.
+         */
+        public void _init() {
+
+            useScrollBarHack = new JCheckBox( jEdit.getProperty( "lookandfeel.nimbus.scrollbarHack.label", "Use scrollbar hack" ) );
+            useScrollBarHack.setSelected( jEdit.getBooleanProperty( "lookandfeel.nimbus.scrollbarHack", true ) );
+            addComponent( useScrollBarHack );
+            useButtonHack = new JCheckBox( jEdit.getProperty( "lookandfeel.nimbus.buttonHack.label", "Use button hack" ) );
+            useButtonHack.setSelected( jEdit.getBooleanProperty( "lookandfeel.nimbus.buttonHack", true ) );
+            addComponent( useButtonHack );
+        }
+
+        /**
+         * Save this configuration.
+         */
+        public void _save() {
+            jEdit.setBooleanProperty( "lookandfeel.nimbus.scrollbarHack", useScrollBarHack.isSelected() );
+            jEdit.setBooleanProperty( "lookandfeel.nimbus.buttonHack", useButtonHack.isSelected() );
             try {
                 SystemLookAndFeelInstaller.this.install();
             }
