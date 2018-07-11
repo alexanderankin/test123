@@ -66,10 +66,15 @@ public class SystemLookAndFeelInstaller implements LookAndFeelInstaller {
                 // https://bugs.openjdk.java.net/browse/JDK-8072677
                 // and jEdit tracker #3368
                 LookAndFeel laf = UIManager.getLookAndFeel();
-                laf.getDefaults().put( "ScrollBar.maximumThumbSize", new DimensionUIResource( 4096, 4096 ) );
+                if ( jEdit.getBooleanProperty( "lookandfeel.nimbus.scrollbarHack", true ) ) {
+                    laf.getDefaults().put( "ScrollBar.maximumThumbSize", new DimensionUIResource( 4096, 4096 ) );
+                }
 
-                // this sort of fixes the button issue, sometimes, with the right version of java 8
-                laf.getDefaults().put( "Button.contentMargins", new Insets( 0, 0, 0, 0 ) );
+                if ( jEdit.getBooleanProperty( "lookandfeel.nimbus.buttonHack", true ) ) {
+
+                    // this sort of fixes the button issue, sometimes, with the right version of java 8
+                    laf.getDefaults().put( "Button.contentMargins", new Insets( 0, 0, 0, 0 ) );
+                }
                 UIManager.setLookAndFeel( laf );
             }
             UIManager.put( "ClassLoader", ClassLoader.getSystemClassLoader() );
