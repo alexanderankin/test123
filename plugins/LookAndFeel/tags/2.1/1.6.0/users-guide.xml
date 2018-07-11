@@ -1,0 +1,581 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd" [
+  <!ENTITY % isolat1 PUBLIC "ISO 8879:1986//ENTITIES Added Latin 1//EN//XML" "http://www.oasis-open.org/docbook/xmlcharent/0.3/iso-lat1.ent" >
+]>
+<!-- Look And Feel user's guide -->
+<!-- jEdit buffer-local properties: -->
+<!-- :tabSize=2:indentSize=2:noTabs=true: -->
+<book>
+
+  <bookinfo>
+    <title>Look And Feel plugin user's guide</title>
+
+    <copyright>
+      <year>1999-2010</year>
+      <holder>Dirk M&ouml;bius, David Huttleston Jr., Jamie LaScolea, Calvin Yu, Dale Anson</holder>
+    </copyright>
+
+    <legalnotice>
+      <title>Legal Notice</title>
+      <para>
+      Permission is granted to copy, distribute and/or modify this document
+      under the terms of the GNU Free Documentation License, Version 1.1 or
+      any later version published by the Free Software Foundation; with no
+      <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or
+      <quote>Back-Cover Texts</quote>, each as defined in the license. A copy of
+      the license can be found in the file <filename>COPYING.DOC.txt</filename>
+      included with jEdit.
+    </para>
+    </legalnotice>
+  </bookinfo>
+
+
+  <chapter id="intro">
+    <title>Introduction</title>
+
+    <para>Skin your jEdit!</para>
+    <para>
+    The <application>LookAndFeel</application> plugin lets you choose between
+    different non standard look and feel implementations for jEdit.  Currently,
+    the following look and feel implementations are included:
+  </para>
+    <itemizedlist>
+      <listitem>
+        <para>JGoodies (see <xref linkend="jgoodies"/>)</para>
+      </listitem>
+      <listitem>
+        <para>Kunststoff (see <xref linkend="kunststoff"/>)</para>
+      </listitem>
+      <listitem>
+        <para>Lipstik (see <xref linkend="lipstik"/>)</para>
+      </listitem>
+      <listitem>
+        <para>Metouia (see <xref linkend="metouia"/>)</para>
+      </listitem>
+      <listitem>
+        <para>Napkin (see <xref linkend="napkin"/>)</para>
+      </listitem>
+      <listitem>
+        <para>NimROD (see <xref linkend="nimrod"/>)</para>
+      </listitem>
+      <listitem>
+        <para>Oyoaha (see <xref linkend="oyoaha"/>)</para>
+      </listitem>
+      <listitem>
+        <para>Skin (see <xref linkend="skin"/>)</para>
+      </listitem>
+      <listitem>
+        <para>Tonic (see <xref linkend="tonic"/>)</para>
+      </listitem>
+    </itemizedlist>
+  
+    <para>
+      Other look and feels may be provided by additional plugins, for example,
+    the popular Substance Look and Feel is provided by the SubstanceLookAndFeel
+    plugin.  This plugin will load the Substance Look and Feel plugin and any
+    other available look and feel plugins automatically.
+    </para>
+  </chapter>
+
+
+  <chapter id="configuration">
+    <title>Configuration</title>
+    <para>
+    To configure the Look And Feel plugin, open up the
+    <emphasis>Plugin Options Dialog</emphasis> and select the
+    <guibutton>Look And Feel</guibutton> Option Pane:
+  </para>
+    <para>
+      <guimenu>Plugins</guimenu>&gt;
+    <guimenuitem>Plugin Options</guimenuitem>&gt;
+    <guilabel>Look And Feel</guilabel>
+    </para>
+    <sect1 id="use-jedit-font">
+      <title>Using jEdit Fonts</title>
+      <para>
+      Check the <guibutton>Use jEdit Font</guibutton> check box to use the font
+      specified under <guilabel>jEdit</guilabel>&gt; <guilabel>Appearance</guilabel>
+      under <guimenuitem>Global Options</guimenuitem>.  Note that this is a hint
+      only, and might not work on some Look and Feel implementations.
+    </para>
+    </sect1>
+    <sect1 id="select-laf-impl">
+      <title>Selecting a Look and Feel Implementation</title>
+      <para>
+      You can select from available look and feel implementations from the combo
+      box labeled '<guilabel>Look and Feel</guilabel>'.  Some look and feel
+      implementations will have extra configuration options that you may or
+      may not need to configure, check the chapters on the individual look and
+      feel implementations for details.
+    </para>
+    </sect1>
+    <sect1 id="saving-config">
+      <title>Saving Your Configuration</title>
+      <para>
+      Once you <guibutton>Apply</guibutton> or <guibutton>Save</guibutton>
+      these changes, the look and feel will be installed.  Depending on the
+      look and feel implementation, you might need to restart jEdit for
+      all look and feel changes to be in effect.
+    </para>
+    </sect1>
+  </chapter>
+
+
+  <chapter id="skin">
+    <title>The Skin Look And Feel (v1.2.10)</title>
+    <para>
+    The Skin Look And Feel allows you to customize jEdit's look and feel based
+    on themes.  A theme is (roughly) a set of images, colors and properties,
+    that defines the look of the GUI components.
+  </para>
+    <para>
+    Themes can be downloaded <ulink url="http://javootoo.l2fprod.com/plaf/skinlf/index.php">here</ulink>.
+    At the time of this writing, there are 10 themes available:
+  </para>
+    <itemizedlist>
+      <listitem>
+        <para>Alluminium Alloy Toxic</para>
+      </listitem>
+      <listitem>
+        <para>Aqua</para>
+      </listitem>
+      <listitem>
+        <para>BBj 2.0</para>
+      </listitem>
+      <listitem>
+        <para>Beige Azul</para>
+      </listitem>
+      <listitem>
+        <para>BeOS</para>
+      </listitem>
+      <listitem>
+        <para>Cell Shaded</para>
+      </listitem>
+      <listitem>
+        <para>MacOS</para>
+      </listitem>
+      <listitem>
+        <para>Whistler</para>
+      </listitem>
+      <listitem>
+        <para>Mozilla Modern</para>
+      </listitem>
+      <listitem>
+        <para>XP</para>
+      </listitem>
+    </itemizedlist>
+    <para>
+    To install, select the theme pack you want to use from the
+    <guilabel>LookAndFeel</guilabel> option pane in jEdit's
+    <guimenu>Global Options</guimenu> menu.  The themepacks are ZIP files,
+    but you do not need to extract them. Just put the ZIP files in a
+    directory of your choice.
+  </para>
+    <para>
+    More information on the Skin look and feel can be found at
+    <ulink url="http://www.l2fprod.com">http://www.l2fprod.com</ulink>
+    </para>
+
+    <sect1 id="skin-configuration">
+      <title>Configuring The Skin Look and Feel</title>
+      <para>
+      To configure the Skin look and feel, just specify the path to your theme
+      under the LookAndFeel option pane.  You'll also have the option to enable
+      XTra Scrollbars.  XTra Scrollbars enables the grouping of scroll bar buttons.
+    </para>
+    </sect1>
+
+    <sect1 id="skin-license">
+      <title>License</title>
+      <para>
+      This product includes software developed by <emphasis>L2FProd.com</emphasis>
+      (<ulink url="http://www.L2FProd.com/">http://www.L2FProd.com</ulink>).
+    </para>
+      <para>
+      The software, <trademark>SkinLF</trademark>, is a library distributed
+      under LGPL.  Please see <ulink url="http://www.fsf.org/copyleft/lgpl.html">http://www.fsf.org/copyleft/lgpl.html</ulink>
+      for detailed license information.
+    </para>
+      <para>
+        <trademark>SkinLF</trademark> includes <trademark>nanoXML</trademark>
+      from Marc De Scheemaecker.  <trademark>nanoXML</trademark> is available
+      at <ulink url="http://nanoXML.sourceforge.net">http://nanoXML.sourceforge.net</ulink>
+      </para>
+    </sect1>
+  </chapter>
+
+
+  <chapter id="oyoaha">
+    <title>The Oyoaha Look And Feel (v3.0)</title>
+    <para>
+    The Oyoaha Look And Feel, like the Skin Look And Feel (see <xref linkend="skin"/>),
+    allows you to customize jEdit's look and feel based on themes.  There two
+    kind of themes you can configure in Oyoaha, the oyoaha theme and the metal
+    theme (optional).  The Oyoaha theme is the main theme, while some Oyoaha
+    themes will use metal themes to configure various options like colors.
+  </para>
+    <para>
+    Themes can be downloaded <ulink url="http://www.oyoaha.com/themes">here</ulink>.
+  </para>
+    <para>
+    To install, select the themes you want to use from the
+    <guilabel>LookAndFeel</guilabel> option pane in jEdit's
+    <guimenu>Global Options</guimenu> menu.  The Oyoaha theme files
+    have the *.otm extension, while the metal theme has a *.theme extension.
+  </para>
+    <para>
+    More information on the Oyoaha look and feel can be found at
+    <ulink url="http://www.oyoaha.com">http://www.oyoaha.com</ulink>
+    </para>
+    <sect1 id="oyoaha-license">
+      <title>License</title>
+      <para>
+      The Oyoaha license can be found <ulink url="http://www.oyoaha.com/lookandfeel/download.html">here</ulink>.
+    </para>
+    </sect1>
+  </chapter>
+
+
+  <chapter id="kunststoff">
+    <title>The Kunststoff Look And Feel (v2.0.2)</title>
+    <para>
+    The Kunststoff look and feel is an extension of the metal look and feel,
+    with a more modern and smoother look.
+  </para>
+    <para>
+    The Kunststoff look and feel project is no longer maintained, but the
+    informations about the last public version can be found at
+    <ulink url="http://www.incors.org/archive">http://www.incors.org/archive</ulink>
+    </para>
+    <sect1 id="kunststoff-license">
+      <title>License</title>
+      <para>
+      The software, <trademark>Kunststoff Look And Feel</trademark>, is a library distributed
+      under LGPL Version 2.1.  Please see
+      <ulink url="http://www.fsf.org/copyleft/lgpl.html">http://www.fsf.org/copyleft/lgpl.html</ulink>
+      for detailed license information.
+    </para>
+    </sect1>
+  </chapter>
+
+
+  <chapter id="metouia">
+    <title>The Metouia Look And Feel (1.0 Beta)</title>
+    <para>
+    The Metouia look and feel is another look and feel, which (according to their
+    description on SourceForge) makes jEdit look elegant, nice, and professional.
+  </para>
+    <para>
+    More information on the Metouia look and feel can be found at
+    <ulink url="http://mlf.sourceforge.net">http://mlf.sourceforge.net</ulink>
+    </para>
+    <sect1 id="metouia-license">
+      <title>License</title>
+      <para>
+      The software, <trademark>Metouia Look And Feel</trademark>, is a library distributed
+      under LGPL Version 2.0.  Please see <ulink url="http://www.fsf.org/copyleft/lgpl.html">http://www.fsf.org/copyleft/lgpl.html</ulink>
+      for detailed license information.
+    </para>
+    </sect1>
+  </chapter>
+
+  <chapter id="nimrod">
+    <title>The NimROD Look And Feel (0.9 beta)</title>
+    <para>
+    The NimROD look and feel is another look and feel is an extension of the Metal Look And Feel. It tries
+    to be modern and soft and was coded by Nilo J. Gonzalez..
+  </para>
+    <para>
+    More information on the NimROD look and feel can be found at
+    <ulink url="http://personales.ya.com/nimrod">http://personales.ya.com/nimrod</ulink>
+    </para>
+    <sect1 id="nimrod-license">
+      <title>License</title>
+      <para>
+      The software, <trademark>NimROD Look And Feel</trademark>, is a library distributed
+      under LGPL Version 2.0.  Please see <ulink url="http://www.fsf.org/copyleft/lgpl.html">http://www.fsf.org/copyleft/lgpl.html</ulink>
+      for detailed license information.
+    </para>
+    </sect1>
+  </chapter>
+
+
+
+  <chapter id="tonic">
+    <title>The Tonic Look And Feel (04-Apr-2004)</title>
+    <para>
+    Tonic tries to provide a clean, balanced look and an improved feel.
+    Tonic is available free of charge both for commercial and non-commercial
+    applications. It lends a professional touch and a very tidy and clean
+    interface to Swing based applications.
+  </para>
+    <para>
+    The website for Tonic is
+    <ulink url="http://www.digitprop.com/p.php?page=toniclf">http://www.digitprop.com/p.php?page=toniclf</ulink>.
+  </para>
+    <sect1 id="tonic-license">
+      <title>License</title>
+      <para>
+      The software, <trademark>Tonic Look And Feel</trademark>, is a library distributed
+      under LGPL Version 2.1.  Please see
+      <ulink url="http://www.fsf.org/copyleft/lgpl.html">http://www.fsf.org/copyleft/lgpl.html</ulink>
+      for detailed license information.
+    </para>
+    </sect1>
+  </chapter>
+
+
+  <chapter id="napkin">
+    <title>The Napkin Look and Feel (1.0) </title>
+    <para>
+    The Napkin Look and Feel is a pluggable Java look and feel that looks like it was scrawled on a napkin. You can use it to make provisional work actually look provisional, or just for fun.
+  </para>
+    <para>
+    More information on the Napkin look and feel can be found at
+    <ulink url="http://napkinlaf.sourceforge.net/">http://napkinlaf.sourceforge.net/</ulink>
+    </para>
+    <sect1 id="napkin-license">
+      <title>License</title>
+      <para>
+The Napkin Code
+
+Copyright &copy; 2003-2006, Ken Arnold
+All rights reserved.
+</para>
+<para> Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+</para>
+<para>
+  <itemizedlist>
+    <listitem>
+    <para>
+    Redistributions of source code must retain the above copyright notice,
+        this list of conditions and the following disclaimer.
+        </para>
+            </listitem>
+            <listitem>
+              <para>Redistributions in binary form must reproduce the above copyright
+        notice, this list of conditions and the following disclaimer in the
+        documentation and/or other materials provided with the distribution.
+        </para>
+            </listitem>
+            <listitem>
+              <para>
+              Neither the name of the Napkin Look &amp; Feel Project nor the names of its
+        contributors may be used to endorse or promote products derived from
+        this software without specific prior written permission.
+        </para>
+            </listitem>
+          </itemizedlist>
+</para>
+<para>
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+</para>
+
+
+        <para>The Handwritten Font "Felt Tip Roman"</para>
+        <para>
+Felt Tip Roman font(s) Copyright &copy; 2001 &amp; 2003 Mark Simonson and included
+by special arrangement with Mark Simonson Studio for use with Napkin Look &amp; Feel
+only. Any other use prohibited without obtaining a user license from Mark
+Simonson Studio or one of its authorized distributors. For more information
+contact mark@ms-studio.com or visit http://www.ms-studio.com.
+</para>
+
+        <para>The Handwritten Font "&AElig;nigma Scrawl"</para>
+
+        <para>&AElig;nigma Scrawl, Created by Brian Kent</para>
+
+        <para>DISCLAIMER</para>
+
+        <itemizedlist>
+          <listitem>
+            <para>
+    The font(s) in this zip file were created by me (Brian Kent). All of my
+    Fonts are Freeware, you can use them any way you want to (Personal use,
+    Commercial use, or whatever).
+    </para>
+          </listitem>
+          <listitem>
+            <para>
+    If you have a Font related site and would like to offer my fonts on your
+        site, go right ahead. All I ask is that you keep this text file intact
+        with the Font.
+        </para>
+          </listitem>
+          <listitem>
+            <para>
+    You may not Sell or Distribute my Fonts for profit or alter them in any
+        way without asking me first. [e-mail &mdash; kentpw@norwich.net]
+        </para>
+          </listitem>
+        </itemizedlist>
+
+
+        <para>Handwritten Font: "Augie"</para>
+
+        <para> thank you for downloading "augie," a handwritten casual based on the fall
+    1982 classnotes of a solid B-minus college student.</para>
+
+        <para> "augie" is a windows95 truetype font designed in the emerald city, seattle,
+    washington, by steven j. lundeen, copyright &copy; 1997.</para>
+
+        <para> please note, "augie" is a freeware font.</para>
+
+        <para> the author places no conditions or restrictions on the use of this font.</para>
+
+        <para> permission is granted to freely distribute and/or post this font, providing
+    that all files in the original archive are attached, including this one.</para>
+
+        <para> please support the art of fontography.</para>
+
+        <para> if you find this font useful, you may wish to contact the designer, or any
+    member of the staff at m.a.t. via the following address:</para>
+
+        <para>manarts@seanet.com</para>
+
+        <para> all comments, critiques, raves, rages, flames and proposals of marriage
+    invited.</para>
+
+
+        <para>The Typewriter Font "1942 report"</para>
+
+        <para> 1942 report &mdash; monospaced typewriter font. </para>
+
+<para> This truetype typewriter font was borned at Free Typewriter Fonts Homepage:
+    http://www.free-typewriter-fonts.com</para>
+
+          <para> You may distribute, sell, resell, change or modify the font &mdash; and you
+    are allowed to upload the font onto any site or CD if this disclaimer is
+    included in the download (text.txt).</para>
+
+          <para> Any other means prohibited.</para>
+
+          <para> Johan Holmdahl
+    webmaster@free-typewriter-fonts.com</para>
+
+          <para> March 2001</para>
+
+      </sect1>
+    </chapter>
+
+
+    <chapter id="jgoodies">
+      <title>The JGoodies Look And Feel Family (1.2.2)</title>
+      <para>
+    The JGoodies Look And Feel family (aka Looks) has been optimized for
+    readability, precise micro-design and usability. And it simplifies the
+    multi-platform support by using similar widget dimensions. Anyway, many
+    people have reviewed it as elegant.
+  </para>
+      <para>
+  The JGoodies Look And Feel family consists of 3 different look and feel
+  implementations:
+  </para>
+      <itemizedlist>
+        <listitem>
+          <para>PlasticXP</para>
+        </listitem>
+        <listitem>
+          <para>Plastic3D</para>
+        </listitem>
+        <listitem>
+          <para>WindowsExt (extended Windows look and feel)</para>
+        </listitem>
+      </itemizedlist>
+      <para>
+    The website for the JGoodies Look And Feel family is
+    <ulink url="https://looks.dev.java.net/">https://looks.dev.java.net/</ulink>.
+  </para>
+      <sect1 id="jgoodies-license">
+        <title>License</title>
+        <para>
+      The software, <trademark>JGoodies Look And Feel (Looks)</trademark>, is a
+      library distributed under BSD License. Please see
+      <ulink url="http://www.opensource.org/licenses/bsd-license.html">http://www.opensource.org/licenses/bsd-license.html</ulink>
+      for detailed license information.
+    </para>
+      </sect1>
+    </chapter>
+
+  <chapter id="lipstik">
+    <title>The Lipstik Look And Feel, version 1.1 (17 Mar 2008)</title>
+    <para>
+    Lipstik look and feel is intended to be a Java (tm) Swing counterpart of KDE theme engine called Lipstik.
+    This look and feel was written by Michal Buczko.  This look and feel creates small, but very usable,
+    components, which is great on a laptop where you would like to use your screen space for editing code
+    rather than window decoration.  A high quality and well finished look and feel.
+  </para>
+    <para>
+    The website for Lipstik is
+    <ulink url="https://sourceforge.net/projects/lipstiklf/">https://sourceforge.net/projects/lipstiklf/</ulink>.
+  </para>
+    <sect1 id="lipstik-license">
+      <title>License</title>
+      <para>
+      This library is GPL2 licensed.
+      It is provided 'as is' without warranty of any kind.  Please see <ulink url="http://www.fsf.org/copyleft/gpl.html">http://www.fsf.org/copyleft/gpl.html</ulink>
+      for detailed license information.
+      </para>
+    </sect1>
+  </chapter>
+
+  
+    <chapter id="feedback">
+      <title>Feedback</title>
+
+      <para>
+    The preferred way to send bug reports or feature requests is to use the
+    <emphasis>Sourceforge Bug Tracker</emphasis> at
+    <ulink url="http://sourceforge.net/bugs/?group_id=588">http://sourceforge.net/bugs/?group_id=588</ulink>.
+  </para>
+
+      <para>
+    You can also write to:
+  </para>
+      <itemizedlist>
+        <listitem>
+          <para>
+        jEdit users mailing-list
+        <ulink url="mailto:jedit-users@lists.sourceforge.net">jedit-users@lists.sourceforge.net</ulink>, or
+      </para>
+        </listitem>
+        <listitem>
+          <para>
+        jEdit developers mailing-list
+        <ulink url="mailto:jedit-devel@lists.sourceforge.net">jedit-devel@lists.sourceforge.net</ulink>.
+      </para>
+        </listitem>
+      </itemizedlist>
+    </chapter>
+
+
+    <chapter id="license">
+      <title>License</title>
+      <para>
+    The source code for LookAndFeel plugin is distributed under the GPL.
+    Please see <ulink url="http://www.fsf.org/copyleft/gpl.html">http://www.fsf.org/copyleft/gpl.html</ulink>
+    for detailed license information.
+  </para>
+    </chapter>
+
+
+
+    <chapter id="changelog">
+      <title>Changes</title>
+      <para>For a detailled list of changes have a look at the
+    <ulink url="CHANGELOG.txt">CHANGELOG</ulink>.
+  </para>
+    </chapter>
+
+  </book>
