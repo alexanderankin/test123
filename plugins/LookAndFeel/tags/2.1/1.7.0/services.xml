@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+<SERVICES>
+    <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="JGoodies Plastic 3D">
+        new lookandfeel.JgoodiesExtWindows();
+    </SERVICE>
+    <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="JGoodies Ext Windows">
+        new lookandfeel.JgoodiesPlastic3DLnfInstaller();
+    </SERVICE>
+    <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="JGoodies Plastic XP">
+        new lookandfeel.JgoodiesPlasticXPLnfInstaller();
+    </SERVICE>
+    <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="Kunststoff">
+        new lookandfeel.KunststoffLnfInstaller();       
+    </SERVICE>                                     
+    <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="Lipstik">
+        new lookandfeel.LipstikLnfInstaller();       
+    </SERVICE>                                     
+    <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="Metouia">
+        new lookandfeel.MetouiaLnfInstaller();       
+    </SERVICE>                                     
+    <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="Napkin">
+        new lookandfeel.NapkinLnfInstaller();       
+    </SERVICE>                                     
+    <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="NimROD">
+        new lookandfeel.NimRODLnfInstaller();
+    </SERVICE>
+    <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="Oyoaha">
+        new lookandfeel.OyoahaLnfInstaller();       
+    </SERVICE>                                     
+    <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="Skin">
+        new lookandfeel.SkinLnfInstaller();       
+    </SERVICE>                                     
+    <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="Tonic">
+        new lookandfeel.TonicLnfInstaller();       
+    </SERVICE>                                     
+    <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="None">
+        new lookandfeel.NoneLnfInstaller();
+    </SERVICE>
+</SERVICES>

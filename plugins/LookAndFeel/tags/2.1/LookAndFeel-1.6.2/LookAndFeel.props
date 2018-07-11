@@ -1,0 +1,65 @@
+plugin.lookandfeel.LookAndFeelPlugin.name=LookAndFeel
+plugin.lookandfeel.LookAndFeelPlugin.author=Dirk Moebius, Jamie LaScolea, David Huttleston Jr., Calvin Yu, Nilo J. Gonzalez, Dale Anson
+plugin.lookandfeel.LookAndFeelPlugin.version=1.6.2
+plugin.lookandfeel.LookAndFeelPlugin.docs=index.html
+plugin.lookandfeel.LookAndFeelPlugin.activate=startup
+plugin.lookandfeel.LookAndFeelPlugin.depend.0=jdk 1.5
+plugin.lookandfeel.LookAndFeelPlugin.depend.1=jedit 04.03.99.00
+plugin.lookandfeel.LookAndFeelPlugin.jars=skinlf.jar oalnf.jar kunststoff.jar metouia.jar toniclf.jar jgoodies_looks.jar nimrodlf.jar napkinlaf.jar lipstikLF-1.2.jar
+plugin.lookandfeel.LookAndFeelPlugin.option-pane=lookandfeel
+plugin.lookandfeel.LookAndFeelPlugin.description=The LookAndFeel plugin allows easily changing the look of the user interface from within jEdit.
+
+options.lookandfeel.code=new lookandfeel.LookAndFeelOptionPane();
+options.lookandfeel.label=Look And Feel
+
+lookandfeel.lookandfeel.label=Look And Feel:
+lookandfeel.usejeditfont.label=Use jEdit Font
+
+lookandfeel.message.restart.title=Look And Feel plugin
+lookandfeel.message.restart.message=\
+  It might take a restart for the look and feel changes to take full effect.
+
+lookandfeel.message.fnf.title=File invalid
+lookandfeel.message.fnf.message=\
+   The file {0}\n\
+   does not exist or is not readable.
+
+lookandfeel.error.installer.title=Look And Feel Error!
+lookandfeel.error.installer.message=Error configuring Look And Feel
+
+#{{{ Skin Properties
+lookandfeel.skin.themepack.title=Choose Themepack
+lookandfeel.skin.themepack.filter.extensions=zip
+lookandfeel.skin.themepack.filter.description=Zip File (*.zip)
+lookandfeel.skin.themepack.label=Themepack:
+lookandfeel.skin.themepack.select-tooltip=Select Themepack
+lookandfeel.skin.themepack.link.href= http://javootoo.l2fprod.com/plaf/skinlf/index.php
+lookandfeel.skin.themepack.link.label=Download themepacks at
+lookandfeel.skin.xtra-scrollbars.label=Enable XTra ScrollBars
+#}}}
+
+#{{{ Oyoaha Properties
+lookandfeel.oyoaha.metal-theme.title=Choose Metal Theme
+lookandfeel.oyoaha.metal-theme.filter.extensions=theme
+lookandfeel.oyoaha.metal-theme.filter.description=Metal Theme File (*.theme)
+lookandfeel.oyoaha.metal-theme.label=Metal Theme:
+lookandfeel.oyoaha.metal-theme.select-tooltip=Select Metal Theme
+lookandfeel.oyoaha.metal-theme.remove-tooltip=Unset Metal Theme
+lookandfeel.oyoaha.metal-theme.link.href=http://www.oyoaha.com/lookandfeel/download.html
+lookandfeel.oyoaha.metal-theme.link.label=Metal themes come with the Oyoaha distribution at
+
+lookandfeel.oyoaha.oyoaha-theme.title=Choose Oyoaha Theme
+lookandfeel.oyoaha.oyoaha-theme.filter.extensions=otm
+lookandfeel.oyoaha.oyoaha-theme.filter.description=Oyoaha Theme File (*.otm)
+lookandfeel.oyoaha.oyoaha-theme.label=Oyoaha Theme:
+lookandfeel.oyoaha.oyoaha-theme.select-tooltip=Select Oyoaha Theme
+lookandfeel.oyoaha.oyoaha-theme.link.href=http://www.oyoaha.com/themes/index.html
+lookandfeel.oyoaha.oyoaha-theme.link.label=Download Oyoaha themes at
+#}}}
+
+#{{{ Lipstik Properties
+lipstikLF.menuBar.label=Menu style:
+lipstikLF.theme.label=Theme style:
+#}}}
+
+substance.theme.label=Theme

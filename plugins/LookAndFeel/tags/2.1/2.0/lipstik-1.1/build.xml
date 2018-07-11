@@ -1,0 +1,108 @@
+<project name="lipstikLF" default="dist" basedir=".">
+
+    <!-- read build.props to override properties set below -->
+    <property file="build.props"/>
+
+    <!-- version number, override in build.props if necessary -->
+    <property name="build_num" value="1.2"/>
+
+
+    <!-- shouldn't need to override the following properties -->
+
+    <!-- source code directory, this is where the .java files live -->
+    <property name="src.dir" location="src" />
+
+    <!-- the directory for the compiled classes. Files in this directory will be
+    included in the finished jar file. -->
+    <property name="classes.dir" location="classes" />
+
+    <!-- where to put the finished distribution file -->
+    <property name="dist.dir" location="/home/danson/.jedit/jars"/>
+
+
+   <!-- ========================================================================
+      Target: set classpath
+   ========================================================================= -->
+   <target name="setClasspath">
+      <path id="classpathref">
+         <pathelement location="${classes.dir}" />
+         <pathelement path="${java.class.path}"/>
+      </path>
+   </target>
+
+   <!-- ========================================================================
+      Target: clean
+      deletes all files from the build directory
+   ========================================================================= -->
+    <target name="clean" description="Delete all files from the classes directory.">
+        <delete>
+            <fileset dir="${classes.dir}" includes="**" />
+        </delete>
+    </target>
+
+   <!-- ========================================================================
+      Target: compile
+   ========================================================================= -->
+    <target name="compile"
+            description="Compile"
+            depends="init,setClasspath">
+        <javac deprecation="on"
+               debug="on"
+               nowarn="on"
+               destdir="${classes.dir}"
+               srcdir="${src.dir}"
+               source="1.4"
+               target="1.4">
+            <classpath refid="classpathref" />
+        </javac>
+        <copy todir="${classes.dir}" overwrite="yes">
+            <fileset dir="${src.dir}">
+               <include name="**/icons/*"/>
+            </fileset>
+        </copy>
+    </target>
+
+   <!-- ========================================================================
+      Target: dist
+      this target does several things:
+      first, it creates a jar file in the prep directory.
+      second, it copies the jar file to $install.dir
+      third, it zips the jar file and installation docs into $dist.dir
+   ========================================================================= -->
+    <target name="dist"
+            description="Compiles and jars the app."
+            depends="init,clean,compile">
+
+        <!-- make the jar file, put it in $prep.dir -->
+        <tstamp/>
+
+        <jar jarfile="${dist.dir}/${ant.project.name}-${build_num}.jar">
+            <manifest>
+                <attribute name="AppName" value="${ant.project.name}" />
+                <attribute name="AppVersion" value="${build_num}" />
+                <attribute name="Created-By" value="${user.name}"/>
+                <attribute name="Created-On" value="${TODAY}"/>
+            </manifest>
+
+            <!-- include everything in the build directory -->
+            <fileset dir="${classes.dir}">
+                <include name="**/*" />
+                <exclude name="**/testcases/**/*"/>
+            </fileset>
+        </jar>
+    </target>
+
+   <!-- ========================================================================
+      Target: init
+      this target creates the directories needed for this project and
+      only needs to be done once.
+   ========================================================================= -->
+    <target name="init"
+            description="Create directory structure."
+            unless="init.done">
+        <mkdir dir="${src.dir}" />
+        <mkdir dir="${classes.dir}" />
+        <mkdir dir="${dist.dir}"/>
+        <property name="init.done" value="true"/>
+    </target>
+</project>
