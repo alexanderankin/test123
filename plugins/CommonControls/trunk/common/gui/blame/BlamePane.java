@@ -25,6 +25,8 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.ChangeEvent;
@@ -63,6 +65,9 @@ public class BlamePane extends JComponent implements CaretListener, EBComponent 
         this.model = model;
         updateUI();
         EditBus.addToBus( this );
+
+        Border border = BorderFactory.createBevelBorder(BevelBorder.LOWERED);
+        setBorder(border);
     }
 
     public void updateUI() {
