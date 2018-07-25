@@ -153,7 +153,8 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener, Mou
 
             // paint the background
             Rectangle size = getBounds();
-            gfx.setColor( getBackground() );
+            Color background = jEdit.getColorProperty( "view.bgColor", Color.WHITE );
+            gfx.setColor( background );
             gfx.fillRect( 0, 0, size.width, size.height );
             gfx.setFont(getFont());
             if ( !"none".equals( jEdit.getProperty( "view.antiAlias" ) ) ) {
@@ -168,7 +169,8 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener, Mou
             pixelsPerLine = textArea.getPainter().getLineHeight();
             int caretLine = textArea.getCaretLine();
             Color foreground = jEdit.getColorProperty( "view.fgColor", Color.BLACK );
-            Color highlight = jEdit.getColorProperty( "view.lineHighlightColor", Color.WHITE );
+            Color highlight = jEdit.getColorProperty( "view.lineHighlightColor",
+                new Color( 0xFF, 0xFF, 0xE0 ) );
             gfx.setColor( foreground );
             java.util.List<String> blame = model.getBlame();
             int descent = gfx.getFontMetrics().getDescent();
