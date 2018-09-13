@@ -1,0 +1,34 @@
+String ConvertHex(String input) {
+    if (input.matches("0x\\p{XDigit}+"))
+        return Integer.toString(Integer.parseInt(input.substring(2), 16));
+    else if (input.matches("\\d+"))
+        return "0x" + Integer.toHexString(Integer.parseInt(input));
+    else if (input.matches("\\p{XDigit}+"))
+        return Integer.toString(Integer.parseInt(input, 16));
+    else
+        return "Invalid Number";
+}
+
+String CharToCodepoint(String input) {
+    return Integer.toHexString(input.codePointAt(0)).toUpperCase();
+}
+
+String CodepointToChar(String input) {
+    int codepoint = -1;
+    if (input.matches("\\d+"))
+        codepoint = Integer.parseInt(input);
+    else if (input.matches("0x\\p{XDigit}+"))
+        codepoint = Integer.parseInt(input.substring(2), 16);
+    else if (input.matches("\\p{XDigit}+"))
+        codepoint = Integer.parseInt(input, 16);
+        
+    if (codepoint > 0x10FFFF) codepoint = -1;
+    if (codepoint < 0)
+        return "Invalid codepoint";
+    else
+        return new String(new int[] {codepoint}, 0, 1);
+}
+
+String BeanShellEval(String input) {
+    return eval(input).toString();
+}
