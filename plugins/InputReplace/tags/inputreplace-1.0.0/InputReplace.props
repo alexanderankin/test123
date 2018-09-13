@@ -1,0 +1,41 @@
+# jEdit only needs to load the plugin the first time the user accesses it
+# the presence of this property also tells jEdit the plugin is using the new API
+plugin.com.illcode.jedit.inputreplace.InputReplacePlugin.activate=defer
+plugin.com.illcode.jedit.inputreplace.InputReplacePlugin.usePluginHome=true
+
+# These two properties are required for all plugins
+plugin.com.illcode.jedit.inputreplace.InputReplacePlugin.name=InputReplace
+plugin.com.illcode.jedit.inputreplace.InputReplacePlugin.author=Jesse Pavel
+
+# version number
+plugin.com.illcode.jedit.inputreplace.InputReplacePlugin.version=1.0.0
+
+# online help
+plugin.com.illcode.jedit.inputreplace.InputReplacePlugin.docs=doc/InputReplace.html
+
+# we only have one dependency, jEdit 5.4
+plugin.com.illcode.jedit.inputreplace.InputReplacePlugin.depend.0=jedit 05.04.00.01
+plugin.com.illcode.jedit.inputreplace.InputReplacePlugin.depend.1=jdk 1.7
+
+plugin.com.illcode.jedit.inputreplace.InputReplacePlugin.description=\
+    A plugin that provides for input replacement (like abbreviations) using a table and functions.
+plugin.com.illcode.jedit.inputreplace.InputReplacePlugin.longdescription=doc/description.html
+
+
+# plugin menu
+plugin.com.illcode.jedit.inputreplace.InputReplacePlugin.menu = \
+  inputreplace.input-replace \
+  inputreplace.edit-table \
+  inputreplace.edit-user-functions \
+  inputreplace.reload-resources
+
+# action labels for actions supplied by actions.xml
+inputreplace.input-replace.label = Input Replace at Caret
+inputreplace.edit-table.label = Edit Replacement Table
+inputreplace.edit-user-functions.label = Edit User Functions
+inputreplace.reload-resources.label = Reload Table and Functions
+
+# plugin option pane
+plugin.com.illcode.jedit.inputreplace.InputReplacePlugin.option-pane=inputreplace
+options.inputreplace.label=InputReplace
+options.inputreplace.code=new com.illcode.jedit.inputreplace.InputReplaceOptionPane();
