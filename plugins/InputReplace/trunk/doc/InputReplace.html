@@ -1,0 +1,96 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name=Generator content="Atlantis Word Processor 2.0.6.0, http://www.AtlantisWordProcessor.com">
+<meta name="Processor" content="FormatAtlantisHTML">
+<title>InputReplace Plugin for jEdit</title>
+<meta name="Author" content="JP">
+<style>p{margin-top:0pt;margin-bottom:6pt;font-family:Times New Roman;font-size:14.0pt;color:black}</style>
+<style>
+body {
+  width: 850px;
+  margin: auto;
+}
+</style>
+</head>
+
+
+<body>
+<p style="text-align:center;margin-bottom:0pt"><span style="font-size:20.0pt;color:#000000">&nbsp;</span></p>
+<p style="text-align:center;margin-bottom:0pt"><span style="font-size:20.0pt">InputReplace Plugin for jEdit</span></p>
+<p style="text-align:center;margin-bottom:0pt"><span style="color:#000000">&nbsp;</span></p>
+<p style="text-align:center;margin-bottom:0pt"><span style="color:#000000">&nbsp;</span></p>
+<p style="margin-bottom:0pt"><a id="_Table_Of_Contents"></a><a href="#Overview">1. Overview</a></p>
+<p style="margin-bottom:0pt"><a href="#Download" style="color:black;">2. Download</a></p>
+<p style="margin-bottom:0pt"><a href="#Defining_the_Replacement_Table_and_User" style="color:black;">3. Defining the Replacement Table and User Functions</a></p>
+<p style="margin-left:22.0pt;margin-bottom:0pt"><a href="#Replacement_Table" style="color:black;">3.1. Replacement Table</a></p>
+<p style="margin-left:22.0pt;margin-bottom:0pt"><a href="#User_Functions" style="color:black;">3.2. User Functions</a></p>
+<p style="margin-left:22.0pt;margin-bottom:0pt"><a href="#Reloading" style="color:black;">3.3. Reloading</a></p>
+<p style="margin-bottom:0pt"><a href="#Plugin_Operation" style="color:black;">4. Plugin Operation</a></p>
+<p style="margin-bottom:0pt"><span style="color:#000000">&nbsp;</span></p>
+<p style="margin-bottom:0pt"><span style="color:#000000">&nbsp;</span></p>
+<p style="text-indent:-31.6pt;margin-left:31.6pt;margin-top:6pt;margin-bottom:10pt">&nbsp;&nbsp;&nbsp;<span style="font-size:17.0pt"><b>1.&nbsp;&nbsp;</b></span><a id="Overview"></a><span style="font-size:17.0pt"><b>Overview</b></span></p>
+<p>The InputReplace plugin provides a facility for expanding input character sequences into replacement text, similar to abbreviations but without the requirement of expanding a whole word at a time. It is useful for inserting characters not found in your keyboard layout, such as turning <span style="font-family:Courier New">e'</span> into <span style="font-family:Courier New">é</span> or <span style="font-family:Courier New">c/</span> into <span style="font-family:Courier New">¢</span>. </p>
+<p>The primary advantage over jEdit's built-in abbreviations is that these replacements can be used <i>within</i> words, rather than just with whole words.</p>
+<p>This allows you to define, say, a single replacement <span style="font-family:Courier New">e' → é</span> and use it to quickly enter both café and débutante. To enter café, you would type <span style="font-family:Courier New">cafe'</span> and activate &quot;Input Replace at Caret&quot; after the whole word; to enter débutante, you would type <span style="font-family:Courier New">de'</span>, activate &quot;Input Replace at Caret&quot;, and then finish typing the word.</p>
+<p>You can, of course, define whole words as input and replacement text, as with abbreviations (though without any positional parameters).</p>
+<p>I recommend binding &quot;Input Replace at Caret&quot; to an easy key-combination, since you'll need to activate it often, if you write a lot of accented text.</p>
+<p>One can also define BeanShell functions to perform more complicated replacements, for instance turning characters into codepoints and vice-versa:</p>
+<p><span style="font-family:Courier New">&nbsp;&nbsp;&quot;(É)U-&quot;&nbsp;&nbsp;&nbsp; → &quot;0xC9&quot;<br>&nbsp;&nbsp;&quot;(0xC9)U+&quot; → &quot;É&quot;</span></p>
+<p>or converting numbers to and from hex:</p>
+<p><span style="font-family:Courier New">&nbsp;&nbsp;&quot;(5314)0x&quot;&nbsp;&nbsp;&nbsp; → 0x14c2<br>&nbsp;&nbsp;&quot;(0xBE415)0x&quot; → 779285</span></p>
+<p>Such things can accomplished with other plugins or macros, but using the InputReplace framework to write custom transformations lets you assign simple names to those transformations&mdash;like &quot;<span style="font-family:Courier New">U+</span>&quot; and &quot;<span style="font-family:Courier New">0x</span>&quot; above&mdash;and also write the BeanShell code without dealing with the jEdit API (each transformation is a simple String→String function).</p>
+<p><span style="color:#000000">&nbsp;</span></p>
+<p style="text-indent:-31.6pt;margin-left:31.6pt;margin-bottom:10pt">&nbsp;&nbsp;&nbsp;<span style="font-size:17.0pt"><b>2.&nbsp;&nbsp;</b></span><a id="Download"></a><span style="font-size:17.0pt"><b>Download</b></span></p>
+<p>The easiest way to get the InputReplace plugin is to use jEdit's Plugin Manager (once the plugin is released). You can also manually download the jar for this plugin from:</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://jessepav.github.io/jedit-plugins/InputReplace.jar">[Download JAR from GitHub]</a></p>
+<p><span style="color:#000000">&nbsp;</span></p>
+<p style="text-indent:-31.6pt;margin-left:31.6pt;margin-bottom:10pt">&nbsp;&nbsp;&nbsp;<span style="font-size:17.0pt"><b>3.&nbsp;&nbsp;</b></span><a id="Defining_the_Replacement_Table_and_User"></a><span style="font-size:17.0pt"><b>Defining the Replacement Table and User Functions</b></span></p>
+<p>When you first install the plugin, a default replacement table will be set up, as well as a few BeanShell functions that you can use in your replacements. The table and user functions can be edited by the &quot;Edit Replacement Table&quot; and &quot;Edit User Functions&quot; actions in the Plugins menu.</p>
+<p><span style="color:#000000">&nbsp;</span></p>
+<p style="text-indent:-31.6pt;margin-left:31.6pt">&nbsp;<span style="font-size:15.0pt"><b>3.1.&nbsp;&nbsp;</b></span><a id="Replacement_Table"></a><span style="font-size:15.0pt"><b>Replacement Table</b></span></p>
+<p>The format of the replacement table is given in the table text file itself, but is copied here for reference:</p>
+<p style="margin-bottom:0pt"><span style="font-family:Courier New;font-size:13.0pt"># This file maps input strings to character compositions, like a simple</span></p>
+<p style="margin-bottom:0pt"><span style="font-family:Courier New;font-size:13.0pt"># input method. Only non-whitespace characters may be used for the input</span></p>
+<p style="margin-bottom:0pt"><span style="font-family:Courier New;font-size:13.0pt"># string (the replacement text may contain whitespace). The format of the</span></p>
+<p style="margin-bottom:0pt"><span style="font-family:Courier New;font-size:13.0pt"># table is a series of lines, where the input strings appear at the start</span></p>
+<p style="margin-bottom:0pt"><span style="font-family:Courier New;font-size:13.0pt"># of each line, followed by whitespace, and then the output string. Lines</span></p>
+<p style="margin-bottom:0pt"><span style="font-family:Courier New;font-size:13.0pt"># that are JUST a hash mark, or that begin with a hash AND a space, are</span></p>
+<p style="margin-bottom:0pt"><span style="font-family:Courier New;font-size:13.0pt"># comments (since abbreviations are at minimum two characters long, this</span></p>
+<p style="margin-bottom:0pt"><span style="font-family:Courier New;font-size:13.0pt"># doesn't affect the table at all). Lines that are all whitespace are</span></p>
+<p style="margin-bottom:0pt"><span style="font-family:Courier New;font-size:13.0pt"># ignored.</span></p>
+<p style="margin-bottom:0pt"><span style="font-family:Courier New;font-size:13.0pt">#</span></p>
+<p style="margin-bottom:0pt"><span style="font-family:Courier New;font-size:13.0pt"># Instead of a replacement string, you can use a special notation,</span></p>
+<p style="margin-bottom:0pt"><span style="font-family:Courier New;font-size:13.0pt"># U+HHHH or U+10HHHH to represent a Unicode character expressed in hex.</span></p>
+<p style="margin-bottom:0pt"><span style="font-family:Courier New;font-size:13.0pt">#</span></p>
+<p style="margin-bottom:0pt"><span style="font-family:Courier New;font-size:13.0pt"># You can also use a special form as the replacement string, which is</span></p>
+<p style="margin-bottom:0pt"><span style="font-family:Courier New;font-size:13.0pt">#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (&lt;function name&gt;)FUNC</span></p>
+<p style="margin-bottom:0pt"><span style="font-family:Courier New;font-size:13.0pt"># which will use BeanShell to evaluation &lt;function name&gt;, passing in as</span></p>
+<p style="margin-bottom:0pt"><span style="font-family:Courier New;font-size:13.0pt"># an argument the text in the document contained between '(' and ')'.</span></p>
+<p style="margin-bottom:0pt"><span style="font-family:Courier New;font-size:13.0pt"># Actually, the parentheses can be any characters, and the document text</span></p>
+<p style="margin-bottom:0pt"><span style="font-family:Courier New;font-size:13.0pt"># will be scanned to find the opening and closing delimeters. Example:</span></p>
+<p style="margin-bottom:0pt"><span style="font-family:Courier New;font-size:13.0pt">#&nbsp;&nbsp; FB&nbsp;&nbsp;&nbsp; |foobar|FUNC</span></p>
+<p style="margin-bottom:0pt"><span style="font-family:Courier New;font-size:13.0pt"># will match the document form |analyze|FB, and call foobar(&quot;analyze&quot;)</span></p>
+<p style="margin-bottom:0pt"><span style="font-family:Courier New;font-size:14.0pt;color:#000000">&nbsp;</span></p>
+<p>Looking at the default replacement table will give you a good idea of its use: <a href="https://github.com/jessepav/jedit-plugins/blob/master/InputReplace/resources/input-replace-table-default.txt">[View on GitHub]</a></p>
+<p><span style="font-size:14.0pt;color:#000000">&nbsp;</span></p>
+<p style="text-indent:-31.6pt;margin-left:31.6pt">&nbsp;<span style="font-size:15.0pt"><b>3.2.&nbsp;&nbsp;</b></span><a id="User_Functions"></a><span style="font-size:15.0pt"><b>User Functions</b></span></p>
+<p>The BeanShell script installed with the plugin provides examples of how your own functions would be structured: each function takes one parameter, a String representing the input, and returns a transformed String. You then reference it in the replacement table using the &quot;<span style="font-family:Courier New">(&lt;function&nbsp;name&gt;)FUNC</span>&quot; syntax.</p>
+<p>The default user function script can be seen here: <a href="https://github.com/jessepav/jedit-plugins/blob/master/InputReplace/resources/input-replace-functions-default.bsh">[View on GitHub]</a></p>
+<p><span style="font-size:14.0pt;color:#000000">&nbsp;</span></p>
+<p style="text-indent:-31.6pt;margin-left:31.6pt">&nbsp;<span style="font-size:15.0pt"><b>3.3.&nbsp;&nbsp;</b></span><a id="Reloading"></a><span style="font-size:15.0pt"><b>Reloading</b></span></p>
+<p>When you change the replacement table or user-function script, you'll need to use the &quot;Reload Table and Functions&quot; action to have the plugin load your changes.</p>
+<p><span style="color:#000000">&nbsp;</span></p>
+<p style="text-indent:-31.6pt;margin-left:31.6pt;margin-bottom:10pt">&nbsp;&nbsp;&nbsp;<span style="font-size:17.0pt"><b>4.&nbsp;&nbsp;</b></span><a id="Plugin_Operation"></a><span style="font-size:17.0pt"><b>Plugin Operation</b></span></p>
+<p>The way that the &quot;Input Replace at Caret&quot; action works is primarily what differentiates this plugin from abbreviations. Instead of examining the previous word, it operates on non-whitespace characters in this fashion:</p>
+<p style="text-indent:-28.0pt;margin-left:46.0pt;margin-bottom:2pt">&nbsp;&nbsp;&nbsp;1.&nbsp;&nbsp;Set the <i>point</i> to <span style="font-family:Courier New">max-length</span> characters before the caret. <span style="font-family:Courier New">max-length</span> is settable in Plugin Options, and defaults to 8.</p>
+<p style="text-indent:-28.0pt;margin-left:46.0pt;margin-bottom:2pt">&nbsp;&nbsp;&nbsp;2.&nbsp;&nbsp;Check if the text between the point and the caret has an entry in the replacement table; if so, perform the replacement and we're done.</p>
+<p style="text-indent:-28.0pt;margin-left:46.0pt;margin-bottom:2pt">&nbsp;&nbsp;&nbsp;3.&nbsp;&nbsp;Otherwise, if there are still more than 2 characters between the point and caret, advance the point one character and try again. (The minimum length of a replacement entry is 2 characters)</p>
+<p style="margin-bottom:2pt"><span style="color:#000000">&nbsp;</span></p>
+<p style="margin-bottom:2pt"><span style="color:#000000">&nbsp;</span></p>
+<p style="margin-left:334.0pt;margin-bottom:2pt">Jesse Pavel<br>jpavel@alum.mit.edu<br>September, 2018</p>
+<p><span style="color:#000000">&nbsp;</span></p>
+</body>
+
+</html>
