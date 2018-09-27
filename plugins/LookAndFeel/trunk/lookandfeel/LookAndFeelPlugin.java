@@ -94,6 +94,7 @@ public class LookAndFeelPlugin extends EBPlugin {
 				start();
 			}
 			else if ( PluginUpdate.UNLOADED.equals( pu.getWhat() ) || PluginUpdate.DEACTIVATED.equals( pu.getWhat() ) || PluginUpdate.REMOVED.equals( pu.getWhat() ) ) {
+
 				// restore the system look and feels
 				UIManager.setInstalledLookAndFeels( systemLnfs );
 			}
@@ -120,7 +121,7 @@ public class LookAndFeelPlugin extends EBPlugin {
 			return;
 		}
 
-		SwingUtilities.invokeLater( ()-> {
+		SwingUtilities.invokeLater( () -> {
 			try {
 
 				// jEdit.unsetProperty("lookAndFeel");
@@ -130,42 +131,50 @@ public class LookAndFeelPlugin extends EBPlugin {
 				if ( jEdit.getBooleanProperty( "lookandfeel.usejeditfont", false ) ) {
 					Font primaryFont = jEdit.getFontProperty( "metal.primary.font" );
 					Font secondaryFont = jEdit.getFontProperty( "metal.secondary.font" );
+					secondaryFont = secondaryFont == null ? primaryFont : secondaryFont;
 
 					if ( primaryFont != null && secondaryFont != null ) {
+
+						// This is the same as code in jEdit's Appearance option pane.
+						// "primary" font, for buttons, labels, menus, etc, components that just 
+						// display text
 						uid.put( "Button.font", primaryFont );
 						uid.put( "CheckBox.font", primaryFont );
+						uid.put( "CheckBoxMenuItem.font", primaryFont );
+						uid.put( "ColorChooser.font", primaryFont );
+						uid.put( "DesktopIcon.font", primaryFont );
+						uid.put( "Label.font", primaryFont );
 						uid.put( "Menu.font", primaryFont );
 						uid.put( "MenuBar.font", primaryFont );
 						uid.put( "MenuItem.font", primaryFont );
-						uid.put( "Label.font", primaryFont );
-						uid.put( "CheckBoxMenuItem.font", primaryFont );
-						uid.put( "RadioButtonMenuItem.font", primaryFont );
-						uid.put( "ComboBox.font", primaryFont );
-						uid.put( "InternalFrame.font", primaryFont );
+						uid.put( "OptionPane.font", primaryFont );
+						uid.put( "Panel.font", primaryFont );
 						uid.put( "PopupMenu.font", primaryFont );
+						uid.put( "ProgressBar.font", primaryFont );
 						uid.put( "RadioButton.font", primaryFont );
+						uid.put( "RadioButtonMenuItem.font", primaryFont );
+						uid.put( "ScrollPane.font", primaryFont );
+						uid.put( "Slider.font", primaryFont );
 						uid.put( "TabbedPane.font", primaryFont );
+						uid.put( "Table.font", primaryFont );
 						uid.put( "TableHeader.font", primaryFont );
+						uid.put( "TitledBorder.font", primaryFont );
 						uid.put( "ToggleButton.font", primaryFont );
-						uid.put( "InternalFrame.titleFont", primaryFont );
+						uid.put( "ToolBar.font", primaryFont );
+						uid.put( "ToolTip.font", primaryFont );
+						uid.put( "Tree.font", primaryFont );
+						uid.put( "Viewport.font", primaryFont );
 
-						uid.put( "ColorChooser.font", secondaryFont );
-						uid.put( "DesktopIcon.font", secondaryFont );
+						// secondary" font, for components the user can type into
+						uid.put( "ComboBox.font", secondaryFont );
+						uid.put( "EditorPane.font", secondaryFont );
+						uid.put( "FormattedTextField.font", secondaryFont );
 						uid.put( "List.font", secondaryFont );
-						uid.put( "OptionPane.font", secondaryFont );
-						uid.put( "Panel.font", secondaryFont );
 						uid.put( "PasswordField.font", secondaryFont );
-						uid.put( "ProgressBar.font", secondaryFont );
-						uid.put( "ScrollPane.font", secondaryFont );
-						uid.put( "Table.font", secondaryFont );
+						uid.put( "Spinner.font", secondaryFont );
 						uid.put( "TextArea.font", secondaryFont );
 						uid.put( "TextField.font", secondaryFont );
 						uid.put( "TextPane.font", secondaryFont );
-						uid.put( "TitledBorder.font", secondaryFont );
-						uid.put( "ToolBar.font", secondaryFont );
-						uid.put( "ToolTip.font", secondaryFont );
-						uid.put( "Tree.font", secondaryFont );
-						uid.put( "Viewport.font", secondaryFont );
 					}
 				}
 
