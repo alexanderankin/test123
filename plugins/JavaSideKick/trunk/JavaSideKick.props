@@ -6,7 +6,7 @@
 plugin.sidekick.java.JavaSideKickPlugin.activate=defer
 plugin.sidekick.java.JavaSideKickPlugin.name=JavaSideKick
 plugin.sidekick.java.JavaSideKickPlugin.author=Dale Anson, Andre Kaplan, George Latkiewicz, Damien Radtke, Alan Ezust, Robert Schwenn
-plugin.sidekick.java.JavaSideKickPlugin.version=4.1
+plugin.sidekick.java.JavaSideKickPlugin.version=4.2
 plugin.sidekick.java.JavaSideKickPlugin.description=SideKick to browse java, javacc, and property files.
 
 # docs
@@ -14,7 +14,7 @@ plugin.sidekick.java.JavaSideKickPlugin.docs=docs/index.html
 
 
 # dependencies
-plugin.sidekick.java.JavaSideKickPlugin.depend.0=jdk 1.7.0
+plugin.sidekick.java.JavaSideKickPlugin.depend.0=jdk 1.8.0
 plugin.sidekick.java.JavaSideKickPlugin.depend.1=jedit 05.04.00.00
 plugin.sidekick.java.JavaSideKickPlugin.depend.2=plugin errorlist.ErrorListPlugin 2.3
 plugin.sidekick.java.JavaSideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 1.8

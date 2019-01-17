@@ -122,6 +122,25 @@ done - Add support for private interface methods. (danson, done, see 'interfaceM
 Of course, comments, in particular, javadoc, is allowed. I need to find an official
 language specification for package-info files, but right now JavaSideKick won't parse package-info files.
 
+17 Jan 2019, updated for Java 10. The only change to the language in Java 10 is the 
+addition of "var" as a local variable type. Here is the grammar change: 
+
+LocalVariableDeclarationStatement:
+    LocalVariableDeclaration ;
+
+LocalVariableDeclaration:
+    {VariableModifier} LocalVariableType VariableDeclaratorList
+    
+LocalVariableType:
+    UnannType 
+    var
+    
+Reference: https://docs.oracle.com/javase/specs/jls/se10/html/jls-14.html#jls-14.4
+
+Personally, I don't like this change, it makes the type of the variable less clear
+and feels somewhat "javascripty". The recommendation is to use this sparingly, but
+that won't happen...
+
 */
  
 grammar Java8;
@@ -890,9 +909,17 @@ localVariableDeclarationStatement
 	;
 
 localVariableDeclaration
-	:	variableModifier* unannType variableDeclaratorList
+//	:	variableModifier* unannType variableDeclaratorList
+// for Java 10:
+	:	variableModifier* localVariableType variableDeclaratorList
 	;
 
+// for Java 10, 'var' is added as a local variable type	
+localVariableType
+    : unannType 
+    | 'var'	
+    ;
+	
 statement
 	:	statementWithoutTrailingSubstatement
 	|	labeledStatement
@@ -1920,7 +1947,7 @@ OR : '||';
 INC : '++';
 DEC : '--';
 ADD : '+';
-SUB : '-';
+//SUB : '-';
 MUL : '*';
 DIV : '/';
 BITAND : '&';

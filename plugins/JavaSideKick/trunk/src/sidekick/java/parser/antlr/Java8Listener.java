@@ -1442,6 +1442,16 @@ public interface Java8Listener extends ParseTreeListener {
 	 */
 	void exitLocalVariableDeclaration(@NotNull Java8Parser.LocalVariableDeclarationContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link Java8Parser#localVariableType}.
+	 * @param ctx the parse tree
+	 */
+	void enterLocalVariableType(@NotNull Java8Parser.LocalVariableTypeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link Java8Parser#localVariableType}.
+	 * @param ctx the parse tree
+	 */
+	void exitLocalVariableType(@NotNull Java8Parser.LocalVariableTypeContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link Java8Parser#statement}.
 	 * @param ctx the parse tree
 	 */

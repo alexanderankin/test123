@@ -37,6 +37,7 @@ import sidekick.SideKickUpdate;
 import sidekick.java.node.*;
 import sidekick.java.options.*;
 import sidekick.java.parser.*;
+import sidekick.java.util.PropertyManager;
 
 import sidekick.util.ElementUtil;
 import sidekick.util.Location;
@@ -110,10 +111,8 @@ public class JavaParser extends SideKickParser implements EBComponent {
      * Reparse if the option settings have changed.
      */
     public void handleMessage( EBMessage msg ) {
-        // reparse on properties changed
-        // TODO: fix this, should only parse if properties for this plugin
-        // have changed.
-        if ( ( msg instanceof PropertiesChanged ) ) {
+        // reparse only if properties have changed
+        if ( ( msg instanceof PropertiesChanged ) && PropertyManager.getInstance().hasChanged() ) {
             if ( currentView != null ) {
                 currentView = jEdit.getActiveView();
             }
@@ -203,6 +202,13 @@ public class JavaParser extends SideKickParser implements EBComponent {
                         
                         // build the tree
                         compilationUnit = listener.getCompilationUnit();
+                        
+                        // for debugging, set "javasidekick.dump" to "true" as a jEdit
+                        // property. This will print out the CUNode and children.
+                        if ( "true".equals( jEdit.getProperty( "javasidekick.dump" ) ) ) {
+                            System.out.println( compilationUnit.dump() );
+                        }
+            
                         compilationUnit.setResults( listener.getResults() );
                     }
                     else {
@@ -225,12 +231,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     break;
             }
             
-            // for debugging, set "javasidekick.dump" to "true" as a jEdit
-            // property. This will print out the CUNode and children.
-            if ( "true".equals( jEdit.getProperty( "javasidekick.dump" ) ) ) {
-                System.out.println( compilationUnit.dump() );
-            }
-
             // compilationUnit is root node
             compilationUnit.setName( buffer.getName() );
             compilationUnit.setFilename( filename );
@@ -266,7 +266,10 @@ public class JavaParser extends SideKickParser implements EBComponent {
         } catch ( Exception e ) {       // NOPMD
             // there can be a lot of exceptions thrown if parse on keystroke is
             // enabled for code completion.
-            ///e.printStackTrace();
+            e.printStackTrace();
+            
+            // if there is a parsing exception, just return last known good data 
+            // for this buffer, if any
             return (SideKickParsedData)buffer.getProperty(JSK_PARSED_DATA);
         } finally {
             try {
