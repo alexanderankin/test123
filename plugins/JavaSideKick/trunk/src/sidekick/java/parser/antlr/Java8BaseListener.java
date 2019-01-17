@@ -1736,6 +1736,18 @@ public class Java8BaseListener implements Java8Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterLocalVariableType(@NotNull Java8Parser.LocalVariableTypeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitLocalVariableType(@NotNull Java8Parser.LocalVariableTypeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterStatement(@NotNull Java8Parser.StatementContext ctx) { }
 	/**
 	 * {@inheritDoc}

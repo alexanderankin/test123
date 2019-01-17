@@ -292,6 +292,21 @@ public class TigerNode extends Asset implements SideKickElement {
             Log.log(Log.DEBUG, this, "Not allowed to add child: " + child.getClass().getName() + ", " + child.toString() + " to " + getClass().getName());
         }
     }
+    
+    public void addChild(int index, TigerNode child) {
+        if ( child == null )
+            return ;
+        if ( canAdd( child ) ) {
+            if ( children == null )
+                children = new ArrayList<TigerNode>();
+            child.setParent( this );
+            children.add( 0,  child );
+        }
+        else {
+            //System.out.println("+++++ Not allowed to add child: " + child.getClass().getName() + ", " + child.toString() + " to " + getClass().getName());
+            Log.log(Log.DEBUG, this, "Not allowed to add child: " + child.getClass().getName() + ", " + child.toString() + " to " + getClass().getName());
+        }
+    }
 
     /**
      * Add a bunch of child nodes at once.  Any elements of <code>kids</code> that
