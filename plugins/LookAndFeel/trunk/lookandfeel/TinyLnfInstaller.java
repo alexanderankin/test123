@@ -1,35 +1,65 @@
+
 package lookandfeel;
 
-import java.util.HashMap;
-import javax.swing.*;
-import org.gjt.sp.jedit.AbstractOptionPane;
-import org.gjt.sp.jedit.jEdit;
 
 import de.muntjak.tinylookandfeel.*;
 
-public class TinyLnfInstaller  implements LookAndFeelInstaller {
-	public String getName() {
-        return "Tiny";		
-	}
-	
+import java.util.HashMap;
+import java.util.TreeMap;
+import java.util.Vector;
+
+import javax.swing.*;
+
+import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.jEdit;
+
+
+public class TinyLnfInstaller implements LookAndFeelInstaller {
+
+    private TreeMap<String, ThemeDescription> themeMap;
+
+    public String getName() {
+        return "Tiny";
+    }
+
     public void install() throws UnsupportedLookAndFeelException {
+        loadThemeMap();
+        String theme_name = jEdit.getProperty( "lookandfeel.tiny.theme" );
+        if ( theme_name != null ) {
+            Theme.loadTheme( themeMap.get( theme_name ) );
+        }
         UIManager.setLookAndFeel( new de.muntjak.tinylookandfeel.TinyLookAndFeel() );
         UIManager.put( "ClassLoader", de.muntjak.tinylookandfeel.TinyLookAndFeel.class.getClassLoader() );
+    }
+
+    private void loadThemeMap() {
+        ThemeDescription[] themes = Theme.getAvailableThemes();
+        if ( themes.length > 0 ) {
+            String[] themeNames = new String [themes.length];
+            themeMap = new TreeMap<String, ThemeDescription>();
+            for ( int i = 0; i < themes.length; i++ ) {
+                themeNames[i] = themes[i].getName();
+                themeMap.put( themes[i].getName(), themes[i] );
+            }
+        }
     }
 
     /**
      * Returns a component used to configure the look and feel.
      */
-	public AbstractOptionPane getOptionPane() {
-		return new OptionComponent();	
-	}
+    public AbstractOptionPane getOptionPane() {
+        return new OptionComponent();
+    }
+
+
+
 
     /**
      * The configuration component.
      */
     class OptionComponent extends AbstractOptionPane {
+
         JComboBox theme_choices;
-        HashMap<String, ThemeDescription> themeMap;
 
         /**
          * Create a new <code>OptionComponent</code>.
@@ -43,17 +73,11 @@ public class TinyLnfInstaller  implements LookAndFeelInstaller {
          * Layout this component.
          */
         public void _init() {
-            ThemeDescription[] themes = Theme.getAvailableThemes();
-            if (themes.length > 0) {
-                String[] themeNames = new String[themes.length];
-                themeMap = new HashMap<String, ThemeDescription>();
-                for (int i = 0; i < themes.length; i++) {
-                    themeNames[i] = themes[i].getName();
-                    themeMap.put(themes[i].getName(), themes[i]);
-                }
-                theme_choices = new JComboBox( themeNames );
+            loadThemeMap();
+            if ( !themeMap.isEmpty() ) {
+                theme_choices = new JComboBox( new Vector<String>( themeMap.keySet() ) );
                 theme_choices.setEditable( false );
-                addComponent(jEdit.getProperty("lookandfeel.tiny.themes.label"), theme_choices);
+                addComponent( jEdit.getProperty( "lookandfeel.tiny.themes.label" ), theme_choices );
             }
             String theme = jEdit.getProperty( "lookandfeel.tiny.theme" );
             if ( !LookAndFeelPlugin.isEmpty( theme ) ) {
@@ -65,19 +89,13 @@ public class TinyLnfInstaller  implements LookAndFeelInstaller {
          * Save this configuration.
          */
         public void _save() {
-            String theme_setting = ( String ) theme_choices.getSelectedItem();
+            String theme_setting = ( String )theme_choices.getSelectedItem();
             if ( theme_setting == null ) {
                 jEdit.unsetProperty( "lookandfeel.tiny.theme" );
             }
             else {
                 jEdit.setProperty( "lookandfeel.tiny.theme", theme_setting );
-                Theme.loadTheme(themeMap.get(theme_setting));
-            }
-            try {
-                TinyLnfInstaller.this.install();
-            }
-            catch ( Exception e ) {
-                e.printStackTrace();
+                Theme.loadTheme( themeMap.get( theme_setting ) );
             }
         }
     }
