@@ -35,7 +35,7 @@ public class MappedContent implements AbstractDocument.Content {
     }
     
     public UndoableEdit insertString(int where, String text) throws BadLocationException {
-        System.out.println("+++++ MappedContent.insertString: " + where + ", " + text);
+        //System.out.println("+++++ MappedContent.insertString: " + where + ", " + text);
         map.insert((long)where, text.getBytes());
         return null;
     }
@@ -45,7 +45,7 @@ public class MappedContent implements AbstractDocument.Content {
     }
     
     public UndoableEdit remove(int where, int nitems) throws BadLocationException {
-        System.out.println("+++++ MappedContent.remove: " + where + ", " + nitems);
+        //System.out.println("+++++ MappedContent.remove: " + where + ", " + nitems);
         map.delete(where, nitems);
         return null;
     }

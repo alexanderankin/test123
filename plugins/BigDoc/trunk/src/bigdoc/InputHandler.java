@@ -386,7 +386,7 @@ public abstract class InputHandler extends KeyAdapter {
          JEditTextArea textArea = getTextArea( evt );
 
          if ( !textArea.isEditable() ) {
-            textArea.getToolkit().beep();
+            javax.swing.UIManager.getLookAndFeel().provideErrorFeedback(null); 
             return ;
          }
 
@@ -397,7 +397,7 @@ public abstract class InputHandler extends KeyAdapter {
          else {
             int caret = textArea.getCaretPosition();
             if ( caret == 0 ) {
-               textArea.getToolkit().beep();
+               javax.swing.UIManager.getLookAndFeel().provideErrorFeedback(null); 
                return ;
             }
             try {
@@ -427,7 +427,7 @@ public abstract class InputHandler extends KeyAdapter {
 
          if ( caret == 0 ) {
             if ( lineStart == 0 ) {
-               textArea.getToolkit().beep();
+               javax.swing.UIManager.getLookAndFeel().provideErrorFeedback(null); 
                return ;
             }
             caret--;
@@ -453,7 +453,7 @@ public abstract class InputHandler extends KeyAdapter {
          JEditTextArea textArea = getTextArea( evt );
 
          if ( !textArea.isEditable() ) {
-            textArea.getToolkit().beep();
+            javax.swing.UIManager.getLookAndFeel().provideErrorFeedback(null); 
             return ;
          }
 
@@ -464,7 +464,7 @@ public abstract class InputHandler extends KeyAdapter {
          else {
             int caret = textArea.getCaretPosition();
             if ( caret == textArea.getDocumentLength() ) {
-               textArea.getToolkit().beep();
+               javax.swing.UIManager.getLookAndFeel().provideErrorFeedback(null); 
                return ;
             }
             try {
@@ -494,7 +494,7 @@ public abstract class InputHandler extends KeyAdapter {
 
          if ( caret == lineText.length() ) {
             if ( lineStart + caret == textArea.getDocumentLength() ) {
-               textArea.getToolkit().beep();
+               javax.swing.UIManager.getLookAndFeel().provideErrorFeedback(null); 
                return ;
             }
             caret++;
@@ -541,7 +541,7 @@ public abstract class InputHandler extends KeyAdapter {
          int lastDocument = textArea.getDocumentLength();
 
          if ( caret == lastDocument ) {
-            textArea.getToolkit().beep();
+            javax.swing.UIManager.getLookAndFeel().provideErrorFeedback(null); 
             return ;
          }
          else if ( !Boolean.TRUE.equals( textArea.getClientProperty(
@@ -601,7 +601,7 @@ public abstract class InputHandler extends KeyAdapter {
                   firstVisibleLine );
 
          if ( caret == 0 ) {
-            textArea.getToolkit().beep();
+            javax.swing.UIManager.getLookAndFeel().provideErrorFeedback(null); 
             return ;
          }
          else if ( !Boolean.TRUE.equals( textArea.getClientProperty(
@@ -642,7 +642,7 @@ public abstract class InputHandler extends KeyAdapter {
          JEditTextArea textArea = getTextArea( evt );
 
          if ( !textArea.isEditable() ) {
-            textArea.getToolkit().beep();
+            javax.swing.UIManager.getLookAndFeel().provideErrorFeedback(null); 
             return ;
          }
 
@@ -655,7 +655,7 @@ public abstract class InputHandler extends KeyAdapter {
          JEditTextArea textArea = getTextArea( evt );
 
          if ( !textArea.isEditable() ) {
-            textArea.getToolkit().beep();
+            javax.swing.UIManager.getLookAndFeel().provideErrorFeedback(null); 
             return ;
          }
 
@@ -674,7 +674,7 @@ public abstract class InputHandler extends KeyAdapter {
          JEditTextArea textArea = getTextArea( evt );
          int caret = textArea.getCaretPosition();
          if ( caret == textArea.getDocumentLength() ) {
-            textArea.getToolkit().beep();
+            javax.swing.UIManager.getLookAndFeel().provideErrorFeedback(null); 
             return ;
          }
 
@@ -699,7 +699,7 @@ public abstract class InputHandler extends KeyAdapter {
          int line = textArea.getCaretLine();
 
          if ( line == textArea.getLineCount() - 1 ) {
-            textArea.getToolkit().beep();
+            javax.swing.UIManager.getLookAndFeel().provideErrorFeedback(null); 
             return ;
          }
 
@@ -769,7 +769,7 @@ public abstract class InputHandler extends KeyAdapter {
 
          if ( caret == lineText.length() ) {
             if ( lineStart + caret == textArea.getDocumentLength() ) {
-               textArea.getToolkit().beep();
+               javax.swing.UIManager.getLookAndFeel().provideErrorFeedback(null); 
                return ;
             }
             caret++;
@@ -806,7 +806,7 @@ public abstract class InputHandler extends KeyAdapter {
          JEditTextArea textArea = getTextArea( evt );
          int caret = textArea.getCaretPosition();
          if ( caret == 0 ) {
-            textArea.getToolkit().beep();
+            javax.swing.UIManager.getLookAndFeel().provideErrorFeedback(null); 
             return ;
          }
 
@@ -831,7 +831,7 @@ public abstract class InputHandler extends KeyAdapter {
          int line = textArea.getCaretLine();
 
          if ( line == 0 ) {
-            textArea.getToolkit().beep();
+            javax.swing.UIManager.getLookAndFeel().provideErrorFeedback(null); 
             return ;
          }
 
@@ -897,7 +897,7 @@ public abstract class InputHandler extends KeyAdapter {
 
          if ( caret == 0 ) {
             if ( lineStart == 0 ) {
-               textArea.getToolkit().beep();
+               javax.swing.UIManager.getLookAndFeel().provideErrorFeedback(null); 
                return ;
             }
             caret--;
@@ -950,7 +950,7 @@ public abstract class InputHandler extends KeyAdapter {
             textArea.overwriteSetSelectedText( buf.toString() );
          }
          else {
-            textArea.getToolkit().beep();
+            javax.swing.UIManager.getLookAndFeel().provideErrorFeedback(null); 
          }
       }
    }

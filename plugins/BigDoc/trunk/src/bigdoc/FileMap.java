@@ -111,7 +111,7 @@ public class FileMap {
     }
 
     public byte[] get( long offset, int size ) throws IndexOutOfBoundsException {
-        System.out.println( "+++++ get( " + offset + ", " + size + ')' );
+        //System.out.println( "+++++ get( " + offset + ", " + size + ')' );
         // check edits, adjust size as necessary, may need to asjust size to
         // account for inserts and deletes
         int editCount = 0;
@@ -127,7 +127,7 @@ public class FileMap {
         }
         int readSize = Math.max( size, size - editCount );        // minus is correct, need to read less if there are inserts, more if there are deletes
         // int readSize = size;
-        System.out.println( "+++++ size = " + size + ", readSize = " + readSize + ", editCount = " + editCount );
+        //System.out.println( "+++++ size = " + size + ", readSize = " + readSize + ", editCount = " + editCount );
         double a = offset;
         double b = MAX_INT;
         byte[] fileBytes = new byte[readSize];
@@ -161,7 +161,7 @@ public class FileMap {
         }
 
         if ( edits.isEmpty() ) {
-            System.out.println( "+++++ returning fileBytes" );
+            //System.out.println( "+++++ returning fileBytes" );
             return fileBytes;
         }
 
@@ -176,7 +176,7 @@ public class FileMap {
         Edit currentEdit = editIterator.next();
 
         while ( fileBuffer.hasRemaining() && returnBytes.hasRemaining() ) {
-            System.out.println( "+++++ currentEdit: " + currentEdit );
+            //System.out.println( "+++++ currentEdit: " + currentEdit );
             long editOffset;
             if ( currentEdit == null ) {
                 editOffset = fileBuffer.capacity();
@@ -199,7 +199,7 @@ public class FileMap {
                 currentEdit = null;
             }
         }
-        System.out.println( "+++++ returning returnBytes: " + returnBytes.array().length );
+        //System.out.println( "+++++ returning returnBytes: " + returnBytes.array().length );
         return returnBytes.array();
     }
 
@@ -242,7 +242,7 @@ public class FileMap {
         ed.data = Arrays.copyOf( src, src.length );
         ed.count = src.length;
         edits.add( ed );
-        System.out.println( "+++++ " + ed );
+        //System.out.println( "+++++ " + ed );
     }
 
     public void insert( long offset, String str ) {
