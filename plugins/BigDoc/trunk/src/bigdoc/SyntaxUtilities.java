@@ -88,19 +88,12 @@ public class SyntaxUtilities
 	 */
 	public static SyntaxStyle[] getDefaultSyntaxStyles()
 	{
-		SyntaxStyle[] styles = new SyntaxStyle[Token.ID_COUNT];
-
-		styles[Token.COMMENT1] = new SyntaxStyle(new Color( 0, 153, 51 ),true,false); // <!-- comment
-		styles[Token.COMMENT2] = new SyntaxStyle(new Color(153,0,51),false,false);    // <! comment
-		styles[Token.KEYWORD1] = new SyntaxStyle(new Color(0,0,0),false,true);        // tag name
-		styles[Token.KEYWORD2] = new SyntaxStyle(new Color(0,0,0),false,false);       // attribute
-		styles[Token.KEYWORD3] = new SyntaxStyle(new Color(153,0,153),false,true);    // inside pi
-		styles[Token.LITERAL1] = new SyntaxStyle(new Color(51,51,255),false,false);   // string
-		styles[Token.LITERAL2] = new SyntaxStyle(new Color(51,51,255),false,true);    // string
-		styles[Token.LABEL] = new SyntaxStyle(new Color(153,0,51),false,true);        // entity
-		styles[Token.OPERATOR] = new SyntaxStyle(Color.black,false,false);            // = in attribute
-		styles[Token.INVALID] = new SyntaxStyle(Color.red,false,true);
-
+	    org.gjt.sp.jedit.syntax.SyntaxStyle[] jeditStyles = org.gjt.sp.jedit.jEdit.getActiveView().getTextArea().getPainter().getStyles();
+	    SyntaxStyle[] styles = new SyntaxStyle[jeditStyles.length];
+	    for (int i = 0; i < styles.length; i++) {
+	        Font font = jeditStyles[i].getFont();
+	        styles[i] = new SyntaxStyle(jeditStyles[i].getForegroundColor(), font.isItalic(), font.isBold());
+	    }
 		return styles;
 	}
 

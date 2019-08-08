@@ -2,11 +2,31 @@
 <body>
    <h2>BigDoc Plugin</h2>
    <h3>Dale Anson</h3>
-   <p>A plugin to handle really large text files, like hundreds of MBs or even
-   a vew GBs. Provides syntax highlighting for xml files.</p>
+   <p>A plugin to view really large text files, like hundreds of MBs or maybe even
+   a few GBs. Provides crappy syntax highlighting for xml and html files.</p>
+   <p>Open a file with the plugin File - Open menu item.</p>
+   <p>If it is an XML or HTML file, it will have some crappy syntax highlighting
+   that should be similar to the colors that you would see if you opened the same file
+   in jEdit's text area, but no, it's not like that.</p>
+   <p>Settings like caret color, background color, bracket highlight, etc, are
+   the same as those used in the jEdit text area.</p>
+   <p>There is a "Find" command, it works pretty well, but I wish I could get the
+   jEdit hypersearch to work.</p>
+   <p>There are no other editing tools, all you can do is look at a file's contents.
+   You can search, you can select and copy, but that's it for now. Oh, rectangular
+   selection works fairly well in case you need to copy a column of something.</p>
+   <p>I spent a lot of time trying to figure out how to adapt the code in this
+   plugin to work with jEdit itself, so that jEdit could open giant files, but
+   it turns out that would require a huge rewrite of jEdit and not many people
+   are really asking to be able to load large files.</p>
+   <p>The largest file I've opened was about 80 MB, it opened easily and did not
+   cause any out of memory errors, however, moving the caret with the keyboard did,
+   but everything recovered fairly quickly. That file was an html file, so syntax
+   highlighting was in effect. Maybe I should add an option to turn that off?</p>
 	
 	<h3>Change log:</h3>
 	<ul>
+	   <li>8 Aug 2019, yeah, that initial release didn't happen.</li>
 	   <li>28 Jan 2015, Version 0.1, initial release.</li>
 	</ul>
 	

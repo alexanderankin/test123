@@ -1,3 +1,4 @@
+
 /*
  * TextAreaDefaults.java - Encapsulates default values for various settings
  * Copyright (C) 1999 Slava Pestov
@@ -6,11 +7,15 @@
  * permitted, in both source and binary form, provided that this notice
  * remains intact in all source distributions of this package.
  */
+package bigdoc;
 
-package bigdoc; 
+
+import java.awt.Color;
 
 import javax.swing.JPopupMenu;
-import java.awt.Color;
+
+import org.gjt.sp.jedit.jEdit;
+
 
 /**
  * Encapsulates default settings for a text area. This can be passed
@@ -18,67 +23,61 @@ import java.awt.Color;
  * The advantage of doing this over calling lots of set() methods after
  * creating the text area is that this method is faster.
  */
-public class TextAreaDefaults
-{
-	private static TextAreaDefaults DEFAULTS;
+public class TextAreaDefaults {
 
-	public InputHandler inputHandler;
-	public SyntaxDocument document;
-	public boolean editable;
+    private static TextAreaDefaults DEFAULTS;
+    public InputHandler inputHandler;
+    public SyntaxDocument document;
+    public boolean editable;
+    public boolean caretVisible;
+    public boolean caretBlinks;
+    public boolean blockCaret;
+    public int electricScroll;
+    public int cols;
+    public int rows;
+    public SyntaxStyle[] styles;
+    public Color caretColor;
+    public Color selectionColor;
+    public Color lineHighlightColor;
+    public boolean lineHighlight;
+    public Color bracketHighlightColor;
+    public boolean bracketHighlight;
+    public Color eolMarkerColor;
+    public boolean eolMarkers;
+    public boolean paintInvalid;
+    public JPopupMenu popup;
 
-	public boolean caretVisible;
-	public boolean caretBlinks;
-	public boolean blockCaret;
-	public int electricScroll;
+    /**
+     * Returns a new TextAreaDefaults object with the default values filled
+     * in.
+     */
+    public static TextAreaDefaults getDefaults() {
+        if ( DEFAULTS == null ) {
+            DEFAULTS = new TextAreaDefaults();
 
-	public int cols;
-	public int rows;
-	public SyntaxStyle[] styles;
-	public Color caretColor;
-	public Color selectionColor;
-	public Color lineHighlightColor;
-	public boolean lineHighlight;
-	public Color bracketHighlightColor;
-	public boolean bracketHighlight;
-	public Color eolMarkerColor;
-	public boolean eolMarkers;
-	public boolean paintInvalid;
+            DEFAULTS.inputHandler = new DefaultInputHandler();
+            DEFAULTS.inputHandler.addDefaultKeyBindings();
+            DEFAULTS.document = new SyntaxDocument();
+            DEFAULTS.editable = false;
 
-	public JPopupMenu popup;
+            DEFAULTS.caretVisible = true;
+            DEFAULTS.caretBlinks = jEdit.getBooleanProperty( "view.caretBlink" );
+            DEFAULTS.electricScroll = 3;
 
-	/**
-	 * Returns a new TextAreaDefaults object with the default values filled
-	 * in.
-	 */
-	public static TextAreaDefaults getDefaults()
-	{
-		if(DEFAULTS == null)
-		{
-			DEFAULTS = new TextAreaDefaults();
+            DEFAULTS.cols = 80;
+            DEFAULTS.rows = 25;
+            DEFAULTS.styles = SyntaxUtilities.getDefaultSyntaxStyles();
+            DEFAULTS.caretColor = jEdit.getColorProperty( "view.caretColor" );
+            DEFAULTS.selectionColor = jEdit.getColorProperty( "view.selectionColor" );
+            DEFAULTS.lineHighlightColor = jEdit.getColorProperty( "view.lineHighlightColor" );
+            DEFAULTS.lineHighlight = jEdit.getBooleanProperty( "view.lineHighlight", true );
+            DEFAULTS.bracketHighlightColor = jEdit.getColorProperty( "view.structureHighlightColor" );
+            DEFAULTS.bracketHighlight = jEdit.getBooleanProperty( "view.structureHighlight", true );
+            DEFAULTS.eolMarkerColor = jEdit.getColorProperty( "view.eolMarkerColor" );
+            DEFAULTS.eolMarkers = jEdit.getBooleanProperty( "view.eolMarkers", false );
+            DEFAULTS.paintInvalid = true;
+        }
 
-			DEFAULTS.inputHandler = new DefaultInputHandler();
-			DEFAULTS.inputHandler.addDefaultKeyBindings();
-			DEFAULTS.document = new SyntaxDocument();
-			DEFAULTS.editable = true;
-
-			DEFAULTS.caretVisible = true;
-			DEFAULTS.caretBlinks = true;
-			DEFAULTS.electricScroll = 3;
-
-			DEFAULTS.cols = 80;
-			DEFAULTS.rows = 25;
-			DEFAULTS.styles = SyntaxUtilities.getDefaultSyntaxStyles();
-			DEFAULTS.caretColor = Color.red;
-			DEFAULTS.selectionColor = new Color(0xccccff);
-			DEFAULTS.lineHighlightColor = new Color(0xe0e0e0);
-			DEFAULTS.lineHighlight = true;
-			DEFAULTS.bracketHighlightColor = Color.black;
-			DEFAULTS.bracketHighlight = true;
-			DEFAULTS.eolMarkerColor = new Color(0x009999);
-			DEFAULTS.eolMarkers = true;
-			DEFAULTS.paintInvalid = true;
-		}
-
-		return DEFAULTS;
-	}
+        return DEFAULTS;
+    }
 }
