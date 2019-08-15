@@ -1,6 +1,9 @@
+
 package bigdoc;
 
+
 import java.beans.PropertyChangeListener;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -18,6 +21,8 @@ import javax.swing.text.Element;
 import javax.swing.text.Position;
 import javax.swing.text.Segment;
 
+import org.gjt.sp.jedit.MiscUtilities;
+
 
 /**
  * A document that uses a memory map as a backing store. This document can
@@ -33,10 +38,11 @@ public class BigTextDocument implements Document {
     private ArrayList<LineDetails> lines;
     private Element rootElement;
     private ByteBuffer chunk;
+    private boolean isBinary = false;
 
     /**
      * @param filename The name of a local file to open.
-     * @param listener A PropertyChangeListener that will be notified when the file is 
+     * @param listener A PropertyChangeListener that will be notified when the file is
      * loaded. The change event will be named "lineLoader" and the value will be "done"
      * when the document has finished loading.
      */
@@ -186,9 +192,6 @@ public class BigTextDocument implements Document {
         properties.put( key, value );
     }
 
-    /**
-     * Required by Document interface.
-     */
     public void remove( int offs, int len ) {
         // not implemented, at the moment, this is read-only
     }
@@ -205,9 +208,6 @@ public class BigTextDocument implements Document {
         }
     }
 
-    /**
-     * Required by Document interface.
-     */
     public void removeUndoableEditListener( UndoableEditListener listener ) {
         if ( editListeners != null ) {
             editListeners.remove( listener );
@@ -229,6 +229,24 @@ public class BigTextDocument implements Document {
         }
     }
 
+    // determine if the file is binary. If so, there is no need to load the line
+    // array
+    private boolean isBinary() {
+        try {
+            byte[] bytes = new byte [100];
+            chunk.get( bytes );
+            ByteArrayInputStream bais = new ByteArrayInputStream( bytes );
+            boolean rtn = MiscUtilities.isBinary( bais );
+            chunk.rewind();
+            return rtn;
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
     // root element, children are represented by LineDetails. Child elements are
     // created on the fly as needed.
     private class RootElement implements Element {
@@ -244,11 +262,18 @@ public class BigTextDocument implements Document {
 
         // lazy creation of child elements as needed
         public Element getElement( int index ) {
+            if ( isBinary ) {
+                int start = index * 100;
+                return new LineElement( this, start, start + 100 );
+            }
             LineDetails line = lines.get( index );
             return new LineElement( this, line.getStartOffset(), line.getEndOffset() );
         }
 
         public int getElementCount() {
+            if (isBinary) {
+                return BigTextDocument.this.getLength() / 100;   
+            }
             return lines.size();
         }
 
@@ -262,6 +287,10 @@ public class BigTextDocument implements Document {
             // return the index of the last line if the offset is greater than the length of the document
             if ( offset >= BigTextDocument.this.getLength() ) {
                 return getElementCount() - 1;
+            }
+
+            if ( isBinary ) {
+                return offset / 100;
             }
 
             // use Newton's method to quickly find line containing offset. This works
@@ -366,6 +395,7 @@ public class BigTextDocument implements Document {
         }
     }
 
+
     // LineDetails simply tracks the line number, start offset, and endOffset,
     // it does not store any text. One of these is create per line in the document
     // and stored in memory.
@@ -394,13 +424,14 @@ public class BigTextDocument implements Document {
         }
 
         public int getLength() {
-            return end - start + 1; // TODO: confirm the +1 is necessary
+            return end - start + 1;
         }
 
         public String toString() {
             return "LineDetails: " + getStartOffset() + ',' + getLength() + ',' + getEndOffset();
         }
     }
+
 
     // Scans the files for line separators and creates a list of LineDetails objects.
     private class LineLoader extends SwingWorker <ArrayList, Object[]> {
@@ -411,6 +442,7 @@ public class BigTextDocument implements Document {
                 RandomAccessFile fileAccessor = new RandomAccessFile( file, "r" );
                 FileChannel channelMapper = fileAccessor.getChannel();
                 chunk = channelMapper.map( FileChannel.MapMode.READ_ONLY, 0, length );
+                isBinary = BigTextDocument.this.isBinary();
             }
             catch ( Exception e ) {
                 e.printStackTrace();
@@ -419,6 +451,11 @@ public class BigTextDocument implements Document {
 
         @Override
         protected ArrayList doInBackground() {
+            if ( isBinary ) {
+
+                // no need to parse binary files
+                return null;
+            }
             lines = new ArrayList<LineDetails>();
             int lineNumber = 0;
             int offset = 0;
@@ -429,7 +466,6 @@ public class BigTextDocument implements Document {
                 chunk.get( temp, 0, length );
                 for ( int i = 0; i < length; i++ ) {
                     byte b = temp[i];
-                    ++offset;
                     if ( b == '\r' ) {
 
                         // Windows file, read next byte for \n. I'm not worrying about
@@ -440,9 +476,10 @@ public class BigTextDocument implements Document {
                     if ( b == '\n' || i == length - 1 ) {
                         LineDetails line = new LineDetails( lineNumber, start, offset );
                         lines.add( line );
-                        start = offset;
+                        start = offset + 1;
                         ++lineNumber;
                     }
+                    ++offset;
                 }
             }
             return lines;

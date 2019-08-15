@@ -9,9 +9,4 @@
 		    }
 		</CODE>
 	</ACTION>
-	<ACTION NAME="bigdoc-save">
-		<CODE>
-		    BigDocPlugin.save();
-		</CODE>
-	</ACTION>
 </ACTIONS>
