@@ -22,6 +22,7 @@ import javax.swing.text.Position;
 import javax.swing.text.Segment;
 
 import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.jEdit;
 
 
 /**
@@ -50,10 +51,12 @@ public class BigTextDocument implements Document {
         Objects.requireNonNull( filename );
         file = new File( filename );
         if ( !file.exists() || file.isDirectory() ) {
-            throw new IllegalArgumentException( "Invalid file." );
+            throw new IllegalArgumentException( jEdit.getProperty( "bigdoc.Invalid_file.", "Invalid file." ) );
         }
         if ( file.length() > Integer.MAX_VALUE ) {
-            throw new IllegalArgumentException( "File is too large, it must be smaller than " + Integer.MAX_VALUE + " bytes." );
+            String msg = jEdit.getProperty( "bigdoc.File_is_too_large", "File is too large, it must be smaller than %d bytes." );
+            msg = msg.format( msg, Integer.MAX_VALUE );
+            throw new IllegalArgumentException( msg );
         }
         rootElement = new RootElement();
         LineLoader lineLoader = new LineLoader( file );
@@ -161,6 +164,8 @@ public class BigTextDocument implements Document {
 
         // ByteBuffer.get, the 0 and length are for the bytes array, not the file
         chunk.get( bytes, 0, length );
+        // this is why binary files cause jEdit to hang, the conversion from bytes to chars
+        // and back doesn't work correctly
         return new String( bytes );
     }
 
@@ -234,13 +239,15 @@ public class BigTextDocument implements Document {
     private boolean isBinary() {
         try {
             byte[] bytes = new byte [100];
+            chunk.rewind();
             chunk.get( bytes );
             ByteArrayInputStream bais = new ByteArrayInputStream( bytes );
             boolean rtn = MiscUtilities.isBinary( bais );
+            bais.close();
             chunk.rewind();
             return rtn;
         }
-        catch(Exception e) {
+        catch ( Exception e ) {
             e.printStackTrace();
             return false;
         }
@@ -271,8 +278,8 @@ public class BigTextDocument implements Document {
         }
 
         public int getElementCount() {
-            if (isBinary) {
-                return BigTextDocument.this.getLength() / 100;   
+            if ( isBinary ) {
+                return BigTextDocument.this.getLength() / 100;
             }
             return lines.size();
         }
@@ -443,9 +450,13 @@ public class BigTextDocument implements Document {
                 FileChannel channelMapper = fileAccessor.getChannel();
                 chunk = channelMapper.map( FileChannel.MapMode.READ_ONLY, 0, length );
                 isBinary = BigTextDocument.this.isBinary();
+                if (isBinary) {
+                    throw new IllegalArgumentException(jEdit.getProperty("bigdoc.isBinary", "Cannot display binary files."));   
+                }
             }
             catch ( Exception e ) {
                 e.printStackTrace();
+                throw new RuntimeException(e.getMessage());
             }
         }
 
@@ -460,10 +471,12 @@ public class BigTextDocument implements Document {
             int lineNumber = 0;
             int offset = 0;
             int start = 0;
-            byte[] temp = new byte [1024 * 32];
+            byte[] temp = new byte [1024 * 128];
+            int bytesRead = 0;
             while ( chunk.hasRemaining() ) {
                 int length = Math.min( temp.length, chunk.remaining() );
                 chunk.get( temp, 0, length );
+                bytesRead += length;
                 for ( int i = 0; i < length; i++ ) {
                     byte b = temp[i];
                     if ( b == '\r' ) {
@@ -486,7 +499,6 @@ public class BigTextDocument implements Document {
         }
 
         protected void done() {
-            firePropertyChange( "lineLoader", "", "done" );
             chunk.rewind();
         }
     }

@@ -4,14 +4,13 @@
    <h3>Dale Anson</h3>
    <p>A plugin to view really large text files, up to 2 GB in size. This is 
    intended for TEXT files. Binary files (yes, I know text files are technically
-   binary, but you know what I mean) may or may not open and may or may not
-   cause jEdit to hang.</p>
+   binary, but you know what I mean) are detected using the standard jEdit binary
+   detection method and will not be opened since they can cause jEdit to hang due
+   to byte conversion shenanigans.</p>
    
    <p>Open a file with the plugin File - Open menu item.</p>
    
-   <p>There is a "Find" command, it works pretty well, but I wish I could get the
-   jEdit hypersearch to work. This will likely cause out of memory errors on some files
-   and I plan to fix it so it doesn't.</p>
+   <p>There is a "Find" command, it works well.</p>
    
    <p>There are no other editing tools, all you can do is look at file contents.
    You can search, you can select and copy, but that's it for now.</p>
@@ -26,7 +25,7 @@
 	
 	<h3>Change log:</h3>
 	<ul>
-	   <li>8 Aug 2019, yeah, that initial release didn't happen.</li>
+	   <li>8 Aug 2019, yeah, that initial release didn't happen, so this is still version 0.1.</li>
 	   <li>28 Jan 2015, Version 0.1, initial release.</li>
 	</ul>
 	

@@ -22,3 +22,14 @@ bigdoc-save.label=Save
 # dockable window name
 bigdoc.title=BigDoc
 bigdoc.label=BigDoc
+
+# messages for localization
+bigdoc.Invalid_file=Invalid file
+bigdoc.File_is_too_large=File is too large, it must be smaller than %d bytes.
+bigdoc.Open_File=Open File
+bigdoc.Find=Find
+bigdoc.File=File
+bigdoc.Loading...=Loading...
+bigdoc.Loading=Loading:
+bigdoc.Error_loading_file=Error loading file
+bidoc.isBinary=Cannot display binary files.
