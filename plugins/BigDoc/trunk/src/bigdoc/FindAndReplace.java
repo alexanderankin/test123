@@ -1,26 +1,31 @@
+
 /*
-* FindAndReplace.java - for jEdit's text component
-* Copyright (C) 2002 Dale Anson
-*
-* You may use and modify this package for any purpose. Redistribution is
-* permitted, in both source and binary form, provided that this notice
-* remains intact in all source distributions of this package.
-*/
+ * FindAndReplace.java - for jEdit's text component
+ * Copyright (C) 2002 Dale Anson
+ *
+ * You may use and modify this package for any purpose. Redistribution is
+ * permitted, in both source and binary form, provided that this notice
+ * remains intact in all source distributions of this package.
+ */
 package bigdoc;
+
+
+import ise.java.awt.*;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.util.regex.*;
+
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.event.*;
-import ise.java.awt.*;
 
 
 /**
@@ -32,21 +37,19 @@ import ise.java.awt.*;
  */
 public class FindAndReplace extends JDialog {
 
-    public final static int FIND = 0;
-    private JTextArea textarea = null;
+    public static final int FIND = 0;
+    private JTextArea textArea = null;
     private JTextField to_find = null;
-
 
     /**
      * Constructor for FindAndReplace
      *
-     * @param textarea
+     * @param textArea
      * @param parent    Description of the Parameter
      */
-    public FindAndReplace( JFrame parent, JTextArea textarea ) {
-        this( parent, FIND, textarea );
+    public FindAndReplace( JFrame parent, JTextArea textArea ) {
+        this( parent, FIND, textArea );
     }
-
 
     /**
      * Constructor for FindAndReplace
@@ -57,8 +60,8 @@ public class FindAndReplace extends JDialog {
      */
     public FindAndReplace( JFrame parent, int type, JTextArea ta ) {
         super( parent, "Find", true );
-        this.textarea = ta;
-        setContentPane(getFindPanel());
+        this.textArea = ta;
+        setContentPane( getFindPanel() );
         pack();
         to_find.requestFocus();
     }
@@ -75,7 +78,7 @@ public class FindAndReplace extends JDialog {
         JButton find_next_btn = new JButton( "Find Next" );
         JButton cancel_btn = new JButton( "Close" );
         final JCheckBox wrap_cb = new JCheckBox( "Wrap search" );
-        wrap_cb.setSelected(true);
+        wrap_cb.setSelected( true );
 
         panel.add( find_label, "0, 0, 1, 1, SW, w, 3" );
         panel.add( to_find, "0, 1, 1, 1, N, w, 3" );
@@ -87,25 +90,37 @@ public class FindAndReplace extends JDialog {
         btn_panel.add( cancel_btn, "0, 2, 1, 1, 0, w, 3" );
         panel.add( btn_panel, "1, 0, 1, 3, 0, h, 5" );
 
-        find_btn.addActionListener(
-            new ActionListener() {
+        find_btn.addActionListener( new ActionListener(){
+
                 public void actionPerformed( ActionEvent ae ) {
                     String text_to_find = to_find.getText();
                     if ( text_to_find == null || text_to_find.length() == 0 ) {
-                        return ;
+                        return;
                     }
                     try {
-                        // TODO: need to use the document and pull in part of the 
-                        // text at a time
-                        String doc = textarea.getText();
                         Pattern pattern = Pattern.compile( text_to_find, Pattern.DOTALL );
-                        Matcher matcher = pattern.matcher( doc );
-                        if ( matcher.find() ) {
-                            int start = matcher.start();
-                            int end = matcher.end();
-                            //String found = doc.substring( start, end );
-                            textarea.setCaretPosition( start );
-                            textarea.select( start, end );
+                        BigTextDocument doc = ( BigTextDocument )textArea.getDocument();
+
+                        // read 64k at a time
+                        int index = 0;
+                        int searchSize = 1024 * 64;
+                        int maxBlocks = ( doc.getLength() / searchSize ) + 1;    // need a +1 for those last bits
+                        for ( int i = 0; i < maxBlocks; i++ ) {
+                            String text = doc.getText( index, searchSize );
+                            Matcher matcher = pattern.matcher( text );
+                            if ( matcher.find() ) {
+                                int start = matcher.start() + index;
+                                int end = matcher.end() + index;
+                                SwingUtilities.invokeLater( new Runnable(){
+
+                                        public void run() {
+                                            textArea.setCaretPosition( start );
+                                            textArea.select( start, end );
+                                        }
+                                    } );
+                                return;
+                            }
+                            index += text.length();
                         }
                     }
                     catch ( Exception e ) {
@@ -114,27 +129,39 @@ public class FindAndReplace extends JDialog {
                 }
             }
         );
-        find_next_btn.addActionListener(
-            new ActionListener() {
+        find_next_btn.addActionListener( new ActionListener(){
+
                 public void actionPerformed( ActionEvent ae ) {
                     String text_to_find = to_find.getText();
                     if ( text_to_find == null || text_to_find.length() == 0 ) {
-                        return ;
+                        return;
                     }
                     try {
-                        int initial_caret = textarea.getCaretPosition();
-                        int caret = initial_caret;
-                        String doc = textarea.getText();
+                        int initial_caret = textArea.getCaretPosition();
                         Pattern pattern = Pattern.compile( text_to_find, Pattern.DOTALL );
-                        Matcher matcher = pattern.matcher( doc );
-                        if (!matcher.find(caret) && wrap_cb.isSelected())
-                            caret = 0;
-                        if ( matcher.find(caret) ) {
-                            int start = matcher.start();
-                            int end = matcher.end();
-                            //String found = doc.substring( start, end );
-                            textarea.setCaretPosition( start );
-                            textarea.select( start, end );
+
+                        BigTextDocument doc = ( BigTextDocument )textArea.getDocument();
+
+                        // read 64k at a time
+                        int index = initial_caret;
+                        int searchSize = 1024 * 64;
+                        int maxBlocks = ( doc.getLength() / searchSize ) + 1;    // need a +1 for those last bits
+                        for ( int i = 0; i < maxBlocks; i++ ) {
+                            String text = doc.getText( index, searchSize );
+                            Matcher matcher = pattern.matcher( text );
+                            if ( matcher.find() ) {
+                                int start = matcher.start() + index;
+                                int end = matcher.end() + index;
+                                SwingUtilities.invokeLater( new Runnable(){
+
+                                        public void run() {
+                                            textArea.setCaretPosition( start );
+                                            textArea.select( start, end );
+                                        }
+                                    } );
+                                return;
+                            }
+                            index += text.length();
                         }
                     }
                     catch ( Exception e ) {
@@ -144,8 +171,8 @@ public class FindAndReplace extends JDialog {
             }
         );
 
-        cancel_btn.addActionListener(
-            new ActionListener() {
+        cancel_btn.addActionListener( new ActionListener(){
+
                 public void actionPerformed( ActionEvent ae ) {
                     setVisible( false );
                     dispose();
@@ -155,6 +182,4 @@ public class FindAndReplace extends JDialog {
 
         return panel;
     }
-
 }
-
