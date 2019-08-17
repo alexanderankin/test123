@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+	<ACTION NAME="bigdoc-open">
+		<CODE>
+		    String[] filename = GUIUtilities.showVFSFileDialog(view, buffer.getPath(), VFSBrowser.OPEN_DIALOG, false);
+		    if(filename != null) {
+		        BigDocPlugin.open(filename[0]);
+		    }
+		</CODE>
+	</ACTION>
+</ACTIONS>
