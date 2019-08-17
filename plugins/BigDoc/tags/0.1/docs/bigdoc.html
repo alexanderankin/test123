@@ -1,0 +1,33 @@
+<html>
+<body>
+   <h2>BigDoc Plugin</h2>
+   <h3>Dale Anson</h3>
+   <p>A plugin to view really large text files, up to 2 GB in size. This is 
+   intended for TEXT files. Binary files (yes, I know text files are technically
+   binary, but you know what I mean) are detected using the standard jEdit binary
+   detection method and will not be opened since they can cause jEdit to hang due
+   to byte conversion shenanigans.</p>
+   
+   <p>Open a file with the plugin File - Open menu item.</p>
+   
+   <p>There is a "Find" command, it works well.</p>
+   
+   <p>There are no other editing tools, all you can do is look at file contents.
+   You can search, you can select and copy, but that's it for now.</p>
+   
+   <p>I spent a lot of time trying to figure out how to adapt the code in this
+   plugin to work with jEdit itself, so that jEdit could open giant files, but
+   it turns out that would require a huge rewrite of jEdit and not many people
+   are really asking to be able to load large files.</p>
+   
+   <p>The largest file I've opened was about 1.3 GB, it opened easily and did not
+   cause any out of memory errors.</p>
+	
+	<h3>Change log:</h3>
+	<ul>
+	   <li>8 Aug 2019, yeah, that initial release didn't happen, so this is still version 0.1.</li>
+	   <li>28 Jan 2015, Version 0.1, initial release.</li>
+	</ul>
+	
+</body>	
+</html>
