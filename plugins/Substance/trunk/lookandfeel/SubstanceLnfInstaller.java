@@ -7,8 +7,8 @@ import javax.swing.*;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
 
-import org.pushingpixels.substance.api.SubstanceLookAndFeel;
-import org.pushingpixels.substance.api.SubstanceConstants;
+import org.pushingpixels.substance.api.SubstanceCortex;
+import org.pushingpixels.substance.api.SubstanceSlices;
 
 
 public class SubstanceLnfInstaller implements LookAndFeelInstaller {
@@ -62,10 +62,10 @@ public class SubstanceLnfInstaller implements LookAndFeelInstaller {
             // adjust JOptionPane buttons to yes/no/cancel (as opposed to cancel/no/yes) as this is the Java standard.
             // The other option is to use PLATFORM, which would do the same thing except on Mac, where the buttons would
             // be ordered as cancel/no/yes, but that would be inconsistent with the rest of jEdit.
-            SubstanceLookAndFeel.setOptionPaneButtonOrder( SubstanceConstants.SubstanceOptionPaneButtonOrder.DEFAULT_AS_LEADING );
+            SubstanceCortex.GlobalScope.setButtonBarOrder( SubstanceSlices.ButtonOrder.DEFAULT_AS_LEADING );
 
             // align the JOptionPane buttons to the right, since most (all?) jEdit dialogs are aligned that way
-            SubstanceLookAndFeel.setOptionPaneButtonAlignment( SubstanceConstants.SubstanceOptionPaneButtonAlignment.ALIGNED_TO_PARENT_TRAILING_EDGE );
+            SubstanceCortex.GlobalScope.setButtonBarGravity( SubstanceSlices.HorizontalGravity.TRAILING );
         }
         catch ( Exception e ) {
 
