@@ -11,9 +11,9 @@
 
 <li><a href="index.php?page=feedback">Mailing list subscription</a>
 </li>
-<li> <a href="http://jedit.svn.sourceforge.net/viewvc/jedit/">Browse SVN</a>,
-     <a href="http://jedit.git.sourceforge.net/git/gitweb-index.cgi">Browse Git</a>,
-     read more at <a href="https://sourceforge.net/apps/mediawiki/jedit/index.php?title=Code_repositories">wiki</a>.
+<li> Browse <a href="https://sourceforge.net/p/jedit/svn/HEAD/tree/jEdit/trunk/">jEdit SVN (trunk)</a>,
+     <a href="https://sourceforge.net/p/jedit/svn/HEAD/tree/plugins/">jEdit plugins SVN</a>,
+     and <a href="https://sourceforge.net/p/jedit/_list/git">jEdit plugins Git</a> code repositories.
 </li>
 <li> <b>Docs:</b> <a href="http://www.jedit.org/users-guide/">Users Guide</a>,
 <a href="api/index.html">API docs</a> </li>
@@ -23,12 +23,11 @@
 
 <a href="https://sourceforge.net/tracker/?group_id=588&amp;atid=997936">Plugin Feature Requests</a>,
 <a href="https://sourceforge.net/tracker/?group_id=588&amp;atid=625093">Plugin Central Submissions</a>,
-<a href="https://sourceforge.net/tracker/?group_id=588&amp;atid=300588">Patches</a>, <a href="https://sourceforge.net/tracker/?group_id=588&amp;atid=997937">Plugin Patches</a>, 
+<a href="https://sourceforge.net/tracker/?group_id=588&amp;atid=300588">Patches</a>, <a href="https://sourceforge.net/tracker/?group_id=588&amp;atid=997937">Plugin Patches</a>,
 <a href="https://sourceforge.net/tracker/?group_id=588&amp;atid=1235750">Merge Requests</a> </li>
 <li> <a href="#patches">Creating</a> and <a href="https://sourceforge.net/tracker/?group_id=588&amp;atid=300588">Submitting</a> patches. </li>
 <li> <a href="http://plugins.jedit.org/releasing.php">Releasing plugins</a></li>
 <li> <a href="#help">Want to join us? Help wanted!</a> </li>
-<li> <a href="https://sourceforge.net/apps/mediawiki/jedit/index.php?title=Main_Page">Developers Zone</a> - the Wiki community. </li>
 <li> <a href="#contributions">Types of Contributions</a> </li>
 <li> <a href="#schedule">Release Schedule</a></li>
 <li> <a href="http://www.tellurianring.com/projects/jedit-daily/">Daily Builds</a> - The core + some plugins under active development have daily builds you can download here.  </li>
@@ -40,8 +39,8 @@
 </a>
 <p> A new "point" release of jEdit is scheduled to come out every year or so.
 A "pre" is released a few months before that to allow for testing, updating international
-strings, and other general kinds of polishing off, although translators 
-are encouraged to test the latest daily builds. 
+strings, and other general kinds of polishing off, although translators
+are encouraged to test the latest daily builds.
 </p>
 
 <ul>
@@ -74,6 +73,7 @@ are encouraged to test the latest daily builds.
 <li> <b>jEdit 5.2.0</b>: February 5, 2015</li>
 <li> <b>jEdit 5.3.0</b>: October 22, 2015</li>
 <li> <b>jEdit 5.4.0</b>: March 18, 2017</li>
+<li> <b>jEdit 5.5.0</b>: April 10, 2018</li>
 </ul>
 
 <a name="help" >
@@ -82,8 +82,6 @@ are encouraged to test the latest daily builds.
 
 
 <h2>Becoming a jEdit developer</h2>
-
-<p> <a href="https://sourceforge.net/apps/mediawiki/jedit/index.php?title=Roadmap">Core Development Road Map</a> contains a road map of what needs to be done, and who is paying attention to what in the core. </p>
 
 <p>jEdit is always looking for more people to help. If you examine the  <a href="https://sourceforge.net/tracker/?group_id=588&amp;atid=350588">Feature Requests</a> and open <a href="https://sourceforge.net/tracker/?group_id=588&amp;atid=100588">Bugs</a>, you will see that many of them are "unassigned". </p>
 
@@ -99,7 +97,7 @@ href="index.php?page=feedback">subscribing to the <tt>jEdit-devel</tt> and
 
 <p>Membership in the <a
 href="http://www.sourceforge.net/projects/jedit/">jEdit</a>
-SourceForge project is granted on an as-needed basis. If you join the jEdit mailing lists, participate, and end up working on one or more plugins (either your own, or existing ones), then you can ask one of the administrators of the project for access to the CVS or SVN repository. If you still find yourself with inadquate permissions to do your work, ask one of the project administrators for the permissions you need. This includes access to statistics, databases, etc.
+SourceForge project is granted on an as-needed basis. If you join the jEdit mailing lists, participate, and end up working on one or more plugins (either your own, or existing ones), then you can ask one of the administrators of the project for access to the GIT or SVN repository. If you still find yourself with inadquate permissions to do your work, ask one of the project administrators for the permissions you need. This includes access to statistics, databases, etc.
 </p>
 
 <a name="contributions" >
@@ -109,7 +107,7 @@ SourceForge project is granted on an as-needed basis. If you join the jEdit mail
 <h3> Are you a Drupal expert? </h3>
 
 <p> jEdit's <a href="http://community.jedit.org/">community site</a> is far out of date  and needs some love.
-If you are a Drupal developer and don't mind the challenge of upgrading a 10+ year old system, that would be much appreciated! Please ask to join or even administer the <a href="https://sourceforge.net/projects/jedit-community/?source=directory">jEdit community project</a>.
+If you are a Drupal developer and don't mind the challenge of upgrading a 15+ year old system, that would be much appreciated! Please ask to join or even administer the <a href="https://sourceforge.net/projects/jedit-community/?source=directory">jEdit community project</a>.
 </p>
 
 <h3>Localization files</h3>
@@ -160,7 +158,7 @@ If you want to make changes to existing plugins, or jEdit itself, make sure that
 <a name="patches" >
 <h3>Creating and submitting Patches</h3>
 </a>
-<p> We prefer patches which are generated against the latest "trunk" in subversion. By checking out a copy of the source and making changes to your local copy, you can create a patch by simply typing <tt>svn diff</tt>, (or <tt>cvs diff</tt>, if it's in CVS) from the root directory of your project. This command will give you context, as well as version numbers for all differences between your versions and the versions you checked out from the repository. Redirect this command to a file and attach it with proper documentation to a <a href="https://sourceforge.net/tracker/?group_id=588&amp;atid=300588">patches</a> tracker item.
+<p> We prefer patches which are generated against the latest "trunk" in subversion. By checking out a copy of the source and making changes to your local copy, you can create a patch by simply typing <tt>svn diff</tt>, (or <tt>git diff</tt>, if it's in git) from the root directory of your project. This command will give you context, as well as version numbers for all differences between your versions and the versions you checked out from the repository. Redirect this command to a file and attach it with proper documentation to a <a href="https://sourceforge.net/tracker/?group_id=588&amp;atid=300588">patches</a> tracker item.
 </p>
 
 <h3>Adding plugins to the Subversion or Git repository</h3>
@@ -174,7 +172,7 @@ See <a href="http://plugins.jedit.org/releasing.php">this page</a> to find out h
 
 <h2>Thanks</h2>
 
-<p> Special thanks to <a href="http://www.sourceforge.net">sourceforge.net</a> for hosting and providing for free, the SVN, GIT, wiki, web hosting, file releasing, and bugtracking services we've needed to collaborate with each other for over 10 years of jEdit's development. </p>
+<p> Special thanks to <a href="http://www.sourceforge.net">sourceforge.net</a> for hosting and providing for free, the SVN, GIT, web hosting, file releasing, and bugtracking services we've needed to collaborate with each other for over 10 years of jEdit's development. </p>
 <p>Thanks to the <a href="http://www.gjt.org">Giant Java Tree</a>, which
 hosted the jEdit CVS and web site for the first 3 years of jEdit's
 development. </p>
