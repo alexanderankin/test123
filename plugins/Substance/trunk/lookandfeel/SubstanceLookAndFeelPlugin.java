@@ -13,8 +13,8 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
-import org.pushingpixels.substance.api.SubstanceConstants.SubstanceWidgetType;
-import org.pushingpixels.substance.api.SubstanceLookAndFeel;
+import org.pushingpixels.substance.api.SubstanceSlices.SubstanceWidgetType;
+import org.pushingpixels.substance.api.SubstanceCortex;
 
 
 public class SubstanceLookAndFeelPlugin extends EBPlugin {
@@ -29,7 +29,7 @@ public class SubstanceLookAndFeelPlugin extends EBPlugin {
 
                 public void run() {
                     for ( View view : jEdit.getViews() ) {
-                        SubstanceLookAndFeel.setWidgetVisible( view.getRootPane(), visible, SubstanceWidgetType.MENU_SEARCH );
+                        SubstanceCortex.WindowScope.setWidgetVisible( view, visible, SubstanceWidgetType.MENU_SEARCH );
                         view.getJMenuBar().revalidate();
                     }
                 }
