@@ -26,6 +26,7 @@ public class SubstanceLnfInstaller implements LookAndFeelInstaller {
         "Gemini",
         "GraphiteAqua",
         "GraphiteChalk",
+        "GraphiteElectric",
         "GraphiteGlass",
         "GraphiteGold",
         "Graphite",
@@ -36,9 +37,6 @@ public class SubstanceLnfInstaller implements LookAndFeelInstaller {
         "Moderate",
         "NebulaBrickWall",
         "Nebula",
-        "OfficeBlack2007",
-        "OfficeBlue2007",
-        "OfficeSilver2007",
         "Raven",
         "Sahara",
         "Twilight"

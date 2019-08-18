@@ -10,11 +10,16 @@
       <div  style="background:#ccccff">
         <h2>Substance Look and Feel</h2>
         <b>Author: Dale Anson</b><br/>
-        <b>Version: 7.4.7.1.00, Oct 2017</b>
+        <b>Version: 8.2.5, August 2019</b>
       </div>
         <p>This plugin provides the Substance Look and Feel to
         jEdit. Substance is perhaps the best looking look and feel for
         Java applications.</p>
+        <p>The version numbers for Substance have changed since Substance became
+        part of the "radiance" project. The previous version numbering was 7.x, the
+        new numbering is 2.x. The plugin version number reflects the version number
+        of Substance, so 8.2.5 means version 8 of the plugin and version 2.5 of
+        Substance.</p>
         
         <p>
         <a href="#configuration">Configuration</a><br/>
@@ -45,6 +50,7 @@
         <li>Gemini</li>
         <li>GraphiteAqua</li>
         <li>GraphiteChalk</li>
+        <li>GraphiteElectric (new in 2.5)</li>
         <li>GraphiteGlass</li>
         <li>GraphiteGold</li>
         <li>Graphite</li>
@@ -55,9 +61,9 @@
         <li>Moderate</li>
         <li>NebulaBrickWall</li>
         <li>Nebula</li>
-        <li>OfficeBlack2007</li>
-        <li>OfficeBlue2007</li>
-        <li>OfficeSilver2007</li>
+        <li><del>OfficeBlack2007</del> (removed in 2.5)</li>
+        <li><del>OfficeBlue2007</del> (removed in 2.5)</li>
+        <li><del>OfficeSilver2007</del> (removed in 2.5)</li>
         <li>Raven</li>
         <li>Sahara</li>
         <li>Twilight</li>
@@ -186,15 +192,14 @@
         <p><img src="screenshots/twilight-zenburn.png"></p>
         
         <h3 id="about" style="background:#7FB2FF">About Substance:</h3>
-        <p>The Substance project has been resurrected by the original author,
-        Kirill Grouchnikov. The latest release was on Oct 17. 2017. The version
-        number of this plugin is a little odd, since it was following the forked
-        Insubstantial project, which has died, but moved version numbers ahead.
-        The next release from Kirill will be 8.0, so the version number of this 
-        plugin will track with that when it happens.</p>
+        <p>The Substance project is now part of the "Radiance" project: https://github.com/kirill-grouchnikov/radiance</p>
+        
+        <p>This plugin provides only the Substance look and feel libraries and does not
+        include all the other good stuff from the Radiance project.</p>
         
         <h3 id="changes" style="background:#7FB2FF">Changes</h3>
         <ul>
+         <li>Version 8.2.5, updated to Radiance Substance 2.5</li>
          <li>Version 7.4.7.1.00, updated to Substance 7.1:
             <ol>
                <li>Removed dependency on laf-widget.jar and laf-plugin.jar as 
