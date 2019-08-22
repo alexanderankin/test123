@@ -147,12 +147,10 @@
     <property name="compiler.deprecation"   value="off" />
     <property name="compiler.verbose"       value="off" />
     <property name="compiler.nowarn"        value="off" />
-    <property name="compiler.target"        value="1.7" />
-    <property name="compiler.source"        value="1.7" />
     <property name="compiler.listfiles"     value="no" />
     <property name="compiler.fork"          value="no" />
     <property name="compiler.bootclasspath" value="${java.home}/lib/rt.jar"/>
-    <property name="compiler.extdirs"       value="${java.ext.dirs}"/>
+    <!-- property name="compiler.extdirs"       value="${java.ext.dirs}"/ -->
     <property name="compiler.userargs"      value="" />
 
     <!-- default documentation options  -->
@@ -233,12 +231,9 @@
                 deprecation="${compiler.deprecation}"
                 verbose="${compiler.verbose}"
                 nowarn="${compiler.nowarn}"
-                target="${compiler.target}"
-                source="${compiler.source}"
                 listfiles="${compiler.listfiles}"
                 fork="${compiler.fork}"
                 bootclasspath="${compiler.bootclasspath}"
-                extdirs="${compiler.extdirs}"
                 >
             <src location="${src.dir}" />
 	    <compilerarg line="${compiler.userargs}" />
@@ -344,8 +339,6 @@
          compiler.deprecation: deprecation option (off)
          compiler.verbose: the verbose option (off)
          compiler.nowarn: the nowarn option (off)
-         compiler.target: the target option (1.6)
-         compiler.source: the source option (1.6)
          compiler.listfiles: the listfiles option (no)      -->
     <target name="compile"
             description="Compile the plugin's classes" depends="resolve">
