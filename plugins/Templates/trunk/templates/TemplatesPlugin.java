@@ -21,15 +21,12 @@ package templates;
 import java.io.*;
 import java.util.*;
 import javax.swing.JFileChooser;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
@@ -424,7 +421,7 @@ public class TemplatesPlugin extends EditPlugin
 	{
 		try
 		{
-			if (!getEngine().templateExists(template))
+			if (!getEngine().resourceExists(template))
 			{
 				GUIUtilities.error(view, "plugin.velocity.error.no-template-found",
 						new String[]{template});
@@ -433,7 +430,7 @@ public class TemplatesPlugin extends EditPlugin
 			((jEditContext) ctx).captureSelection();
 			Writer out = new BufferWriter(((Buffer) textArea.getBuffer()),
 					textArea.getCaretPosition());
-			getEngine().mergeTemplate(template, ctx, out);
+			getEngine().mergeTemplate(template, "UTF-8", ctx, out);
 			if (ctx.get(CARET) != null)
 			{
 				Integer pos = (Integer) ctx.get(CARET);
