@@ -103,10 +103,7 @@ public class YesNoPrompt extends SimpleDirective
 				null);
 
 		// Set the variable's value in the context
-		if (n == JOptionPane.YES_OPTION)
-			context.getInternalUserContext().put(key, new Boolean(true));
-		else
-			context.getInternalUserContext().put(key, new Boolean(false));
+        context.getInternalUserContext().put(key, n == JOptionPane.YES_OPTION);
 
 		return true;
 	}

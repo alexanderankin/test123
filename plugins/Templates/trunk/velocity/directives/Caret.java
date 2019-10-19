@@ -66,7 +66,7 @@ public class Caret extends Directive
 	  if (caretPos < 0) {
 	  	caretPos = 0;
 	  }
-      context.getInternalUserContext().put(CARET, new Integer(caretPos));
+      context.getInternalUserContext().put(CARET, Integer.valueOf(caretPos));
       return true;
    }
 
