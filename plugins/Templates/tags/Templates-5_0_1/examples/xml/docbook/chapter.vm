@@ -1,0 +1,8 @@
+## template=Chapter
+#prompt ( "Chapter ID:" $chapterId )
+#prompt ( "Title:" $title )
+<chapter id="${chapterId}">
+${_jeditIndentation}${_jeditTab}<title>${title}</title>
+
+#parse ( "xml/docbook/para.vm" )
+${_jeditIndentation}</chapter>
