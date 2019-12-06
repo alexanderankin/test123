@@ -4,9 +4,14 @@ import javax.swing.text.Position;
 import sidekick.util.Location;
 import sidekick.util.SideKickElement;
 
+/**
+ * Currently all nodes are header nodes, might need to change this if it is 
+ * necessary to include items in the markdown file that are not header lines.
+ */
 public class Node implements Comparable, SideKickElement {
 
     private String value = null;
+    private int level = 1;
     private Location startLocation = new Location();
     private Location endLocation = new Location();
     private Position startPosition = new Position() {
@@ -20,19 +25,17 @@ public class Node implements Comparable, SideKickElement {
         }
     };
 
-    public Node() {
-    }
-
-    public Node(String value) {
+    public Node(String value, int level) {
         this.value = value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
+        this.level = level;
     }
 
     public String getValue() {
         return value;
+    }
+    
+    public int getLevel() {
+        return level;   
     }
 
     public void setStartLocation(Location start) {
@@ -58,7 +61,7 @@ public class Node implements Comparable, SideKickElement {
     public void setStartPosition(Position p) {
         startPosition = p;
     }
-
+    
     public Position getEndPosition() {
         return endPosition;
     }
@@ -69,8 +72,7 @@ public class Node implements Comparable, SideKickElement {
 
 
     public String toString() {
-        String v = value == null ? "" : value;
-        return v;
+        return level + ": " + value;   
     }
 
     public int compareTo(Object o) {

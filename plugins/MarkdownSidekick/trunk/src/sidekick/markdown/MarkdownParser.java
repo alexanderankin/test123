@@ -37,6 +37,7 @@ import java.util.*;
 import java.util.regex.*;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
@@ -76,44 +77,55 @@ public class MarkdownParser extends SideKickParser {
         try {
             String filename = buffer.getPath();
             SideKickParsedData parsedData = new MarkdownSideKickParsedData( filename );
+            Node rootNode = new Node( filename, 0 );
+            rootNode.setStartLocation( new Location( 0, 0 ) );
+            parsedData.root = new DefaultMutableTreeNode( rootNode );
+            parsedData.tree = new DefaultTreeModel(parsedData.root);
             DefaultMutableTreeNode root = parsedData.root;
-
             StringReader sr = new StringReader( buffer.getText( 0, buffer.getLength() ) );
             BufferedReader lineReader = new BufferedReader( sr );
-
-            Pattern headerPattern = Pattern.compile( "^#{1,6}.*?" );
-
             int lineIndex = 1;
             String line = lineReader.readLine();
             String previousLine = line;
+            Node n = null;
 
             while ( line != null ) {
 
                 // check if header line
-                Matcher m = headerPattern.matcher( line );
-                if ( m.matches() ) {
+                int level = isHeaderLine( line );
+                if ( level > 0 ) {
 
                     // it's a # header line
-                    Node n = new Node( line );
+                    n = new Node( line, level );
                     n.setStartLocation( new Location( lineIndex, 0 ) );
                     n.setEndLocation( new Location( lineIndex, line.length() ) );
-                    DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode( n );
-                    root.add( treeNode );
                 }
-                else if ( isSetextHeaderLine( line ) ) {
+                else if ( ( level = isSetextHeaderLine( line ) ) > 0 ) {
 
                     // previous line is a header line
-                    Node n = new Node( previousLine );
+                    n = new Node( previousLine, level );
                     n.setStartLocation( new Location( lineIndex - 1, 0 ) );
                     n.setEndLocation( new Location( lineIndex - 1, previousLine.length() ) );
+                }
+                if ( level > 0 ) {
                     DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode( n );
-                    root.add( treeNode );
+                    DefaultMutableTreeNode parent = ( DefaultMutableTreeNode )root.getLastLeaf();
+                    Node lastNode = ( Node )parent.getUserObject();
+                    while ( lastNode.getLevel() >= level ) {
+                        parent = ( DefaultMutableTreeNode )parent.getParent();
+                        if ( root.equals( parent ) ) {
+                            break;
+                        }
+                        lastNode = ( Node )parent.getUserObject();
+                    }
+                    parent.add( treeNode );
                 }
                 previousLine = line;
                 line = lineReader.readLine();
                 ++lineIndex;
             }
             ElementUtil.convert( buffer, root );
+            lineReader.close();
             return parsedData;
         }
         catch ( Exception e ) {
@@ -122,7 +134,32 @@ public class MarkdownParser extends SideKickParser {
         return null;
     }
 
-    private boolean isSetextHeaderLine( String line ) {
-        return line.startsWith( "=" ) || line.startsWith( "-" );
+    /**
+     * @return -1 if line is not a header line or the header level if it is
+     */
+    private int isHeaderLine( String line ) {
+        int level = -1;
+        if ( line.startsWith( "#" ) ) {
+            level = 1;
+            for ( int i = 1; i < 6; i++ ) {
+                if ( line.charAt( i ) == '#' ) {
+                    ++level;
+                }
+                else {
+                    return level;
+                }
+            }
+        }
+        return level;
+    }
+
+    private int isSetextHeaderLine( String line ) {
+        if ( line.startsWith( "=" ) ) {
+            return 1;
+        }
+        if ( line.startsWith( "-" ) ) {
+            return 2;
+        }
+        return -1;
     }
 }
