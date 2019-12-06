@@ -80,7 +80,7 @@ public class MarkdownParser extends SideKickParser {
             Node rootNode = new Node( filename, 0 );
             rootNode.setStartLocation( new Location( 0, 0 ) );
             parsedData.root = new DefaultMutableTreeNode( rootNode );
-            parsedData.tree = new DefaultTreeModel(parsedData.root);
+            parsedData.tree = new DefaultTreeModel( parsedData.root );
             DefaultMutableTreeNode root = parsedData.root;
             StringReader sr = new StringReader( buffer.getText( 0, buffer.getLength() ) );
             BufferedReader lineReader = new BufferedReader( sr );
@@ -96,14 +96,14 @@ public class MarkdownParser extends SideKickParser {
                 if ( level > 0 ) {
 
                     // it's a # header line
-                    n = new Node( line, level );
+                    n = new Node( trimHeader( line ), level );
                     n.setStartLocation( new Location( lineIndex, 0 ) );
                     n.setEndLocation( new Location( lineIndex, line.length() ) );
                 }
                 else if ( ( level = isSetextHeaderLine( line ) ) > 0 ) {
 
                     // previous line is a header line
-                    n = new Node( previousLine, level );
+                    n = new Node( trimHeader( previousLine ), level );
                     n.setStartLocation( new Location( lineIndex - 1, 0 ) );
                     n.setEndLocation( new Location( lineIndex - 1, previousLine.length() ) );
                 }
@@ -161,5 +161,13 @@ public class MarkdownParser extends SideKickParser {
             return 2;
         }
         return -1;
+    }
+
+    private String trimHeader( String line ) {
+        StringBuilder sb = new StringBuilder( line );
+        while ( sb.charAt( 0 ) == '#' ) {
+            sb.deleteCharAt( 0 );
+        }
+        return sb.toString();
     }
 }

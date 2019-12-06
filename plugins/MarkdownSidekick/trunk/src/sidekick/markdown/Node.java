@@ -72,7 +72,7 @@ public class Node implements Comparable, SideKickElement {
 
 
     public String toString() {
-        return level + ": " + value;   
+        return /*level + ": " + */ value;   
     }
 
     public int compareTo(Object o) {
