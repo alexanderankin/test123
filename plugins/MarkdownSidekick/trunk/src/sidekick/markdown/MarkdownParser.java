@@ -164,6 +164,9 @@ public class MarkdownParser extends SideKickParser {
     }
 
     private String trimHeader( String line ) {
+        if ( line == null || line.length() == 0 ) {
+            return "";
+        }
         StringBuilder sb = new StringBuilder( line );
         while ( sb.charAt( 0 ) == '#' ) {
             sb.deleteCharAt( 0 );
