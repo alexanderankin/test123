@@ -51,7 +51,8 @@ public class MarkdownParser extends SideKickParser {
 
     private static final String NAME = "markdown";
     private View currentView = null;
-    public static boolean showAll = false;
+    private Pattern setextH1 = Pattern.compile( "^=+?$" );
+    private Pattern setextH2 = Pattern.compile( "^-+?$" );
 
     public MarkdownParser() {
         super( NAME );
@@ -86,7 +87,7 @@ public class MarkdownParser extends SideKickParser {
             BufferedReader lineReader = new BufferedReader( sr );
             int lineIndex = 1;
             String line = lineReader.readLine();
-            String previousLine = line;
+            String previousLine = null;
             Node n = null;
 
             while ( line != null ) {
@@ -101,11 +102,16 @@ public class MarkdownParser extends SideKickParser {
                     n.setEndLocation( new Location( lineIndex, line.length() ) );
                 }
                 else if ( ( level = isSetextHeaderLine( line ) ) > 0 ) {
+                    if ( isBlankLine( previousLine ) ) {
+                        level = -1;
+                    }
+                    else {
 
-                    // previous line is a header line
-                    n = new Node( trimHeader( previousLine ), level );
-                    n.setStartLocation( new Location( lineIndex - 1, 0 ) );
-                    n.setEndLocation( new Location( lineIndex - 1, previousLine.length() ) );
+                        // previous line is a header line
+                        n = new Node( trimHeader( previousLine ), level );
+                        n.setStartLocation( new Location( lineIndex - 1, 0 ) );
+                        n.setEndLocation( new Location( lineIndex - 1, previousLine.length() ) );
+                    }
                 }
                 if ( level > 0 ) {
                     DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode( n );
@@ -135,6 +141,16 @@ public class MarkdownParser extends SideKickParser {
     }
 
     /**
+     * @return true if line contains no characters or only whitespace characters
+     */
+    private boolean isBlankLine( String line ) {
+        if ( line == null ) {
+            return true;
+        }
+        return line.isBlank();
+    }
+
+    /**
      * @return -1 if line is not a header line or the header level if it is
      */
     private int isHeaderLine( String line ) {
@@ -153,22 +169,34 @@ public class MarkdownParser extends SideKickParser {
         return level;
     }
 
+    /**
+     * @return 1 if line matches setextH1, 2 if line matches setextH2, -1 otherwise.
+     */
     private int isSetextHeaderLine( String line ) {
-        if ( line.startsWith( "=" ) ) {
+        Matcher m = setextH1.matcher( line );
+        if ( m.matches() ) {
             return 1;
         }
-        if ( line.startsWith( "-" ) ) {
-            return 2;
+        else {
+            m = setextH2.matcher( line );
+            if ( m.matches() ) {
+                return 2;
+            }
         }
         return -1;
     }
-
+    
+    /**
+     * Removes leading # and whitespace from the given line. Note there is no
+     * checking that the line is actually a header line.
+     * @return the line with leading # and whitespace removed    
+     */
     private String trimHeader( String line ) {
         if ( line == null || line.length() == 0 ) {
             return "";
         }
         StringBuilder sb = new StringBuilder( line );
-        while ( sb.charAt( 0 ) == '#' ) {
+        while ( sb.charAt( 0 ) == '#' || sb.charAt(0) == ' ' || sb.charAt(0) == '\t' ) {
             sb.deleteCharAt( 0 );
         }
         return sb.toString();
