@@ -1,4 +1,0 @@
-<?xml version="1.0" ?>
-<locatingRules xmlns="http://thaiopensource.com/ns/locating-rules/1.0">
-<uri resource="file:/home/elelay/jedit/XMLGit/test_data/rnc/startInIncluded.xml" uri="file:/home/elelay/jedit/XMLGit/test_data/rnc/startInIncluded.rnc"/><documentElement localName="ACTIONS" typeId="ACTIONS"/><typeId id="ACTIONS" uri="actions.rnc"/>
-</locatingRules>
