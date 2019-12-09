@@ -1,7 +1,0 @@
-<preface id="tutorials">
-<!-- :xml.root=book_index.docbook: -->
-<title> Tutorials </title>
-<para> These are tutorials. To see the reference guide,
-go to <xref linkend="refguide"/>.
-</para>
-</preface>
