@@ -29,9 +29,10 @@
 package sidekick.markdown;
 
 
+import eclipseicons.EclipseIconsPlugin;
 import errorlist.DefaultErrorSource;
-
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
 import java.util.regex.*;
@@ -46,13 +47,14 @@ import sidekick.SideKickParsedData;
 import sidekick.SideKickParser;
 import sidekick.util.*;
 
-
 public class MarkdownParser extends SideKickParser {
 
     private static final String NAME = "markdown";
     private View currentView = null;
     private Pattern setextH1 = Pattern.compile( "^=+?$" );
     private Pattern setextH2 = Pattern.compile( "^-+?$" );
+    private enum BlockType {HEADER1,  HEADER2,  HEADER3,  HEADER4,  HEADER5,  HEADER6,  HEADER1S,  HEADER2S,  PARAGRAPH,  QUOTE,  CODE,  BLANK};
+    ;
 
     public MarkdownParser() {
         super( NAME );
@@ -76,55 +78,137 @@ public class MarkdownParser extends SideKickParser {
      */
     public SideKickParsedData parse( Buffer buffer, DefaultErrorSource errorSource ) {
         try {
+
+            // set up sidekick data structure
             String filename = buffer.getPath();
             SideKickParsedData parsedData = new MarkdownSideKickParsedData( filename );
-            Node rootNode = new Node( filename, 0 );
+            Node rootNode = new Node( filename);
+            rootNode.setLevel(0);
             rootNode.setStartLocation( new Location( 0, 0 ) );
             parsedData.root = new DefaultMutableTreeNode( rootNode );
             parsedData.tree = new DefaultTreeModel( parsedData.root );
             DefaultMutableTreeNode root = parsedData.root;
+
+            // set up reading buffer
             StringReader sr = new StringReader( buffer.getText( 0, buffer.getLength() ) );
             BufferedReader lineReader = new BufferedReader( sr );
             int lineIndex = 1;
+            
+            // read a line
             String line = lineReader.readLine();
             String previousLine = null;
             Node n = null;
+            DefaultMutableTreeNode currentTreeNode = parsedData.root;
 
             while ( line != null ) {
+                BlockType bt = getBlockType( line );
+                int level = 0;
 
-                // check if header line
-                int level = isHeaderLine( line );
-                if ( level > 0 ) {
-
-                    // it's a # header line
-                    n = new Node( trimHeader( line ), level );
+                switch ( bt ) {
+                case HEADER1:
+                    level = 1;
+                    n = new Node( trim( line ) );
+                    n.setLevel(level);
                     n.setStartLocation( new Location( lineIndex, 0 ) );
                     n.setEndLocation( new Location( lineIndex, line.length() ) );
-                }
-                else if ( ( level = isSetextHeaderLine( line ) ) > 0 ) {
+                    break;
+                case HEADER2:
+                    level = 2;
+                    n = new Node( trim( line ) );
+                    n.setLevel(level);
+                    n.setStartLocation( new Location( lineIndex, 0 ) );
+                    n.setEndLocation( new Location( lineIndex, line.length() ) );
+                    break;
+                case HEADER3:
+                    level = 3;
+                    n = new Node( trim( line ) );
+                    n.setLevel(level);
+                    n.setStartLocation( new Location( lineIndex, 0 ) );
+                    n.setEndLocation( new Location( lineIndex, line.length() ) );
+                    break;
+                case HEADER4:
+                    level = 4;
+                    n = new Node( trim( line ) );
+                    n.setLevel(level);
+                    n.setStartLocation( new Location( lineIndex, 0 ) );
+                    n.setEndLocation( new Location( lineIndex, line.length() ) );
+                    break;
+                case HEADER5:
+                    level = 5;
+                    n = new Node( trim( line ) );
+                    n.setLevel(level);
+                    n.setStartLocation( new Location( lineIndex, 0 ) );
+                    n.setEndLocation( new Location( lineIndex, line.length() ) );
+                    break;
+                case HEADER6:
+                    level = 6;
+                    n = new Node( trim( line ) );
+                    n.setLevel(level);
+                    n.setStartLocation( new Location( lineIndex, 0 ) );
+                    n.setEndLocation( new Location( lineIndex, line.length() ) );
+                    break;
+                case HEADER1S:
                     if ( isBlankLine( previousLine ) ) {
                         level = -1;
                     }
                     else {
-
-                        // previous line is a header line
-                        n = new Node( trimHeader( previousLine ), level );
+                        level = 1;
+                        n = new Node( trim( previousLine ) );
+                        n.setLevel(level);
                         n.setStartLocation( new Location( lineIndex - 1, 0 ) );
                         n.setEndLocation( new Location( lineIndex - 1, previousLine.length() ) );
                     }
+                    break;
+                case HEADER2S:
+                    if ( isBlankLine( previousLine ) ) {
+                        level = -1;
+                    }
+                    else {
+                        level = 2;
+                        n = new Node( trim( previousLine ) );
+                        n.setLevel(level);
+                        n.setStartLocation( new Location( lineIndex - 1, 0 ) );
+                        n.setEndLocation( new Location( lineIndex - 1, previousLine.length() ) );
+                    }
+                    break;
+                case PARAGRAPH:
+                case QUOTE:
+                case CODE:
+                    n = new Node( trim( line ) );
+                    n.setLevel(-2);
+                    n.setStartLocation( new Location( lineIndex, 0 ) );
+                    n.setEndLocation( new Location( lineIndex, line.length() ) );
+                    DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode( n );
+                    currentTreeNode.add( treeNode );
+                    lineIndex += skipToBlankLine(lineReader);
+                    break;
+                case BLANK:
+                    level = -1;
+                    break;
                 }
+
+
                 if ( level > 0 ) {
                     DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode( n );
                     DefaultMutableTreeNode parent = ( DefaultMutableTreeNode )root.getLastLeaf();
                     Node lastNode = ( Node )parent.getUserObject();
+                    if (lastNode.getLevel() == -2) {
+                        parent = (DefaultMutableTreeNode)parent.getParent();  
+                        lastNode = ( Node )parent.getUserObject();
+                    }
                     while ( lastNode.getLevel() >= level ) {
                         parent = ( DefaultMutableTreeNode )parent.getParent();
                         if ( root.equals( parent ) ) {
                             break;
                         }
                         lastNode = ( Node )parent.getUserObject();
+                        if (lastNode.getLevel() == -2) {
+                            parent = ( DefaultMutableTreeNode )parent.getParent();
+                            lastNode = ( Node )parent.getUserObject();
+                        }
                     }
                     parent.add( treeNode );
+                    currentTreeNode = treeNode;
                 }
                 previousLine = line;
                 line = lineReader.readLine();
@@ -140,6 +224,45 @@ public class MarkdownParser extends SideKickParser {
         return null;
     }
 
+    private BlockType getBlockType( String line ) {
+        if ( line == null || line.isBlank() ) {
+            return BlockType.BLANK;
+        }
+        if ( line.startsWith( "######" ) ) {
+            return BlockType.HEADER6;
+        }
+        if ( line.startsWith( "#####" ) ) {
+            return BlockType.HEADER5;
+        }
+        if ( line.startsWith( "####" ) ) {
+            return BlockType.HEADER4;
+        }
+        if ( line.startsWith( "###" ) ) {
+            return BlockType.HEADER3;
+        }
+        if ( line.startsWith( "##" ) ) {
+            return BlockType.HEADER2;
+        }
+        if ( line.startsWith( "#" ) ) {
+            return BlockType.HEADER1;
+        }
+        Matcher m = setextH1.matcher( line );
+        if ( m.matches() ) {
+            return BlockType.HEADER1S;
+        }
+        m = setextH2.matcher( line );
+        if ( m.matches() ) {
+            return BlockType.HEADER2S;
+        }
+        if ( line.startsWith( ">" ) ) {
+            return BlockType.QUOTE;
+        }
+        if ( line.startsWith( "    " ) || line.startsWith( "\t" ) ) {
+            return BlockType.CODE;
+        }
+        return BlockType.PARAGRAPH;
+    }
+
     /**
      * @return true if line contains no characters or only whitespace characters
      */
@@ -150,54 +273,31 @@ public class MarkdownParser extends SideKickParser {
         return line.isBlank();
     }
 
-    /**
-     * @return -1 if line is not a header line or the header level if it is
-     */
-    private int isHeaderLine( String line ) {
-        int level = -1;
-        if ( line.startsWith( "#" ) ) {
-            level = 1;
-            for ( int i = 1; i < 6; i++ ) {
-                if ( line.charAt( i ) == '#' ) {
-                    ++level;
-                }
-                else {
-                    return level;
-                }
-            }
+    private int skipToBlankLine(BufferedReader lineReader) throws IOException {
+        String line = lineReader.readLine();
+        int count = 1;
+        while (!isBlankLine(line)) {
+            ++count;
+            line = lineReader.readLine();
         }
-        return level;
-    }
-
-    /**
-     * @return 1 if line matches setextH1, 2 if line matches setextH2, -1 otherwise.
-     */
-    private int isSetextHeaderLine( String line ) {
-        Matcher m = setextH1.matcher( line );
-        if ( m.matches() ) {
-            return 1;
-        }
-        else {
-            m = setextH2.matcher( line );
-            if ( m.matches() ) {
-                return 2;
-            }
-        }
-        return -1;
+        return count;
     }
     
     /**
-     * Removes leading # and whitespace from the given line. Note there is no
-     * checking that the line is actually a header line.
-     * @return the line with leading # and whitespace removed    
+     * Removes leading #, >, and whitespace from the start of the given line and 
+     * removes trailing # from the end of the given line.
+     * @return the trimmed line
      */
-    private String trimHeader( String line ) {
+    private String trim( String line ) {
         if ( line == null || line.length() == 0 ) {
             return "";
         }
         StringBuilder sb = new StringBuilder( line );
-        while ( sb.charAt( 0 ) == '#' || sb.charAt(0) == ' ' || sb.charAt(0) == '\t' ) {
+        while ( sb.charAt( 0 ) == '#' || sb.charAt( 0 ) == '>' || sb.charAt( 0 ) == ' ' || sb.charAt( 0 ) == '\t' ) {
             sb.deleteCharAt( 0 );
+        }
+        while (sb.charAt( sb.length() - 1 ) == '#') {
+            sb.deleteCharAt (sb.length() - 1);
         }
         return sb.toString();
     }

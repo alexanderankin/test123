@@ -3,15 +3,18 @@ package sidekick.markdown;
 import javax.swing.text.Position;
 import sidekick.util.Location;
 import sidekick.util.SideKickElement;
+import sidekick.Asset;
+import javax.swing.Icon;
 
 /**
  * Currently all nodes are header nodes, might need to change this if it is 
  * necessary to include items in the markdown file that are not header lines.
  */
-public class Node implements Comparable, SideKickElement {
+public class Node extends Asset implements Comparable, SideKickElement {
 
     private String value = null;
-    private int level = 1;
+    private Icon icon = null;
+    private int level = -1;
     private Location startLocation = new Location();
     private Location endLocation = new Location();
     private Position startPosition = new Position() {
@@ -24,10 +27,14 @@ public class Node implements Comparable, SideKickElement {
             return 0;
         }
     };
-
-    public Node(String value, int level) {
+    
+    public Node() {
+        super("");
+    }
+    
+    public Node(String value) {
+        super(value);
         this.value = value;
-        this.level = level;
     }
 
     public String getValue() {
@@ -36,6 +43,10 @@ public class Node implements Comparable, SideKickElement {
     
     public int getLevel() {
         return level;   
+    }
+    
+    public void setLevel(int level) {
+        this.level = level;   
     }
 
     public void setStartLocation(Location start) {
@@ -72,7 +83,23 @@ public class Node implements Comparable, SideKickElement {
 
 
     public String toString() {
-        return /*level + ": " + */ value;   
+        return getName();   
+    }
+    
+    public String getShortString() {
+        return toString();   
+    }
+    
+    public String getLongString() {
+        return toString();   
+    }
+    
+    public Icon getIcon() {
+        return icon;   
+    }
+    
+    public void setIcon(Icon icon) {
+        this.icon = icon;   
     }
 
     public int compareTo(Object o) {
