@@ -30,7 +30,9 @@ package sidekick.markdown;
 
 
 import eclipseicons.EclipseIconsPlugin;
+
 import errorlist.DefaultErrorSource;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -42,10 +44,12 @@ import javax.swing.tree.DefaultTreeModel;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
 import sidekick.SideKickParsedData;
 import sidekick.SideKickParser;
 import sidekick.util.*;
+
 
 public class MarkdownParser extends SideKickParser {
 
@@ -53,8 +57,7 @@ public class MarkdownParser extends SideKickParser {
     private View currentView = null;
     private Pattern setextH1 = Pattern.compile( "^=+?$" );
     private Pattern setextH2 = Pattern.compile( "^-+?$" );
-    private enum BlockType {HEADER1,  HEADER2,  HEADER3,  HEADER4,  HEADER5,  HEADER6,  HEADER1S,  HEADER2S,  PARAGRAPH,  QUOTE,  CODE,  BLANK};
-    ;
+    private enum BlockType { HEADER1, HEADER2, HEADER3, HEADER4, HEADER5, HEADER6, HEADER1S, HEADER2S, PARAGRAPH, QUOTE, CODE, BLANK};
 
     public MarkdownParser() {
         super( NAME );
@@ -79,11 +82,16 @@ public class MarkdownParser extends SideKickParser {
     public SideKickParsedData parse( Buffer buffer, DefaultErrorSource errorSource ) {
         try {
 
+            // load options
+            boolean showParagraphs = jEdit.getBooleanProperty( "sidekick.markdown.showParagraphs", true );
+            boolean showQuotes = jEdit.getBooleanProperty( "sidekick.markdown.showQuotes", true );
+            boolean showCode = jEdit.getBooleanProperty( "sidekick.markdown.showCode", true );
+
             // set up sidekick data structure
             String filename = buffer.getPath();
             SideKickParsedData parsedData = new MarkdownSideKickParsedData( filename );
-            Node rootNode = new Node( filename);
-            rootNode.setLevel(0);
+            Node rootNode = new Node( filename );
+            rootNode.setLevel( 0 );
             rootNode.setStartLocation( new Location( 0, 0 ) );
             parsedData.root = new DefaultMutableTreeNode( rootNode );
             parsedData.tree = new DefaultTreeModel( parsedData.root );
@@ -93,7 +101,7 @@ public class MarkdownParser extends SideKickParser {
             StringReader sr = new StringReader( buffer.getText( 0, buffer.getLength() ) );
             BufferedReader lineReader = new BufferedReader( sr );
             int lineIndex = 1;
-            
+
             // read a line
             String line = lineReader.readLine();
             String previousLine = null;
@@ -105,86 +113,108 @@ public class MarkdownParser extends SideKickParser {
                 int level = 0;
 
                 switch ( bt ) {
-                case HEADER1:
-                    level = 1;
-                    n = new Node( trim( line ) );
-                    n.setLevel(level);
-                    n.setStartLocation( new Location( lineIndex, 0 ) );
-                    n.setEndLocation( new Location( lineIndex, line.length() ) );
-                    break;
-                case HEADER2:
-                    level = 2;
-                    n = new Node( trim( line ) );
-                    n.setLevel(level);
-                    n.setStartLocation( new Location( lineIndex, 0 ) );
-                    n.setEndLocation( new Location( lineIndex, line.length() ) );
-                    break;
-                case HEADER3:
-                    level = 3;
-                    n = new Node( trim( line ) );
-                    n.setLevel(level);
-                    n.setStartLocation( new Location( lineIndex, 0 ) );
-                    n.setEndLocation( new Location( lineIndex, line.length() ) );
-                    break;
-                case HEADER4:
-                    level = 4;
-                    n = new Node( trim( line ) );
-                    n.setLevel(level);
-                    n.setStartLocation( new Location( lineIndex, 0 ) );
-                    n.setEndLocation( new Location( lineIndex, line.length() ) );
-                    break;
-                case HEADER5:
-                    level = 5;
-                    n = new Node( trim( line ) );
-                    n.setLevel(level);
-                    n.setStartLocation( new Location( lineIndex, 0 ) );
-                    n.setEndLocation( new Location( lineIndex, line.length() ) );
-                    break;
-                case HEADER6:
-                    level = 6;
-                    n = new Node( trim( line ) );
-                    n.setLevel(level);
-                    n.setStartLocation( new Location( lineIndex, 0 ) );
-                    n.setEndLocation( new Location( lineIndex, line.length() ) );
-                    break;
-                case HEADER1S:
-                    if ( isBlankLine( previousLine ) ) {
-                        level = -1;
-                    }
-                    else {
+                    case HEADER1:
                         level = 1;
-                        n = new Node( trim( previousLine ) );
-                        n.setLevel(level);
-                        n.setStartLocation( new Location( lineIndex - 1, 0 ) );
-                        n.setEndLocation( new Location( lineIndex - 1, previousLine.length() ) );
-                    }
-                    break;
-                case HEADER2S:
-                    if ( isBlankLine( previousLine ) ) {
-                        level = -1;
-                    }
-                    else {
+                        n = new Node( trim( line ) );
+                        n.setLevel( level );
+                        n.setStartLocation( new Location( lineIndex, 0 ) );
+                        n.setEndLocation( new Location( lineIndex, line.length() ) );
+                        break;
+                    case HEADER2:
                         level = 2;
-                        n = new Node( trim( previousLine ) );
-                        n.setLevel(level);
-                        n.setStartLocation( new Location( lineIndex - 1, 0 ) );
-                        n.setEndLocation( new Location( lineIndex - 1, previousLine.length() ) );
-                    }
-                    break;
-                case PARAGRAPH:
-                case QUOTE:
-                case CODE:
-                    n = new Node( trim( line ) );
-                    n.setLevel(-2);
-                    n.setStartLocation( new Location( lineIndex, 0 ) );
-                    n.setEndLocation( new Location( lineIndex, line.length() ) );
-                    DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode( n );
-                    currentTreeNode.add( treeNode );
-                    lineIndex += skipToBlankLine(lineReader);
-                    break;
-                case BLANK:
-                    level = -1;
-                    break;
+                        n = new Node( trim( line ) );
+                        n.setLevel( level );
+                        n.setStartLocation( new Location( lineIndex, 0 ) );
+                        n.setEndLocation( new Location( lineIndex, line.length() ) );
+                        break;
+                    case HEADER3:
+                        level = 3;
+                        n = new Node( trim( line ) );
+                        n.setLevel( level );
+                        n.setStartLocation( new Location( lineIndex, 0 ) );
+                        n.setEndLocation( new Location( lineIndex, line.length() ) );
+                        break;
+                    case HEADER4:
+                        level = 4;
+                        n = new Node( trim( line ) );
+                        n.setLevel( level );
+                        n.setStartLocation( new Location( lineIndex, 0 ) );
+                        n.setEndLocation( new Location( lineIndex, line.length() ) );
+                        break;
+                    case HEADER5:
+                        level = 5;
+                        n = new Node( trim( line ) );
+                        n.setLevel( level );
+                        n.setStartLocation( new Location( lineIndex, 0 ) );
+                        n.setEndLocation( new Location( lineIndex, line.length() ) );
+                        break;
+                    case HEADER6:
+                        level = 6;
+                        n = new Node( trim( line ) );
+                        n.setLevel( level );
+                        n.setStartLocation( new Location( lineIndex, 0 ) );
+                        n.setEndLocation( new Location( lineIndex, line.length() ) );
+                        break;
+                    case HEADER1S:
+                        if ( isBlankLine( previousLine ) ) {
+                            level = -1;
+                        }
+                        else {
+                            level = 1;
+                            n = new Node( trim( previousLine ) );
+                            n.setLevel( level );
+                            n.setStartLocation( new Location( lineIndex - 1, 0 ) );
+                            n.setEndLocation( new Location( lineIndex - 1, previousLine.length() ) );
+                        }
+                        break;
+                    case HEADER2S:
+                        if ( isBlankLine( previousLine ) ) {
+                            level = -1;
+                        }
+                        else {
+                            level = 2;
+                            n = new Node( trim( previousLine ) );
+                            n.setLevel( level );
+                            n.setStartLocation( new Location( lineIndex - 1, 0 ) );
+                            n.setEndLocation( new Location( lineIndex - 1, previousLine.length() ) );
+                        }
+                        break;
+                    case PARAGRAPH:
+                        if ( showParagraphs ) {
+                            n = new Node( trim( line ) );
+                            n.setLevel( -2 );
+                            n.setStartLocation( new Location( lineIndex, 0 ) );
+                            n.setEndLocation( new Location( lineIndex, line.length() ) );
+                            DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode( n );
+                            currentTreeNode.add( treeNode );
+                        }
+                        lineIndex += skipToBlankLine( lineReader );
+                        break;
+                    case QUOTE:
+                        if ( showQuotes ) {
+                            n = new Node( trim( line ) );
+                            n.setLevel( -2 );
+                            n.setStartLocation( new Location( lineIndex, 0 ) );
+                            n.setEndLocation( new Location( lineIndex, line.length() ) );
+                            DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode( n );
+                            currentTreeNode.add( treeNode );
+                        }
+                        lineIndex += skipToBlankLine( lineReader );
+                        break;
+                    case CODE:
+                        if ( showCode ) {
+                            n = new Node( trim( line ) );
+                            n.setLevel( -2 );
+                            n.setStartLocation( new Location( lineIndex, 0 ) );
+                            n.setEndLocation( new Location( lineIndex, line.length() ) );
+                            DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode( n );
+                            currentTreeNode.add( treeNode );
+                        }
+                        lineIndex += skipToBlankLine( lineReader );
+                        break;
+                    case BLANK:
+                        level = -1;
+                        break;
                 }
 
 
@@ -192,8 +222,8 @@ public class MarkdownParser extends SideKickParser {
                     DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode( n );
                     DefaultMutableTreeNode parent = ( DefaultMutableTreeNode )root.getLastLeaf();
                     Node lastNode = ( Node )parent.getUserObject();
-                    if (lastNode.getLevel() == -2) {
-                        parent = (DefaultMutableTreeNode)parent.getParent();  
+                    if ( lastNode.getLevel() == -2 ) {
+                        parent = ( DefaultMutableTreeNode )parent.getParent();
                         lastNode = ( Node )parent.getUserObject();
                     }
                     while ( lastNode.getLevel() >= level ) {
@@ -202,7 +232,7 @@ public class MarkdownParser extends SideKickParser {
                             break;
                         }
                         lastNode = ( Node )parent.getUserObject();
-                        if (lastNode.getLevel() == -2) {
+                        if ( lastNode.getLevel() == -2 ) {
                             parent = ( DefaultMutableTreeNode )parent.getParent();
                             lastNode = ( Node )parent.getUserObject();
                         }
@@ -273,18 +303,18 @@ public class MarkdownParser extends SideKickParser {
         return line.isBlank();
     }
 
-    private int skipToBlankLine(BufferedReader lineReader) throws IOException {
+    private int skipToBlankLine( BufferedReader lineReader ) throws IOException {
         String line = lineReader.readLine();
         int count = 1;
-        while (!isBlankLine(line)) {
+        while ( !isBlankLine( line ) ) {
             ++count;
             line = lineReader.readLine();
         }
         return count;
     }
-    
+
     /**
-     * Removes leading #, >, and whitespace from the start of the given line and 
+     * Removes leading #, >, and whitespace from the start of the given line and
      * removes trailing # from the end of the given line.
      * @return the trimmed line
      */
@@ -296,8 +326,8 @@ public class MarkdownParser extends SideKickParser {
         while ( sb.charAt( 0 ) == '#' || sb.charAt( 0 ) == '>' || sb.charAt( 0 ) == ' ' || sb.charAt( 0 ) == '\t' ) {
             sb.deleteCharAt( 0 );
         }
-        while (sb.charAt( sb.length() - 1 ) == '#') {
-            sb.deleteCharAt (sb.length() - 1);
+        while ( sb.charAt( sb.length() - 1 ) == '#' ) {
+            sb.deleteCharAt( sb.length() - 1 );
         }
         return sb.toString();
     }

@@ -2,7 +2,7 @@
 plugin.sidekick.markdown.MarkdownSideKickPlugin.activate=defer
 plugin.sidekick.markdown.MarkdownSideKickPlugin.author=Dale Anson
 plugin.sidekick.markdown.MarkdownSideKickPlugin.description=A SideKick for working with markdown files.
-plugin.sidekick.markdown.MarkdownSideKickPlugin.docs=docs/markdown.html
+plugin.sidekick.markdown.MarkdownSideKickPlugin.docs=doc/index.html
 plugin.sidekick.markdown.MarkdownSideKickPlugin.longdescription=description.html
 plugin.sidekick.markdown.MarkdownSideKickPlugin.name=MarkdownSideKick
 plugin.sidekick.markdown.MarkdownSideKickPlugin.usePluginHome=false
@@ -17,3 +17,10 @@ plugin.sidekick.markdown.MarkdownSideKickPlugin.depend.4=plugin sidekick.SideKic
 sidekick.parser.markdown.label=markdown
 mode.markdown.sidekick.parser=markdown
 
+plugin.sidekick.markdown.MarkdownSideKickPlugin.option-pane=markdownsidekick
+options.markdownsidekick.code=new sidekick.markdown.OptionPane();
+options.markdownsidekick.label=Markdown Sidekick
+
+sidekick.markdown.showParagraphs.label=Show Paragraphs
+sidekick.markdown.showQuotes.label=Show Block Quotes
+sidekick.markdown.showCode.label=Show Code Blocks
