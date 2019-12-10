@@ -119,6 +119,7 @@ public class MarkdownParser extends SideKickParser {
                         n.setLevel( level );
                         n.setStartLocation( new Location( lineIndex, 0 ) );
                         n.setEndLocation( new Location( lineIndex, line.length() ) );
+                        n.setIcon(EclipseIconsPlugin.getIcon("hierarchicalLayout.gif"));
                         break;
                     case HEADER2:
                         level = 2;
@@ -126,6 +127,7 @@ public class MarkdownParser extends SideKickParser {
                         n.setLevel( level );
                         n.setStartLocation( new Location( lineIndex, 0 ) );
                         n.setEndLocation( new Location( lineIndex, line.length() ) );
+                        n.setIcon(EclipseIconsPlugin.getIcon("hierarchicalLayout.gif"));
                         break;
                     case HEADER3:
                         level = 3;
@@ -133,6 +135,7 @@ public class MarkdownParser extends SideKickParser {
                         n.setLevel( level );
                         n.setStartLocation( new Location( lineIndex, 0 ) );
                         n.setEndLocation( new Location( lineIndex, line.length() ) );
+                        n.setIcon(EclipseIconsPlugin.getIcon("hierarchicalLayout.gif"));
                         break;
                     case HEADER4:
                         level = 4;
@@ -140,6 +143,7 @@ public class MarkdownParser extends SideKickParser {
                         n.setLevel( level );
                         n.setStartLocation( new Location( lineIndex, 0 ) );
                         n.setEndLocation( new Location( lineIndex, line.length() ) );
+                        n.setIcon(EclipseIconsPlugin.getIcon("hierarchicalLayout.gif"));
                         break;
                     case HEADER5:
                         level = 5;
@@ -147,6 +151,7 @@ public class MarkdownParser extends SideKickParser {
                         n.setLevel( level );
                         n.setStartLocation( new Location( lineIndex, 0 ) );
                         n.setEndLocation( new Location( lineIndex, line.length() ) );
+                        n.setIcon(EclipseIconsPlugin.getIcon("hierarchicalLayout.gif"));
                         break;
                     case HEADER6:
                         level = 6;
@@ -154,6 +159,7 @@ public class MarkdownParser extends SideKickParser {
                         n.setLevel( level );
                         n.setStartLocation( new Location( lineIndex, 0 ) );
                         n.setEndLocation( new Location( lineIndex, line.length() ) );
+                        n.setIcon(EclipseIconsPlugin.getIcon("hierarchicalLayout.gif"));
                         break;
                     case HEADER1S:
                         if ( isBlankLine( previousLine ) ) {
@@ -165,6 +171,7 @@ public class MarkdownParser extends SideKickParser {
                             n.setLevel( level );
                             n.setStartLocation( new Location( lineIndex - 1, 0 ) );
                             n.setEndLocation( new Location( lineIndex - 1, previousLine.length() ) );
+                            n.setIcon(EclipseIconsPlugin.getIcon("hierarchicalLayout.gif"));
                         }
                         break;
                     case HEADER2S:
@@ -177,6 +184,7 @@ public class MarkdownParser extends SideKickParser {
                             n.setLevel( level );
                             n.setStartLocation( new Location( lineIndex - 1, 0 ) );
                             n.setEndLocation( new Location( lineIndex - 1, previousLine.length() ) );
+                            n.setIcon(EclipseIconsPlugin.getIcon("hierarchicalLayout.gif"));
                         }
                         break;
                     case PARAGRAPH:
@@ -185,6 +193,9 @@ public class MarkdownParser extends SideKickParser {
                             n.setLevel( -2 );
                             n.setStartLocation( new Location( lineIndex, 0 ) );
                             n.setEndLocation( new Location( lineIndex, line.length() ) );
+                            n.setStart(ElementUtil.createStartPosition(buffer, n));
+                            n.setEnd(ElementUtil.createEndPosition(buffer, n));
+                            n.setIcon(EclipseIconsPlugin.getIcon("topic_small.gif"));
                             DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode( n );
                             currentTreeNode.add( treeNode );
                         }
@@ -196,6 +207,9 @@ public class MarkdownParser extends SideKickParser {
                             n.setLevel( -2 );
                             n.setStartLocation( new Location( lineIndex, 0 ) );
                             n.setEndLocation( new Location( lineIndex, line.length() ) );
+                            n.setStart(ElementUtil.createStartPosition(buffer, n));
+                            n.setEnd(ElementUtil.createEndPosition(buffer, n));
+                            n.setIcon(EclipseIconsPlugin.getIcon("run_co.gif"));
                             DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode( n );
                             currentTreeNode.add( treeNode );
                         }
@@ -207,6 +221,9 @@ public class MarkdownParser extends SideKickParser {
                             n.setLevel( -2 );
                             n.setStartLocation( new Location( lineIndex, 0 ) );
                             n.setEndLocation( new Location( lineIndex, line.length() ) );
+                            n.setStart(ElementUtil.createStartPosition(buffer, n));
+                            n.setEnd(ElementUtil.createEndPosition(buffer, n));
+                            n.setIcon(EclipseIconsPlugin.getIcon("class_obj.gif"));
                             DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode( n );
                             currentTreeNode.add( treeNode );
                         }
@@ -219,6 +236,8 @@ public class MarkdownParser extends SideKickParser {
 
 
                 if ( level > 0 ) {
+                    n.setStart(ElementUtil.createStartPosition(buffer, n));
+                    n.setEnd(ElementUtil.createEndPosition(buffer, n));
                     DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode( n );
                     DefaultMutableTreeNode parent = ( DefaultMutableTreeNode )root.getLastLeaf();
                     Node lastNode = ( Node )parent.getUserObject();
@@ -244,7 +263,7 @@ public class MarkdownParser extends SideKickParser {
                 line = lineReader.readLine();
                 ++lineIndex;
             }
-            ElementUtil.convert( buffer, root );
+            //ElementUtil.convert( buffer, root );
             lineReader.close();
             return parsedData;
         }

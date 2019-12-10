@@ -73,6 +73,10 @@ public class Node extends Asset implements Comparable, SideKickElement {
         startPosition = p;
     }
     
+    public Position getStart() {
+        return startPosition;   
+    }
+    
     public Position getEndPosition() {
         return endPosition;
     }
@@ -81,6 +85,9 @@ public class Node extends Asset implements Comparable, SideKickElement {
         endPosition = p;
     }
 
+    public Position getEnd() {
+        return endPosition;   
+    }
 
     public String toString() {
         return getName();   
