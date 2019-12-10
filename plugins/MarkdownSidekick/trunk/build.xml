@@ -24,7 +24,7 @@
    <selector id="packageFiles">
       <and>
          <or>
-            <filename name="**/markdown.html" />
+            <filename name="**/doc/index.html" />
          </or>
       </and>
    </selector>
