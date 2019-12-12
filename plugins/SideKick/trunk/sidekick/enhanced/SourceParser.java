@@ -45,8 +45,8 @@ import errorlist.*;
  * not able to correctly parse irregular source
  *
  * @author     Martin Raspe
- * @created    Oct 15, 2005
- * @modified   $Id$
+ * created    Oct 15, 2005
+ * modified   $Id$
  * @version    $Revision$
  */
 public class SourceParser extends SideKickParser implements PartialParser {

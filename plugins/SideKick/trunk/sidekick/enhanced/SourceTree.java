@@ -61,8 +61,8 @@ import sidekick.SideKickTree;
 
 /**
  * @author     Martin Raspe, Dale Anson, Shlomy Reinstein
- * @created    Oct 15, 2005
- * @modified   $Id$
+ * created    Oct 15, 2005
+ * modified   $Id$
  * @version    $Revision$
 
  * The Structure Browser dockable. Extends the SideKick structure browser,
