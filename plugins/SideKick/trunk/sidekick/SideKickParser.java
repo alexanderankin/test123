@@ -41,7 +41,7 @@ import org.gjt.sp.util.Log;
  * <code>services.xml</code> files like so:
  *
  * <pre>&lt;SERVICE CLASS="sidekick.SideKickParser" NAME="<i>name</i>"&gt;
- *    new <i>MyParser<i>();
+ *    new <i>MyParser</i>();
  *&lt;/SERVICE&gt;</pre>
  *
  * See <code>org.gjt.sp.jedit.ServiceManager</code> for details.<p>

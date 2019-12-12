@@ -404,7 +404,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                                 }
                         }
 
-                        Enumeration<DefaultMutableTreeNode> e;
+                        Enumeration<TreeNode> e;
                         for (e = node.children(); e.hasMoreElements();)
                         {
                                 addData(e.nextElement(), keys);
@@ -1191,8 +1191,8 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         }
                         else
                         {
-                                Enumeration<DefaultMutableTreeNode> e = node.depthFirstEnumeration();
-                                node = e.nextElement();
+                                Enumeration<TreeNode> e = node.depthFirstEnumeration();
+                                node = (DefaultMutableTreeNode)e.nextElement();
                         }
                         if (node != null)
                         {
@@ -1275,8 +1275,8 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         // node from where we started).
                         if (!model.isLeaf(node))
                         {
-                                Enumeration<DefaultMutableTreeNode> e = node.depthFirstEnumeration();
-                                node = e.nextElement();
+                                Enumeration<TreeNode> e = node.depthFirstEnumeration();
+                                node = (DefaultMutableTreeNode)e.nextElement();
                         }
                         node = node.getPreviousLeaf();
                         if (node != null)
@@ -1505,8 +1505,10 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                 {
                         DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
                         Object nodeValue = node.getUserObject();
+                        System.out.println("+++++ node is a " + (nodeValue == null ? " null!!" : nodeValue.getClass().getName()));
                         if (nodeValue instanceof IAsset)
                         {
+                        	System.out.println("+++++ node is IAsset: " + nodeValue);
                                 IAsset asset = (IAsset) node.getUserObject();
 
                                 setText(asset.getShortString());

@@ -11,8 +11,8 @@ import sidekick.Asset;
  * SourceAsset: extends sidekick.Asset, provides the nodes for a structure tree
  *
  * @author     Martin Raspe
- * @created    Oct 15, 2005
- * @modified   $Id$
+ * created    Oct 15, 2005
+ * modified   $Id$
  * @version    $Revision$
  */
 public class SourceAsset extends Asset {

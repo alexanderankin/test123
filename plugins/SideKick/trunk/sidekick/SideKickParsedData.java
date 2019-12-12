@@ -37,7 +37,7 @@ import sidekick.enhanced.SourceAsset;
 /**
  * Stores a buffer structure tree.
  *
- * @modified   $Id$
+ * modified   $Id$
  * @version    $Revision$
  * Plugins can extend this class to persist plugin-specific information.
  * For example, the XML plugin stores code completion-related structures using
