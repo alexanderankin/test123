@@ -227,7 +227,7 @@ public class MarkdownParser extends SideKickParser {
                             DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode( n );
                             currentTreeNode.add( treeNode );
                         }
-                        lineIndex += skipToBlankLine( lineReader );
+                        lineIndex += skipToEndOfCode( lineReader );
                         break;
                     case BLANK:
                         level = -1;
@@ -326,6 +326,16 @@ public class MarkdownParser extends SideKickParser {
         String line = lineReader.readLine();
         int count = 1;
         while ( !isBlankLine( line ) ) {
+            ++count;
+            line = lineReader.readLine();
+        }
+        return count;
+    }
+    
+    private int skipToEndOfCode( BufferedReader lineReader ) throws IOException {
+        String line = lineReader.readLine();
+        int count = 1;
+        while ( line != null && (line.startsWith( "    " ) || line.startsWith( "\t" )) ) {
             ++count;
             line = lineReader.readLine();
         }
