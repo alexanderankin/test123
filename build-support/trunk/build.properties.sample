@@ -79,10 +79,10 @@
 #compiler.nowarn=off
 
 # Target JVM version
-#compiler.target=1.6
+#compiler.target=11
 
 # Java version of the source files
-#compiler.source=1.6
+#compiler.source=11
 
 # List files being compiled
 #compiler.listfiles=no
@@ -150,7 +150,7 @@
 #docs.style.sheet=${docbook.xsl}/${docbook.xsl.sheet}
 
 # Windows binaries can be gotten at http://www.zlatkovic.com/libxml.en.html
-# You need iconv, libxml2, libxslt, and zlib for the xsltproc package. 
+# You need iconv, libxml2, libxslt, and zlib for the xsltproc package.
 
 # The path to the xsltproc executable
 #xsltproc.executable=C:\\Programme\\xsltproc\\xsltproc.exe
