@@ -1,12 +1,12 @@
 <ivysettings>
     <properties file="ivysettings.properties"/>
     <resolvers>
-        <ibiblio name="maven" m2compatible="true" usepoms="false"/>
+        <ibiblio name="maven" m2compatible="true" usepoms="false" root="https://repo1.maven.org/maven2"/>
         <url name="jedit-plugins-resolver">
-            <artifact pattern="jar:http://${artifactPath}/[artifact]-[revision]-bin.zip!/[artifact].jar" />
+            <artifact pattern="jar:${zipPath}!/[artifact].jar" />
         </url>
         <url name="jedit-plugins-zip-resolver">
-            <artifact pattern="http://${artifactPath}/[artifact]-[revision]-bin.zip" />
+            <artifact pattern="${zipPath}" />
         </url>
     </resolvers>
     <modules>
