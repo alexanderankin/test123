@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009, 2012 Matthieu Casanova
+ * Copyright (C) 2009, 2020 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -39,6 +39,7 @@ public interface Index
 
 	String getName();
 	Analyzer getAnalyzer();
+	void setAnalyzer(Analyzer analyzer);
 
 	/**
 	 * Add a single file to the index.
@@ -63,8 +64,6 @@ public interface Index
 	void addFiles(FileProvider files, ProgressObserver progressObserver) throws IndexInterruptedException;
 	void removeFile(String path);
 
-	void setAnalyzer(Analyzer analyzer);
-
 	/**
 	 * Execute the given search query.
 	 *
@@ -80,7 +79,7 @@ public interface Index
 		void indexingStarted(Index index);
 		void indexingEnded(Index index);
 	}
-	void addActivityListener(ActivityListener l);
-	void removeActivityListener(ActivityListener l);
+	void addActivityListener(ActivityListener activityListener);
+	void removeActivityListener(ActivityListener activityListener);
 	boolean isChanging();
 }
