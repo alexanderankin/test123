@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.Base64;
 
 public class ProxyHTTP implements Proxy {
 
@@ -34,7 +35,8 @@ public class ProxyHTTP implements Proxy {
 		if (proxyUser != null && proxyPass != null) {
 			byte[] code = (proxyUser + ":" + proxyPass).getBytes();
 			out.write("Proxy-Authorization: Basic ".getBytes());
-			out.write((new sun.misc.BASE64Encoder().encode(code)).getBytes());
+
+			out.write(Base64.getEncoder().encode(code));
 			out.write("\r\n".getBytes());
 		}
 		out.write("\r\n".getBytes());
