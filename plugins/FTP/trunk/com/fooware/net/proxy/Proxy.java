@@ -16,6 +16,5 @@ public interface Proxy {
 	/**
 	 * Opens socket to specified host and port 
 	 */
-	public Socket openSocket(String hostName, int port) throws IOException;
-	
+	Socket openSocket(String hostName, int port) throws IOException;
 }
