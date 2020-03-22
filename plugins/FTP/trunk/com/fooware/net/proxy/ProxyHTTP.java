@@ -7,11 +7,10 @@ import java.net.Socket;
 import java.util.Base64;
 
 public class ProxyHTTP implements Proxy {
-
-	private String proxyHost;
-	private int proxyPort;
-	private String proxyUser;
-	private String proxyPass;
+	private final String proxyHost;
+	private final int proxyPort;
+	private final String proxyUser;
+	private final String proxyPass;
 
 	public ProxyHTTP(String proxyHost, int proxyPort) {
 		this(proxyHost, proxyPort, null, null);
@@ -24,6 +23,7 @@ public class ProxyHTTP implements Proxy {
 		this.proxyPass = proxyPass;
 	}
 
+	@Override
 	public Socket openSocket(String hostName, int port) throws IOException {
 		Socket socket = new Socket(proxyHost, proxyPort);
 		socket.setTcpNoDelay(true);
