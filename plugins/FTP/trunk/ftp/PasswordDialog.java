@@ -77,12 +77,13 @@ public class PasswordDialog extends EnhancedDialog implements ActionListener
 		setVisible(true);
 	} // }}}
 	
-	private JPasswordField password;
-	private boolean isOK = false;
-	private JButton ok;
-	private JButton cancel;
+	private final JPasswordField password;
+	private boolean isOK;
+	private final JButton ok;
+	private final JButton cancel;
 	
 	//{{{ ok() method
+	@Override
 	public void ok()
 	{
 		isOK = true;
@@ -90,6 +91,7 @@ public class PasswordDialog extends EnhancedDialog implements ActionListener
 	} //}}}
 	
 	//{{{ cancel() method
+	@Override
 	public void cancel()
 	{
 		dispose();
@@ -102,6 +104,7 @@ public class PasswordDialog extends EnhancedDialog implements ActionListener
 	} //}}}
 
 	//{{{ actionPerformed() method
+	@Override
 	public void actionPerformed(ActionEvent evt)
 	{
 		Object source = evt.getSource();
