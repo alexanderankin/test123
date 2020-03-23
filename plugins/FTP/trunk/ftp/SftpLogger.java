@@ -26,11 +26,13 @@ import com.jcraft.jsch.Logger;
 
 public class SftpLogger implements Logger
 {
+	@Override
 	public boolean isEnabled(int level)
 	{
 		return level!=Logger.DEBUG;
 	}
 	
+	@Override
 	public void log(int level, java.lang.String message)
 	{
 		int jeditLog;
