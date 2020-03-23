@@ -22,9 +22,6 @@
 package ftp;
 
 //{{{ imports
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -34,14 +31,14 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.border.EmptyBorder;
 
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
 import org.gjt.sp.jedit.gui.VariableGridLayout;
+import org.gjt.sp.util.GenericGUIUtilities;
 //}}}
 
 @SuppressWarnings("serial")
-public class PasswordDialog extends EnhancedDialog implements ActionListener
+public class PasswordDialog extends EnhancedDialog
 {
 	// {{{ PasswordDialog ctor
 	public PasswordDialog(JFrame comp, String title, String message)
@@ -58,19 +55,19 @@ public class PasswordDialog extends EnhancedDialog implements ActionListener
 		
 		Box buttons = new Box(BoxLayout.X_AXIS);
 		buttons.add(Box.createGlue());
-		ok = new JButton(jEdit.getProperty("common.ok"));
-		ok.addActionListener(this);
+		JButton ok = new JButton(jEdit.getProperty("common.ok"));
+		ok.addActionListener(e -> ok());
 		getRootPane().setDefaultButton(ok);
 		buttons.add(ok);
 		buttons.add(Box.createHorizontalStrut(6));
-		cancel = new JButton(jEdit.getProperty("common.cancel"));
-		cancel.addActionListener(this);
+		JButton cancel = new JButton(jEdit.getProperty("common.cancel"));
+		cancel.addActionListener(e -> cancel());
 		buttons.add(cancel);
 		buttons.add(Box.createGlue());
 		
 		content.add(buttons);
 
-		GUIUtilities.requestFocus(this,password);
+		GenericGUIUtilities.requestFocus(this,password);
 		pack();
 		setLocationRelativeTo(comp);
 		setModal(true);
@@ -79,9 +76,7 @@ public class PasswordDialog extends EnhancedDialog implements ActionListener
 	
 	private final JPasswordField password;
 	private boolean isOK;
-	private final JButton ok;
-	private final JButton cancel;
-	
+
 	//{{{ ok() method
 	@Override
 	public void ok()
@@ -101,17 +96,6 @@ public class PasswordDialog extends EnhancedDialog implements ActionListener
 	public boolean isOK()
 	{
 		return isOK;
-	} //}}}
-
-	//{{{ actionPerformed() method
-	@Override
-	public void actionPerformed(ActionEvent evt)
-	{
-		Object source = evt.getSource();
-		if(source == ok)
-			ok();
-		else if(source == cancel)
-			cancel();
 	} //}}}
 
 	public char[] getPassword()
