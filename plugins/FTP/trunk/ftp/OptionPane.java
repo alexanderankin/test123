@@ -49,7 +49,7 @@ public class OptionPane extends AbstractOptionPane implements ActionListener {
 		super("ftp");
 	}
 
-	
+	@Override
 	protected void _init() {
 		storePasswords = new JCheckBox(jEdit.getProperty("options.ftp.savePasswords"), jEdit.getBooleanProperty("vfs.ftp.storePassword"));
 		storePasswords.addActionListener(this);
@@ -86,12 +86,14 @@ public class OptionPane extends AbstractOptionPane implements ActionListener {
 
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		useKeyFile.setEnabled(storePasswords.isSelected());
 		keyFile.setEnabled(useKeyFile.isSelected() && storePasswords.isSelected());
 		disableWeakCrypto.setEnabled(storePasswords.isSelected());
 	}
 
+	@Override
 	protected void _save() {
 
 		jEdit.setBooleanProperty("ftp.useKeyFile", useKeyFile.isSelected());
@@ -104,7 +106,7 @@ public class OptionPane extends AbstractOptionPane implements ActionListener {
 		jEdit.setBooleanProperty("vfs.sftp.compression", enableCompression.isSelected());
 		String minStr = timeOutMinutes.getSelectedItem().toString();
 		jEdit.setProperty("ftp.timeOutMinutes", minStr );
-		Integer minutes = Integer.parseInt(minStr);
+		int minutes = Integer.parseInt(minStr);
 		ConnectionManager.setConnectionTimeout(minutes);
 		
 		jEdit.setProperty("vfs.sftp.MaxAuthTries", sftpMaxAuthTries.getSelectedItem().toString());
