@@ -31,26 +31,28 @@ import org.gjt.sp.jedit.AbstractOptionPane;
 import common.gui.FileTextField;
 import org.gjt.sp.jedit.jEdit;
 
-
-/** FTP plugin options pane
-*/
+/**
+ * FTP plugin options pane
+ */
 @SuppressWarnings("serial")
-public class OptionPane extends AbstractOptionPane implements ActionListener {
+public class OptionPane extends AbstractOptionPane implements ActionListener
+{
+	private JCheckBox storePasswords;
+	private JCheckBox useKeyFile;
+	private FileTextField keyFile;
+	private JCheckBox enableCompression;
+	private JCheckBox disableWeakCrypto;
+	private JComboBox<String> sftpMaxAuthTries;
+	private JComboBox<String> timeOutMinutes;
 
-	JCheckBox storePasswords;
-	JCheckBox useKeyFile;
-	FileTextField keyFile;
-	JCheckBox enableCompression;
-	JCheckBox disableWeakCrypto;
-	JComboBox<String> sftpMaxAuthTries;
-	JComboBox<String> timeOutMinutes;
-
-	public OptionPane() {
+	public OptionPane()
+	{
 		super("ftp");
 	}
 
 	@Override
-	protected void _init() {
+	protected void _init()
+	{
 		storePasswords = new JCheckBox(jEdit.getProperty("options.ftp.savePasswords"), jEdit.getBooleanProperty("vfs.ftp.storePassword"));
 		storePasswords.addActionListener(this);
 		addComponent(storePasswords);
@@ -61,7 +63,7 @@ public class OptionPane extends AbstractOptionPane implements ActionListener {
 
 		keyFile = new FileTextField(jEdit.getProperty("ftp.passKeyFile"), false);
 		keyFile.setToolTipText(jEdit.getProperty("options.ftp.useKeyFile.tooltip"));
-		addComponent(useKeyFile , keyFile);
+		addComponent(useKeyFile, keyFile);
 
 		disableWeakCrypto = new JCheckBox(jEdit.getProperty("options.ftp.disableWeakCrypto"), jEdit.getBooleanProperty("ftp.disableWeakCrypto"));
 		addComponent(disableWeakCrypto);
@@ -69,17 +71,17 @@ public class OptionPane extends AbstractOptionPane implements ActionListener {
 		actionPerformed(null);
 
 		enableCompression = new JCheckBox(jEdit.getProperty("options.sftp.enableCompression"),
-				jEdit.getBooleanProperty("vfs.sftp.compression"));
+			jEdit.getBooleanProperty("vfs.sftp.compression"));
 		addComponent(enableCompression);
 
-		
-		timeOutMinutes = new JComboBox<String>(new String[] {"1", "2", "5", "10", "15", "30", "60" });
+
+		timeOutMinutes = new JComboBox<>(new String[]{"1", "2", "5", "10", "15", "30", "60"});
 		String timeOut = jEdit.getProperty("ftp.timeOutMinutes", "1");
 		timeOutMinutes.setSelectedItem(timeOut);
 		addComponent(jEdit.getProperty("options.ftp.timeOutMinutes"), timeOutMinutes);
-		
-		
-		sftpMaxAuthTries = new JComboBox<String>(new String[] {"1", "2", "3", "4", "5", "6" });
+
+
+		sftpMaxAuthTries = new JComboBox<>(new String[]{"1", "2", "3", "4", "5", "6"});
 		sftpMaxAuthTries.setSelectedItem(jEdit.getProperty("vfs.sftp.MaxAuthTries"));
 		addComponent(jEdit.getProperty("options.sftp.MaxAuthTries"), sftpMaxAuthTries);
 
@@ -87,28 +89,30 @@ public class OptionPane extends AbstractOptionPane implements ActionListener {
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(ActionEvent e)
+	{
 		useKeyFile.setEnabled(storePasswords.isSelected());
 		keyFile.setEnabled(useKeyFile.isSelected() && storePasswords.isSelected());
 		disableWeakCrypto.setEnabled(storePasswords.isSelected());
 	}
 
 	@Override
-	protected void _save() {
-
+	protected void _save()
+	{
 		jEdit.setBooleanProperty("ftp.useKeyFile", useKeyFile.isSelected());
 		jEdit.setBooleanProperty("ftp.disableWeakCrypto", disableWeakCrypto.isSelected());
-		
-		if (useKeyFile.isSelected()) {
+
+		if (useKeyFile.isSelected())
+		{
 			jEdit.setProperty("ftp.passKeyFile", keyFile.getTextField().getText());
 		}
 		jEdit.setBooleanProperty("vfs.ftp.storePassword", storePasswords.isSelected());
 		jEdit.setBooleanProperty("vfs.sftp.compression", enableCompression.isSelected());
 		String minStr = timeOutMinutes.getSelectedItem().toString();
-		jEdit.setProperty("ftp.timeOutMinutes", minStr );
+		jEdit.setProperty("ftp.timeOutMinutes", minStr);
 		int minutes = Integer.parseInt(minStr);
 		ConnectionManager.setConnectionTimeout(minutes);
-		
+
 		jEdit.setProperty("vfs.sftp.MaxAuthTries", sftpMaxAuthTries.getSelectedItem().toString());
 	}
 }
