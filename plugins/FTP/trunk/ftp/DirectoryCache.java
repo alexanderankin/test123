@@ -22,17 +22,11 @@
 
 package ftp;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.util.IOUtilities;
@@ -90,10 +84,8 @@ public class DirectoryCache
 			long time = System.currentTimeMillis();
 			String path = MiscUtilities.constructPath(cacheDirectory, "cache-" + tmpFileCount + "-" + time + ".tmp");
 
-			ObjectOutputStream out = null;
-			try
+			try(ObjectOutput out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(path))))
 			{
-				out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(path)));
 				out.writeObject(directory);
 
 				Log.log(Log.DEBUG,DirectoryCache.class, "Cached "+ url + " to " + path);
@@ -103,10 +95,6 @@ public class DirectoryCache
 			catch(Exception e)
 			{
 				Log.log(Log.ERROR,DirectoryCache.class,e);
-			}
-			finally
-			{
-				IOUtilities.closeQuietly((Closeable)out);
 			}
 		}
 	} //}}}
@@ -158,9 +146,9 @@ public class DirectoryCache
 	} //}}}
 
 	//{{{ Private members
-	private static Object lock = new Object();
+	private static final Object lock = new Object();
 	private static int tmpFileCount;
-	private static Hashtable<String, String> urlToCacheFileHash;
+	private static final Hashtable<String, String> urlToCacheFileHash;
 	private static String cacheDirectory;
 
 	private DirectoryCache() {}
@@ -171,7 +159,7 @@ public class DirectoryCache
 	 * of this kludge */
 	private static String canon(String url)
 	{
-		if(url.length() != 0 && (url.endsWith("/")
+		if(!url.isEmpty() && (url.endsWith("/")
 			|| url.endsWith(File.separator)))
 			return url.substring(0,url.length() - 1);
 		else
@@ -181,9 +169,9 @@ public class DirectoryCache
 	//{{{ Class initializer
 	static
 	{
-		urlToCacheFileHash = new Hashtable<String, String>();
+		urlToCacheFileHash = new Hashtable<>();
 
-		String settingsDirectory = FtpPlugin.getPluginHome(FtpPlugin.class).toString();
+		String settingsDirectory = EditPlugin.getPluginHome(FtpPlugin.class).toString();
 		if(settingsDirectory == null)
 		{
 			Log.log(Log.WARNING,DirectoryCache.class,"-nosettings "

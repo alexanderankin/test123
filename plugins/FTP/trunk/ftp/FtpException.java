@@ -29,16 +29,18 @@ import org.gjt.sp.jedit.jEdit;
 //}}}
 
 @SuppressWarnings("serial")
-public class FtpException extends IOException {
-	
-	private FtpResponse response;
-	
-	public FtpException(FtpResponse response) {
+public class FtpException extends IOException
+{
+	private final FtpResponse response;
+
+	public FtpException(FtpResponse response)
+	{
 		super(jEdit.getProperty("ftperror",new String[] { response.toString() }));
 		this.response = response;
 	}
-	
-	public FtpResponse getResponse() {
+
+	public FtpResponse getResponse()
+	{
 		return response;
 	}
 }

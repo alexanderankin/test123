@@ -29,9 +29,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Vector;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -198,32 +197,20 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 	@SuppressWarnings("unchecked")
 	FtpVFS.FtpDirectoryEntry[] listDirectory(String path) throws IOException
 	{
-		ArrayList<FtpDirectoryEntry> listing = new ArrayList<FtpDirectoryEntry>();
-		// int count=0;
+		FtpVFS.FtpDirectoryEntry[] listing;
 		try
 		{
-			Vector<com.jcraft.jsch.ChannelSftp.LsEntry> vv = sftp.ls(path);
-			if (vv != null)
-			{
-				for (int ii = 0; ii < vv.size(); ii++)
-				{
-					Object obj = vv.elementAt(ii);
-					if (obj instanceof com.jcraft.jsch.ChannelSftp.LsEntry)
-					{
-						//count++;
-						com.jcraft.jsch.ChannelSftp.LsEntry entry = (com.jcraft.jsch.ChannelSftp.LsEntry) obj;
-						listing.add(createDirectoryEntry(entry.getFilename(), entry.getAttrs()));
-					}
-				}
-			}
+			List<ChannelSftp.LsEntry> lsEntries = sftp.ls(path);
+			listing = lsEntries
+				.stream()
+				.map(lsEntry -> createDirectoryEntry(lsEntry.getFilename(), lsEntry.getAttrs()))
+				.toArray(FtpDirectoryEntry[]::new);
 		}
 		catch (SftpException e)
 		{
 			return null;
 		}
-		FtpVFS.FtpDirectoryEntry[] result = listing.toArray(
-			new FtpVFS.FtpDirectoryEntry[listing.size()]);
-		return result;
+		return listing;
 	}//}}}
 
 	//{{{ getDirectoryEntry()
@@ -452,21 +439,18 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 	@Override
 	public boolean promptYesNo(String message)
 	{
-		final int ret[] = new int[1];
+		int ret[] = new int[1];
 		try
 		{
-			Runnable runnable = new Runnable()
+			Runnable runnable = () ->
 			{
-				public void run()
-				{
-					Object[] options = {"yes", "no"};
-					ret[0] = JOptionPane.showOptionDialog(jEdit.getActiveView(),
-						message,
-						"Warning",
-						JOptionPane.DEFAULT_OPTION,
-						JOptionPane.WARNING_MESSAGE,
-						null, options, options[0]);
-				}
+				Object[] options = {"yes", "no"};
+				ret[0] = JOptionPane.showOptionDialog(jEdit.getActiveView(),
+					message,
+					"Warning",
+					JOptionPane.DEFAULT_OPTION,
+					JOptionPane.WARNING_MESSAGE,
+					null, options, options[0]);
 			};
 			if (EventQueue.isDispatchThread())
 			{
@@ -494,7 +478,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 	@Override
 	public String[] promptKeyboardInteractive(String destination, String name, String instruction, String[] prompt, boolean[] echo)
 	{
-		if (prompt.length != 1 || echo[0] != false)
+		if (prompt.length != 1 || echo[0])
 			return null;
 		String[] response = new String[1];
 		response[0] = getPassword();

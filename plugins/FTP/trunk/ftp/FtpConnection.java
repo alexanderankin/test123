@@ -30,15 +30,21 @@ import ftp.FtpVFS.FtpDirectoryEntry;
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
+
+import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 //}}}
 
 //{{{ FtpConnection
 class FtpConnection extends Connection
 {
-	FtpConnection(final ConnectionInfo info) throws IOException
+
+	public static final FtpDirectoryEntry[] EMPTY_DIRECTORY_ARRAY = new FtpDirectoryEntry[0];
+
+	FtpConnection(ConnectionInfo info) throws IOException
 	{
 		super(info);
 		
@@ -47,7 +53,7 @@ class FtpConnection extends Connection
 				&& jEdit.getBooleanProperty("vfs.ftp.passive")
 				&& jEdit.getBooleanProperty("firewall.enabled") ) {
 			Proxy proxy;
-			if (jEdit.getProperty("firewall.user", "").equals(""))
+			if (jEdit.getProperty("firewall.user", "").isEmpty())
 				proxy = new ProxyHTTP(jEdit.getProperty("firewall.host"), jEdit.getIntegerProperty("firewall.port", 3128));
 			else 
 				proxy = new ProxyHTTP(
@@ -77,7 +83,7 @@ class FtpConnection extends Connection
 				throw new FtpLoginException(response);
 			}
 		}
-		else if(client.getResponse().isPositiveCompletion())
+		else if (client.getResponse().isPositiveCompletion())
 		{
 			// do nothing, server let us in without
 			// a password
@@ -103,12 +109,13 @@ class FtpConnection extends Connection
 				{
 					home = msg.substring(1,index);
 					if(!home.startsWith("/"))
-						home = "/".concat(home);
+						home = "/" + home;
 				}
 			}
 		}
 	}
 
+	@Override
 	FtpVFS.FtpDirectoryEntry[] listDirectory(String path) throws IOException
 	{
 		//CWD into the directory - Doing a LIST on a path with spaces in the
@@ -127,8 +134,8 @@ class FtpConnection extends Connection
 
 		// some servers might not support -a, so if we get an error
 		// try without -a
-		ArrayList<FtpVFS.FtpDirectoryEntry> directoryVector = _listDirectory(true);
-		if(directoryVector == null || directoryVector.size() == 0)
+		List<FtpVFS.FtpDirectoryEntry> directoryVector = _listDirectory(true);
+		if(directoryVector == null || directoryVector.isEmpty())
 			directoryVector = _listDirectory(false);
 
 		if(directoryVector == null)
@@ -137,8 +144,7 @@ class FtpConnection extends Connection
 			return null;
 		}
 
-		return (FtpVFS.FtpDirectoryEntry[])directoryVector.toArray(
-			new FtpVFS.FtpDirectoryEntry[directoryVector.size()]);
+		return directoryVector.toArray(EMPTY_DIRECTORY_ARRAY);
 	}
 
 	/**
@@ -146,6 +152,7 @@ class FtpConnection extends Connection
 	 * internal use by resolveSymlinks(), in FTP 0.7.1 we grafted on
 	 * support for file type detection, as required by jEdit 4.2.
 	 */
+	@Override
 	FtpVFS.FtpDirectoryEntry getDirectoryEntry(String path) throws IOException
 	{
 		//CWD into the directory - Doing a LIST on a path with spaces in the
@@ -186,7 +193,7 @@ class FtpConnection extends Connection
 
 		// to determine if this is a file or a directory, we list it.
 		// if the list contains 1 entry, guess that this is a file
-		LinkedList<FtpDirectoryEntry> listing = new LinkedList<FtpDirectoryEntry>();
+		LinkedList<FtpDirectoryEntry> listing = new LinkedList<>();
 
 		try
 		{
@@ -207,14 +214,14 @@ class FtpConnection extends Connection
 		}
 
 		int type;
-		if(listing.size() == 0)
+		if(listing.isEmpty())
 		{
 			// probably a file that does not exist.
-			type = FtpVFS.FtpDirectoryEntry.FILE;
+			type = VFSFile.FILE;
 		}
 		else if(listing.size() > 1)
 		{
-			type = FtpVFS.FtpDirectoryEntry.DIRECTORY;
+			type = VFSFile.DIRECTORY;
 		}
 		else
 		{
@@ -235,7 +242,7 @@ class FtpConnection extends Connection
 			{
 				// it could be a directory with 1 file in it!
 				// but I don't care, I don't use FTP :-)
-				type = FtpVFS.FtpDirectoryEntry.FILE;
+				type = VFSFile.FILE;
 			}
 		}
 
@@ -254,18 +261,21 @@ class FtpConnection extends Connection
 		return dirEntry;
 	}
 
+	@Override
 	boolean removeFile(String path) throws IOException
 	{
 		client.delete(path);
 		return client.getResponse().isPositiveCompletion();
 	}
 
+	@Override
 	boolean removeDirectory(String path) throws IOException
 	{
 		client.removeDirectory(path);
 		return client.getResponse().isPositiveCompletion();
 	}
 
+	@Override
 	boolean rename(String from, String to) throws IOException
 	{
 		client.renameFrom(from);
@@ -273,12 +283,14 @@ class FtpConnection extends Connection
 		return client.getResponse().isPositiveCompletion();
 	}
 
+	@Override
 	boolean makeDirectory(String path) throws IOException
 	{
 		client.makeDirectory(path);
 		return client.getResponse().isPositiveCompletion();
 	}
 
+	@Override
 	InputStream retrieve(String path) throws IOException
 	{
 		setupSocket();
@@ -289,6 +301,7 @@ class FtpConnection extends Connection
 			return in;
 	}
 
+	@Override
 	OutputStream store(String path) throws IOException
 	{
 		setupSocket();
@@ -299,6 +312,7 @@ class FtpConnection extends Connection
 			return out;
 	}
 
+	@Override
 	void chmod(String path, int permissions) throws IOException
 	{
 		String cmd = "CHMOD " + Integer.toString(permissions,8) + " " + path;
@@ -306,6 +320,7 @@ class FtpConnection extends Connection
 	}
 
 	// Passed 'name' in an array as a hack to be able to return multiple values
+	@Override
 	public String resolveSymlink(String path, String[] name)
 		throws IOException
 	{
@@ -329,6 +344,7 @@ class FtpConnection extends Connection
 		return link;
 	}
 
+	@Override
 	boolean checkIfOpen() throws IOException
 	{
 		try
@@ -345,22 +361,23 @@ class FtpConnection extends Connection
 		}
 	}
 
+	@Override
 	void logout() throws IOException
 	{
 		client.logout();
 	}
 
 	// Private members
-	private FtpClient client;
+	private final FtpClient client;
 	// used to parse VMS file listings, which can span more than one line
 	private String prevLine;
 
-	private static Pattern[] unixRegexps;
-	private static Pattern dosRegexp;
-	private static Pattern vmsRegexp;
-	private static Pattern vmsPartialRegexp;
-	private static Pattern vmsRejectedRegexp;
-	private static Pattern as400Regexp;
+	private static final Pattern[] unixRegexps;
+	private static final Pattern dosRegexp;
+	private static final Pattern vmsRegexp;
+	private static final Pattern vmsPartialRegexp;
+	private static final Pattern vmsRejectedRegexp;
+	private static final Pattern as400Regexp;
 
 	static
 	{
@@ -380,8 +397,7 @@ class FtpConnection extends Connection
 		as400Regexp = Pattern.compile(jEdit.getProperty("vfs.ftp.list.as400"), Pattern.UNIX_LINES);
 	}
 
-	private void setupSocket()
-		throws IOException
+	private void setupSocket() throws IOException
 	{
 		// See if we should use Binary mode to transfer files.
 		if (jEdit.getBooleanProperty("vfs.ftp.binary")) {
@@ -398,16 +414,14 @@ class FtpConnection extends Connection
 			client.dataPort();
 	}
 
-	private ArrayList<FtpDirectoryEntry> _listDirectory(boolean tryHiddenFiles)
-		throws IOException
+	private List<FtpDirectoryEntry> _listDirectory(boolean tryHiddenFiles) throws IOException
 	{
 		BufferedReader in = null;
-
 		try {
-			ArrayList<FtpDirectoryEntry> directoryVector = new ArrayList<FtpDirectoryEntry>();
+			List<FtpDirectoryEntry> directoryVector = new ArrayList<>();
 
 			setupSocket();
-			Reader _in = (tryHiddenFiles ? client.list("-a") : client.list());
+			Reader _in = tryHiddenFiles ? client.list("-a") : client.list();
 
 			if(_in == null)
 			{
@@ -421,19 +435,15 @@ class FtpConnection extends Connection
 			String line;
 			while((line = in.readLine()) != null)
 			{
-				if(line.length() == 0)
+				if(line.isEmpty())
 					continue;
 
 				FtpVFS.FtpDirectoryEntry entry = lineToDirectoryEntry(line);
-				if(entry == null
-					|| entry.getName().equals(".")
-					|| entry.getName().equals(".."))
+				if(entry == null || entry.getName().equals(".") || entry.getName().equals(".."))
 				{
 					Log.log(Log.DEBUG,this,"Discarding " + line);
 					continue;
 				}
-				else
-					; //Log.log(Log.DEBUG,this,"Parsed " + line);
 
 				directoryVector.add(entry);
 			}
@@ -442,17 +452,7 @@ class FtpConnection extends Connection
 		}
 		finally
 		{
-			if(in != null)
-			{
-				try
-				{
-					in.close();
-				}
-				catch(Exception e)
-				{
-					Log.log(Log.ERROR,this,e);
-				}
-			}
+			IOUtilities.closeQuietly(in);
 		}
 	}
 
@@ -463,7 +463,7 @@ class FtpConnection extends Connection
 		{
 			// we use one of several regexps to obtain
 			// the file name, type, and size
-			int type = FtpVFS.FtpDirectoryEntry.FILE;
+			int type = VFSFile.FILE;
 			String name = null;
 			long length = 0L;
 			int permissions = 0;
@@ -479,21 +479,23 @@ class FtpConnection extends Connection
 				prevLine = null;
 			}
 
-			for(int i = 0; i < unixRegexps.length; i++) {
-				Pattern regexp = unixRegexps[i];
+			for (Pattern regexp : unixRegexps)
+			{
 				Matcher match;
-				if((match = regexp.matcher(line)) == null || !match.matches()) continue;
-					
-				switch(line.charAt(0)) {
-				case 'd':
-					type = FtpVFS.FtpDirectoryEntry.DIRECTORY;
-					break;
-				case 'l':
-					type = FtpVFS.FtpDirectoryEntry.LINK;
-					break;
-				case '-':
-					type = FtpVFS.FtpDirectoryEntry.FILE;
-					break;
+				if ((match = regexp.matcher(line)) == null || !match.matches())
+					continue;
+
+				switch (line.charAt(0))
+				{
+					case 'd':
+						type = VFSFile.DIRECTORY;
+						break;
+					case 'l':
+						type = FtpDirectoryEntry.LINK;
+						break;
+					case '-':
+						type = VFSFile.FILE;
+						break;
 				}
 
 				permissionString = match.group(1);
@@ -501,10 +503,13 @@ class FtpConnection extends Connection
 
 				ownerName = match.group(2);
 				ownerGroup = match.group(3);
-				
-				try {
+
+				try
+				{
 					length = Long.parseLong(match.group(4));
-				} catch(NumberFormatException nf) {
+				}
+				catch (NumberFormatException nf)
+				{
 					length = 0L;
 				}
 
@@ -526,17 +531,16 @@ class FtpConnection extends Connection
 					prevLine = line;
 					return null;
 				}
-				else if(vmsRejectedRegexp.matcher(line).matches() == true)
+				else if (vmsRejectedRegexp.matcher(line).matches())
 					return null;
-				else if((match = vmsRegexp.matcher(line)) != null && match.matches())
+				else if ((match = vmsRegexp.matcher(line)) != null && match.matches())
 				{
 					name = match.group(1);
-					length = Long.parseLong(
-						match.group(2)) * 512;
+					length = Long.parseLong(match.group(2)) * 512;
 					if(name.endsWith(".DIR"))
 					{
 						name = name.substring(0,name.length() - 4);
-						type = FtpVFS.FtpDirectoryEntry.DIRECTORY;
+						type = VFSFile.DIRECTORY;
 					}
 					permissionString = match.group(3);
 					ok = true;
@@ -550,9 +554,9 @@ class FtpConnection extends Connection
 				{
  					String dirFlag = match.group(2);
  					if (dirFlag.equals("*DIR"))
- 						type = FtpVFS.FtpDirectoryEntry.DIRECTORY;
+ 						type = VFSFile.DIRECTORY;
  					else
- 						type = FtpVFS.FtpDirectoryEntry.FILE;
+ 						type = VFSFile.FILE;
 
  					try
  					{

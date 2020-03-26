@@ -22,28 +22,25 @@
 package ftp;
 
 //{{{ Imports
-import java.io.File;
-import java.io.IOException;
-
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.io.VFSManager;
-import org.gjt.sp.util.Log;
 //}}}
 
 public class FtpPlugin extends EditPlugin
 {
 	//{{{ start() method
+	@Override
 	public void start()
 	{
 	} //}}}
 
 	//{{{ stop() method
+	@Override
 	public void stop()
 	{
 		ConnectionManager.cleanup();
@@ -74,9 +71,7 @@ public class FtpPlugin extends EditPlugin
 	//{{{ showSaveFTPDialog() method
 	public static void showSaveFTPDialog(View view, boolean secure)
 	{
-
-		String path = ( (FtpVFS)VFSManager.getVFSForProtocol(FtpVFS.getProtocol(secure)) )
-			.showBrowseDialog(new Object[1],view);
+		String path = ( (FtpVFS)VFSManager.getVFSForProtocol(FtpVFS.getProtocol(secure)) ).showBrowseDialog(new Object[1],view);
 		if(path != null)
 		{
 			String[] files = GUIUtilities.showVFSFileDialog(
@@ -87,8 +82,4 @@ public class FtpPlugin extends EditPlugin
 			view.getBuffer().save(view,files[0],true);
 		}
 	} //}}}
-
-	//{{{ Private members
-
-	//}}}
 }
