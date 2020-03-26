@@ -21,8 +21,6 @@
  */
 package ftp;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -50,11 +48,7 @@ public abstract class Connection
 		id = COUNTER++;
 		this.info = info;
 
-		closeTimer = new Timer(0,new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				ConnectionManager.closeConnection(Connection.this);
-			}
-		});
+		closeTimer = new Timer(0, evt -> ConnectionManager.closeConnection(this));
 	}
 
 	abstract FtpVFS.FtpDirectoryEntry[] listDirectory(String path) throws IOException;

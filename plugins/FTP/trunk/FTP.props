@@ -7,8 +7,8 @@ plugin.ftp.FtpPlugin.author=Slava Pestov (Former), Nicholas O'Leary (Former), Va
 plugin.ftp.FtpPlugin.version=1.4
 plugin.ftp.FtpPlugin.dev.revision=$Rev$
 plugin.ftp.FtpPlugin.docs=index.html
-plugin.ftp.FtpPlugin.depend.0=jedit 05.01.99.00
-plugin.ftp.FtpPlugin.depend.1=jdk 1.7
+plugin.ftp.FtpPlugin.depend.0=jedit 05.05.99.00
+plugin.ftp.FtpPlugin.depend.1=jdk 11
 plugin.ftp.FtpPlugin.depend.2=plugin CommonControlsPlugin 1.7.4
 
 plugin.ftp.FtpPlugin.jars=jsch.jar jzlib.jar
