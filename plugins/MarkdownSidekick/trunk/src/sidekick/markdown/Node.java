@@ -1,10 +1,11 @@
 package sidekick.markdown;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.text.Position;
+import sidekick.Asset;
 import sidekick.util.Location;
 import sidekick.util.SideKickElement;
-import sidekick.Asset;
-import javax.swing.Icon;
 
 /**
  * Currently all nodes are header nodes, might need to change this if it is 
@@ -12,9 +13,7 @@ import javax.swing.Icon;
  */
 public class Node extends Asset implements Comparable, SideKickElement {
 
-    private String value = null;
     private Icon icon = null;
-    private int level = -1;
     private Location startLocation = new Location();
     private Location endLocation = new Location();
     private Position startPosition = new Position() {
@@ -32,21 +31,8 @@ public class Node extends Asset implements Comparable, SideKickElement {
         super("");
     }
     
-    public Node(String value) {
-        super(value);
-        this.value = value;
-    }
-
-    public String getValue() {
-        return value;
-    }
-    
-    public int getLevel() {
-        return level;   
-    }
-    
-    public void setLevel(int level) {
-        this.level = level;   
+    public Node(String name) {
+        super(name);
     }
 
     public void setStartLocation(Location start) {
@@ -71,10 +57,7 @@ public class Node extends Asset implements Comparable, SideKickElement {
 
     public void setStartPosition(Position p) {
         startPosition = p;
-    }
-    
-    public Position getStart() {
-        return startPosition;   
+        start = p;
     }
     
     public Position getEndPosition() {
@@ -83,32 +66,29 @@ public class Node extends Asset implements Comparable, SideKickElement {
 
     public void setEndPosition( Position p ) {
         endPosition = p;
+        end = p;
+    }
+    
+    public void setIcon(ImageIcon icon) {
+        this.icon = icon;   
     }
 
-    public Position getEnd() {
-        return endPosition;   
-    }
-
-    public String toString() {
-        return getName();   
-    }
-    
-    public String getShortString() {
-        return toString();   
-    }
-    
-    public String getLongString() {
-        return toString();   
-    }
-    
     public Icon getIcon() {
         return icon;   
     }
     
-    public void setIcon(Icon icon) {
-        this.icon = icon;   
+    public String toString() {
+        return name; //getName() + '|' + getStartLocation() + '|' + getEndLocation() + '|' + getStartPosition().getOffset() + '|' + getEndPosition().getOffset();   
     }
-
+    
+    public String getShortString() {
+        return name;   
+    }
+    
+    public String getLongString() {
+        return name + ": " + getStartLocation() + ":" + getEndLocation();   
+    }
+    
     public int compareTo(Object o) {
         return toString().compareToIgnoreCase(o.toString());
     }

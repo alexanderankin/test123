@@ -1,13 +1,12 @@
 
 package sidekick.markdown;
 
-// Imports
-import sidekick.SideKickParsedData;
 
-/**
- * Stores a buffer structure tree.
- */
+import sidekick.*;
+import javax.swing.tree.*;
+
 public class MarkdownSideKickParsedData extends SideKickParsedData {
+
     /**
      * @param fileName The file name being parsed, used as the root of the
      * tree.
@@ -15,4 +14,5 @@ public class MarkdownSideKickParsedData extends SideKickParsedData {
     public MarkdownSideKickParsedData( String fileName ) {
         super( fileName );
     }
+
 }
