@@ -57,7 +57,7 @@ public class MarkdownParser extends SideKickParser {
     private View currentView = null;
     private Pattern setextH1 = Pattern.compile( "^=+?$" );
     private Pattern setextH2 = Pattern.compile( "^-+?$" );
-    private enum BlockType { HEADER1, HEADER2, HEADER3, HEADER4, HEADER5, HEADER6, HEADER1S, HEADER2S, PARAGRAPH, QUOTE, CODE, BLANK}
+    private enum BlockType { ROOT, HEADER1, HEADER2, HEADER3, HEADER4, HEADER5, HEADER6, HEADER1S, HEADER2S, PARAGRAPH, QUOTE, CODE, BLANK}
 
 
     ;
@@ -92,11 +92,13 @@ public class MarkdownParser extends SideKickParser {
             boolean showCode = jEdit.getBooleanProperty( "sidekick.markdown.showCode", true );
 
             // set up sidekick data structure
+            int level = BlockType.ROOT.ordinal();    
             String filename = buffer.getPath();
             SideKickParsedData parsedData = new MarkdownSideKickParsedData( filename );
             Node rootNode = new Node( filename );
             rootNode.setStartLocation( new Location( 0, 0 ) );
             rootNode.setStart( new SideKickPosition( 0 ) );
+            rootNode.setLevel( level );
             parsedData.root = new DefaultMutableTreeNode( rootNode );
             parsedData.tree = new DefaultTreeModel( parsedData.root );
             DefaultMutableTreeNode root = parsedData.root;
@@ -114,6 +116,13 @@ public class MarkdownParser extends SideKickParser {
             while ( line != null ) {
                 BlockType bt = getBlockType( line );
 
+                n = new Node( trim( line ) );
+                n.setStartLocation( new Location( lineIndex, 0 ) );
+                n.setStart( createStartPosition( buffer, n ) );
+                n.setEndLocation( new Location( lineIndex, line.length() ) );
+                n.setEnd( createEndPosition( buffer, n ) );
+                n.setIcon( EclipseIconsPlugin.getIcon( "hierarchicalLayout.gif" ) );
+
                 switch ( bt ) {
                     case HEADER1:
                     case HEADER2:
@@ -121,102 +130,93 @@ public class MarkdownParser extends SideKickParser {
                     case HEADER4:
                     case HEADER5:
                     case HEADER6:
-                        n = new Node( trim( line ) );
-                        n.setStartLocation( new Location( lineIndex, 0 ) );
-                        n.setEndLocation( new Location( lineIndex, line.length() ) );
-                        n.setStart( createStartPosition( buffer, n ) );
-                        n.setEnd( createEndPosition( buffer, n ) );
-                        n.setIcon( EclipseIconsPlugin.getIcon( "hierarchicalLayout.gif" ) );
+                        level = bt.ordinal();
                         break;
                     case HEADER1S:
+                        level = BlockType.HEADER1.ordinal();
+                        if ( isBlankLine( previousLine ) ) {
+                            n = null;
+                        }
+                        else {
+                            n.setName(trim(previousLine));   
+                        }
+                        break;
                     case HEADER2S:
-                        if ( !isBlankLine( previousLine ) ) {
-                            n = new Node( trim( previousLine ) );
-                            n.setStartLocation( new Location( lineIndex - 1, 0 ) );
-                            n.setEndLocation( new Location( lineIndex, line.length() ) );
-                            n.setStart( createStartPosition( buffer, n ) );
-                            n.setEnd( createEndPosition( buffer, n ) );
-                            n.setIcon( EclipseIconsPlugin.getIcon( "hierarchicalLayout.gif" ) );
+                        level = BlockType.HEADER2.ordinal();
+                        if ( isBlankLine( previousLine ) ) {
+                            n = null;
+                        }
+                        else {
+                            n.setName(trim(previousLine));   
                         }
                         break;
                     case PARAGRAPH:
-                        if ( showParagraphs ) {
-                            n = new Node( trim( line ) );
-                            n.setStartLocation( new Location( lineIndex, 0 ) );
-                            n.setStart( createStartPosition( buffer, n ) );
-                            n.setIcon( EclipseIconsPlugin.getIcon( "topic_small.gif" ) );
-                        }
+                        level = bt.ordinal();
                         lineIndex += skipToBlankLine( lineReader );
-                        if ( showParagraphs ) {
+                        if ( !showParagraphs ) {
+                            n = null;
+                        }
+                        else {
+                            n.setIcon( EclipseIconsPlugin.getIcon( "topic_small.gif" ) );
                             int length = line == null ? 0 : line.length();    // covers end of file situation
                             n.setEndLocation( new Location( lineIndex, length ) );
                             n.setEnd( createEndPosition( buffer, n ) );
                         }
                         break;
                     case QUOTE:
-                        if ( showQuotes ) {
-                            n = new Node( trim( line ) );
-                            n.setStartLocation( new Location( lineIndex, 0 ) );
-                            n.setStart( createStartPosition( buffer, n ) );
-                            n.setIcon( EclipseIconsPlugin.getIcon( "run_co.gif" ) );
-                        }
+                        level = bt.ordinal();
                         lineIndex += skipToBlankLine( lineReader );
-                        if ( showQuotes ) {
+                        if ( !showQuotes ) {
+                            n = null;
+                        }
+                        else {
+                            n.setIcon( EclipseIconsPlugin.getIcon( "run_co.gif" ) );
                             n.setEndLocation( new Location( lineIndex, line.length() ) );
                             n.setEnd( createEndPosition( buffer, n ) );
                         }
                         break;
                     case CODE:
-                        if ( showCode ) {
-                            n = new Node( trim( line ) );
-                            n.setStartLocation( new Location( lineIndex, 0 ) );
-                            n.setStart( createStartPosition( buffer, n ) );
-                            n.setIcon( EclipseIconsPlugin.getIcon( "class_obj.gif" ) );
-                        }
+                        level = bt.ordinal();
                         lineIndex += skipToEndOfCode( lineReader );
-                        if ( showCode ) {
+                        if ( !showCode ) {
+                            n = null;
+                        }
+                        else {
+                            n.setIcon( EclipseIconsPlugin.getIcon( "class_obj.gif" ) );
                             n.setEndLocation( new Location( lineIndex, line.length() ) );
                             n.setEnd( createEndPosition( buffer, n ) );
                         }
                         break;
                     case BLANK:
+                        n = null;
                         break;
                 }
 
-
+                // add the node at the appropriate level in the tree
                 if ( n != null ) {
+                    n.setLevel( level );
                     DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode( n );
-                    root.add( treeNode );
+                    DefaultMutableTreeNode parent = ( DefaultMutableTreeNode )root.getLastLeaf();
+                    if ( parent == null || parent.equals( root ) ) {
+                        root.add( treeNode );
+                    }
+                    else {
+                        Node parentNode = ( Node )parent.getUserObject();    
+                        while ( parentNode.getLevel() >= level ) {
+                            parent = ( DefaultMutableTreeNode )parent.getParent();
+                            if ( parent == null || parent.equals(root)) {
+                                root.add(treeNode);
+                                break;
+                            }
+                            parentNode = ( Node )parent.getUserObject();
+                        }
+                        parent.add( treeNode );
+                    }
                     rootNode.setEndLocation( n.getEndLocation() );
                     rootNode.setEnd( n.getEnd() );
                     n = null;
                 }
-                /*
-                if ( level > 0 ) {
-                    n.setStart(ElementUtil.createStartPosition(buffer, n));
-                    n.setEnd(ElementUtil.createEndPosition(buffer, n));
-                    DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode( n );
-                    DefaultMutableTreeNode parent = ( DefaultMutableTreeNode )root.getLastLeaf();
-                    Node lastNode = ( Node )parent.getUserObject();
-                    if ( lastNode.getLevel() == -2 ) {
-                        parent = ( DefaultMutableTreeNode )parent.getParent();
-                        lastNode = ( Node )parent.getUserObject();
-                    }
-                    while ( lastNode.getLevel() >= level ) {
-                        parent = ( DefaultMutableTreeNode )parent.getParent();
-                        if ( root.equals( parent ) ) {
-                            break;
-                        }
-                        lastNode = ( Node )parent.getUserObject();
-                        if ( lastNode.getLevel() == -2 ) {
-                            parent = ( DefaultMutableTreeNode )parent.getParent();
-                            lastNode = ( Node )parent.getUserObject();
-                        }
-                    }
-                    parent.add( treeNode );
-                    currentTreeNode = treeNode;
-                }
-                */
+
                 previousLine = line;
                 line = lineReader.readLine();
                 ++lineIndex;
@@ -291,8 +291,10 @@ public class MarkdownParser extends SideKickParser {
     }
 
     private int skipToEndOfCode( BufferedReader lineReader ) throws IOException {
-        String line = lineReader.readLine();
+        line = lineReader.readLine();
         int count = 1;
+
+        // code blocks start with 4 or more spaces or a single tab
         while ( line != null && ( line.startsWith( "    " ) || line.startsWith( "\t" ) ) ) {
             ++count;
             line = lineReader.readLine();
@@ -302,14 +304,14 @@ public class MarkdownParser extends SideKickParser {
 
     /**
      * Removes leading #, >, and whitespace from the start of the given line and
-     * removes trailing # from the end of the given line.
+     * removes trailing # and whitespace from the end of the given line.
      * @return the trimmed line
      */
     private String trim( String line ) {
         if ( line == null || line.length() == 0 ) {
             return "";
         }
-        StringBuilder sb = new StringBuilder( line );
+        StringBuilder sb = new StringBuilder( line.trim() );
         while ( sb.charAt( 0 ) == '#' || sb.charAt( 0 ) == '>' || sb.charAt( 0 ) == ' ' || sb.charAt( 0 ) == '\t' ) {
             sb.deleteCharAt( 0 );
         }
@@ -326,5 +328,4 @@ public class MarkdownParser extends SideKickParser {
     private SideKickPosition createEndPosition( Buffer buffer, Node n ) {
         return new SideKickPosition( ElementUtil.createEndPosition( buffer, n ).getOffset() );
     }
-    
 }

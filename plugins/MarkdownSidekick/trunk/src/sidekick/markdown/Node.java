@@ -13,6 +13,7 @@ import sidekick.util.SideKickElement;
  */
 public class Node extends Asset implements Comparable, SideKickElement {
 
+    private int level = 0;
     private Icon icon = null;
     private Location startLocation = new Location();
     private Location endLocation = new Location();
@@ -33,6 +34,14 @@ public class Node extends Asset implements Comparable, SideKickElement {
     
     public Node(String name) {
         super(name);
+    }
+    
+    public void setLevel(int level) {
+        this.level = level;   
+    }
+    
+    public int getLevel() {
+        return level;   
     }
 
     public void setStartLocation(Location start) {
