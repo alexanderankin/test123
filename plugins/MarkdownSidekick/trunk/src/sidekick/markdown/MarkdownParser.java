@@ -107,11 +107,10 @@ public class MarkdownParser extends SideKickParser {
 
             // read a line
             line = lineReader.readLine();
-            String previousLine = null;
             Node n = null;
 
             while ( line != null ) {
-                BlockType bt = getBlockType( line );
+                BlockType bt = getBlockType( line, lineReader );
 
                 n = new Node( trim( line ) );
                 n.setStartLocation( new Location( lineIndex, 0 ) );
@@ -131,21 +130,17 @@ public class MarkdownParser extends SideKickParser {
                         break;
                     case HEADER1S:
                         level = BlockType.HEADER1.ordinal();
-                        if ( isBlankLine( previousLine ) ) {
-                            n = null;
-                        }
-                        else {
-                            n.setName( trim( previousLine ) );
-                        }
+                        n.setName( trim( line ) );
+                        line = lineReader.readLine();  // read ========
+                        n.setEndLocation( new Location( ++lineIndex, line.length() ) );
+                        n.setEnd( createEndPosition( buffer, n ) );
                         break;
                     case HEADER2S:
                         level = BlockType.HEADER2.ordinal();
-                        if ( isBlankLine( previousLine ) ) {
-                            n = null;
-                        }
-                        else {
-                            n.setName( trim( previousLine ) );
-                        }
+                        n.setName( trim( line ) );
+                        line = lineReader.readLine();   // read -------
+                        n.setEndLocation( new Location( ++lineIndex, line.length() ) );
+                        n.setEnd( createEndPosition( buffer, n ) );
                         break;
                     case PARAGRAPH:
                         level = bt.ordinal();
@@ -219,7 +214,6 @@ public class MarkdownParser extends SideKickParser {
                     n = null;
                 }
 
-                previousLine = line;
                 line = lineReader.readLine();
                 ++lineIndex;
             }
@@ -233,7 +227,7 @@ public class MarkdownParser extends SideKickParser {
         return null;
     }
 
-    private BlockType getBlockType( String line ) {
+    private BlockType getBlockType( String line, BufferedReader lineReader ) throws IOException {
         if ( line == null || line.isBlank() ) {
             return BlockType.BLANK;
         }
@@ -255,11 +249,14 @@ public class MarkdownParser extends SideKickParser {
         if ( line.startsWith( "#" ) ) {
             return BlockType.HEADER1;
         }
-        Matcher m = setextH1.matcher( line );
+        lineReader.mark(1024);
+        String nextLine = lineReader.readLine();
+        lineReader.reset();
+        Matcher m = setextH1.matcher( nextLine );
         if ( m.matches() ) {
             return BlockType.HEADER1S;
         }
-        m = setextH2.matcher( line );
+        m = setextH2.matcher( nextLine );
         if ( m.matches() ) {
             return BlockType.HEADER2S;
         }
