@@ -57,10 +57,7 @@ public class MarkdownParser extends SideKickParser {
     private View currentView = null;
     private Pattern setextH1 = Pattern.compile( "^=+?$" );
     private Pattern setextH2 = Pattern.compile( "^-+?$" );
-    private enum BlockType { ROOT, HEADER1, HEADER2, HEADER3, HEADER4, HEADER5, HEADER6, HEADER1S, HEADER2S, PARAGRAPH, QUOTE, CODE, BLANK}
-
-
-    ;
+    private enum BlockType { ROOT, HEADER1, HEADER2, HEADER3, HEADER4, HEADER5, HEADER6, HEADER1S, HEADER2S, PARAGRAPH, QUOTE, CODE, BLANK};
     private String line;
 
     public MarkdownParser() {
@@ -92,7 +89,7 @@ public class MarkdownParser extends SideKickParser {
             boolean showCode = jEdit.getBooleanProperty( "sidekick.markdown.showCode", true );
 
             // set up sidekick data structure
-            int level = BlockType.ROOT.ordinal();    
+            int level = BlockType.ROOT.ordinal();
             String filename = buffer.getPath();
             SideKickParsedData parsedData = new MarkdownSideKickParsedData( filename );
             Node rootNode = new Node( filename );
@@ -138,7 +135,7 @@ public class MarkdownParser extends SideKickParser {
                             n = null;
                         }
                         else {
-                            n.setName(trim(previousLine));   
+                            n.setName( trim( previousLine ) );
                         }
                         break;
                     case HEADER2S:
@@ -147,7 +144,7 @@ public class MarkdownParser extends SideKickParser {
                             n = null;
                         }
                         else {
-                            n.setName(trim(previousLine));   
+                            n.setName( trim( previousLine ) );
                         }
                         break;
                     case PARAGRAPH:
@@ -164,7 +161,7 @@ public class MarkdownParser extends SideKickParser {
                         }
                         break;
                     case QUOTE:
-                        level = bt.ordinal();
+                        level = BlockType.PARAGRAPH.ordinal();
                         lineIndex += skipToBlankLine( lineReader );
                         if ( !showQuotes ) {
                             n = null;
@@ -177,7 +174,7 @@ public class MarkdownParser extends SideKickParser {
                         }
                         break;
                     case CODE:
-                        level = bt.ordinal();
+                        level = BlockType.PARAGRAPH.ordinal();
                         lineIndex += skipToEndOfCode( lineReader );
                         if ( !showCode ) {
                             n = null;
@@ -194,6 +191,7 @@ public class MarkdownParser extends SideKickParser {
                         break;
                 }
 
+
                 // add the node at the appropriate level in the tree
                 if ( n != null ) {
                     n.setLevel( level );
@@ -203,16 +201,18 @@ public class MarkdownParser extends SideKickParser {
                         root.add( treeNode );
                     }
                     else {
-                        Node parentNode = ( Node )parent.getUserObject();    
+                        Node parentNode = ( Node )parent.getUserObject();
                         while ( parentNode.getLevel() >= level ) {
                             parent = ( DefaultMutableTreeNode )parent.getParent();
-                            if ( parent == null || parent.equals(root)) {
-                                root.add(treeNode);
+                            if ( parent == null || parent.equals( root ) ) {
+                                root.add( treeNode );
                                 break;
                             }
                             parentNode = ( Node )parent.getUserObject();
                         }
                         parent.add( treeNode );
+                        parentNode.setEndLocation( n.getEndLocation() );
+                        parentNode.setEnd( n.getEnd() );
                     }
                     rootNode.setEndLocation( n.getEndLocation() );
                     rootNode.setEnd( n.getEnd() );
