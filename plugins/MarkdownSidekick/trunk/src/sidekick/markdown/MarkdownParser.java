@@ -171,7 +171,8 @@ public class MarkdownParser extends SideKickParser {
                         }
                         else {
                             n.setIcon( EclipseIconsPlugin.getIcon( "run_co.gif" ) );
-                            n.setEndLocation( new Location( lineIndex, line.length() ) );
+                            int length = line == null ? 0 : line.length();    // covers end of file situation
+                            n.setEndLocation( new Location( lineIndex, length ) );
                             n.setEnd( createEndPosition( buffer, n ) );
                         }
                         break;
@@ -183,7 +184,8 @@ public class MarkdownParser extends SideKickParser {
                         }
                         else {
                             n.setIcon( EclipseIconsPlugin.getIcon( "class_obj.gif" ) );
-                            n.setEndLocation( new Location( lineIndex, line.length() ) );
+                            int length = line == null ? 0 : line.length();    // covers end of file situation
+                            n.setEndLocation( new Location( lineIndex, length ) );
                             n.setEnd( createEndPosition( buffer, n ) );
                         }
                         break;
