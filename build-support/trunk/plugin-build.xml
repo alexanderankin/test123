@@ -301,7 +301,7 @@
     <!-- This overloads defaults from build-helper.xml
          to have ivy.jar in the same place as jedit builder has.
          Otherwise ivy would be put in ${build.support}/lib/ivy -->
-    <property name="ivy.install.version" value="2.2.0" />
+    <property name="ivy.install.version" value="2.5.0" />
     <condition property="ivy.home" value="${env.IVY_HOME}">
       <isset property="env.IVY_HOME" />
     </condition>
