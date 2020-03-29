@@ -76,7 +76,7 @@ public class FtpPlugin extends EditPlugin
 		{
 			String[] files = GUIUtilities.showVFSFileDialog(
 				view,path,VFSBrowser.SAVE_DIALOG,false);
-			if(files == null)
+			if(files == null || files.length == 0)
 				return;
 
 			view.getBuffer().save(view,files[0],true);
