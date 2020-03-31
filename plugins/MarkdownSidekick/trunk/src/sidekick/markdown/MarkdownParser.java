@@ -252,13 +252,15 @@ public class MarkdownParser extends SideKickParser {
         lineReader.mark(1024);
         String nextLine = lineReader.readLine();
         lineReader.reset();
-        Matcher m = setextH1.matcher( nextLine );
-        if ( m.matches() ) {
-            return BlockType.HEADER1S;
-        }
-        m = setextH2.matcher( nextLine );
-        if ( m.matches() ) {
-            return BlockType.HEADER2S;
+        if (nextLine != null) {
+            Matcher m = setextH1.matcher( nextLine );
+            if ( m.matches() ) {
+                return BlockType.HEADER1S;
+            }
+            m = setextH2.matcher( nextLine );
+            if ( m.matches() ) {
+                return BlockType.HEADER2S;
+            }
         }
         if ( line.startsWith( ">" ) ) {
             return BlockType.QUOTE;
