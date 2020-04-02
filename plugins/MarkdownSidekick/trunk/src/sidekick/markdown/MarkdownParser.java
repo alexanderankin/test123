@@ -57,7 +57,9 @@ public class MarkdownParser extends SideKickParser {
     private View currentView = null;
     private Pattern setextH1 = Pattern.compile( "^=+?$" );
     private Pattern setextH2 = Pattern.compile( "^-+?$" );
-    private enum BlockType { ROOT, HEADER1, HEADER2, HEADER3, HEADER4, HEADER5, HEADER6, HEADER1S, HEADER2S, PARAGRAPH, QUOTE, CODE, BLANK};
+    private enum BlockType { ROOT, HEADER1, HEADER2, HEADER3, HEADER4, HEADER5, HEADER6, HEADER1S, HEADER2S, PARAGRAPH, QUOTE, CODE, BLANK}
+
+    ;
     private String line;
 
     public MarkdownParser() {
@@ -131,20 +133,20 @@ public class MarkdownParser extends SideKickParser {
                     case HEADER1S:
                         level = BlockType.HEADER1.ordinal();
                         n.setName( trim( line ) );
-                        line = lineReader.readLine();  // read ========
+                        line = lineReader.readLine();    // read ========
                         n.setEndLocation( new Location( ++lineIndex, line.length() ) );
                         n.setEnd( createEndPosition( buffer, n ) );
                         break;
                     case HEADER2S:
                         level = BlockType.HEADER2.ordinal();
                         n.setName( trim( line ) );
-                        line = lineReader.readLine();   // read -------
+                        line = lineReader.readLine();    // read -------
                         n.setEndLocation( new Location( ++lineIndex, line.length() ) );
                         n.setEnd( createEndPosition( buffer, n ) );
                         break;
                     case PARAGRAPH:
                         level = bt.ordinal();
-                        lineIndex += skipToBlankLine( lineReader );
+                        lineIndex += skipToParagraphEnd( lineReader );
                         if ( !showParagraphs ) {
                             n = null;
                         }
@@ -157,7 +159,7 @@ public class MarkdownParser extends SideKickParser {
                         break;
                     case QUOTE:
                         level = BlockType.PARAGRAPH.ordinal();
-                        lineIndex += skipToBlankLine( lineReader );
+                        lineIndex += skipToParagraphEnd( lineReader );
                         if ( !showQuotes ) {
                             n = null;
                         }
@@ -249,10 +251,10 @@ public class MarkdownParser extends SideKickParser {
         if ( line.startsWith( "#" ) ) {
             return BlockType.HEADER1;
         }
-        lineReader.mark(1024);
+        lineReader.mark( 1024 );
         String nextLine = lineReader.readLine();
         lineReader.reset();
-        if (nextLine != null) {
+        if ( nextLine != null ) {
             Matcher m = setextH1.matcher( nextLine );
             if ( m.matches() ) {
                 return BlockType.HEADER1S;
@@ -280,13 +282,25 @@ public class MarkdownParser extends SideKickParser {
         }
         return line.isBlank();
     }
-
-    private int skipToBlankLine( BufferedReader lineReader ) throws IOException {
-        line = lineReader.readLine();
+    
+    /**
+     * Paragraph ends at next blank line or next header line, whichever is first.    
+     */
+    private int skipToParagraphEnd( BufferedReader lineReader ) throws IOException {
         int count = 1;
-        while ( !isBlankLine( line ) ) {
-            ++count;
+        lineReader.mark(1024);
+        line = lineReader.readLine();
+        while (line != null) {
+            if (isBlankLine(line)) {
+                return count;   
+            }
+            if (line.startsWith("#")) {
+                lineReader.reset();
+                return count - 1;
+            }
+            lineReader.mark(1024);
             line = lineReader.readLine();
+            ++count;
         }
         return count;
     }
