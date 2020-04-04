@@ -16,7 +16,8 @@ public class ErrorHashSet extends HashSet <ErrorSource.Error>
 
     // overriding 'add' since Error is an interface and doesn't
     // necessarily implement a good 'equals'
-    public boolean add( Error error )
+    @Override
+    public boolean add(Error error )
     {
         if ( !contains( error ) )
         {

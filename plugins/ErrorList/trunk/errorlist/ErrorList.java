@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2007, Dale Anson
  * All rights reserved.
@@ -28,22 +27,14 @@
  */
 package errorlist;
 
-
 import java.awt.*;
-import java.awt.event.*;
-
 import javax.swing.*;
-import javax.swing.event.*;
 
 import org.gjt.sp.jedit.View;
 
-
-/**
- */
-public class ErrorList extends JPanel {
-
-    private ErrorListPanel panel;
-
+public class ErrorList extends JPanel
+{
+    private final ErrorListPanel panel;
 
     public ErrorList( View view ) {
         super( new BorderLayout() );
@@ -55,7 +46,6 @@ public class ErrorList extends JPanel {
         add(panel);
 
     }
-
 
     public void unload() {
         panel.unload();
