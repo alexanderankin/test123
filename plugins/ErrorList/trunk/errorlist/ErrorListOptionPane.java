@@ -168,7 +168,8 @@ public class ErrorListOptionPane extends AbstractOptionPane implements ActionLis
 		changed = false;
 	} //}}}
 	
-	public void actionPerformed(ActionEvent ae) 
+	@Override
+	public void actionPerformed(ActionEvent ae)
 	{
 		changed = true;	
 	}

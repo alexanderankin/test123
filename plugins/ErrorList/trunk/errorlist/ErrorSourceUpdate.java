@@ -149,6 +149,7 @@ public class ErrorSourceUpdate extends EBMessage
 	} //}}}
 
 	//{{{ paramString() method
+	@Override
 	public String paramString()
 	{
 		return super.paramString() + ",what=" + what
@@ -157,8 +158,8 @@ public class ErrorSourceUpdate extends EBMessage
 	} //}}}
 
 	//{{{ Private members
-	private Object what;
-	private ErrorSource errorSource;
+	private final Object what;
+	private final ErrorSource errorSource;
 	private ErrorSource.Error error;
 	private ErrorSource.Error[] errors;
 	//}}}

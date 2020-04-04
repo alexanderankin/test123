@@ -1,4 +1,3 @@
-
 /*
  * ErrorHighlight.java - Highlights error locations in text area
  * :tabSize=4:indentSize=4:noTabs=false:
@@ -22,10 +21,10 @@
  */
 package errorlist;
 
-
-import java.awt.*;
-
 // {{{ Imports
+import java.awt.*;
+import java.util.Arrays;
+
 import javax.swing.text.Segment;
 
 import org.gjt.sp.jedit.EditPane;
@@ -33,10 +32,8 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.*;
 // }}}
 
-
 public class ErrorHighlight extends TextAreaExtension
 {
-
 	// {{{ ErrorHighlight constructor
 	public ErrorHighlight( EditPane editPane )
 	{
@@ -58,19 +55,15 @@ public class ErrorHighlight extends TextAreaExtension
 
 		FontMetrics fm = editPane.getTextArea().getPainter().getFontMetrics();
 
-		for ( int i = 0; i < errorSources.length; i++ )
+		for (ErrorSource errorSource : errorSources)
 		{
-			ErrorSource.Error[] errors = errorSources[i].getLineErrors( editPane.getBuffer().getSymlinkPath(), physicalLine, physicalLine );
-			if ( errors == null )
+			ErrorSource.Error[] errors = errorSource.getLineErrors(editPane.getBuffer().getSymlinkPath(), physicalLine, physicalLine);
+			if (errors == null)
 			{
 				continue;
 			}
 
-			for ( int j = 0; j < errors.length; j++ )
-			{
-				paintError( errors[j], gfx, physicalLine,
-				start, end, y + fm.getAscent() );
-			}
+			Arrays.stream(errors).forEach(error -> paintError(error, gfx, physicalLine, start, end, y + fm.getAscent()));
 		}
 	}	//}}}
 
@@ -94,24 +87,23 @@ public class ErrorHighlight extends TextAreaExtension
 
 		int line = textArea.getLineOfOffset( offset );
 
-		for ( int i = 0; i < errorSources.length; i++ )
+		for (ErrorSource errorSource : errorSources)
 		{
-			ErrorSource.Error[] lineErrors = errorSources[i].getLineErrors( editPane.getBuffer().getSymlinkPath(), line, line );
+			ErrorSource.Error[] lineErrors = errorSource.getLineErrors(editPane.getBuffer().getSymlinkPath(), line, line);
 
-			if ( lineErrors == null )
+			if (lineErrors == null)
 			{
 				continue;
 			}
 
-			int lineStart = textArea.getLineStartOffset( line );
+			int lineStart = textArea.getLineStartOffset(line);
 
-			for ( int j = 0; j < lineErrors.length; j++ )
+			for (ErrorSource.Error error : lineErrors)
 			{
-				ErrorSource.Error error = lineErrors[j];
 				int start = error.getStartOffset();
 				int end = error.getEndOffset();
 
-				if ( ( offset >= start + lineStart && offset <= end + lineStart ) || ( start == 0 && end == 0 ) )
+				if ((offset >= start + lineStart && offset <= end + lineStart) || (start == 0 && end == 0))
 				{
 					return error.getErrorMessage();
 				}
@@ -122,9 +114,9 @@ public class ErrorHighlight extends TextAreaExtension
 	}	//}}}
 
 	// {{{ Private members
-	private EditPane editPane;
-	private Segment seg;
-	private Point point;
+	private final EditPane editPane;
+	private final Segment seg;
+	private final Point point;
 
 	// {{{ paintError() method
 	private void paintError( ErrorSource.Error error, Graphics2D gfx, int line, int _start, int _end, int y )

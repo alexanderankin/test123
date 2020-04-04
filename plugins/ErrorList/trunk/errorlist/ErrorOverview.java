@@ -39,6 +39,7 @@ public class ErrorOverview extends JPanel
 
 		addMouseListener(new MouseAdapter()
 		{
+			@Override
 			public void mousePressed(MouseEvent evt)
 			{
 				int line = yToLine(evt.getY());
@@ -61,6 +62,7 @@ public class ErrorOverview extends JPanel
 	} //}}}
 
 	//{{{ addNotify() method
+	@Override
 	public void addNotify()
 	{
 		super.addNotify();
@@ -68,6 +70,7 @@ public class ErrorOverview extends JPanel
 	} //}}}
 
 	//{{{ removeNotify() method
+	@Override
 	public void removeNotify()
 	{
 		super.removeNotify();
@@ -75,6 +78,7 @@ public class ErrorOverview extends JPanel
 	} //}}}
 
 	//{{{ getToolTipText() method
+	@Override
 	public String getToolTipText(MouseEvent evt)
 	{
 		Buffer buffer = editPane.getBuffer();
@@ -84,22 +88,22 @@ public class ErrorOverview extends JPanel
 		if(line >= 0 && line < textArea.getLineCount())
 		{
 			ErrorSource[] errorSources = ErrorSource.getErrorSources();
-			for(int i = 0; i < errorSources.length; i++)
+			for (ErrorSource errorSource : errorSources)
 			{
-				ErrorSource.Error[] errors = errorSources[i]
+				ErrorSource.Error[] errors = errorSource
 					.getLineErrors(buffer.getSymlinkPath(),
-					line,line);
+						line, line);
 				// if there is no exact match, try next and
 				// prev lines
-				if(errors == null && line != 0)
-					errors = errorSources[i]
-					.getLineErrors(buffer.getPath(),
-					line - 1,line - 1);
-				if(errors == null && line != lineCount - 1)
-					errors = errorSources[i]
-					.getLineErrors(buffer.getPath(),
-					line + 1,line + 1);
-				if(errors != null)
+				if (errors == null && line != 0)
+					errors = errorSource
+						.getLineErrors(buffer.getPath(),
+							line - 1, line - 1);
+				if (errors == null && line != lineCount - 1)
+					errors = errorSource
+						.getLineErrors(buffer.getPath(),
+							line + 1, line + 1);
+				if (errors != null)
 					return errors[0].getErrorMessage();
 			}
 		}
@@ -108,6 +112,7 @@ public class ErrorOverview extends JPanel
 	} //}}}
 
 	//{{{ paintComponent() method
+	@Override
 	public void paintComponent(Graphics gfx)
 	{
 		super.paintComponent(gfx);
@@ -129,29 +134,29 @@ public class ErrorOverview extends JPanel
 		if(line2 >= lineCount)
 			line2 = lineCount - 1;
 
-		for(int i = 0; i < errorSources.length; i++)
+		for (ErrorSource errorSource : errorSources)
 		{
-			ErrorSource.Error[] errors = errorSources[i].getLineErrors(
-				buffer.getSymlinkPath(),line1,line2);
-			if(errors == null)
+			ErrorSource.Error[] errors = errorSource.getLineErrors(
+				buffer.getSymlinkPath(), line1, line2);
+			if (errors == null)
 				continue;
 
-			for(int j = 0; j < errors.length; j++)
+			for (ErrorSource.Error error : errors)
 			{
-				ErrorSource.Error error = errors[j];
 				int line = error.getLineNumber();
-				if(line < line1 || line > line2)
+				if (line < line1 || line > line2)
 					System.err.println("WTF: " + line);
 				int y = lineToY(line);
 
 				gfx.setColor(ErrorListPlugin.getErrorColor(
-					errors[j].getErrorType()));
-				gfx.fillRect(0,y,getWidth(),HILITE_HEIGHT);
+					error.getErrorType()));
+				gfx.fillRect(0, y, getWidth(), HILITE_HEIGHT);
 			}
 		}
 	} //}}}
 
 	//{{{ getPreferredSize() method
+	@Override
 	public Dimension getPreferredSize()
 	{
 		return new Dimension(10,0);
@@ -160,7 +165,7 @@ public class ErrorOverview extends JPanel
 	//{{{ Private members
 	private static final int WIDTH = 10;	// TODO: this isn't used, remove it
 	private static final int HILITE_HEIGHT = 2;
-	private EditPane editPane;
+	private final EditPane editPane;
 
 	//{{{ lineToY() method
 	private int lineToY(int line)

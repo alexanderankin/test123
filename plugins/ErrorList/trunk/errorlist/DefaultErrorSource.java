@@ -38,6 +38,9 @@ import org.gjt.sp.jedit.*;
  */
 public class DefaultErrorSource extends ErrorSource
 {
+	public static final String[] EMPTY_STRING = new String[0];
+	public static final Error[] EMPTY_ERROR_ARRAY = new Error[0];
+
 	//{{{ DefaultErrorSource constructors
 	/**
 	 * Creates a new default error source.
@@ -46,14 +49,15 @@ public class DefaultErrorSource extends ErrorSource
 	*/
 	public DefaultErrorSource(String name, View v)
 	{
-		errors = new LinkedHashMap<String, ErrorListForPath>();
+		errors = new LinkedHashMap<>();
 		this.name = name;
 		this.view = v;
 	}
 
 	/** @deprecated please supply a View using the other ctor. */
 	@Deprecated
-	public DefaultErrorSource(String name) {
+	public DefaultErrorSource(String name)
+	{
 		this(name, null);
 	}//}}}
 
@@ -61,6 +65,7 @@ public class DefaultErrorSource extends ErrorSource
 	/**
 	 * Returns a string description of this error source.
 	 */
+	@Override
 	public String getName()
 	{
 		return name;
@@ -68,6 +73,7 @@ public class DefaultErrorSource extends ErrorSource
 
 	//{{{ getView() method
 	/** Returns the View that messages should be displayed in */
+	@Override
 	public View getView() {
 		return view;
 
@@ -77,6 +83,7 @@ public class DefaultErrorSource extends ErrorSource
 	/**
 	 * Returns the number of errors in this source.
 	 */
+	@Override
 	public int getErrorCount()
 	{
 		return errorCount;
@@ -86,19 +93,17 @@ public class DefaultErrorSource extends ErrorSource
 	/**
 	 * Returns all errors.
 	 */
+	@Override
 	public synchronized ErrorSource.Error[] getAllErrors()
 	{
-		if(errors.size() == 0)
+		if(errors.isEmpty())
 			return null;
 
-		List<Error> errorList = new LinkedList<Error>();
+		List<Error> errorList = new LinkedList<>();
 
-		Iterator<ErrorListForPath> iter = errors.values().iterator();
-		while(iter.hasNext())
-			errorList.addAll(iter.next());
+        errors.values().forEach(errorList::addAll);
 
-		return (ErrorSource.Error[])errorList.toArray(
-			new ErrorSource.Error[errorList.size()]);
+		return errorList.toArray(EMPTY_ERROR_ARRAY);
 	} //}}}
 
 	//{{{ getFileErrorCount() method
@@ -106,9 +111,10 @@ public class DefaultErrorSource extends ErrorSource
 	 * Returns the number of errors in the specified file.
 	 * @param path The full path name
 	 */
+	@Override
 	public int getFileErrorCount(String path)
 	{
-		ErrorListForPath list = (ErrorListForPath)errors.get(path);
+		ErrorListForPath list = errors.get(path);
 		if(list == null)
 			return 0;
 		else
@@ -120,13 +126,14 @@ public class DefaultErrorSource extends ErrorSource
 	 * Returns all errors in the specified file.
 	 * @param path The full path name
 	 */
+	@Override
 	public ErrorSource.Error[] getFileErrors(String path)
 	{
 		ErrorListForPath list = errors.get(path);
-		if(list == null || list.size() == 0)
+		if(list == null || list.isEmpty())
 			return null;
 
-		return list.toArray(new ErrorSource.Error[list.size()]);
+		return list.toArray(EMPTY_ERROR_ARRAY);
 	} //}}}
 
 	//{{{ getLineErrors() method
@@ -137,21 +144,21 @@ public class DefaultErrorSource extends ErrorSource
 	 * @param endLineIndex The line number
 	 * @since ErrorList 1.3
 	 */
-	public ErrorSource.Error[] getLineErrors(String path,
-		int startLineIndex, int endLineIndex)
+	@Override
+	public ErrorSource.Error[] getLineErrors(String path, int startLineIndex, int endLineIndex)
 	{
-		if(errors.size() == 0)
+		if(errors.isEmpty())
 			return null;
 
 		ErrorListForPath list = errors.get(path);
 		if(list == null)
 			return null;
 		Collection<Error> inRange = list.subSetInLineRange(startLineIndex, endLineIndex);
-		if(inRange.size() == 0)
+		if(inRange.isEmpty())
 			return null;
 		else
 		{
-			return inRange.toArray(new ErrorSource.Error[inRange.size()]);
+			return inRange.toArray(EMPTY_ERROR_ARRAY);
 		}
 	} //}}}
 
@@ -171,15 +178,7 @@ public class DefaultErrorSource extends ErrorSource
 
 		if(registered)
 		{
-			SwingUtilities.invokeLater(new Runnable()
-			{
-				public void run()
-				{
-					ErrorSourceUpdate message = new ErrorSourceUpdate(
-						DefaultErrorSource.this, ErrorSourceUpdate.ERRORS_CLEARED);
-					EditBus.send(message);
-				}
-			});
+			SwingUtilities.invokeLater(() -> sendErrorSourceUpdate(ErrorSourceUpdate.ERRORS_CLEARED));
 		}
 	} //}}}
 
@@ -200,17 +199,7 @@ public class DefaultErrorSource extends ErrorSource
 
 		if(registered)
 		{
-			SwingUtilities.invokeLater(new Runnable()
-			{
-				public void run()
-				{
-					for (Error error: list) {
-						ErrorSourceUpdate message = new ErrorSourceUpdate(
-							DefaultErrorSource.this, ErrorSourceUpdate.ERROR_REMOVED, error);
-						EditBus.send(message);
-					}
-				}
-			});
+			SwingUtilities.invokeLater(() -> list.forEach(error -> sendErrorSourceUpdate(ErrorSourceUpdate.ERROR_REMOVED, error)));
 		}
 	} //}}}
 
@@ -219,6 +208,7 @@ public class DefaultErrorSource extends ErrorSource
 	 * Adds an error to this error source. This method is thread-safe.
 	 * @param error The error
 	 */
+	@Override
 	public synchronized void addError(final DefaultError error)
 	{
 		ErrorListForPath list = errors.get(error.getFilePath());
@@ -233,15 +223,7 @@ public class DefaultErrorSource extends ErrorSource
 			removeOrAddToBus();
 			if(registered)
 			{
-				SwingUtilities.invokeLater(new Runnable()
-				{
-					public void run()
-					{
-						ErrorSourceUpdate message = new ErrorSourceUpdate(DefaultErrorSource.this,
-							ErrorSourceUpdate.ERROR_ADDED,error);
-						EditBus.send(message);
-					}
-				});
+				SwingUtilities.invokeLater(() -> sendErrorSourceUpdate(ErrorSourceUpdate.ERROR_ADDED, error));
 			}
 		}
 	} //}}}
@@ -304,26 +286,18 @@ public class DefaultErrorSource extends ErrorSource
 
 		if(message.getWhat() == BufferUpdate.LOADED)
 		{
-			ErrorListForPath list = (ErrorListForPath)errors.get(buffer.getSymlinkPath());
+			ErrorListForPath list = errors.get(buffer.getSymlinkPath());
 			if(list != null)
 			{
-				Iterator<Error> i = list.iterator();
-				while(i.hasNext())
-				{
-					((DefaultError)i.next()).openNotify(buffer);
-				}
+				list.forEach(error -> ((DefaultError) error).openNotify(buffer));
 			}
 		}
 		else if(message.getWhat() == BufferUpdate.CLOSED)
 		{
-			ErrorListForPath list = (ErrorListForPath)errors.get(buffer.getSymlinkPath());
+			ErrorListForPath list = errors.get(buffer.getSymlinkPath());
 			if(list != null)
 			{
-				Iterator<Error> i = list.iterator();
-				while(i.hasNext())
-				{
-					((DefaultError)i.next()).closeNotify(buffer);
-				}
+				list.forEach(error -> ((DefaultError) error).closeNotify(buffer));
 			}
 		}
 	} //}}}
@@ -351,6 +325,19 @@ public class DefaultErrorSource extends ErrorSource
 			addedToBus = true;
 			EditBus.addToBus(this);
 		}
+	} //}}}
+
+
+	//{{{ sendErrorSourceUpdate() method
+	private void sendErrorSourceUpdate(Object what)
+	{
+		EditBus.send(new ErrorSourceUpdate(this, what));
+	} //}}}
+
+	//{{{ sendErrorSourceUpdate() method
+	private void sendErrorSourceUpdate(Object what, ErrorSource.Error error)
+	{
+		EditBus.send(new ErrorSourceUpdate(this, what, error));
 	} //}}}
 
 	//}}}
@@ -397,6 +384,7 @@ public class DefaultErrorSource extends ErrorSource
 		/**
 		 * Returns the error source.
 		 */
+		@Override
 		public ErrorSource getErrorSource()
 		{
 			return source;
@@ -406,6 +394,7 @@ public class DefaultErrorSource extends ErrorSource
 		/**
 		 * Returns the error type.
 		 */
+		@Override
 		public int getErrorType()
 		{
 			return type;
@@ -415,6 +404,7 @@ public class DefaultErrorSource extends ErrorSource
 		/**
 		 * Returns the buffer involved, or null if it is not open.
 		 */
+		@Override
 		public Buffer getBuffer()
 		{
 			return buffer;
@@ -424,6 +414,7 @@ public class DefaultErrorSource extends ErrorSource
 		/**
 		 * Returns the file name involved.
 		 */
+		@Override
 		public String getFilePath()
 		{
 			return path;
@@ -444,6 +435,7 @@ public class DefaultErrorSource extends ErrorSource
 		/**
 		 * Returns the name portion of the file involved.
 		 */
+		@Override
 		public String getFileName()
 		{
 			return name;
@@ -453,6 +445,7 @@ public class DefaultErrorSource extends ErrorSource
 		/**
 		 * Returns the line number.
 		 */
+		@Override
 		public int getLineNumber()
 		{
 			if(startPos != null)
@@ -467,6 +460,7 @@ public class DefaultErrorSource extends ErrorSource
 		/**
 		 * Returns the start offset.
 		 */
+		@Override
 		public int getStartOffset()
 		{
 			if(startPos != null)
@@ -483,6 +477,7 @@ public class DefaultErrorSource extends ErrorSource
 		/**
 		 * Returns the end offset.
 		 */
+		@Override
 		public int getEndOffset()
 		{
 			if(endPos != null)
@@ -499,6 +494,7 @@ public class DefaultErrorSource extends ErrorSource
 		/**
 		 * Returns the error message.
 		 */
+		@Override
 		public String getErrorMessage()
 		{
 			return error;
@@ -522,13 +518,13 @@ public class DefaultErrorSource extends ErrorSource
 		/**
 		 * Returns the error message.
 		 */
+		@Override
 		public String[] getExtraMessages()
 		{
 			if(extras == null)
-				return new String[0];
+				return EMPTY_STRING;
 
-			return (String[])extras.toArray(
-				new String[extras.size()]);
+			return extras.toArray(EMPTY_STRING);
 		} //}}}
 
 		//{{{ toString() method
@@ -630,23 +626,23 @@ public class DefaultErrorSource extends ErrorSource
 		//}}}
 
 		//{{{ Private members
-		private ErrorSource source;
+		private final ErrorSource source;
 
-		private int type;
+		private final int type;
 
 		private String path;
 		private String name;
 		private Buffer buffer;
 
-		private int lineIndex;
+		private final int lineIndex;
 		private int start;
-		private int end;
+		private final int end;
 
 		private Position linePos;
 		private Position startPos;
 		private Position endPos;
 
-		private String error;
+		private final String error;
 		private List<String> extras;
 		//}}}
 	} //}}}
@@ -677,6 +673,7 @@ public class DefaultErrorSource extends ErrorSource
 		 */
 		private static class ErrorComparator implements Comparator<Error>
 		{
+			@Override
 			public int compare(Error e1, Error e2)
 			{
 				int line1 = e1.getLineNumber();
@@ -730,30 +727,40 @@ public class DefaultErrorSource extends ErrorSource
 		 */
 		private static class LineKey implements ErrorSource.Error
 		{
-			private int line;
+			private final int line;
 
-			public LineKey(int line)
+			LineKey(int line)
 			{
 				this.line = line;
 			}
 
+			@Override
 			public int getLineNumber()
 			{
 				return line;
 			}
 
+			@Override
 			public String getErrorMessage()
 			{
 				return "";
 			}
 
+			@Override
 			public int getErrorType() { return 0; }
+			@Override
 			public ErrorSource getErrorSource() { return null; }
+			@Override
 			public Buffer getBuffer() { return null; }
+			@Override
 			public String getFilePath() { return null; }
+			@Override
 			public String getFileName() { return null; }
+			@Override
 			public int getStartOffset() { return 0; }
+			@Override
 			public int getEndOffset() { return 0; }
+			@Override
 			public String[] getExtraMessages() { return null; }
 		} ///}}}
 	} ///}}}

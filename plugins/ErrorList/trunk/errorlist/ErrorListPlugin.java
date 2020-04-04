@@ -24,6 +24,7 @@ package errorlist;
 
 //{{{ Imports
 import java.awt.*;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import org.gjt.sp.jedit.*;
@@ -35,6 +36,7 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextAreaExtension;
 //}}}
 import org.gjt.sp.util.StandardUtilities;
+import org.gjt.sp.util.SyntaxUtilities;
 
 public class ErrorListPlugin extends EditPlugin
 {
@@ -44,16 +46,17 @@ public class ErrorListPlugin extends EditPlugin
 	static final String SHOW_ICONS_IN_GUTTER = "error-list.showIconsInGutter";
 
 	//{{{ start() method
+	@Override
 	public void start()
 	{
 		View view = jEdit.getFirstView();
 		while(view != null)
 		{
 			EditPane[] panes = view.getEditPanes();
-			for(int i = 0; i < panes.length; i++)
+			for (EditPane pane : panes)
 			{
-				initEditPane(panes[i]);
-				addErrorOverviewIfErrors(panes[i]);
+				initEditPane(pane);
+				addErrorOverviewIfErrors(pane);
 			}
 			view = view.getNext();
 		}
@@ -63,6 +66,7 @@ public class ErrorListPlugin extends EditPlugin
 	} //}}}
 
 	//{{{ stop() method
+	@Override
 	public void stop()
 	{
 		EditBus.removeFromBus(this);
@@ -70,10 +74,10 @@ public class ErrorListPlugin extends EditPlugin
 		while(view != null)
 		{
 			EditPane[] panes = view.getEditPanes();
-			for(int i = 0; i < panes.length; i++)
+			for (EditPane pane : panes)
 			{
-				uninitEditPane(panes[i]);
-				removeErrorOverview(panes[i]);
+				uninitEditPane(pane);
+				removeErrorOverview(pane);
 			}
 			ErrorList errorList = (ErrorList)
 				view.getDockableWindowManager().getDockable("error-list");
@@ -116,9 +120,8 @@ public class ErrorListPlugin extends EditPlugin
 			while(view != null)
 			{
 				EditPane[] editPanes = view.getEditPanes();
-				for(int i = 0; i < editPanes.length; i++)
+				for (EditPane pane : editPanes)
 				{
-					EditPane pane = editPanes[i];
 					pane.getTextArea().getPainter().repaint();
 					addErrorOverviewIfErrors(pane);
 				}
@@ -170,8 +173,7 @@ public class ErrorListPlugin extends EditPlugin
 		while(view != null)
 		{
 			EditPane[] panes = view.getEditPanes();
-			for(int i = 0; i < panes.length; i++)
-				addErrorOverviewIfErrors(panes[i]);
+            Arrays.stream(panes).forEach(ErrorListPlugin::addErrorOverviewIfErrors);
 			view = view.getNext();
 		}
 	} //}}}
@@ -251,7 +253,7 @@ public class ErrorListPlugin extends EditPlugin
 	private static boolean isInclusionFilter;
 
 	//{{{ isErrorFiltered()
-	private boolean isErrorFiltered(ErrorSource.Error error)
+	private static boolean isErrorFiltered(ErrorSource.Error error)
 	{
 		// Check if the type of error is filtered
 		if (jEdit.getBooleanProperty(
@@ -272,16 +274,14 @@ public class ErrorListPlugin extends EditPlugin
 	} //}}}
 
 	//{{{ propertiesChanged() method
-	private void propertiesChanged()
+	private static void propertiesChanged()
 	{
 		showOnError = jEdit.getBooleanProperty("error-list.showOnError");
 		showErrorOverview = jEdit.getBooleanProperty("error-list.showErrorOverview");
-		warningColor = GUIUtilities.parseColor(jEdit.getProperty(
-			"error-list.warningColor"));
-		errorColor = GUIUtilities.parseColor(jEdit.getProperty(
-			"error-list.errorColor"));
+		warningColor = SyntaxUtilities.parseColor(jEdit.getProperty("error-list.warningColor"), Color.black);
+		errorColor = SyntaxUtilities.parseColor(jEdit.getProperty("error-list.errorColor"), Color.black);
 		String globFilter = jEdit.getProperty(FILENAME_FILTER);
-		if (globFilter != null && globFilter.length() > 0)
+		if (globFilter != null && !globFilter.isEmpty())
 			filter = Pattern.compile(StandardUtilities.globToRE(globFilter));
 		else
 			filter = null;
@@ -291,18 +291,18 @@ public class ErrorListPlugin extends EditPlugin
 		while(view != null)
 		{
 			EditPane[] panes = view.getEditPanes();
-			for(int i = 0; i < panes.length; i++)
+			for (EditPane pane : panes)
 			{
-				uninitEditPane(panes[i]);
-				initEditPane(panes[i]);
-				addErrorOverviewIfErrors(panes[i]);
+				uninitEditPane(pane);
+				initEditPane(pane);
+				addErrorOverviewIfErrors(pane);
 			}
 			view = view.getNext();
 		}
 	} //}}}
 
 	//{{{ initEditPane() method
-	private void initEditPane(EditPane editPane)
+	private static void initEditPane(EditPane editPane)
 	{
 		JEditTextArea textArea = editPane.getTextArea();
 		TextAreaExtension ext;
@@ -322,7 +322,7 @@ public class ErrorListPlugin extends EditPlugin
 	} //}}}
 
 	//{{{ uninitEditPane() method
-	private void uninitEditPane(EditPane editPane)
+	private static void uninitEditPane(EditPane editPane)
 	{
 		JEditTextArea textArea = editPane.getTextArea();
 		TextAreaExtension ext = (TextAreaExtension)
@@ -343,23 +343,22 @@ public class ErrorListPlugin extends EditPlugin
 
 	//{{{ showErrorList() method
 	// TODO: parameter 'message' is not used, remove it
-	private void showErrorList(ErrorSourceUpdate message, View view)
+	private static void showErrorList(ErrorSourceUpdate message, View view)
 	{
 		DockableWindowManager dwm = view.getDockableWindowManager();
 		dwm.addDockableWindow("error-list");
 	} //}}}
 
 	//{{{ invalidateLineInAllViews() method
-	private void invalidateLineInAllViews(Buffer buffer, int line)
+	private static void invalidateLineInAllViews(Buffer buffer, int line)
 	{
 		View view = jEdit.getFirstView();
 		while(view != null)
 		{
 			EditPane[] editPanes = view.getEditPanes();
-			for(int i = 0; i < editPanes.length; i++)
+			for (EditPane pane : editPanes)
 			{
-				EditPane pane = editPanes[i];
-				if(pane.getBuffer() == buffer)
+				if (pane.getBuffer() == buffer)
 				{
 					pane.getTextArea().invalidateLine(line);
 					addErrorOverviewIfErrors(pane);
@@ -371,17 +370,16 @@ public class ErrorListPlugin extends EditPlugin
 	} //}}}
 
 	//{{{ addErrorOverviewIfErrors() method
-	private void addErrorOverviewIfErrors(EditPane editPane)
+	private static void addErrorOverviewIfErrors(EditPane editPane)
 	{
 		Buffer buffer = editPane.getBuffer();
 
 		if(showErrorOverview)
 		{
 			ErrorSource[] errorSources = ErrorSource.getErrorSources();
-			for(int i = 0; i < errorSources.length; i++)
+			for (ErrorSource source : errorSources)
 			{
-				ErrorSource source = errorSources[i];
-				if(source.getFileErrors(buffer.getSymlinkPath()) != null)
+				if (source.getFileErrors(buffer.getSymlinkPath()) != null)
 				{
 					addErrorOverview(editPane);
 					return;
@@ -395,7 +393,7 @@ public class ErrorListPlugin extends EditPlugin
 	} //}}}
 	
 	//{{{ doErrorsExist() method
-	private boolean doErrorsExist()
+	private static boolean doErrorsExist()
 	{
 		for(ErrorSource errorSource: ErrorSource.getErrorSources())
 		{

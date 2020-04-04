@@ -35,9 +35,10 @@ import org.gjt.sp.jedit.textarea.TextAreaExtension;
   * Gutter Icon to indicate an error.
   * @author Shlomy Reinstein
   */
-public class ErrorGutterIcon extends TextAreaExtension {
+public class ErrorGutterIcon extends TextAreaExtension
+{
+	private final EditPane editPane;
 
-	private EditPane editPane;
 	private static final int FOLD_MARKER_SIZE = 12;
 		// Taken from Gutter... Unfortunately it is private there
 
@@ -47,7 +48,9 @@ public class ErrorGutterIcon extends TextAreaExtension {
 		this.editPane = editPane;
 	} //}}}
 
-	public String getToolTipText(int x, int y) {
+	@Override
+	public String getToolTipText(int x, int y)
+	{
 		ErrorSource[] errorSources = ErrorSource.getErrorSources();
 		if(!editPane.getBuffer().isLoaded())
 			return null;
@@ -60,7 +63,7 @@ public class ErrorGutterIcon extends TextAreaExtension {
 
 		int line = textArea.getLineOfOffset(offset);
 
-		StringBuffer errMsg = new StringBuffer(128);
+		StringBuilder errMsg = new StringBuilder(128);
 		for(int i = 0; i < errorSources.length; i++)
 		{
 			ErrorSource.Error[] lineErrors =
@@ -72,17 +75,16 @@ public class ErrorGutterIcon extends TextAreaExtension {
 				continue;
 
 			errMsg.append("<html>");
-			for(int j = 0; j < lineErrors.length; j++)
+			for (ErrorSource.Error error : lineErrors)
 			{
-				ErrorSource.Error error = lineErrors[j];
 				errMsg.append(error.getErrorMessage());
-                errMsg.append("<br>");
-                for(String extra : error.getExtraMessages())
-                {
-                    errMsg.append("__");
-                    errMsg.append(extra);
-                    errMsg.append("<br>");
-                }
+				errMsg.append("<br>");
+				for (String extra : error.getExtraMessages())
+				{
+					errMsg.append("__");
+					errMsg.append(extra);
+					errMsg.append("<br>");
+				}
 			}
 			errMsg.append("</html>");
 		}
@@ -92,22 +94,23 @@ public class ErrorGutterIcon extends TextAreaExtension {
 		return null;
 	}
 
-	public void paintValidLine(Graphics2D gfx, int screenLine,
-			int physicalLine, int start, int end, int y) {
+	@Override
+	public void paintValidLine(Graphics2D gfx, int screenLine, int physicalLine, int start, int end, int y)
+	{
 		ErrorSource[] errorSources = ErrorSource.getErrorSources();
 		if(errorSources == null)
 			return;
 
-		for (int i = 0; i < errorSources.length; i++)
+		for (ErrorSource errorSource : errorSources)
 		{
-			ErrorSource.Error[] errors = errorSources[i].getLineErrors(
+			ErrorSource.Error[] errors = errorSource.getLineErrors(
 				editPane.getBuffer().getSymlinkPath(), physicalLine, physicalLine);
-			if(errors == null)
+			if (errors == null)
 				continue;
 			boolean isError = false;
-			for (int j = 0; j < errors.length; j++)
+			for (ErrorSource.Error error : errors)
 			{
-				if (errors[j].getErrorType() == ErrorSource.ERROR)
+				if (error.getErrorType() == ErrorSource.ERROR)
 				{
 					isError = true;
 					break;
@@ -118,8 +121,8 @@ public class ErrorGutterIcon extends TextAreaExtension {
 			// Center the icon in the gutter line
 			int lineHeight = textArea.getPainter().getFontMetrics().getHeight();
 			Point iconPos = new Point(
-					(FOLD_MARKER_SIZE - icon.getIconWidth()) / 2,
-					y + (lineHeight - icon.getIconHeight()) / 2);
+				(FOLD_MARKER_SIZE - icon.getIconWidth()) / 2,
+				y + (lineHeight - icon.getIconHeight()) / 2);
 			gfx.drawImage(icon.getImage(), iconPos.x, iconPos.y, null);
 		}
 	}
