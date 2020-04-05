@@ -19,9 +19,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-
 package common.gui;
-
 
 import java.awt.*;
 import java.awt.event.*;
@@ -30,7 +28,6 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.*;
 import org.gjt.sp.util.Log;
-
 
 /** An extension of the default Swing JTable, that passes action key events,
  * displays tooltips and autoresizes columns.<p>
@@ -68,32 +65,27 @@ import org.gjt.sp.util.Log;
  */
 public class HelpfulJTable extends JTable
 {
-
-	public final static int SORT_OFF = -1;
-	public final static int SORT_ASCENDING = 1;
-	public final static int SORT_DESCENDING = 2;
-
+	public static final int SORT_OFF = -1;
+	public static final int SORT_ASCENDING = 1;
+	public static final int SORT_DESCENDING = 2;
 
 	public HelpfulJTable() {
-		super();
 		super.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
 		KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
 		KeyStroke tab = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0);
 		KeyStroke shifttab = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, InputEvent.SHIFT_MASK);
 
-		this.unregisterKeyboardAction(enter);
-		this.unregisterKeyboardAction(tab);
+		unregisterKeyboardAction(enter);
+		unregisterKeyboardAction(tab);
 
-		KeyHandler kh = new KeyHandler();
+		registerKeyboardAction(this::fireActionEvent, "enter-pressed", enter, JComponent.WHEN_FOCUSED);
+		registerKeyboardAction(this::fireActionEvent, "tab-pressed", tab, JComponent.WHEN_FOCUSED);
+		registerKeyboardAction(this::fireActionEvent, "shift-tab-pressed", shifttab, JComponent.WHEN_FOCUSED);
 
-		this.registerKeyboardAction(kh, "enter-pressed", enter, JComponent.WHEN_FOCUSED);
-		this.registerKeyboardAction(kh, "tab-pressed", tab, JComponent.WHEN_FOCUSED);
-		this.registerKeyboardAction(kh, "shift-tab-pressed", shifttab, JComponent.WHEN_FOCUSED);
+		addMouseListener(new TooltipMouseHandler());
 
-		this.addMouseListener(new TooltipMouseHandler());
-
-		if (this.getTableHeader() != null) {
+		if (getTableHeader() != null) {
 			this.getTableHeader().setResizingAllowed(false);
 		}
 	}
@@ -151,7 +143,7 @@ public class HelpfulJTable extends JTable
 		int oldSortColumn = this.sortColumn;
 		this.sortColumn = sortColumn;
 		if (oldSortColumn != this.sortColumn)
-			firePropertyChange("sortColumn", new Integer(oldSortColumn), new Integer(this.sortColumn));
+			firePropertyChange("sortColumn", Integer.valueOf(oldSortColumn), Integer.valueOf(this.sortColumn));
 	}
 
 
@@ -174,10 +166,10 @@ public class HelpfulJTable extends JTable
 		if (order != SORT_ASCENDING && order != SORT_DESCENDING && order != SORT_OFF)
 			throw new IllegalArgumentException("sortOrder must be one of: SORT_ASCENDING, SORT_DESCENDING, SORT_OFF");
 
-		int oldSortOrder = this.sortOrder;
-		this.sortOrder = order;
-		if (oldSortOrder != this.sortOrder)
-			firePropertyChange("sortOrder", new Integer(oldSortOrder), new Integer(this.sortOrder));
+		int oldSortOrder = sortOrder;
+		sortOrder = order;
+		if (oldSortOrder != sortOrder)
+			firePropertyChange("sortOrder", Integer.valueOf(oldSortOrder), Integer.valueOf(sortOrder));
 	}
 
 
@@ -190,6 +182,7 @@ public class HelpfulJTable extends JTable
 	 * Overridden, so that any attempts to set a mode other than
 	 * AUTO_RESIZE_OFF are ignored, if autoResizeColumns is on.
 	 */
+	@Override
 	public void setAutoResizeMode(int mode) {
 		if (autoResizeColumns)
 			return;
@@ -201,6 +194,7 @@ public class HelpfulJTable extends JTable
 	 * Overridden, so that any attempts to set a TableHeader with
 	 * <tt>resizingAllowed = true</tt> is set back to <tt>false</tt>.
 	 */
+	@Override
 	public void setTableHeader(JTableHeader th) {
 		super.setTableHeader(th);
 		if (th != null) {
@@ -220,6 +214,7 @@ public class HelpfulJTable extends JTable
 	 * This implementation also sets new header renderers that display the
 	 * current sort column with a small icon.
 	 */
+	@Override
 	public void setColumnModel(TableColumnModel tcm) {
 		super.setColumnModel(tcm);
 		// set header renderer for all columns:
@@ -227,23 +222,21 @@ public class HelpfulJTable extends JTable
 			columnModel.getColumn(i).setHeaderRenderer(new SortTableHeaderRenderer(i));
 	}
 
-
 	/** Add an action listener to this table instance. */
 	public void addActionListener(ActionListener l) {
 		listenerList.add(ActionListener.class, l);
 	}
-
 
 	/** Remove an action listener from this table instance. */
 	public void removeActionListener(ActionListener l) {
 		listenerList.remove(ActionListener.class, l);
 	}
 
-
 	/**
 	 * Overridden to return null, if the cell is fully visible, so that
 	 * ToolTips are only displayed if the cell is partially hidden.
 	 */
+	@Override
 	public final String getToolTipText(MouseEvent evt) {
 		if (getToolTipLocation(evt) == null)
 			return null;
@@ -251,11 +244,11 @@ public class HelpfulJTable extends JTable
 			return super.getToolTipText(evt);
 	}
 
-
 	/**
 	 * Overridden to return null, if the cell is fully visible, so that
 	 * ToolTips are only displayed if the cell is partially hidden.
 	 */
+	@Override
 	public final Point getToolTipLocation(MouseEvent evt) {
 		int col = columnAtPoint(evt.getPoint());
 		int row = rowAtPoint(evt.getPoint());
@@ -276,7 +269,6 @@ public class HelpfulJTable extends JTable
 		}
 	}
 
-
 	/** Autosizes the specified column to the width of its longest cell. */
 	public void autosizeColumn(int col) {
 		int width = getLongestCellTextWidth(col);
@@ -289,12 +281,11 @@ public class HelpfulJTable extends JTable
 		}
 	}
 
-
-
 	/**
 	 * Invoked when the table data has changed, this method autoresizes
 	 * all columns to its longest content length, if autoResizeColumns is on.
 	 */
+	@Override
 	public void tableChanged(TableModelEvent e) {
 		super.tableChanged(e);
 
@@ -319,13 +310,12 @@ public class HelpfulJTable extends JTable
 
 
 	/** Overwritten to autoscroll only vertically, not horizontally. */
+	@Override
 	public void changeSelection(int rowIndex, int columnIndex, boolean toggle, boolean extend) {
 		if (getAutoscrolls()) {
 			Rectangle cellRect = getCellRect(rowIndex, columnIndex, false);
-			if (cellRect != null) {
-				cellRect.width = 0;
-				scrollRectToVisible(cellRect);
-			}
+			cellRect.width = 0;
+			scrollRectToVisible(cellRect);
 		}
 
 		// Update column selection model:
@@ -507,20 +497,9 @@ public class HelpfulJTable extends JTable
 			Log.log(Log.ERROR, HelpfulJTable.class, "Error fetching image sort_down.gif");
 	}
 
-
-	private class KeyHandler implements ActionListener
-	{
-
-		public void actionPerformed(ActionEvent evt) {
-			fireActionEvent(evt);
-		}
-
-	}
-
-
 	class TooltipMouseHandler extends MouseAdapter
 	{
-
+		@Override
 		public void mouseEntered(MouseEvent evt) {
 			ToolTipManager ttm = ToolTipManager.sharedInstance();
 			toolTipInitialDelay = ttm.getInitialDelay();
@@ -529,23 +508,20 @@ public class HelpfulJTable extends JTable
 			ttm.setReshowDelay(0);
 		}
 
-
+		@Override
 		public void mouseExited(MouseEvent evt) {
 			ToolTipManager ttm = ToolTipManager.sharedInstance();
 			ttm.setInitialDelay(toolTipInitialDelay);
 			ttm.setReshowDelay(toolTipReshowDelay);
 		}
 
-
 		private int toolTipInitialDelay = -1;
 		private int toolTipReshowDelay = -1;
-
 	}
-
 
 	class TableHeaderMouseHandler extends MouseAdapter
 	{
-
+		@Override
 		public void mouseClicked(MouseEvent evt) {
 			int col = getColumnModel().getColumnIndexAtX(evt.getX());
 			if (col < 0)
@@ -588,16 +564,14 @@ public class HelpfulJTable extends JTable
 
 	class SortTableHeaderRenderer extends DefaultTableCellRenderer
 	{
-
-		public SortTableHeaderRenderer(int viewColumn) {
-			super();
+		SortTableHeaderRenderer(int viewColumn) {
 			this.viewColumn = viewColumn;
 			setHorizontalAlignment(SwingConstants.LEADING);
 			setHorizontalTextPosition(SwingConstants.LEADING);
 			setBorder(UIManager.getBorder("TableHeader.cellBorder"));
 		}
 
-
+		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
 			setText(value == null ? "" : value.toString());
 			if (viewColumn == sortColumn)
@@ -611,10 +585,7 @@ public class HelpfulJTable extends JTable
 			return this;
 		}
 
-
-		private int viewColumn;
-
+		private final int viewColumn;
 	}
-
 }
 
