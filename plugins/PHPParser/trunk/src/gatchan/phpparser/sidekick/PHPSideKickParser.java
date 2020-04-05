@@ -21,7 +21,6 @@
 package gatchan.phpparser.sidekick;
 
 //{{{ Imports
-import com.sun.org.apache.bcel.internal.classfile.Constant;
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 import gatchan.phpparser.PHPErrorSource;
