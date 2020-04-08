@@ -23,7 +23,6 @@
 package gatchan.jedit.hyperlinks.configurable;
 
 //{{{ Imports
-import java.net.URL;
 import java.util.*;
 import java.io.StringReader;
 
@@ -31,7 +30,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.helpers.DefaultHandler;
 
-import org.gjt.sp.util.XMLUtilities;
 import org.gjt.sp.util.Log;
 //}}}
 
@@ -40,9 +38,9 @@ import org.gjt.sp.util.Log;
  */
 public class ConfigurableHyperlinksHandler extends DefaultHandler
 {
-
 	//{{{ resolveEntity() method
-	public InputSource resolveEntity(String publicId, String systemId) 
+	@Override
+	public InputSource resolveEntity(String publicId, String systemId)
 	{
 		// could have used EntityResolver2.resolveEntity(4),
 		// but it's not always available 
@@ -55,6 +53,7 @@ public class ConfigurableHyperlinksHandler extends DefaultHandler
 	} //}}}
 
 	//{{{ characters() method
+	@Override
 	public void characters(char[] c, int off, int len)
 	{
 		String tag = peekElement();
@@ -67,8 +66,8 @@ public class ConfigurableHyperlinksHandler extends DefaultHandler
 	} //}}}
 
 	//{{{ startElement() method
-	public void startElement(String uri, String localName,
-				 String tag, Attributes attrs)
+	@Override
+	public void startElement(String uri, String localName, String tag, Attributes attrs)
 	{
 		pushElement(tag);
 		if(tag.equals("HYPERLINKSOURCE"))
@@ -80,6 +79,7 @@ public class ConfigurableHyperlinksHandler extends DefaultHandler
 	} //}}}
 
 	//{{{ endElement() method
+	@Override
 	public void endElement(String uri, String localName, String name)
 	{
 		String tag = peekElement();
@@ -103,7 +103,9 @@ public class ConfigurableHyperlinksHandler extends DefaultHandler
 				code.setLength(0);
 				tooltip.setLength(0);
 				regex.setLength(0);
-			} else if (tag.equals("HYPERLINKSOURCE")) {
+			}
+			else if (tag.equals("HYPERLINKSOURCE"))
+			{
 				source.trimToSize();
 				sources.put(sourceName,source);
 				source = new ArrayList<ConfigurableHyperlinkData>();
@@ -119,14 +121,15 @@ public class ConfigurableHyperlinksHandler extends DefaultHandler
 	} //}}}
 
 	//{{{ startDocument() method
+	@Override
 	public void startDocument()
 	{
 		code = new StringBuilder();
 		regex = new StringBuilder();
 		tooltip = new StringBuilder();
-		stateStack = new Stack<String>();
-		sources = new HashMap<String,ArrayList<ConfigurableHyperlinkData>>();
-		source = new ArrayList<ConfigurableHyperlinkData>();
+		stateStack = new Stack<>();
+		sources = new HashMap<>();
+		source = new ArrayList<>();
 		try
 		{
 			pushElement(null);
@@ -136,7 +139,7 @@ public class ConfigurableHyperlinksHandler extends DefaultHandler
 			Log.log(Log.ERROR, e, e);
 		}
 	} //}}}
-	
+
 	//{{{ getSources() method
 	public HashMap<String, ArrayList<ConfigurableHyperlinkData>> getSources()
 	{
@@ -154,7 +157,7 @@ public class ConfigurableHyperlinksHandler extends DefaultHandler
 	private StringBuilder tooltip;
 
 	private Stack<String> stateStack;
-	
+
 	private HashMap<String,ArrayList<ConfigurableHyperlinkData>> sources;
 	private ArrayList<ConfigurableHyperlinkData> source;
 
