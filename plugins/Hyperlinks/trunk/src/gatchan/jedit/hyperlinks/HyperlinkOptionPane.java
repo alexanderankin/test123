@@ -34,7 +34,6 @@ import javax.swing.*;
 import java.util.Arrays;
 //}}}
 
-
 /**
  * @author Matthieu Casanova
  * @version $Id: Buffer.java 8190 2006-12-07 07:58:34Z kpouer $
@@ -49,26 +48,25 @@ public class HyperlinkOptionPane extends AbstractOptionPane
 
 	//{{{ _init() method
 	@Override
-    public void _init()
+	public void _init()
 	{
 		hyperlinkColor = new ColorWellButton(jEdit.getColorProperty("options.hyperlink.color.value"));
 		String[] serviceNames = ServiceManager.getServiceNames(HyperlinkSource.SERVICE);
-		Arrays.sort(serviceNames, new StandardUtilities.StringCompare(true));
+		Arrays.sort(serviceNames, new StandardUtilities.StringCompare<>(true));
 		StringList sl = new StringList();
 		sl.add(HyperlinkSource.NONE);
 		sl.addAll(serviceNames);
 
-		defaultSource = new JComboBox(sl.toArray());
+		defaultSource = new JComboBox<>(sl.toArray());
 		String defaultSourceName = jEdit.getProperty(HyperlinkSource.DEFAULT_PROPERTY);
 		defaultSource.setSelectedItem(defaultSourceName);
 		addComponent(jEdit.getProperty("options.hyperlink.color.label"), hyperlinkColor);
 		addComponent(jEdit.getProperty(HyperlinkSource.DEFAULT_PROPERTY + ".label"), defaultSource);
 	} //}}}
 
-
 	//{{{ _save() method
 	@Override
-    public void _save()
+	public void _save()
 	{
 		jEdit.setColorProperty("options.hyperlink.color.value", hyperlinkColor.getSelectedColor());
 		String selected = (String) defaultSource.getSelectedItem();
@@ -86,7 +84,7 @@ public class HyperlinkOptionPane extends AbstractOptionPane
 
 	//{{{ Instance variables
 	private ColorWellButton hyperlinkColor;
-	private JComboBox defaultSource;
+	private JComboBox<String> defaultSource;
 	//}}}
 
 	//}}}
