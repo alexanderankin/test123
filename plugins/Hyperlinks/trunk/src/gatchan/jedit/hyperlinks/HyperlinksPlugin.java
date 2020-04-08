@@ -29,6 +29,8 @@ import java.io.*;
 import org.gjt.sp.util.XMLUtilities;
 import org.gjt.sp.util.Log;
 import java.util.*;
+import java.util.stream.Stream;
+
 import gatchan.jedit.hyperlinks.configurable.*;
 
 /**
@@ -43,21 +45,15 @@ public class HyperlinksPlugin extends EditPlugin
 	private File hyperlinksFile;
 	
 	@Override
-    public void start()
+	public void start()
 	{
 		EditBus.addToBus(this);
-		View view = jEdit.getFirstView();
-		while (view != null)
-		{
-			EditPane[] panes = view.getEditPanes();
-			for (int i = 0; i < panes.length; i++)
-			{
-				JEditTextArea textArea = panes[i].getTextArea();
-				initTextArea(textArea);
-			}
-			view = view.getNext();
-		}
-		
+		Arrays
+			.stream(jEdit.getViews())
+			.flatMap(view -> Stream.of(view.getEditPane()))
+			.map(EditPane::getTextArea)
+			.forEach(HyperlinksPlugin::initTextArea);
+
 		// initialize configurable hyperlinks
 		handler = new ConfigurableHyperlinksHandler();
 		hyperlinksFile = new File(getPluginHome(), "hyperlinks.xml");
@@ -82,20 +78,14 @@ public class HyperlinksPlugin extends EditPlugin
 	}
 
 	@Override
-    public void stop()
+	public void stop()
 	{
-        EditBus.removeFromBus(this);
-		View view = jEdit.getFirstView();
-		while (view != null)
-		{
-			EditPane[] panes = view.getEditPanes();
-			for (int i = 0; i < panes.length; i++)
-			{
-				JEditTextArea textArea = panes[i].getTextArea();
-				uninitTextArea(textArea);
-			}
-			view = view.getNext();
-		}
+		EditBus.removeFromBus(this);
+		Arrays
+			.stream(jEdit.getViews())
+			.flatMap(view -> Stream.of(view.getEditPane()))
+			.map(EditPane::getTextArea)
+			.forEach(HyperlinksPlugin::uninitTextArea);
 	}
 
 	private static void uninitTextArea(JEditTextArea textArea)
@@ -110,13 +100,13 @@ public class HyperlinksPlugin extends EditPlugin
 		textArea.putClientProperty(HyperlinkManager.class, new HyperlinkManager(textArea));
 	}
 
-    @EditBus.EBHandler
+	@EditBus.EBHandler
 	public void handlePropertiesChanged(PropertiesChanged message)
 	{
-        HyperlinkTextAreaPainter.color = jEdit.getColorProperty("options.hyperlink.color.value");
-    }
+		HyperlinkTextAreaPainter.color = jEdit.getColorProperty("options.hyperlink.color.value");
+	}
 
-    @EditBus.EBHandler
+	@EditBus.EBHandler
 	public void handleEditPaneMessage(EditPaneUpdate message)
 	{
 		JEditTextArea textArea = message.getEditPane().getTextArea();
@@ -140,7 +130,7 @@ public class HyperlinksPlugin extends EditPlugin
 		registerConfigurableHyperlinkSources();
 	}
 	
-	public ArrayList<ConfigurableHyperlinkData> getHyperlinkData(String name)
+	public List<ConfigurableHyperlinkData> getHyperlinkData(String name)
 	{
 		return sources.get(name);
 	}
