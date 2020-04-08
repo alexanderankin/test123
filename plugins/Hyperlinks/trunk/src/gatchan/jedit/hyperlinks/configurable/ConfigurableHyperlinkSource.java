@@ -20,16 +20,13 @@
  */
 package gatchan.jedit.hyperlinks.configurable;
 
-import java.util.Scanner;
+import java.util.List;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.ArrayList;
 
 import gatchan.jedit.hyperlinks.Hyperlink;
 import gatchan.jedit.hyperlinks.HyperlinkSource;
 import gatchan.jedit.hyperlinks.HyperlinksPlugin;
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.TextUtilities;
 import org.gjt.sp.jedit.jEdit;
 
 /**
@@ -40,8 +37,8 @@ import org.gjt.sp.jedit.jEdit;
 public class ConfigurableHyperlinkSource implements HyperlinkSource
 {
 	private Hyperlink currentLink;
-	private String name;
-	private ArrayList<ConfigurableHyperlinkData> dataArray;
+	private final String name;
+	private final List<ConfigurableHyperlinkData> dataArray;
 	
 	public ConfigurableHyperlinkSource(String name) {
 		this.name = name;

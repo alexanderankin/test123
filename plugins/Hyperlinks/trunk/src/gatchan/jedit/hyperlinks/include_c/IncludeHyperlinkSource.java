@@ -20,17 +20,12 @@
  */
 package gatchan.jedit.hyperlinks.include_c;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import gatchan.jedit.hyperlinks.Hyperlink;
 import gatchan.jedit.hyperlinks.HyperlinkSource;
 import gatchan.jedit.hyperlinks.jEditOpenFileHyperlink;
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.TextUtilities;
+
+import java.util.regex.Pattern;
 
 /**
  * This hyperlink source will search for #include "something".

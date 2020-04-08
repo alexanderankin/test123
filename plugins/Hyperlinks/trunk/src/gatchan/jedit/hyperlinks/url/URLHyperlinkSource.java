@@ -41,6 +41,7 @@ public class URLHyperlinkSource implements HyperlinkSource
 
 	private Hyperlink currentLink;
 
+	@Override
 	public Hyperlink getHyperlink(Buffer buffer, int caretPosition)
 	{
 		if (currentLink != null)
