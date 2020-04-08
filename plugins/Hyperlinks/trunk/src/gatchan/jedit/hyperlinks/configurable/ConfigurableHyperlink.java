@@ -35,15 +35,15 @@ import org.gjt.sp.util.Log;
  */
 public class ConfigurableHyperlink implements Hyperlink
 {
-	private int start;
+	private final int start;
 
-	private int end;
+	private final int end;
 
-	private int startLine;
+	private final int startLine;
 
-	private int endLine;
+	private final int endLine;
 
-	private String tooltip;
+	private final String tooltip;
 	
 	private final String code;
 	private final Matcher matcher;
@@ -59,6 +59,7 @@ public class ConfigurableHyperlink implements Hyperlink
 		this.tooltip = evalTooltip(tooltip);
 	}
 
+	@Override
 	public void click(View view)
 	{
 		try
@@ -97,6 +98,7 @@ public class ConfigurableHyperlink implements Hyperlink
 	/**
 	 * Returns the start offset.
 	 */
+	@Override
 	public int getStartOffset()
 	{
 		return start;
@@ -105,21 +107,25 @@ public class ConfigurableHyperlink implements Hyperlink
 	/**
 	 * Returns the end offset.
 	 */
+	@Override
 	public int getEndOffset()
 	{
 		return end;
 	}
 
+	@Override
 	public int getStartLine()
 	{
 		return startLine;
 	}
 
+	@Override
 	public int getEndLine()
 	{
 		return endLine;
 	}
 
+	@Override
 	public String getTooltip()
 	{
 		return tooltip;
