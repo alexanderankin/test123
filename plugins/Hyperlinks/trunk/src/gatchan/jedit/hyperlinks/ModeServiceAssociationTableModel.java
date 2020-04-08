@@ -29,10 +29,11 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.*;
+import java.util.Arrays;
 import java.util.Vector;
 import java.util.Collections;
-import java.util.Comparator;
 import java.awt.*;
+import java.util.stream.IntStream;
 
 /**
  * @author Matthieu Casanova
@@ -53,11 +54,12 @@ public class ModeServiceAssociationTableModel extends AbstractTableModel
 		this.defaultOption = defaultOption;
 		this.propertySuffix = propertySuffix;
 		Mode[] modes = jEdit.getModes();
-		this.modes = new Vector<Entry>(modes.length);
-		for (int i = 0; i < modes.length; i++)
-		{
-			this.modes.add(new Entry(modes[i].getName()));
-		}
+		this.modes = new Vector<>(modes.length);
+		Arrays
+			.stream(modes)
+			.map(Mode::getName)
+			.map(Entry::new)
+			.forEach(this.modes::add);
 		Collections.sort(this.modes);
 	}
 
@@ -70,21 +72,15 @@ public class ModeServiceAssociationTableModel extends AbstractTableModel
 		table.setRowSelectionAllowed(false);
 		table.setCellSelectionEnabled(false);
 		String[] serviceNames = ServiceManager.getServiceNames(serviceName);
-		Vector<String> serviceVector = new Vector<String>(serviceNames.length + 2);
+		Vector<String> serviceVector = new Vector<>(serviceNames.length + 2);
 		serviceVector.add(null);
 		serviceVector.add(defaultValue);
-		for (int i = 0; i < serviceNames.length; i++)
+		serviceVector.addAll(Arrays.asList(serviceNames));
+		serviceVector.sort((a, b) ->
 		{
-			serviceVector.add(serviceNames[i]);
-		}
-		Collections.sort(serviceVector, new Comparator<String>()
-		{
-			public int compare(String a, String b)
-			{
-				a = a == null ? "" : a;
-				b = b == null ? "" : b;
-				return a.compareToIgnoreCase(b);
-			}
+			a = a == null ? "" : a;
+			b = b == null ? "" : b;
+			return a.compareToIgnoreCase(b);
 		});
 
 		MyCellRenderer comboBox = new MyCellRenderer(serviceVector);
@@ -96,15 +92,15 @@ public class ModeServiceAssociationTableModel extends AbstractTableModel
 		return table;
 	}
 
-
-
 	//{{{ getColumnCount() method
+	@Override
 	public int getColumnCount()
 	{
 		return 2;
 	} //}}}
 
 	//{{{ getRowCount() method
+	@Override
 	public int getRowCount()
 	{
 		return modes.size();
@@ -112,7 +108,7 @@ public class ModeServiceAssociationTableModel extends AbstractTableModel
 
 	//{{{ getColumnClass() method
 	@Override
-    public Class getColumnClass(int col)
+	public Class<String> getColumnClass(int col)
 	{
 		switch (col)
 		{
@@ -125,15 +121,16 @@ public class ModeServiceAssociationTableModel extends AbstractTableModel
 	} //}}}
 
 	//{{{ getValueAt() method
+	@Override
 	public Object getValueAt(int row, int col)
 	{
 		Entry entry = modes.elementAt(row);
 		switch (col)
 		{
 			case 0:
-				return entry.mode;
+				return entry.getMode();
 			case 1:
-				return entry.serviceName;
+				return entry.getServiceName();
 			default:
 				throw new InternalError();
 		}
@@ -157,7 +154,7 @@ public class ModeServiceAssociationTableModel extends AbstractTableModel
 		switch (col)
 		{
 			case 1:
-				entry.serviceName = (String) value;
+				entry.setServiceName((String) value);
 				break;
 			default:
 				throw new InternalError();
@@ -168,7 +165,7 @@ public class ModeServiceAssociationTableModel extends AbstractTableModel
 
 	//{{{ getColumnName() method
 	@Override
-    public String getColumnName(int index)
+	public String getColumnName(int index)
 	{
 		switch (index)
 		{
@@ -184,14 +181,11 @@ public class ModeServiceAssociationTableModel extends AbstractTableModel
 	//{{{ save() method
 	public void save()
 	{
-		for (int i = 0; i < modes.size(); i++)
-		{
-			modes.get(i).save();
-		}
+		IntStream.range(0, modes.size()).forEach(i -> modes.get(i).save());
 	} //}}}
 
 	//{{{ Entry class
-	class Entry implements Comparable<Entry>
+	private class Entry implements Comparable<Entry>
 	{
 		private final String mode;
 		private String serviceName;
@@ -200,7 +194,39 @@ public class ModeServiceAssociationTableModel extends AbstractTableModel
 		{
 			this.mode = mode;
 			serviceName = jEdit.getProperty("mode." + this.mode + '.' + propertySuffix);
+		}
 
+		public String getMode()
+		{
+			return mode;
+		}
+
+		public String getServiceName()
+		{
+			return serviceName;
+		}
+
+		public void setServiceName(String serviceName)
+		{
+			this.serviceName = serviceName;
+		}
+
+		@Override
+		public boolean equals(Object o)
+		{
+			if (this == o)
+				return true;
+			if (o == null || getClass() != o.getClass())
+				return false;
+
+			Entry entry = (Entry) o;
+			return mode.equals(entry.mode);
+		}
+
+		@Override
+		public int hashCode()
+		{
+			return mode.hashCode();
 		}
 
 		void save()
@@ -211,20 +237,22 @@ public class ModeServiceAssociationTableModel extends AbstractTableModel
 				jEdit.setProperty("mode." + mode + '.' + propertySuffix, serviceName);
 		}
 
+		@Override
 		public int compareTo(Entry a)
 		{
 			return mode.compareToIgnoreCase(a.mode);
 		}
 	} //}}}
 
-	private static class MyCellRenderer extends JComboBox implements TableCellRenderer
+	private static class MyCellRenderer extends JComboBox<String> implements TableCellRenderer
 	{
-		MyCellRenderer(Vector vector)
+		MyCellRenderer(Vector<String> vector)
 		{
 			super(vector);
 			setRequestFocusEnabled(false);
 		}
 
+		@Override
 		public Component getTableCellRendererComponent(JTable table,
 							       Object value, boolean isSelected, boolean hasFocus,
 							       int row, int column)
