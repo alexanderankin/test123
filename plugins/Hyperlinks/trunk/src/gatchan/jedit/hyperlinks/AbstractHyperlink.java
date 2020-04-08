@@ -26,15 +26,15 @@ package gatchan.jedit.hyperlinks;
  */
 public abstract class AbstractHyperlink implements Hyperlink
 {
-	private int start;
+	private final int start;
 
-	private int end;
+	private final int end;
 
-	private int startLine;
+	private final int startLine;
 
-	private int endLine;
+	private final int endLine;
 
-	private String tooltip;
+	private final String tooltip;
 
 	//{{{ AbstractHyperlink constructors
 	protected AbstractHyperlink(int start, int end, int startLine, String tooltip)
@@ -56,6 +56,7 @@ public abstract class AbstractHyperlink implements Hyperlink
 	/**
 	 * Returns the start offset.
 	 */
+	@Override
 	public int getStartOffset()
 	{
 		return start;
@@ -64,21 +65,25 @@ public abstract class AbstractHyperlink implements Hyperlink
 	/**
 	 * Returns the end offset.
 	 */
+	@Override
 	public int getEndOffset()
 	{
 		return end;
 	}
 
+	@Override
 	public int getStartLine()
 	{
 		return startLine;
 	}
 
+	@Override
 	public int getEndLine()
 	{
 		return endLine;
 	}
 
+	@Override
 	public String getTooltip()
 	{
 		return tooltip;
