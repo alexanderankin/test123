@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class FallbackHyperlinkSource implements HyperlinkSource
 {
-    private List<HyperlinkSource> hyperlinkSources;
+    private final List<HyperlinkSource> hyperlinkSources;
 
     public FallbackHyperlinkSource(List<HyperlinkSource> hyperlinkSources)
     {
