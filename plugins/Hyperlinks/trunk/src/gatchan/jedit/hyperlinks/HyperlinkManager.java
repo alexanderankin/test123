@@ -22,7 +22,6 @@ package gatchan.jedit.hyperlinks;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
-import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
@@ -158,27 +157,27 @@ public class HyperlinkManager
 			if (hyperlinkSourceName == null)
 				return null;
 
-            String[] split = hyperlinkSourceName.split(",");
-            if (split.length == 1)
-            {
-                return (HyperlinkSource) ServiceManager.getService(HyperlinkSource.SERVICE, hyperlinkSourceName);
-            }
-            List<HyperlinkSource> sources = new LinkedList<HyperlinkSource>();
-            for (String s : split)
-            {
-                HyperlinkSource source = (HyperlinkSource) ServiceManager.getService(HyperlinkSource.SERVICE, hyperlinkSourceName.trim());
-                if (source != null)
-                {
-                    sources.add(source);
-                }
-            }
-            if (sources.isEmpty())
-                return null;
-            if (sources.size() == 1)
-            {
-                return sources.get(0);
-            }
-            return new FallbackHyperlinkSource(sources);
+			String[] split = hyperlinkSourceName.split(",");
+			if (split.length == 1)
+			{
+				return (HyperlinkSource) ServiceManager.getService(HyperlinkSource.SERVICE, hyperlinkSourceName);
+			}
+			List<HyperlinkSource> sources = new LinkedList<>();
+			for (String s : split)
+			{
+				HyperlinkSource source = (HyperlinkSource) ServiceManager.getService(HyperlinkSource.SERVICE, hyperlinkSourceName.trim());
+				if (source != null)
+				{
+					sources.add(source);
+				}
+			}
+			if (sources.isEmpty())
+				return null;
+			if (sources.size() == 1)
+			{
+				return sources.get(0);
+			}
+			return new FallbackHyperlinkSource(sources);
 		}
 	}
 }
