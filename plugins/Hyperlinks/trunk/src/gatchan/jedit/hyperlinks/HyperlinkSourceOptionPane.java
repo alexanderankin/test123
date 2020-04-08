@@ -30,7 +30,6 @@ import java.awt.*;
 import org.gjt.sp.jedit.*;
 //}}}
 
-
 /**
  * An option pane to configure the mode - hyperlink source associations.
  *
@@ -47,7 +46,7 @@ public class HyperlinkSourceOptionPane extends AbstractOptionPane
 
 	//{{{ _init() method
 	@Override
-    public void _init()
+	public void _init()
 	{
 		setLayout(new BorderLayout());
 		JTable table = ModeServiceAssociationTableModel.getTable(HyperlinkSource.SERVICE,
@@ -64,7 +63,7 @@ public class HyperlinkSourceOptionPane extends AbstractOptionPane
 
 	//{{{ _save() method
 	@Override
-    public void _save()
+	public void _save()
 	{
 		tableModel.save();
 	} //}}}
