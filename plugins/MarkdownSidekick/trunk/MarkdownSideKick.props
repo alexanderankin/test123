@@ -11,8 +11,7 @@ plugin.sidekick.markdown.MarkdownSideKickPlugin.version=1.0
 # Dependencies
 plugin.sidekick.markdown.MarkdownSideKickPlugin.depend.0=jedit 05.02.01.00
 plugin.sidekick.markdown.MarkdownSideKickPlugin.depend.1=jdk 11.0.0
-plugin.sidekick.markdown.MarkdownSideKickPlugin.depend.2=plugin eclipseicons.EclipseIconsPlugin 1.0
-plugin.sidekick.markdown.MarkdownSideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 1.7
+plugin.sidekick.markdown.MarkdownSideKickPlugin.depend.2=plugin sidekick.SideKickPlugin 1.7
 
 sidekick.parser.markdown.label=markdown
 mode.markdown.sidekick.parser=markdown

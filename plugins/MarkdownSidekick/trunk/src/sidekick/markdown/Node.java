@@ -78,7 +78,7 @@ public class Node extends Asset implements Comparable, SideKickElement {
         end = p;
     }
     
-    public void setIcon(ImageIcon icon) {
+    public void setIcon(Icon icon) {
         this.icon = icon;   
     }
 
