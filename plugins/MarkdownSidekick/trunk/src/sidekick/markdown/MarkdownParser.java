@@ -29,10 +29,9 @@
 package sidekick.markdown;
 
 
-import eclipseicons.EclipseIconsPlugin;
-
 import errorlist.DefaultErrorSource;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -51,15 +50,21 @@ import sidekick.SideKickParser;
 import sidekick.util.*;
 
 
+/**
+ * A Sidekick parser for Markdown files. Parsing is based on the syntax guide found
+ * here: https://daringfireball.net/projects/markdown/syntax
+ */
 public class MarkdownParser extends SideKickParser {
 
     private static final String NAME = "markdown";
     private View currentView = null;
+    // 2 kinds of headers are supported, setext and atx. setext headers are headers
+    // that are underlined with either = or -. These regexes find the underline lines.
     private Pattern setextH1 = Pattern.compile( "^=+?$" );
     private Pattern setextH2 = Pattern.compile( "^-+?$" );
     private enum BlockType { ROOT, HEADER1, HEADER2, HEADER3, HEADER4, HEADER5, HEADER6, HEADER1S, HEADER2S, PARAGRAPH, QUOTE, CODE, BLANK}
-
     ;
+    // current buffer line to process
     private String line;
 
     public MarkdownParser() {
@@ -68,7 +73,6 @@ public class MarkdownParser extends SideKickParser {
 
     /**
      * Parse the current buffer in the current view.
-     * TODO: is this used anymore?
      */
     public void parse() {
         if ( currentView != null ) {
@@ -79,7 +83,7 @@ public class MarkdownParser extends SideKickParser {
     /**
      * Parse the contents of the given buffer.
      * @param buffer the buffer to parse
-     * @param errorSource where to send any error messages
+     * @param errorSource where to send any error messages, not used, there are no errors, ever!
      * @return data for the tree
      */
     public SideKickParsedData parse( Buffer buffer, DefaultErrorSource errorSource ) {
@@ -89,6 +93,7 @@ public class MarkdownParser extends SideKickParser {
             boolean showParagraphs = jEdit.getBooleanProperty( "sidekick.markdown.showParagraphs", true );
             boolean showQuotes = jEdit.getBooleanProperty( "sidekick.markdown.showQuotes", true );
             boolean showCode = jEdit.getBooleanProperty( "sidekick.markdown.showCode", true );
+            View view = jEdit.getFirstView();
 
             // set up sidekick data structure
             int level = BlockType.ROOT.ordinal();
@@ -106,8 +111,21 @@ public class MarkdownParser extends SideKickParser {
             StringReader sr = new StringReader( buffer.getText( 0, buffer.getLength() ) );
             BufferedReader lineReader = new BufferedReader( sr );
             int lineIndex = 1;
-
-            // read a line
+            
+            // icon foreground color and background colors
+            // TODO: let the user choose the colors in the option pane?
+            Color foregroundColor = jEdit.getColorProperty("view.fgColor");
+            Color h1Color = new Color(204, 255, 255);
+            Color h2Color = new Color(153, 255, 255);
+            Color h3Color = new Color(102, 255, 255);
+            Color h4Color = new Color(51, 255, 255);
+            Color h5Color = new Color(0, 255, 255);
+            Color h6Color = new Color(0, 204, 204);
+            Color paragraphColor = new Color(255, 153, 255);
+            Color quoteColor = new Color(255, 255, 153);
+            Color codeColor = new Color(153, 255, 153);
+            
+            // read the lines
             line = lineReader.readLine();
             Node n = null;
 
@@ -119,15 +137,30 @@ public class MarkdownParser extends SideKickParser {
                 n.setStart( createStartPosition( buffer, n ) );
                 n.setEndLocation( new Location( lineIndex, line.length() ) );
                 n.setEnd( createEndPosition( buffer, n ) );
-                n.setIcon( EclipseIconsPlugin.getIcon( "hierarchicalLayout.gif" ) );
 
                 switch ( bt ) {
                     case HEADER1:
+                        n.setIcon( new LetterIcon( view, "H1", h1Color, foregroundColor ) );
+                        level = bt.ordinal();
+                        break;
                     case HEADER2:
+                        n.setIcon( new LetterIcon( view, "H2", h2Color, foregroundColor ) );
+                        level = bt.ordinal();
+                        break;
                     case HEADER3:
+                        n.setIcon( new LetterIcon( view, "H3", h3Color, foregroundColor ) );
+                        level = bt.ordinal();
+                        break;
                     case HEADER4:
+                        n.setIcon( new LetterIcon( view, "H4", h4Color, foregroundColor ) );
+                        level = bt.ordinal();
+                        break;
                     case HEADER5:
+                        n.setIcon( new LetterIcon( view, "H5", h5Color, foregroundColor ) );
+                        level = bt.ordinal();
+                        break;
                     case HEADER6:
+                        n.setIcon( new LetterIcon( view, "H6", h6Color, foregroundColor ) );
                         level = bt.ordinal();
                         break;
                     case HEADER1S:
@@ -136,6 +169,7 @@ public class MarkdownParser extends SideKickParser {
                         line = lineReader.readLine();    // read ========
                         n.setEndLocation( new Location( ++lineIndex, line.length() ) );
                         n.setEnd( createEndPosition( buffer, n ) );
+                        n.setIcon( new LetterIcon( view, "H1", h1Color, foregroundColor ) );
                         break;
                     case HEADER2S:
                         level = BlockType.HEADER2.ordinal();
@@ -143,6 +177,7 @@ public class MarkdownParser extends SideKickParser {
                         line = lineReader.readLine();    // read -------
                         n.setEndLocation( new Location( ++lineIndex, line.length() ) );
                         n.setEnd( createEndPosition( buffer, n ) );
+                        n.setIcon( new LetterIcon( view, "H2", h2Color, foregroundColor ) );
                         break;
                     case PARAGRAPH:
                         level = bt.ordinal();
@@ -151,7 +186,7 @@ public class MarkdownParser extends SideKickParser {
                             n = null;
                         }
                         else {
-                            n.setIcon( EclipseIconsPlugin.getIcon( "topic_small.gif" ) );
+                            n.setIcon( new LetterIcon( view, "P", paragraphColor, foregroundColor ) );
                             int length = line == null ? 0 : line.length();    // covers end of file situation
                             n.setEndLocation( new Location( lineIndex, length ) );
                             n.setEnd( createEndPosition( buffer, n ) );
@@ -164,7 +199,7 @@ public class MarkdownParser extends SideKickParser {
                             n = null;
                         }
                         else {
-                            n.setIcon( EclipseIconsPlugin.getIcon( "run_co.gif" ) );
+                            n.setIcon( new LetterIcon( view, ">", quoteColor, foregroundColor ) );
                             int length = line == null ? 0 : line.length();    // covers end of file situation
                             n.setEndLocation( new Location( lineIndex, length ) );
                             n.setEnd( createEndPosition( buffer, n ) );
@@ -177,7 +212,7 @@ public class MarkdownParser extends SideKickParser {
                             n = null;
                         }
                         else {
-                            n.setIcon( EclipseIconsPlugin.getIcon( "class_obj.gif" ) );
+                            n.setIcon( new LetterIcon( view, "c", codeColor, foregroundColor ) );
                             int length = line == null ? 0 : line.length();    // covers end of file situation
                             n.setEndLocation( new Location( lineIndex, length ) );
                             n.setEnd( createEndPosition( buffer, n ) );
@@ -224,6 +259,8 @@ public class MarkdownParser extends SideKickParser {
             return parsedData;
         }
         catch ( Exception e ) {
+
+            // there are no errors? Really?
             e.printStackTrace();
         }
         return null;
@@ -251,6 +288,8 @@ public class MarkdownParser extends SideKickParser {
         if ( line.startsWith( "#" ) ) {
             return BlockType.HEADER1;
         }
+
+        // need to read the next line to see if it is an underlined setext style header
         lineReader.mark( 1024 );
         String nextLine = lineReader.readLine();
         lineReader.reset();
@@ -282,29 +321,36 @@ public class MarkdownParser extends SideKickParser {
         }
         return line.isBlank();
     }
-    
+
     /**
-     * Paragraph ends at next blank line or next header line, whichever is first.    
+     * Paragraph ends at next blank line or next header line, whichever is first.
+     * This isn't exactly what the syntax guide says, but in real life, it makes sense.
+     * @return the number of lines skipped.
      */
     private int skipToParagraphEnd( BufferedReader lineReader ) throws IOException {
         int count = 1;
-        lineReader.mark(1024);
+        lineReader.mark( 1024 );
         line = lineReader.readLine();
-        while (line != null) {
-            if (isBlankLine(line)) {
-                return count;   
+        while ( line != null ) {
+            if ( isBlankLine( line ) ) {
+                return count;
             }
-            if (line.startsWith("#")) {
+            if ( line.startsWith( "#" ) ) {
+
+                // next line is a header line, so done with paragraph
                 lineReader.reset();
                 return count - 1;
             }
-            lineReader.mark(1024);
+            lineReader.mark( 1024 );
             line = lineReader.readLine();
             ++count;
         }
         return count;
     }
 
+    /**
+     * @return the number of lines skipped
+     */
     private int skipToEndOfCode( BufferedReader lineReader ) throws IOException {
         line = lineReader.readLine();
         int count = 1;
@@ -319,17 +365,23 @@ public class MarkdownParser extends SideKickParser {
 
     /**
      * Removes leading #, >, and whitespace from the start of the given line and
-     * removes trailing # and whitespace from the end of the given line.
+     * removes trailing # and whitespace from the end of the line.
      * @return the trimmed line
      */
     private String trim( String line ) {
         if ( line == null || line.length() == 0 ) {
             return "";
         }
+
+        // trim whitespace from both ends
         StringBuilder sb = new StringBuilder( line.trim() );
+
+        // trim leading #, >, and any whitespace after those from the start of the line
         while ( sb.charAt( 0 ) == '#' || sb.charAt( 0 ) == '>' || sb.charAt( 0 ) == ' ' || sb.charAt( 0 ) == '\t' ) {
             sb.deleteCharAt( 0 );
         }
+
+        // trim any trailing # characters
         while ( sb.charAt( sb.length() - 1 ) == '#' ) {
             sb.deleteCharAt( sb.length() - 1 );
         }
