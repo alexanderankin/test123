@@ -103,12 +103,10 @@ public class LetterIcon implements Icon {
         FontMetrics fm = graphics.getFontMetrics();
         int lineHeight = fm.getAscent();
         int lineWidth = fm.stringWidth( s );
-        int offset_x = ( w - lineWidth ) / 2;
-        int offset_y = ( ( h - lineHeight ) / 2 ) + lineHeight;
         Graphics g;
 
         switch ( s.length() ) {
-            case 1:    // draw a filled circle
+            case 1:     // draw a filled circle
                 w = h;
                 g = graphics.create( 0, 0, w, h );
                 g.setColor( bg );
@@ -118,9 +116,11 @@ public class LetterIcon implements Icon {
                 w = h + lineWidth;
                 g = graphics.create( 0, 0, h + lineWidth, h );
                 g.setColor( bg );
-                g.fillRoundRect( 0, 0, h + lineWidth, h, h / 2, h / 2 );
+                g.fillRoundRect( 0, 0, h + lineWidth, h, h, h );
         }
 
+        int offset_x = ( w - lineWidth ) / 2;
+        int offset_y = ( ( h - lineHeight ) / 2 ) + lineHeight;
         g.setColor( fg );
         g.drawString( s, offset_x, offset_y );
 
