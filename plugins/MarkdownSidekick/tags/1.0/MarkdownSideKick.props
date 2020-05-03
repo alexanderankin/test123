@@ -1,0 +1,25 @@
+# Basic Plugin Information
+plugin.sidekick.markdown.MarkdownSideKickPlugin.activate=defer
+plugin.sidekick.markdown.MarkdownSideKickPlugin.author=Dale Anson
+plugin.sidekick.markdown.MarkdownSideKickPlugin.description=A SideKick for working with markdown files.
+plugin.sidekick.markdown.MarkdownSideKickPlugin.docs=doc/index.html
+plugin.sidekick.markdown.MarkdownSideKickPlugin.longdescription=description.html
+plugin.sidekick.markdown.MarkdownSideKickPlugin.name=MarkdownSideKick
+plugin.sidekick.markdown.MarkdownSideKickPlugin.usePluginHome=false
+plugin.sidekick.markdown.MarkdownSideKickPlugin.version=1.0
+
+# Dependencies
+plugin.sidekick.markdown.MarkdownSideKickPlugin.depend.0=jedit 05.02.01.00
+plugin.sidekick.markdown.MarkdownSideKickPlugin.depend.1=jdk 11.0.0
+plugin.sidekick.markdown.MarkdownSideKickPlugin.depend.2=plugin sidekick.SideKickPlugin 1.7
+
+sidekick.parser.markdown.label=markdown
+mode.markdown.sidekick.parser=markdown
+
+plugin.sidekick.markdown.MarkdownSideKickPlugin.option-pane=markdownsidekick
+options.markdownsidekick.code=new sidekick.markdown.OptionPane();
+options.markdownsidekick.label=Markdown Sidekick
+
+sidekick.markdown.showParagraphs.label=Show Paragraphs
+sidekick.markdown.showQuotes.label=Show Block Quotes
+sidekick.markdown.showCode.label=Show Code Blocks
