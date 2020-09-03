@@ -2,7 +2,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<link href="https://plus.google.com/105573242513550708576" rel="publisher" />
 <?php
         $page = trim($_GET['page']);
 
@@ -20,7 +19,7 @@
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
   <tr align="center" valign="middle" bgcolor="#DDDDDD">
     <td colspan="7" nowrap="nowrap"><center>
-      <p class="header_text">Last Site Update: 10 April 2018 | <?php /* * /?>Latest Version: <a class="header_text" href="CHANGES52.txt">5.2pre1</a> | <?php/**/?>Stable Version: <a class="header_text" href="CHANGES55.txt">5.5.0</a></p>
+      <p class="header_text">Last Site Update: 03 September 2020 | <?php /* * /?>Latest Version: <a class="header_text" href="CHANGES52.txt">5.2pre1</a> | <?php/**/?>Stable Version: <a class="header_text" href="CHANGES56.txt">5.6.0</a></p>
     </center></td>
   </tr>
   <tr bgcolor="#666666">
