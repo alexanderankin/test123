@@ -145,7 +145,7 @@
 	<!-- {{{ 'compile' target -->
 	<target name="compile" depends="init" description="Compile project files">
 		<javac srcdir="${src.dir}" destdir="${build.dir}"
-				deprecation="on" includeJavaRuntime="yes" includeantruntime="no">
+				deprecation="on" includeJavaRuntime="yes" includeantruntime="no" debug="true">
 				<classpath refid="project.class.path"/>
 		</javac>
 	</target>

@@ -3,7 +3,7 @@
 plugin.templates.TemplatesPlugin.activate=startup
 plugin.templates.TemplatesPlugin.name=Templates
 plugin.templates.TemplatesPlugin.author=Steve Jakob, Calvin Yu
-plugin.templates.TemplatesPlugin.version=5.0.1
+plugin.templates.TemplatesPlugin.version=5.0.2
 plugin.sessions.TemplatesPlugin.description=The Templates plugin integrates the Apache Velocity templating engine with jEdit, to allow dynamic text generation based on template files.
 plugin.templates.TemplatesPlugin.docs=docs/index.html
 
@@ -11,7 +11,7 @@ plugin.templates.TemplatesPlugin.docs=docs/index.html
 plugin.templates.TemplatesPlugin.depend.0=jedit 05.02.99.00
 plugin.templates.TemplatesPlugin.depend.1=jdk 1.7
 plugin.templates.TemplatesPlugin.depend.2=plugin jakartacommons.JakartaCommonsPlugin 0.9
-plugin.templates.TemplatesPlugin.jars=oro-2.0.8.jar velocity-1.7.jar log4j-1.2.14.jar
+plugin.templates.TemplatesPlugin.jars=oro-2.0.8.jar velocity-1.7.jar log4j-1.2.14.jar commons-lang-2.6.jar
 
 # Action labels
 Templates.refresh-templates.label=Refresh templates
