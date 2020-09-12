@@ -26,6 +26,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.tree.TreePath;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.GenericGUIUtilities;
 import org.gjt.sp.util.Log;
 
 /**
@@ -59,7 +60,7 @@ public class TemplateDockable extends JPanel
       templates.addMouseListener(this);
    }
    
-   public boolean requestDefaultFocus() {
+   public boolean requestFocusInWindow() {
       templates.requestFocus();
       return true;
    }
@@ -127,7 +128,7 @@ public class TemplateDockable extends JPanel
     */
    public void mousePressed(MouseEvent evt)
    {
-      if (GUIUtilities.isPopupTrigger(evt)) {
+      if (GenericGUIUtilities.isPopupTrigger(evt)) {
          templates.setSelectionPath(templates.getPathForLocation(evt.getX(), evt.getY()));
          JPopupMenu popup = new JPopupMenu();
 

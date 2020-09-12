@@ -62,12 +62,12 @@ public class BufferMode extends SimpleDirective
       }
 	  
       if (! (writer instanceof BufferWriter)) {
-         rsvc.error("#buffermode() error :  writer is not a buffer writer");
+         rsvc.getLog().error("#buffermode() error :  writer is not a buffer writer");
          return false;
       }
       BufferWriter bufferWriter = (BufferWriter) writer;
 	  if (!bufferWriter.setMode((String)modeName)) {
-         rsvc.error("#buffermode() error :  Mode change was unsuccessful");
+         rsvc.getLog().error("#buffermode() error :  Mode change was unsuccessful");
 		  return false;
 	  }
 	  return true;

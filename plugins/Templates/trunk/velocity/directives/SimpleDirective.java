@@ -42,7 +42,7 @@ public abstract class SimpleDirective extends Directive
       }
       Object obj = node.jjtGetChild(idx).value(context);
       if (obj == null) {
-         rsvc.error("#" + getName() + "() error :  value of " + argumentName + " is null");
+         rsvc.getLog().error("#" + getName() + "() error :  value of " + argumentName + " is null");
          return null;
       }
       return obj;
@@ -64,8 +64,8 @@ public abstract class SimpleDirective extends Directive
     */
    protected String getRequiredVariable(Node node, int idx, String argumentName)
    {
-      String var = getRequiredLiteral(node, idx, argumentName);
-      return var == null ? null : var.substring(1);
+      String literal = getRequiredLiteral(node, idx, argumentName);
+      return literal == null ? null : literal.substring(1);
    }
 
    /**
@@ -123,7 +123,7 @@ public abstract class SimpleDirective extends Directive
    protected boolean requireArgument(Node node, int idx, String argName)
    {
       if (!hasArgument(node, idx)) {
-         rsvc.error("#" + getName() + "() error :  " + argName + " argument required");
+         rsvc.getLog().error("#" + getName() + "() error :  " + argName + " argument required");
          return false;
       }
       return true;

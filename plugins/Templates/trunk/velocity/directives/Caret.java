@@ -58,7 +58,7 @@ public class Caret extends Directive
                          Writer writer, Node node)
    {
       if (! (writer instanceof BufferWriter)) {
-         rsvc.error("#caret() error :  writer is not a buffer writer");
+         rsvc.getLog().error("#caret() error :  writer is not a buffer writer");
          return false;
       }
       BufferWriter bufferWriter = (BufferWriter) writer;
