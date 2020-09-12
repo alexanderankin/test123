@@ -225,6 +225,8 @@ public class AcceleratorOptionPane extends AbstractOptionPane
       GridBagConstraints cons = gridBag.getConstraints(acceleratorPanel);
       cons.fill = cons.BOTH;
       gridBag.setConstraints(acceleratorPanel, cons);
+      
+      loadAcceleratorsForMode(currentMode);
    }
 
    /**
@@ -242,6 +244,7 @@ public class AcceleratorOptionPane extends AbstractOptionPane
           for (Iterator i = list.iterator(); i.hasNext();) {
              listModel.addElement(i.next());
           }
+          accelerators.setModel(listModel);
           accelerators.setSelectedIndex(0);
       }
    }
