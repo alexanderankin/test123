@@ -163,7 +163,9 @@ public class AcceleratorOptionPane extends AbstractOptionPane
       modes.addActionListener(this);
       addComponent(jEdit.getProperty(
 	  		"plugin.TemplatesPlugin.mode.label"), modes);
-
+	  String currentMode = jEdit.getActiveView().getBuffer().getMode().getName();
+	  modes.setSelectedItem(currentMode);
+	  
       JPanel acceleratorPanel = new JPanel(new GridBagLayout());
       acceleratorPanel.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
       GridBagConstraints gbc = new GridBagConstraints();
@@ -223,8 +225,6 @@ public class AcceleratorOptionPane extends AbstractOptionPane
       GridBagConstraints cons = gridBag.getConstraints(acceleratorPanel);
       cons.fill = cons.BOTH;
       gridBag.setConstraints(acceleratorPanel, cons);
-
-      modes.setSelectedIndex(0);
    }
 
    /**
@@ -233,7 +233,7 @@ public class AcceleratorOptionPane extends AbstractOptionPane
    private void loadAcceleratorsForMode(String modeName)
    {
       Collection col = AcceleratorManager.getInstance().getAccelerators(modeName);
-      if (!col.isEmpty()) {
+      if (!col.isEmpty() && accelerators != null) {
           accelerators.setEnabled(true);
           List list = new ArrayList(col);
           Collections.sort(list);
