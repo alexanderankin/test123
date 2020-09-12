@@ -27,7 +27,6 @@ import java.io.Writer;
 
 import org.apache.velocity.context.InternalContextAdapter;
 import org.apache.velocity.exception.MethodInvocationException;
-import org.apache.velocity.runtime.directive.Directive;
 import org.apache.velocity.runtime.parser.node.Node;
 
 import org.gjt.sp.jedit.View;
@@ -65,7 +64,7 @@ public class BeanShell extends SimpleDirective
    throws MethodInvocationException, IOException
    {
       if (node.jjtGetChild(0) == null) {
-         rsvc.error("#beanshell() error :  null script");
+         rsvc.getLog().error("#beanshell() error :  null script");
          return false;
       }
       boolean writeResult = getOptionalBoolean(node, 0, context, true);
@@ -75,8 +74,11 @@ public class BeanShell extends SimpleDirective
                                           "velocity_context");
       try {
          contextNS.setVariable("context", context.getInternalUserContext());
-         Object result = org.gjt.sp.jedit.BeanShell.eval(view, contextNS,
-                                                         getBlockNode(node).literal());
+         Node blockNode = getBlockNode(node);
+         Object result = null;
+         if (blockNode != null) {
+             result = org.gjt.sp.jedit.BeanShell.eval(view, contextNS, blockNode.literal());
+         }
          if (writeResult && result != null) {
             writer.write(result.toString());
          }
