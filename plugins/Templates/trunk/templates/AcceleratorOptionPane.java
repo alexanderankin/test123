@@ -233,15 +233,17 @@ public class AcceleratorOptionPane extends AbstractOptionPane
    private void loadAcceleratorsForMode(String modeName)
    {
       Collection col = AcceleratorManager.getInstance().getAccelerators(modeName);
-      accelerators.setEnabled(!col.isEmpty());
-      List list = new ArrayList(col);
-      Collections.sort(list);
-      DefaultListModel listModel = (DefaultListModel) accelerators.getModel();
-      listModel.clear();
-      for (Iterator i = list.iterator(); i.hasNext();) {
-         listModel.addElement(i.next());
+      if (!col.isEmpty()) {
+          accelerators.setEnabled(true);
+          List list = new ArrayList(col);
+          Collections.sort(list);
+          DefaultListModel listModel = (DefaultListModel) accelerators.getModel();
+          listModel.clear();
+          for (Iterator i = list.iterator(); i.hasNext();) {
+             listModel.addElement(i.next());
+          }
+          accelerators.setSelectedIndex(0);
       }
-      accelerators.setSelectedIndex(0);
    }
 
    /**
