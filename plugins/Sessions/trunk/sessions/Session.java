@@ -515,8 +515,7 @@ public class Session implements Cloneable
 				String encoding = buff.getStringProperty(Buffer.ENCODING);
 				if (encoding != null && encoding.length() > 0)
 					out.write(" encoding=\"" + encoding + "\"");
-				Integer carat = new Integer(buff.getIntegerProperty(
-					Buffer.CARET, 0));
+				Integer carat = Integer.valueOf(buff.getIntegerProperty(Buffer.CARET, 0));
 				out.write(" carat=\"" + carat.toString() + "\"");
 			}
 			out.write("/>");
@@ -567,7 +566,8 @@ public class Session implements Cloneable
 		{
 			if (atStart)
 			{
-				if (localName.equalsIgnoreCase("session"))
+				//if (localName.equalsIgnoreCase("session"))
+				if (name.equalsIgnoreCase("session"))
 				{
 					atStart = false;
 					return;
