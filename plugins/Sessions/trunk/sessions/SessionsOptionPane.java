@@ -30,7 +30,6 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
@@ -137,9 +136,9 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 			jEdit.getIntegerProperty("options.sessions.switcher.maxListSize", 8);
 		maxSessionListSizeModel = new SpinnerNumberModel(
 			maxListSize,
-			new Integer(5),
-			new Integer(50), 
-			new Integer(1)
+			Integer.valueOf(5),
+			Integer.valueOf(50), 
+			Integer.valueOf(1)
 		);
 		maxSessionListSize = new JSpinner(maxSessionListSizeModel);
 		maxSessionListSize.setMaximumSize(maxSessionListSize.getPreferredSize());
