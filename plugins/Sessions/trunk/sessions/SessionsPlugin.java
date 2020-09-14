@@ -24,7 +24,6 @@ package sessions;
 
 import java.awt.BorderLayout;
 import java.util.Hashtable;
-import java.util.Vector;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -73,7 +72,6 @@ public class SessionsPlugin extends EBPlugin
 		
 		// Though we don't need to load the current session's files, we
 		//  still need to load the custom properties into memory.
-		View view = jEdit.getActiveView();
 		//		mgr.getSession(view).open(view, false);			
 		// Put the session name in the jEdit title bar
 		//mgr.setSessionNameInTitleBar();
@@ -117,6 +115,7 @@ public class SessionsPlugin extends EBPlugin
 		}
 		
 		// update the title bar
+		// TODO: unused, why is this here?
 		SessionManager mgr = SessionManager.getInstance();
 	}
 
@@ -242,6 +241,7 @@ public class SessionsPlugin extends EBPlugin
 			view = view.getNext();
 		}
 		
+		// TODO: unused, why is this here?
 		SessionManager mgr = SessionManager.getInstance();
 		
 	}
@@ -342,17 +342,21 @@ public class SessionsPlugin extends EBPlugin
 
 	public static void showInfoMessage(String key)
 	{
-		if (!jEdit.getBooleanProperty(key + ".notAgain"))
-		{
-			String title = jEdit.getProperty(key + ".title");
-			String msg = jEdit.getProperty(key + ".message");
-			String msg2 = jEdit.getProperty("sessions.manager.info.dontShowAgain");
-			JCheckBox notAgain = new JCheckBox(msg2, false);
-						GUIUtilities.hideSplashScreen();
-			JOptionPane.showMessageDialog(null, new Object[] { msg, notAgain },
-				title, JOptionPane.INFORMATION_MESSAGE);
-			jEdit.setBooleanProperty(key + ".notAgain", notAgain.isSelected());
-		}
+		SwingUtilities.invokeLater(new Runnable(){
+				public void run() {
+					if (!jEdit.getBooleanProperty(key + ".notAgain"))
+					{
+						String title = jEdit.getProperty(key + ".title");
+						String msg = jEdit.getProperty(key + ".message");
+						String msg2 = jEdit.getProperty("sessions.manager.info.dontShowAgain");
+						JCheckBox notAgain = new JCheckBox(msg2, false);
+									GUIUtilities.hideSplashScreen();
+						JOptionPane.showMessageDialog(null, new Object[] { msg, notAgain },
+							title, JOptionPane.INFORMATION_MESSAGE);
+						jEdit.setBooleanProperty(key + ".notAgain", notAgain.isSelected());
+					}
+				}
+		});
 	}
 
 }
