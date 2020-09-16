@@ -55,7 +55,6 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 	private JCheckBox bShowSessionNameInTitleBar;
 	private JCheckBox bShowSessionPrefixInTitleBar;
 	private SpinnerNumberModel maxSessionListSizeModel;
-	private JSpinner  maxSessionListSize;
 
 
 	public SessionsOptionPane()
@@ -140,7 +139,7 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 			Integer.valueOf(50), 
 			Integer.valueOf(1)
 		);
-		maxSessionListSize = new JSpinner(maxSessionListSizeModel);
+		JSpinner maxSessionListSize = new JSpinner(maxSessionListSizeModel);
 		maxSessionListSize.setMaximumSize(maxSessionListSize.getPreferredSize());
 		maxSessListSizePanel.add(maxSessionListSize);
 		maxSessListSizePanel.add(maxSessListSizePanel.createHorizontalGlue());

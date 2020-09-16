@@ -29,9 +29,10 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.ArrayList;
 import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.GenericGUIUtilities;
 
 public class SaveDialog extends EnhancedDialog
 {
@@ -73,11 +74,11 @@ public class SaveDialog extends EnhancedDialog
 		JPanel openedPanel = new JPanel(new BorderLayout());
 		JPanel closedPanel = new JPanel(new BorderLayout());
 
-		openedBufferList = new JList(openedBufferModel = new DefaultListModel());
+		JList openedBufferList = new JList(openedBufferModel = new DefaultListModel());
 		openedBufferList.setVisibleRowCount(7);
 		openedBufferList.setEnabled(false);
 
-		closedBufferList = new JList(closedBufferModel = new DefaultListModel());
+		JList closedBufferList = new JList(closedBufferModel = new DefaultListModel());
 		closedBufferList.setVisibleRowCount(7);
 		closedBufferList.setEnabled(false);
 
@@ -87,7 +88,7 @@ public class SaveDialog extends EnhancedDialog
 		Session currentSession = SessionManager.getInstance().getSession(view);
 
 		Buffer[] buffers = view.getBuffers();
-		Vector newFiles = new Vector(buffers.length);
+		ArrayList newFiles = new ArrayList<String>(buffers.length);
 
 		for(int i = 0; i < buffers.length; i++)
 		{
@@ -140,7 +141,7 @@ public class SaveDialog extends EnhancedDialog
 
 		content.add(BorderLayout.SOUTH,buttons);
 
-		GUIUtilities.requestFocus(this,openedBufferList);
+		GenericGUIUtilities.requestFocus(this,openedBufferList);
 
 		pack();
 		setLocationRelativeTo(view);
@@ -174,7 +175,6 @@ public class SaveDialog extends EnhancedDialog
 	}
 
 	private View view;
-	private JList openedBufferList, closedBufferList;
 	private DefaultListModel openedBufferModel, closedBufferModel;
 	private JButton bt_ok, bt_dontsave, bt_cancel;
 
