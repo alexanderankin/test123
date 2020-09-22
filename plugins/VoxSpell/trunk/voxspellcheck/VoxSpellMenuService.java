@@ -1,10 +1,8 @@
 
 package voxspellcheck;
 
-import java.lang.String;
-import java.lang.StringBuffer;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import java.awt.event.MouseEvent;
 
@@ -13,7 +11,6 @@ import javax.swing.JMenuItem;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.gui.DynamicContextMenuService;
-import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.menu.EnhancedMenuItem;
 
@@ -55,7 +52,7 @@ public class VoxSpellMenuService extends DynamicContextMenuService
             if (suggestion_tree == null)
                 return null;
             
-            Vector<String> suggestions = suggestion_tree.getSuggestions(word.toString());
+            ArrayList<String> suggestions = suggestion_tree.getSuggestions(word.toString());
             int num_suggestions = java.lang.Math.min(3, suggestions.size());
             
             // 3 static entries + an unknown number of shortcut suggestions.

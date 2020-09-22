@@ -19,16 +19,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package voxspellcheck;
 
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.SortedMap;
 import java.util.TreeSet;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Set;
 import java.util.HashSet;
 
-import org.gjt.sp.util.Log;
 
 public class SuggestionTree
 {
@@ -41,7 +39,7 @@ public class SuggestionTree
         map = new TreeMap<String, TreeSet<String>>();
         offset_trie = offset_trie_;
         
-        Vector<String> words = offset_trie.getWords();
+        ArrayList<String> words = offset_trie.getWords();
         for (String s : words) {
             String meta = new DoubleMetaphone().encode(s);
             if (map.get(meta) == null) {
@@ -137,8 +135,8 @@ public class SuggestionTree
                 lower = null;
                 try {
                     lower = head.lastKey();
-                } catch (java.util.NoSuchElementException ex) {
-                    ;
+                } catch (java.util.NoSuchElementException ex) {     // NOPMD
+                    // don't care
                 }
             }
             if (higher != null) {
@@ -153,17 +151,17 @@ public class SuggestionTree
         return suggestions;
     }
     
-    public Vector<String> getStartsWith(String word)
+    public ArrayList<String> getStartsWith(String word)
     {
-        Vector<String> vec = new Vector<String>();
+        ArrayList<String> vec = new ArrayList<String>();
         vec.addAll(offset_trie.getWords(word));
         vec.addAll(word_trie.getWords(word));
         return vec;
     }
         
-    public Vector<String> getSuggestions(String word)
+    public ArrayList<String> getSuggestions(String word)
     {
-        if (word == null || word.trim().length() == 0)
+        if (word == null || word.isEmpty())
             return null;
         
         word = word.trim();
@@ -195,10 +193,10 @@ public class SuggestionTree
         /* Sort the words according the levenshtein distance using the
            above comparator. The suggestion tree can have the same word
            appear twice, so make a unique list. */
-        Vector<String> vec_suggestions = new Vector<String>(suggestions);
+        ArrayList<String> vec_suggestions = new ArrayList<String>(suggestions);
         Collections.sort(vec_suggestions, c);
         HashSet<String> unique_db = new HashSet<String>();
-        Vector<String> unique = new Vector<String>();
+        ArrayList<String> unique = new ArrayList<String>();
         for (String s : vec_suggestions) {
             if (unique_db.contains(s))
                 continue;
@@ -206,7 +204,7 @@ public class SuggestionTree
         }
         
         // Cut it down to the first 100
-        unique = new Vector<String>(unique.subList(0, 100));
+        unique = new ArrayList<String>(unique.subList(0, 100));
         
         return unique;
     }

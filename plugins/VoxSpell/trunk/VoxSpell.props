@@ -1,10 +1,10 @@
 plugin.voxspellcheck.VoxSpellPlugin.activate=startup
 plugin.voxspellcheck.VoxSpellPlugin.name=VoxSpell
 plugin.voxspellcheck.VoxSpellPlugin.author=Matthew Gilbert (gilbert@voxmea.net)
-plugin.voxspellcheck.VoxSpellPlugin.version=1.0.8
-plugin.voxspellcheck.VoxSpellPlugin.depend.0=jedit 04.03.15.00
-plugin.voxspellcheck.VoxSpellPlugin.depend.1=jdk 1.5
-plugin.voxspellcheck.VoxSpellPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.7
+plugin.voxspellcheck.VoxSpellPlugin.version=1.0.9
+plugin.voxspellcheck.VoxSpellPlugin.depend.0=jedit 05.05.00.00
+plugin.voxspellcheck.VoxSpellPlugin.depend.1=jdk 11
+plugin.voxspellcheck.VoxSpellPlugin.depend.2=plugin errorlist.ErrorListPlugin 2.3
 plugin.voxspellcheck.VoxSpellPlugin.description=English Language Spell Checker
 plugin.voxspellcheck.VoxSpellPlugin.longdescription=description.html
 plugin.voxspellcheck.VoxSpellPlugin.docs=doc/index.html

@@ -19,31 +19,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package voxspellcheck;
 
-import java.lang.StringBuffer;
+import java.util.ArrayList;
+import java.util.Iterator;
 
-import java.util.Vector;
-import java.util.Enumeration;
-
-import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.jedit.textarea.TextAreaExtension;
-import org.gjt.sp.jedit.textarea.TextAreaPainter;
-import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
-import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.syntax.*;
 import org.gjt.sp.jedit.TextUtilities;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import java.awt.geom.*;
 import java.awt.Rectangle;
 import java.awt.FontMetrics;
 import java.awt.Point;
-import java.awt.EventQueue;
-import java.awt.Color;
 
 import errorlist.*;
 
@@ -136,16 +127,16 @@ public class VoxSpellPainter extends TextAreaExtension
                     c = text.charAt(offset + num_chars++);
                 }
             }
-        } catch (java.lang.IndexOutOfBoundsException ex) {
-            ;
+        } catch (java.lang.IndexOutOfBoundsException ex) {  // NOPMD
+            // don't care
         }
         
         return --num_chars;
     }
     
-    private Vector<String> getWords(int buf_start, int buf_end)
+    private ArrayList<String> getWords(int buf_start, int buf_end)
     {
-        Vector<String> words = new Vector<String>();
+        ArrayList<String> words = new ArrayList<String>();
         
         if (buf_start == textarea.getBufferLength())
             return words;
@@ -183,16 +174,12 @@ public class VoxSpellPainter extends TextAreaExtension
         setMode("text");
     }
     
-    protected void finalize()
-    {
-    }
-    
     protected boolean check(String word, int line_offset, 
                             DefaultTokenHandler tokenHandler,
                             boolean user_only)
     {
         // FIXME: Hack for Unicode apostrophe
-        if (word.indexOf("\u2019") != -1) {
+        if (word.indexOf('\u2019') != -1) {
             word = word.replaceAll("\u2019", "'");
         }
         // FIXME: Hack
@@ -271,18 +258,20 @@ public class VoxSpellPainter extends TextAreaExtension
         } catch (java.lang.NullPointerException ex) {
             // Getting NPE's on splits
             return true;
+        } catch (java.lang.ArrayIndexOutOfBoundsException ai) {
+            return true;   
         }
         
         JEditBuffer buffer = textarea.getBuffer();
         DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
         buffer.markTokens(line, tokenHandler);
         
-        Vector<String> words = getWords(start, end);
-        Enumeration<String> iter = words.elements();
+        ArrayList<String> words = getWords(start, end);
+        Iterator<String> iter = words.iterator();
         int char_count = 0;
         String word = null;
-        while (iter.hasMoreElements()) {
-            word = iter.nextElement();
+        while (iter.hasNext()) {
+            word = iter.next();
             if ((start + char_count + word.length()) >= pos)
                 break;
             char_count += word.length();
@@ -311,7 +300,7 @@ public class VoxSpellPainter extends TextAreaExtension
         FontMetrics metrics = this.textarea.getPainter().getFontMetrics();
         int char_height = metrics.getHeight() - metrics.getLeading();
         
-        Vector<String> words = getWords(start, end);
+        ArrayList<String> words = getWords(start, end);
         
         int char_count = 0;
         for (String word : words) {
@@ -351,7 +340,7 @@ public class VoxSpellPainter extends TextAreaExtension
             String line_text = textarea.getLineText(i);
             DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
             buffer.markTokens(i, tokenHandler);
-            Vector<String> words = getWords(textarea.getLineStartOffset(i), textarea.getLineEndOffset(i));
+            ArrayList<String> words = getWords(textarea.getLineStartOffset(i), textarea.getLineEndOffset(i));
             int char_count = 0;
             for (String word : words) {
                 if (!check(word, char_count, tokenHandler)) {
