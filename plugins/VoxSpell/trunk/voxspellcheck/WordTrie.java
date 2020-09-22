@@ -15,13 +15,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 */
 
 package voxspellcheck;
 
-import java.lang.Comparable;
 
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Stack;
 
 import java.io.BufferedReader;
@@ -161,7 +161,7 @@ public class WordTrie implements SpellCheck
             buf.append(length);
             buf.append(" - ");
             for (WordChar wc : chars) {
-                buf.append(wc.c + " ");
+                buf.append(wc.c).append(' ');
             }
             return buf.toString();
         }
@@ -296,7 +296,8 @@ public class WordTrie implements SpellCheck
         read(reader, root);
     }
    
-    private int getNodeCount(Node node)
+    // TODO: remove, not used
+    private int getNodeCount(Node node)     // NOPMD
     {
         int count = 0;
         for (WordChar wc : node.chars) {
@@ -311,13 +312,13 @@ public class WordTrie implements SpellCheck
     
     public void write_bf(DataOutputStream writer) throws java.io.IOException
     {
-        Vector<Node> cur = null;
-        Vector<Node> next = new Vector<Node>();
+        ArrayList<Node> cur = null;
+        ArrayList<Node> next = new ArrayList<Node>();
         next.add(root);
         
         do {
             cur = next;
-            next = new Vector<Node>();
+            next = new ArrayList<Node>();
             for (Node node : cur) {
                 writer.writeShort(node.length);
                 for (WordChar wc : node.chars) {
@@ -331,13 +332,13 @@ public class WordTrie implements SpellCheck
     
     public void read_bf(DataInputStream reader) throws java.io.IOException
     {
-        Vector<Node> cur = null;
-        Vector<Node> next = new Vector<Node>();
+        ArrayList<Node> cur = null;
+        ArrayList<Node> next = new ArrayList<Node>();
         next.add(root);
         
         do {
             cur = next;
-            next = new Vector<Node>();
+            next = new ArrayList<Node>();
             for (Node node : cur) {
                 int length = reader.readShort();
                 WordChar[] chars = new WordChar[length];
@@ -363,7 +364,7 @@ public class WordTrie implements SpellCheck
         return res;
     }
    
-    protected void getWords(Vector<String> vec, 
+    protected void getWords(ArrayList<String> vec, 
                             Stack<Character> stack, 
                             Node node,
                             int filter)
@@ -385,18 +386,18 @@ public class WordTrie implements SpellCheck
         }
     }
     
-    public Vector<String> getWords()
+    public ArrayList<String> getWords()
     {
-        Vector<String> vec = new Vector<String>();
+        ArrayList<String> vec = new ArrayList<String>();
         Stack<Character> stack = new Stack<Character>();
         getWords(vec, stack, root, 0);
         return vec;
     }
     
     // FIXME: This is a hacked interface to support the bloom filter.
-    public Vector<String> getWords(String prefix)
+    public ArrayList<String> getWords(String prefix)
     {
-        Vector<String> vec = new Vector<String>();
+        ArrayList<String> vec = new ArrayList<String>();
         
         if (prefix.length() == 0)
             return vec;

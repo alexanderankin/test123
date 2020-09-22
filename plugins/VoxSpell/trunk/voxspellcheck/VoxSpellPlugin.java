@@ -19,24 +19,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package voxspellcheck;
 
-import java.lang.Character;
 
-import java.util.TreeMap;
-import java.util.Vector;
-import java.util.HashSet;
-import java.util.Comparator;
-import java.util.Collections;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeSet;
+import java.util.ArrayList;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
@@ -58,7 +47,6 @@ import org.gjt.sp.jedit.textarea.TextAreaPainter;
 import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.jedit.PluginJAR;
-import org.gjt.sp.jedit.JARClassLoader;
 import org.gjt.sp.jedit.TextUtilities;
 
 public class VoxSpellPlugin extends EBPlugin
@@ -244,7 +232,7 @@ public class VoxSpellPlugin extends EBPlugin
         }
         
         /* Add all user_checker words to the suggestion tree. */
-        Vector<String> user_words = user_checker.getWords();
+        ArrayList<String> user_words = user_checker.getWords();
         for (String w : user_words) {
             suggestions.addWord(w);
         }
@@ -342,8 +330,8 @@ public class VoxSpellPlugin extends EBPlugin
             Selection sel = new Selection.Range(word_start + line_start,
                                                 word_end + line_start);
             textarea.setSelection(sel);
-        } catch (java.lang.Exception ex) {
-            ;
+        } catch (java.lang.Exception ex) {      // NOPMD
+            // don't care
         }
     }
     
@@ -360,14 +348,15 @@ public class VoxSpellPlugin extends EBPlugin
                 new_chars[i] = second.charAt(i);
             }
         }
-        String new_word = new String(new_chars);
+        StringBuilder new_word = new StringBuilder();
+        new_word.append(new_chars);
         if (len < second.length()) {
             if (at_least_one_lower)
-                new_word += second.substring(len);
+                new_word.append(second.substring(len));
             else
-                new_word += second.substring(len).toUpperCase();
+                new_word.append(second.substring(len).toUpperCase());
         }
-        return new_word;
+        return new_word.toString();
     }
 
     public static String getSuggestions(String word)
@@ -378,7 +367,7 @@ public class VoxSpellPlugin extends EBPlugin
         if (word.trim().equals(""))
             return null;
 
-        Vector<String> words = suggestions.getSuggestions(word);
+        ArrayList<String> words = suggestions.getSuggestions(word);
         if (words == null)
             return null;
         SuggestionDialog wp = new SuggestionDialog(jEdit.getActiveView(), 

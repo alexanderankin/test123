@@ -38,8 +38,9 @@
 			debug="yes"
 			includes="**/*.java"
 			includeJavaRuntime="yes"
-			target="1.5"
-			source="1.5" >
+			includeAntRuntime="no"
+			target="11"
+			source="11" >
 			<classpath refid="project.class.path"/>
 			<!--
 			<compilerarg value="-Xlint:unchecked"/>

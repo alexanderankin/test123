@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package voxspellcheck;
 
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Stack;
 import java.io.DataInputStream;
 
@@ -78,7 +78,7 @@ public class OffsetTrie implements SpellCheck
         public String toString()
         {
             Character c;
-            String s = new String();
+            StringBuilder s = new StringBuilder();
             input.setPos(pos);
             short length;
             try {
@@ -93,11 +93,11 @@ public class OffsetTrie implements SpellCheck
                     return null;
                 }
                 if (c.equals(Character.MIN_VALUE))
-                    s += " " + "MIN_VALUE";
+                    s.append(" MIN_VALUE");
                 else
-                    s += " " + c;
+                    s.append(' ').append(c);
             }
-            return s;
+            return s.toString();
         }
     }
     
@@ -202,7 +202,7 @@ public class OffsetTrie implements SpellCheck
         return res;
     }
     
-    protected void getWords(Vector<String> vec, 
+    protected void getWords(ArrayList<String> vec, 
                             Stack<Character> stack, 
                             Node node,
                             int filter) throws java.io.IOException
@@ -233,24 +233,24 @@ public class OffsetTrie implements SpellCheck
         }
     }
     
-    public Vector<String> getWords()
+    public ArrayList<String> getWords()
     {
-        Vector<String> vec = new Vector<String>();
+        ArrayList<String> vec = new ArrayList<String>();
         Stack<Character> stack = new Stack<Character>();
         try {
             getWords(vec, stack, root, 0);
         } catch (java.io.IOException ex) {
             Log.log(Log.DEBUG, this, "exception " + ex);
             // FIXME: this should probably not be handled here.
-            return new Vector<String>();
+            return new ArrayList<String>();
         }
         return vec;
     }
     
     // FIXME: This is a hacked interface
-    public Vector<String> getWords(String prefix)
+    public ArrayList<String> getWords(String prefix)
     {
-        Vector<String> vec = new Vector<String>();
+        ArrayList<String> vec = new ArrayList<String>();
         
         if (prefix.length() == 0)
             return vec;
@@ -266,7 +266,7 @@ public class OffsetTrie implements SpellCheck
             } catch (java.io.IOException ex) {
                 Log.log(Log.DEBUG, this, "exception " + ex);
                 // FIXME: this should probably not be handled here.
-                return new Vector<String>();
+                return new ArrayList<String>();
             }
         }
         return vec;

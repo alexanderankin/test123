@@ -23,24 +23,16 @@ import javax.swing.*;
 import java.awt.Graphics;
 import java.awt.geom.*;
 import java.awt.Rectangle;
-import java.awt.FontMetrics;
-import java.awt.Point;
 import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.font.FontRenderContext;
-import java.awt.geom.Rectangle2D;
-import java.awt.Insets;
-import java.awt.EventQueue;
-import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.util.Log;
 
 public class VoxSpellOptionPane extends AbstractOptionPane
 {
