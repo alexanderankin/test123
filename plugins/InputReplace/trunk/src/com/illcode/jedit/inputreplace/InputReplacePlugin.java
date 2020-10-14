@@ -96,7 +96,7 @@ public final class InputReplacePlugin extends EditPlugin
                 // The various types of entries we can find are:
                 if (pieces[1].matches("U\\+(?:10)?\\p{XDigit}{4}"))  {
                     // A Unicode code point written in hex
-                    pieces[1] = new String(Character.toChars(Integer.parseInt(pieces[1].substring(2), 16)));
+                    replacementMap.put(pieces[0], new String(Character.toChars(Integer.parseInt(pieces[1].substring(2), 16))));
                 } else if (pieces[1].length() >= 7 && pieces[1].endsWith("FUNC")) {
                     // This is valid (x)FUNC syntax.
                     // We'll stash it as a normal substitution for now, and let inputReplace() deal with the nitty gritty.
