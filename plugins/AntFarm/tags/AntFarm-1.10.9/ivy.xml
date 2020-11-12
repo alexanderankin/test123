@@ -1,0 +1,11 @@
+<ivy-module version="2.0">
+	<info organisation="jedit-plugins" module="AntFarm"/>
+	<dependencies>
+		<dependency org="junit" name="junit" rev="4.10"/>
+		<dependency org="jedit-plugins" name="ErrorList" rev="1.9"/>
+		<dependency org="jedit-plugins" name="CommonControls" rev="1.4"/>
+		<dependency org="jedit-plugins" name="ProjectViewer" rev="3.2.0"/>
+		<dependency org="jedit-plugins" name="Console" rev="4.4.3"/>
+		<dependency org="jedit-plugins" name="JavaSideKick" rev="2.8.1"/>
+	</dependencies>
+</ivy-module>
