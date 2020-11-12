@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<project name="AntPlugin" default="build" basedir=".">
+	<property file="../build.properties"/>
+	<property file="build.properties"/>
+	<property name="ant.archive" value="apache-ant-1.10.9-bin.zip"/>
+	<property name="ant.archive.docsdir" value="build/apache-ant-1.10.9/manual"/>
+	<property name="ant.archive.libdir" value="build/apache-ant-1.10.9/lib"/>
+    <property name="docs-proc.target"       value="none" />
+
+	<import file="${build.support}/plugin-build.xml" />
+
+	<selector id="extraFiles">
+		<filename name="AntPlugin.props" />
+	</selector>
+
+	<target name="download.ant" unless="offline">
+		<get src="http://downloads.apache.org/ant/binaries/${ant.archive}"
+		     dest="${ant.archive}" usetimestamp="true" ignoreerrors="true"/>
+
+	</target>
+
+	<target name="checkAnt" depends="download.ant">
+		<condition property="antArchivePresent">
+			<available file="${ant.archive}" type="file"/>
+		</condition>
+	</target>
+
+
+	<target name="build.prepare" depends="checkAnt" if="antArchivePresent">
+
+		<unzip src="${ant.archive}" dest="${build.dir}"/>
+		<copy todir="${build.docs}">
+			<fileset dir="${ant.archive.docsdir}">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+	</target>
+
+
+	<target name="build.post">
+		<copy todir="${install.dir}">
+			<fileset dir="${ant.archive.libdir}">
+				<include name="ant.jar"/>
+				<include name="ant-launcher.jar"/>
+			</fileset>
+		</copy>
+	</target>
+</project>
+
