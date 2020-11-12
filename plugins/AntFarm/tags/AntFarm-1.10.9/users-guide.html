@@ -1,0 +1,280 @@
+<html>
+<head>
+<style>
+body {background-color: white;}
+h1   {background-color: #CCCCFF;  
+		color: white; text-align: center;}
+h2   {background-color: #7FB2FF; color: white; text-align: center;}
+p    {color: black;}
+</style>
+</head>
+<body bgcolor="#FFFFFF">
+
+<h1>AntFarm Plugin User's Guide</h1>
+Initial Authors: Rick Gibbs, Chris Scott
+<br>
+Contributors and Maintainers: Damien Radtke, Joe Robertson
+<br>
+Contributors: Fernando Aranguiz, Brian Knowles, Todd Papaioannou, Chris Steinbeck, Richard Wan,
+ James Wilson, Calvin Yu, Gerard Smyth
+<br>
+<p>
+<h2>Legal Notice</h2>
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, Front-Cover Texts or Back-Cover Texts, each as
+defined in the license. A copy of the license can be found in the file
+COPYING.DOC.txt included with jEdit.
+
+<h1>Introduction</h1>
+The AntFarm plugin provides quick access to Ant build files from within
+jEdit. 
+<p>AntFarm has five main features:<br>
+<ol>
+<li>View the structure of an Ant build file.</li>
+<li>Dynamically parse Ant build files and display errors.</li>
+<li>Run Ant targets from within jEdit.</li>
+<li>Integration with the Console plugin.</li>
+<li>Access to the Ant build files assets.</li>
+</ol>
+
+Ant is a Java based make tool developed by the Apache Ant project. The
+Apache software itself is included in another plugin, called the
+AntPlugin.
+<p>
+For help writing Ant build files, please refer to <a href="jeditresource:/AntPlugin.jar!/index.html" >AntPlugin</a> online help,
+which is simply the Ant users guide.
+
+<h2>Configuring Ant Farm</h2>
+To configure Ant Farm, access Global Options -> Plugin Options -> Ant
+Farm -> Build Options.
+<p>
+Ant Farm can be configured to run builds within the current JVM or
+outside of the current JVM using a shell script. Using the current JVM
+is faster but large build tasks may not have enough memory to execute
+properly. Also, complex Ant scripts that require multiple external
+resources might not run properly from the current JVM.
+<p>
+If you experience OutOfMemory exceptions when running builds in the same
+JVM, increase the size of the java heap when running jEdit, or use an
+external script. To increase the heap size, use the -mx&lt;size&gt;m java
+command line option when starting jEdit, where &lt;size&gy; indicates the
+amount of memory to be assigned.
+<p>
+When you attempt to run an Ant build without having configured you build
+preferences, you will be prompted to select whether you wish to use the
+current JVM or an external script.
+<p>
+If you choose to run Ant builds within the current JVM, additional
+classpath elements can be specified when needed. This allows Ant to
+locate classes required for execution. This is useful when using custom
+tasks and external libraries not loaded by JEdit.
+<p>
+To run Ant builds outside of the current JVM, specify the build file you
+wish to use. Default build files for multiple operating systems are
+included with the binary distribution of the Apache Ant project.
+Additionally, you can specify global properties that will be passed to
+Ant. 
+<p>
+Access Global Options -> Plugin Options -> Ant Farm -> Properties,
+and enter the name/value pairs for the properties you need. Ant Farm
+will prompt you for runtime properties each time you run a target. To
+turn this feature off, click Do not prompt for properties when running
+targets. Properties specified at target runtime are not added to the
+global properties list.
+<p>
+Ant Farm can automatically load build.xml files from the root of any
+projects you manage via the Project Viewer. To enable this, check Load
+build files from the Project Viewer plugin, make sure the Project Viewer
+is docked so it starts immediately with jEdit and restart jEdit. Now,
+whenever you switch to a project that contains a file named build.xml,
+it will be loaded into Ant Farm.
+<p>
+Ant Farm also automatically loads any file named build.xml that is
+opened for editing.
+<p>
+When running an Ant target, the name of each task is prepended to the
+output text by default. To avoid this and print output in emacs friendly
+mode, check Produce logging information without adornments (Emacs mode).
+Ant Farm can save all currently changed buffers whenever you execute a
+target. To turn this feature on, check Save all buffers before running a
+target.
+
+<h2>View the structure of an Ant build file.</h2>
+Plugins>AntFarm displays the AntFarm window. This window is floating by
+default, but can be made to dock into the view in the Docking pane of
+the Global Options dialog box.
+<p>
+The AntFarm window consists of a toolbar which manages the different
+build files you work with and a tree which displays the structure of the
+build files you have added. The tree displays the name attribute of the
+Ant project, if provided, and all defined targets of the project.
+In addition to the toolbar buttons, different functions can be accessed
+by right clicking on each item in the tree.
+<p>
+<h2>The AntFarm tool bar</h2>
+Each button on the toolbar shows a tooltip if the mouse pointer is held
+over it long enough. Here is a description of each button:
+<dl>
+<dt>Add</dt> 
+<dd>- provides a file chooser dialog box which allows you to chose the
+Ant build file you want to work with. Multiple build files can be added
+to the tree.
+<p>
+The traditional name for an Ant build file is build.xml. In addition
+to the Add button, AntFarm is setup to automatically load any file named
+build.xml into the tree.
+<p>
+In addition, AntFarm contains the option to load build.xml files from
+any project you may manage using the Project Viewer plugin. To activate
+this feature, check Global Options -> Plugin Options -> Ant Farm -> Load
+build files from the Project Viewer plugin.
+</dd>
+<dt>Remove</dt><dd>- removes the currently selected build file from the tree. This
+does not affect the build file itself in any way.</dd>
+<p>
+<dt>Run</dt><dd> - runs the current target that is selected in the tree. If the
+currently selected item is a project, AntFarm will run the default
+target for that build file.</dd>
+</dl>
+
+<p>
+<h2>Dynamically parse Ant build files and display errors.</h2>
+Ant build files are defined using XML. When a build file is added to the
+AntFarm, its structure is parsed and the targets are displayed in the
+tree. If an error is encountered while parsing, a message will be
+displayed in the tree and an entry will be sent to the ErrorList plugin.
+The ErrorList entry provides quick access to the line that caused the
+problem in the build file when a line number is available.
+<p>
+When changes are made and saved to a build file that is loaded in
+AntFarm, the tree will be reparsed and updated to display the current
+status of the file. Just as in loading, any errors will be caught and
+displayed via the tree and the ErrorList. This feature provides quick
+validation while you are writing your build files.
+
+<h2>Run Ant targets from within jEdit.</h2>
+There are two ways to run targets from the AntFarm tree.
+<p>
+Select the target in the tree and click the Run. If a project is
+selected the default target will be run.
+<p>
+Select the target in the tree, right click and select the Run menu item.
+<p>
+By default, you will be prompted to enter runtime properties to send to
+Ant after you run a target. This can be turned off from the property
+dialog, or turned back on by unchecking, Global Options -> Plugin
+Options -> Ant Farm -> Properties, Do not prompt for properties when
+running targets
+The next section explains how to run targets from the Console plugin.
+
+<h2>Integration with the Console plugin.</h2>
+AntFarm is closely tied to the Console plugin. The Console provides a
+convienent way to display streamed output within jEdit. Console also
+provides error parsing through a pattern matching scheme that is very
+powerful. If you would like to add custom pattern matchers to use with
+AntFarm, refer to the Console documentation. Additionally, Console
+provides a mechanism for adding custom command interpreters called
+shells. AntFarm uses the Ant shell to allow quick command line access to
+some of the features of AntFarm.
+
+<h2>Displaying build output.</h2>
+When running a target from AntFarm all output will be sent to the
+Console’s output window. Any errors that match the built-in patterns
+will be sent to the ErrorList.
+To stop a target while running, use the Stop button on the Console
+toolbar.
+
+<h2>The Ant Shell</h2>
+You can use the Ant Shell indepentently of the AntFarm tree. The Ant
+shell provides the following commands:
+<dl>
+<dt>! [prop=value]*</dt><dd>  runs the default target for the current build file
+with specified properties.</dd>
+<p>
+<dt>![target_name] [prop=value]*</dt><dd>  runs the specified target for the current
+build file with specified properties.</dd>
+<p>
+<dt>?</dt><dd>  lists the available build files and usage</dd>
+<p>
+<dt>=build_file_number</dt><dd>  changes the current build file to the number
+identified by </dd>
+<p>
+<dt>+[full_path_to_file]</dt><dd>  load this build file into Ant Farm. Searches up
+the current buffers directory tree for a build.xml file to load if a
+file is not specified. Re-loads the build file if it is already loaded.</dd>
+</dl>
+
+<h2>Access to the Ant build files assets.</h2>
+AntFarm provides a couple quick short cuts to the different assests
+associated with a build file.
+<p>
+To edit the underlying build file, right click on the project in the
+tree and select the Edit build file item. This will open the build file
+in jEdit and allow you to make changes. The tree will be automatically
+updated when ever the file is saved.
+<p>
+To browse the base directory of the project, right click on the project
+in the tree and select the Browse project files item. Each Ant project
+has a base directory. This command opens that directory in the File
+System Browser.
+
+<h2>ProjectViewer Integration</h2>
+If the ProjectViewer plugin is also installed, then extra functionality
+will be avilable.
+<p>
+Within the ProjectViewer settings for a particular project, there will
+be an Ant settings page, that allows specifying the main ant build file
+for your project, and 4 targets to be easily invoked.
+<p>
+For example, you may want to set Target A to be the build target for
+each of your projects, and then you can easily invoke this using the Run
+Project Target A action. This will automatically figure out the ant
+build script and exact target to invoke based on the project the current
+file belongs to.
+<p>
+If the Emacs Browser plugin is installed, the Select and Run a Project
+Target action can also be used. This will provide a list of all the
+targets in the build file defined for the current project, so the
+required one can be easily invoked.
+This functionality is based on that previously available under jedit 4.2
+in the AntHelper plugin by Beau Tateyama.
+
+<h2>Change log</h2>
+
+Version 1.10.9 Requires jEdit 5.5, JDK 1.8, AntPlugin 1.10.9, Console 4.4.3, ProjectViewer 3.6.0, <br>
+ErrorListPlugin 1.9, CommonControlsPlugin 1.7.4, and optionally JavaSideKickPlugin 2.8.1<br>
+Updated Apache Ant to version 10.9. <br>
+Updated build process for newer JDK and plugin tools.
+<p>
+Version 1.7 Requires jEdit 4.3, JDK 1.5, AntPlugin 1.7.0, Console 4.4.1,<br>
+and optionally ProjectViewer 2.1.x and EBrowsePlugin 0.5.2<br>
+Added ProjectViewer integration to easily iinvoke targets for the
+current project. (Damien Radtke)
+<p>
+Version 1.5.4 Requires jEdit 4.2final, JDK 1.5, AntPlugin 1.6.5, Console
+4.2.6.x, and ProjectViewer 2.1.2.x.<br>
+Added a combobox action on targets to open in editor, so now AntFarm<br>
+is like a sidekick for Ant files.<br>
+Removed XML plugin as a dependency.
+<p>
+Version 1.5.3 Requires jEdit 4.2final, JDK 1.5, AntPlugin 1.6.5, Console
+4.2.5.2, Xml 0.13, and ProjectViewer 2.1.2.<br>
+Decoupled ant.jar and related jars from this plugin. Now AntFarm requres
+AntPlugin, 1.6.5 or later, as a dependency.<br>
+<p>
+Version 1.5.2 Requires jEdit 4.2final, JDK 1.5, Console 4.2.5.2, Xml
+0.13, and ProjectViewer 2.1.2.<br>
+Fixed 1476779
+<p>
+Version 1.5.1 Requires jEdit 4.2final, JDK 1.5, Console 4.2.5.2, Xml
+0.13, and ProjectViewer 2.1.2.<br>
+Reduced dependencies so it runs on 4.2final.
+<p>
+Version 1.5 Requires jEdit 4.3pre3, JDK 1.5, Console 4.2.5.2, Xml 0.15,
+and ProjectViewer 2.1.2.<br>
+Updated for Console 4.2.x, updated Ant from 1.5.4 to Ant 1.6.5.
+
+   </body>
+</html>

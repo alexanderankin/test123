@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+
+<!--
+Use this ant script to build the AntFarm plugin.
+This is based on the build-support plugin-build.xml file for building a jEdit plugin.
+-->
+
+<project name="AntFarm" default="build" basedir=".">
+    <property name="javadoc.packagenames" value="antfarm.*"/>
+    <property name="user-doc.xml" location = "users-guide.xml"/>
+
+    <property file="../build.properties"/>
+    <property name="build.support" value="../build-support"/>
+
+    <!--<property name="jedit.install.dir" value="C:\Program Files\jEdit"/>-->
+
+    <import file="${build.support}/plugin-build.xml"/>
+
+    <path id="project.class.path">
+        <fileset dir="${jedit.install.dir}">
+            <include name="jars/*.jar"/>
+        </fileset>
+    </path>
+	
+	
+	
+    <property name="plugin.dependencies"
+        value="ErrorList,InfoViewer,ProjectViewer,CommonControls"/>
+    <property name="jedit.user.dir" value="${user.home}/.jedit"/>
+    <property name="jedit.user.jars" value="${jedit.user.dir}/jars"/>
+    <property name="jedit.jars" value="${jedit.install.dir}/jars"/>
+    <property name="jar.name" value="AntFarm.jar"/>
+    <property name="build.dir" value="build"/>
+    <property name="jedit.plugins.dir" value="${install.dir}" />
+
+    <target name="dist" depends="clean, docs, build"/>
+
+    <target name="build.prepare" >
+		<copy file="users-guide.html" todir="${build.docs}"/>
+	</target>
+	
+    <selector id="compileFiles">
+        <and>
+            <filename name="**/*.java"/>
+        </and>
+    </selector>
+
+    <selector id="packageFiles">
+        <or>
+            <filename name="icons/*.png"/>
+            <filename name="icons/*.gif"/>
+        </or>
+    </selector>
+</project>
