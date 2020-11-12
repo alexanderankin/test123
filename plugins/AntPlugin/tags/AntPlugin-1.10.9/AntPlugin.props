@@ -1,0 +1,11 @@
+# Plugin properties
+plugin.ant.AntPlugin.name=AntPlugin
+plugin.ant.AntPlugin.activate=defer
+plugin.ant.AntPlugin.author=http://ant.apache.org/contributors.html
+plugin.ant.AntPlugin.version=1.10.9
+plugin.ant.AntPlugin.docs=index.html
+plugin.ant.AntPlugin.jars=ant.jar ant-launcher.jar
+plugin.ant.AntPlugin.depend.0=jedit 05.04.99.00
+plugin.ant.AntPlugin.depend.1=jdk 1.8
+plugin.ant.AntPlugin.description=Apache Ant packaged as a jedit plugin
+plugin.ant.AntPlugin.usePluginHome=true
