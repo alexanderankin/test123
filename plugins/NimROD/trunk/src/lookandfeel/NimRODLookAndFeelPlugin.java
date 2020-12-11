@@ -17,7 +17,6 @@ public class NimRODLookAndFeelPlugin extends EditPlugin {
     private static HashMap<String, Properties> themes = new HashMap<String, Properties>();
 
     public void start() {
-        System.out.println("+++++ start");
         loadThemes();
     }
 
