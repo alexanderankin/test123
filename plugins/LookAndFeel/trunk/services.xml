@@ -9,7 +9,7 @@
         new lookandfeel.JgoodiesExtWindows();
     </SERVICE>
     -->
-    <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="JGoodies Ext Windows">
+    <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="JGoodies Plastic 3D">
         new lookandfeel.JgoodiesPlastic3DLnfInstaller();
     </SERVICE>
     <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="JGoodies Plastic XP">
