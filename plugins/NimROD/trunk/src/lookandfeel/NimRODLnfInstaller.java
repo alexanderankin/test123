@@ -71,8 +71,17 @@ public class NimRODLnfInstaller implements LookAndFeelInstaller {
             themeName = "default";
             jEdit.setProperty( "nimrod.currentTheme", themeName );
         }
-        currentThemeName = themeName;
         Properties currentTheme = NimRODLookAndFeelPlugin.getTheme( themeName );
+        if (currentTheme == null) {
+            currentTheme = NimRODLookAndFeelPlugin.getDefaultTheme();
+            themeName = "default";
+        }
+        currentThemeName = themeName;
+        System.out.println("+++++ theme name: " + themeName);
+        System.out.println("+++++ currrent theme: " + currentTheme);
+        for (Object key : currentTheme.keySet()) {
+            System.out.println("+++++ " + key + " = " + currentTheme.get(key));   
+        }
         NimRODTheme theme = new NimRODTheme();
         theme.setPrimary1( SyntaxUtilities.parseColor( currentTheme.getProperty( "nimrodlf.p1" ), null ) );
         theme.setPrimary2( SyntaxUtilities.parseColor( currentTheme.getProperty( "nimrodlf.p2" ), null ) );

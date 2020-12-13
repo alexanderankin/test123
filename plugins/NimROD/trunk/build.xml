@@ -73,6 +73,7 @@
                 <filename name="**/services.xml" />
                 <filename name="**/*.props" />
                 <filename name="**/index.html"/>
+                <filename name="**/nimrod/themes/*.properties"/>
             </or>
         </and>
     </selector>
