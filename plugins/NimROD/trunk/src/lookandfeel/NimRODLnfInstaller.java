@@ -77,11 +77,6 @@ public class NimRODLnfInstaller implements LookAndFeelInstaller {
             themeName = "default";
         }
         currentThemeName = themeName;
-        System.out.println("+++++ theme name: " + themeName);
-        System.out.println("+++++ currrent theme: " + currentTheme);
-        for (Object key : currentTheme.keySet()) {
-            System.out.println("+++++ " + key + " = " + currentTheme.get(key));   
-        }
         NimRODTheme theme = new NimRODTheme();
         theme.setPrimary1( SyntaxUtilities.parseColor( currentTheme.getProperty( "nimrodlf.p1" ), null ) );
         theme.setPrimary2( SyntaxUtilities.parseColor( currentTheme.getProperty( "nimrodlf.p2" ), null ) );
@@ -293,7 +288,8 @@ public class NimRODLnfInstaller implements LookAndFeelInstaller {
                     public void actionPerformed( ActionEvent ae ) {
                         Configuration.this.setVisible( false );
                         Configuration.this.dispose();
-                        save( null );
+                        save( "___temp___" );
+                        jEdit.setProperty( "nimrod.currentTheme", "___temp___" );
                         try {
                             NimRODLnfInstaller.this.install();
                         }
@@ -422,7 +418,8 @@ public class NimRODLnfInstaller implements LookAndFeelInstaller {
                     public void actionPerformed( ActionEvent ae ) {
                         Configuration.this.setVisible( false );
                         Configuration.this.dispose();
-                        save( null );
+                        save( "___temp___" );
+                        jEdit.setProperty( "nimrod.currentTheme", "___temp___" );
                         try {
                             NimRODLnfInstaller.this.install();
                         }
@@ -521,6 +518,7 @@ public class NimRODLnfInstaller implements LookAndFeelInstaller {
         }
 
         private void save( String themeName ) {
+            currentThemeName = themeName;
             if ( tabs.getSelectedIndex() == 0 ) {
 
                 // basic tab is selected, need to generate the additional color values

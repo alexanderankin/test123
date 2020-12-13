@@ -119,6 +119,7 @@ public class NimRODLookAndFeelPlugin extends EditPlugin {
     protected static String[] getThemeList() {
         ArrayList<String> themeNames = new ArrayList<String>( themes.keySet() );
         themeNames.sort( String.CASE_INSENSITIVE_ORDER );
+        themeNames.remove("___temp___");
         return themeNames.toArray( new String [themeNames.size()]  );
     }
 
