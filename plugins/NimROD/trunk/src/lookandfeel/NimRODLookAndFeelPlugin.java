@@ -17,7 +17,61 @@ public class NimRODLookAndFeelPlugin extends EditPlugin {
     private static HashMap<String, Properties> themes = new HashMap<String, Properties>();
 
     public void start() {
+        copyBundledProperties();
         loadThemes();
+    }
+    
+    // copies bundled theme files from the plugin jar to
+    // the plugin home directory, but does not overwrite files of the same
+    // name that already exist in the plugin home directory.
+    private void copyBundledProperties() {
+        // this property has a comma separated list of the just the names of the properties
+        // files.  The files are located in the jar file at nimrod/themes.
+        String propsFiles = jEdit.getProperty("nimrod.includedThemes");
+        if (propsFiles == null || propsFiles.length() == 0) {
+            return ;
+        }
+        String[] filenames = propsFiles.split(",");
+        File homeDir = jEdit.getPlugin("lookandfeel.NimRODLookAndFeelPlugin").getPluginHome();
+        homeDir.mkdirs();
+        for (String filename : filenames) {
+            filename = filename.trim() + ".properties";
+            File outfile = new File(homeDir, filename);
+            if (outfile.exists()) {
+                continue;
+            }
+            String resource = "nimrod/themes/" + filename;
+            copyToFile(getClass().getClassLoader().getResourceAsStream(resource), outfile);
+        }
+    }
+    
+    /**
+     * Old school copy to file method, works well, and is sufficient for this purpose.
+     * Copies a stream to a file. If destination file exists, it will be
+     * overwritten. The input stream will be closed when this method returns.
+     *
+     * @param from           stream to copy from, will be closed after copy
+     * @param to             file to write
+     * @exception Exception  most likely an IOException
+     */
+    public static void copyToFile(InputStream from, File to) {
+        try {
+            FileOutputStream out = new FileOutputStream(to);
+            byte[] buffer = new byte[1024];
+            int bytes_read;
+            while (true) {
+                bytes_read = from.read(buffer);
+                if (bytes_read == -1) {
+                    break;
+                }
+                out.write(buffer, 0, bytes_read);
+            }
+            out.flush();
+            out.close();
+            from.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -27,6 +81,7 @@ public class NimRODLookAndFeelPlugin extends EditPlugin {
      * I'm just loading them all, they are small files, and likely not many of them.
      */
     private static void loadThemes() {
+        themes.clear();
         themes.put( "default", getDefaultTheme() );
         try {
             File homeDir = jEdit.getPlugin( "lookandfeel.NimRODLookAndFeelPlugin" ).getPluginHome();
@@ -63,7 +118,7 @@ public class NimRODLookAndFeelPlugin extends EditPlugin {
      */
     protected static String[] getThemeList() {
         ArrayList<String> themeNames = new ArrayList<String>( themes.keySet() );
-        themeNames.sort( null );
+        themeNames.sort( String.CASE_INSENSITIVE_ORDER );
         return themeNames.toArray( new String [themeNames.size()]  );
     }
 
@@ -71,16 +126,16 @@ public class NimRODLookAndFeelPlugin extends EditPlugin {
     // like user created themes.
     protected static Properties getDefaultTheme() {
         Properties props = new Properties();
-        props.setProperty( "nimrodlf.p", "0xe3a300" );
-        props.setProperty( "nimrodlf.p1", "0xebb000" );
-        props.setProperty( "nimrodlf.p2", "0xf5bc00" );
-        props.setProperty( "nimrodlf.p3", "0xf5bc00" );
-        props.setProperty( "nimrodlf.s", "0xaba98a" );
-        props.setProperty( "nimrodlf.s1", "0xaba98a" );
-        props.setProperty( "nimrodlf.s2", "0xb3b092" );
-        props.setProperty( "nimrodlf.s3", "0xbdbb9d" );
-        props.setProperty( "nimrodlf.b", "0x000000" );
-        props.setProperty( "nimrodlf.w", "0xffffff" );
+        props.setProperty( "nimrodlf.p", "#ffe3a300" );
+        props.setProperty( "nimrodlf.p1", "#ffebb000" );
+        props.setProperty( "nimrodlf.p2", "#fff5bc00" );
+        props.setProperty( "nimrodlf.p3", "#fff5bc00" );
+        props.setProperty( "nimrodlf.s", "#ffaba98a" );
+        props.setProperty( "nimrodlf.s1", "#ffaba98a" );
+        props.setProperty( "nimrodlf.s2", "#ffb3b092" );
+        props.setProperty( "nimrodlf.s3", "#ffbdbb9d" );
+        props.setProperty( "nimrodlf.b", "#ff000000" );
+        props.setProperty( "nimrodlf.w", "#ffffffff" );
         props.setProperty( "nimrodlf.frameOpacity", "180" );
         props.setProperty( "nimrodlf.menuOpacity", "195" );
         return props;
@@ -102,7 +157,6 @@ public class NimRODLookAndFeelPlugin extends EditPlugin {
         catch ( Exception e ) {
             e.printStackTrace();
         }
-        themes.clear();
         loadThemes();
     }
 
@@ -114,6 +168,7 @@ public class NimRODLookAndFeelPlugin extends EditPlugin {
             File homeDir = jEdit.getPlugin( "lookandfeel.NimRODLookAndFeelPlugin" ).getPluginHome();
             File file = new File( homeDir, name + ".properties" );
             file.delete();
+            loadThemes();
         }
         catch ( Exception e ) {
             e.printStackTrace();

@@ -19,7 +19,7 @@
 </target>
 	
 <target name="compile" depends="setup">
-  <javac srcdir="src" destdir="bin" encoding="ISO-8859-1"/>
+  <javac srcdir="src" destdir="bin" encoding="ISO-8859-1" debug="on" includeantruntime="false"/>
 </target>
 
 <target name="hazjar" depends="compile">
