@@ -41,8 +41,6 @@ import org.gjt.sp.util.SyntaxUtilities;
 
 /**
  * A class for installing the NimROD look and feel
- * TODO: reload
- *
  */
 public class NimRODLnfInstaller implements LookAndFeelInstaller {
 
@@ -242,15 +240,17 @@ public class NimRODLnfInstaller implements LookAndFeelInstaller {
             JPanel buttonPanel = new JPanel( kl );
             JButton saveButton = new JButton( jEdit.getProperty( "nimrod.Save", "Save" ) );
             saveButton.setMnemonic( KeyEvent.VK_S );
+            saveButton.setToolTipText("Save the theme as a named theme");
             JButton okButton = new JButton( jEdit.getProperty( "nimrod.Ok", "Ok" ) );
             okButton.setMnemonic( KeyEvent.VK_O );
+            okButton.setToolTipText("Apply the current colors without saving as a named theme");
             JButton cancelButton = new JButton( jEdit.getProperty( "nimrod.Cancel", "Cancel" ) );
             cancelButton.setMnemonic( KeyEvent.VK_C );
             buttonPanel.add( "0, 0, 1, 1, W, w, 3", saveButton );
-            buttonPanel.add( "1, 0, 1, 1, W, w, 3", KappaLayout.createHorizontalStrut( 66 ) );
+            buttonPanel.add( "1, 0, 1, 1, W, w, 3", KappaLayout.createHorizontalStrut( 20 ) );
             buttonPanel.add( "2, 0, 1, 1, E, w, 3", okButton );
             buttonPanel.add( "3, 0, 1, 1, E, w, 3", cancelButton );
-            kl.makeColumnsSameWidth( 2, 3 );
+            kl.makeColumnsSameWidth();
 
             saveButton.addActionListener( new ActionListener(){
 
@@ -258,10 +258,9 @@ public class NimRODLnfInstaller implements LookAndFeelInstaller {
                         String themeName = currentThemeName;
                         if ( !themeName.equals( "default" ) ) {
 
-                            // TODO: put text in properties file
-                            int response = JOptionPane.showConfirmDialog( null, "Update current theme " + themeName + "?", "Update Theme?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+                            int response = JOptionPane.showConfirmDialog( null, jEdit.getProperty( "nimrod.Update_Current_Theme", "Update current theme" ) + ' ' + themeName + "?", jEdit.getProperty( "nimrod.Update_Theme", "Update Theme?" ), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
                             if ( response != JOptionPane.YES_OPTION ) {
-                                themeName = JOptionPane.showInputDialog( null, "Enter name for theme:", "Theme Name", JOptionPane.QUESTION_MESSAGE );
+                                themeName = JOptionPane.showInputDialog( null, jEdit.getProperty( "nimrod.Enter_name_for_theme", "Enter name for theme:" ), jEdit.getProperty( "nimrod.Theme_Name", "Theme Name" ), JOptionPane.QUESTION_MESSAGE );
                                 if ( themeName == null || themeName.isEmpty() ) {
                                     return;
                                 }
@@ -386,15 +385,17 @@ public class NimRODLnfInstaller implements LookAndFeelInstaller {
             JPanel buttonPanel = new JPanel( kl );
             JButton saveButton = new JButton( jEdit.getProperty( "nimrod.Save", "Save" ) );
             saveButton.setMnemonic( KeyEvent.VK_S );
+            saveButton.setToolTipText("Save the theme as a named theme");
             JButton okButton = new JButton( jEdit.getProperty( "nimrod.Ok", "Ok" ) );
             okButton.setMnemonic( KeyEvent.VK_O );
+            okButton.setToolTipText("Apply the current colors without saving as a named theme");
             JButton cancelButton = new JButton( jEdit.getProperty( "nimrod.Cancel", "Cancel" ) );
             cancelButton.setMnemonic( KeyEvent.VK_C );
             buttonPanel.add( "0, 0, 1, 1, W, w, 3", saveButton );
-            buttonPanel.add( "1, 0, 1, 1, W, w, 3", KappaLayout.createHorizontalStrut( 66 ) );
+            buttonPanel.add( "1, 0, 1, 1, W, w, 3", KappaLayout.createHorizontalStrut( 20 ) );
             buttonPanel.add( "2, 0, 1, 1, E, w, 3", okButton );
             buttonPanel.add( "3, 0, 1, 1, E, w, 3", cancelButton );
-            kl.makeColumnsSameWidth( 2, 3 );
+            kl.makeColumnsSameWidth();
 
             saveButton.addActionListener( new ActionListener(){
 
@@ -402,10 +403,11 @@ public class NimRODLnfInstaller implements LookAndFeelInstaller {
                         String themeName = currentThemeName;
                         if ( !themeName.equals( "default" ) ) {
 
-                            // TODO: put text in properties file
-                            int response = JOptionPane.showConfirmDialog( null, "Update current theme " + themeName + "?", "Update Theme?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+                            int response = JOptionPane.showConfirmDialog( null, jEdit.getProperty( "nimrod.Update_Current_Theme", "Update current theme" ) + ' ' + themeName + "?", jEdit.getProperty( "nimrod.Update_Theme", "Update Theme?" ),
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE );
                             if ( response != JOptionPane.YES_OPTION ) {
-                                themeName = JOptionPane.showInputDialog( null, "Enter name for theme:", "Theme Name", JOptionPane.QUESTION_MESSAGE );
+                                themeName = JOptionPane.showInputDialog( null, jEdit.getProperty( "nimrod.Enter_name_for_theme", "Enter name for theme:" ), jEdit.getProperty( "nimrod.Theme_Name", "Theme Name" ), JOptionPane.QUESTION_MESSAGE );
                                 if ( themeName == null || themeName.isEmpty() ) {
                                     return;
                                 }
@@ -455,21 +457,31 @@ public class NimRODLnfInstaller implements LookAndFeelInstaller {
 
             // need ok, cancel, delete buttons
             KappaLayout kl = new KappaLayout();
-            JPanel buttonPanel = new JPanel( kl );
+            JPanel bottomPanel = new JPanel( kl );
+            JButton okButton = new JButton( jEdit.getProperty( "nimrod.Ok", "Ok" ) );
+            okButton.setMnemonic( KeyEvent.VK_O );
+            okButton.setToolTipText("Apply the currently selected theme");
+            JButton cancelButton = new JButton( jEdit.getProperty( "nimrod.Cancel", "Cancel" ) );
+            cancelButton.setMnemonic( KeyEvent.VK_C );
+            bottomPanel.add( "0, 0, 1, 1, , w, 3", KappaLayout.createHorizontalStrut( 20 ) );
+            bottomPanel.add( "1, 0, 1, 1, , w, 3", KappaLayout.createHorizontalStrut( 20 ) );
+            bottomPanel.add( "2, 0, 1, 1, , w, 3", okButton );
+            bottomPanel.add( "3, 0, 1, 1, , w, 3", cancelButton );
+            kl.makeColumnsSameWidth();
+
+            JPanel sidePanel = new JPanel( new KappaLayout() );
             JButton deleteButton = new JButton( jEdit.getProperty( "nimrod.Delete", "Delete" ) );
+            deleteButton.setToolTipText("Deletes the currently selected theme");
             deleteButton.setMnemonic( KeyEvent.VK_D );
             JButton renameButton = new JButton( jEdit.getProperty( "nimrod.Rename", "Rename" ) );
             renameButton.setMnemonic( KeyEvent.VK_R );
-            JButton okButton = new JButton( jEdit.getProperty( "nimrod.Ok", "Ok" ) );
-            okButton.setMnemonic( KeyEvent.VK_O );
-            JButton cancelButton = new JButton( jEdit.getProperty( "nimrod.Cancel", "Cancel" ) );
-            cancelButton.setMnemonic( KeyEvent.VK_C );
-            buttonPanel.add( "0, 0, 1, 1, W, w, 3", deleteButton );
-            buttonPanel.add( "1, 0, 1, 1, W, w, 3", renameButton );
-            buttonPanel.add( "2, 0, 1, 1, W, w, 3", KappaLayout.createHorizontalStrut( 66 ) );
-            buttonPanel.add( "3, 0, 1, 1, E, w, 3", okButton );
-            buttonPanel.add( "4, 0, 1, 1, E, w, 3", cancelButton );
-            kl.makeColumnsSameWidth( 2, 3 );
+            renameButton.setToolTipText("Rename the currently selected theme");
+            JButton restoreButton = new JButton( jEdit.getProperty( "nimrod.Restore", "Restore" ) );
+            restoreButton.setMnemonic( KeyEvent.VK_S );
+            restoreButton.setToolTipText("Restores the built in themes");
+            sidePanel.add( "0, 0, 1, 1, W, w, 3", deleteButton );
+            sidePanel.add( "0, 1, 1, 1, W, w, 3", renameButton );
+            sidePanel.add( "0, 2, 1, 1, W, w, 3", restoreButton );
 
             deleteButton.addActionListener( new ActionListener(){
 
@@ -479,8 +491,7 @@ public class NimRODLnfInstaller implements LookAndFeelInstaller {
                             return;
                         }
 
-                        // TODO: put text in properties file
-                        int response = JOptionPane.showConfirmDialog( null, "Delete theme \"" + themeName + "\"?" );
+                        int response = JOptionPane.showConfirmDialog( null, jEdit.getProperty( "nimrod.Delete_Theme", "Delete theme" ) + " \"" + themeName + "\"?" );
                         if ( response == JOptionPane.YES_OPTION ) {
                             NimRODLookAndFeelPlugin.deleteTheme( themeName );
                             themeList.setListData( NimRODLookAndFeelPlugin.getThemeList() );
@@ -497,8 +508,7 @@ public class NimRODLnfInstaller implements LookAndFeelInstaller {
                             return;
                         }
 
-                        // TODO: put text in properties file
-                        String newName = JOptionPane.showInputDialog( null, "Enter new name for theme " + oldName, "Rename Theme", JOptionPane.QUESTION_MESSAGE );
+                        String newName = JOptionPane.showInputDialog( null, jEdit.getProperty( "nimrod.Enter_new_name_for_theme", "Enter new name for theme" ) + ' ' + oldName, jEdit.getProperty( "nimrod.Rename_Theme", "Rename Theme" ), JOptionPane.QUESTION_MESSAGE );
                         if ( newName == null || newName.isEmpty() ) {
                             return;
                         }
@@ -508,24 +518,32 @@ public class NimRODLnfInstaller implements LookAndFeelInstaller {
                 }
             );
 
+            restoreButton.addActionListener( new ActionListener(){
+
+                    public void actionPerformed( ActionEvent ae ) {
+                        NimRODLookAndFeelPlugin.restoreThemes();
+                        themeList.setListData( NimRODLookAndFeelPlugin.getThemeList() );
+                    }
+                }
+            );
+
             okButton.addActionListener( new ActionListener(){
 
                     public void actionPerformed( ActionEvent ae ) {
                         String themeName = themeList.getSelectedValue();
-                        if ( themeName == null ) {
-                            return;
-                        }
-                        jEdit.setProperty( "nimrod.currentTheme", themeName );
+                        if ( themeName != null ) {
+                            jEdit.setProperty( "nimrod.currentTheme", themeName );
 
+                            try {
+                                NimRODLnfInstaller.this.install();
+                            }
+                            catch ( Exception e ) {
+                                JOptionPane.showMessageDialog( null, e.getMessage(), jEdit.getProperty( "nimrod.loadError.text", "Error installing NimROD Look and Feel" ), JOptionPane.ERROR_MESSAGE );
+                                e.printStackTrace();
+                            }
+                        }
                         Configuration.this.setVisible( false );
                         Configuration.this.dispose();
-                        try {
-                            NimRODLnfInstaller.this.install();
-                        }
-                        catch ( Exception e ) {
-                            JOptionPane.showMessageDialog( null, e.getMessage(), jEdit.getProperty( "nimrod.loadError.text", "Error installing NimROD Look and Feel" ), JOptionPane.ERROR_MESSAGE );
-                            e.printStackTrace();
-                        }
                     }
                 }
             );
@@ -540,7 +558,8 @@ public class NimRODLnfInstaller implements LookAndFeelInstaller {
             );
 
             contentPanel.add( scrollPane, BorderLayout.CENTER );
-            contentPanel.add( buttonPanel, BorderLayout.SOUTH );
+            contentPanel.add( sidePanel, BorderLayout.EAST );
+            contentPanel.add( bottomPanel, BorderLayout.SOUTH );
             return contentPanel;
         }
 
