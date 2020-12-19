@@ -35,14 +35,14 @@ public class NimRODLookAndFeelPlugin extends EditPlugin {
     private static HashMap<String, Properties> themes = new HashMap<String, Properties>();
 
     public void start() {
-        copyBundledProperties();
+        copyBundledProperties(false);
         loadThemes();
     }
     
     // copies bundled theme files from the plugin jar to
     // the plugin home directory, but does not overwrite files of the same
     // name that already exist in the plugin home directory.
-    private void copyBundledProperties() {
+    private void copyBundledProperties(boolean overwrite) {
         // this property has a comma separated list of the just the names of the properties
         // files.  The files are located in the jar file at nimrod/themes.
         String propsFiles = jEdit.getProperty("nimrod.includedThemes");
@@ -55,7 +55,7 @@ public class NimRODLookAndFeelPlugin extends EditPlugin {
         for (String filename : filenames) {
             filename = filename.trim() + ".properties";
             File outfile = new File(homeDir, filename);
-            if (outfile.exists()) {
+            if (!overwrite && outfile.exists()) {
                 continue;
             }
             String resource = "nimrod/themes/" + filename;
@@ -207,6 +207,14 @@ public class NimRODLookAndFeelPlugin extends EditPlugin {
         }
         catch ( Exception e ) {
             e.printStackTrace();
+        }
+    }
+    
+    protected static void restoreThemes() {
+        NimRODLookAndFeelPlugin plugin = (NimRODLookAndFeelPlugin)jEdit.getPlugin("lookandfeel.NimRODLookAndFeelPlugin");
+        if (plugin != null) {
+            plugin.copyBundledProperties(true);
+            loadThemes();
         }
     }
 }

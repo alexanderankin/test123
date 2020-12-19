@@ -13,7 +13,7 @@ plugin.lookandfeel.NimRODLookAndFeelPlugin.description=The NimROD Look and Feel 
 
 nimrod.theme.label=NimROD Theme Editor
 
-nimrod.includedThemes=Bluebird,Canary,Parrot,Redwing,Raven
+nimrod.includedThemes=Bluebird,Canary,Flamingo,Osterich,Parrot,Raven,Redwing
 
 nimrod.dialog.title=NimROD Theme Configuration
 nimrod.Save=Save
@@ -47,3 +47,11 @@ nimrod.menuOpacity.text=Menu Opacity
 nimrod.loadError.text=Error installing NimROD Look and Feel 
 nimrod.duplicateThemeName.title=Duplicate Theme Name
 nimrod.duplicateThemeName.text=Theme may not be named \"default\".
+nimrod.Update_current_theme=Update current theme
+nimrod.Update_Theme=Update Theme?
+nimrod.Enter_name_for_theme=Enter name for theme:
+nimrod.Theme_Name=Theme Name
+nimrod.Delete_Theme=Delete Theme
+nimrod.Enter_new_name_for_theme=Enter new name for theme
+nimrod.Rename_Theme=Rename Theme
+
