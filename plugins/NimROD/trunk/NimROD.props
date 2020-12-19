@@ -15,9 +15,13 @@ nimrod.theme.label=NimROD Theme Editor
 
 nimrod.includedThemes=Bluebird,Canary,Parrot,Redwing,Raven
 
+nimrod.dialog.title=NimROD Theme Configuration
 nimrod.Save=Save
 nimrod.Ok=Ok
 nimrod.Cancel=Cancel
+nimrod.basic.text=Basic
+nimrod.advanced.text=Advanced
+nimrod.themes.text=Themes
 nimrod.primary.text=Primary
 nimrod.primary.tooltip=Primary: Borders, highlighting, title bars
 nimrod.primary1.text=Primary 1
