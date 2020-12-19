@@ -41,6 +41,7 @@ import org.gjt.sp.util.SyntaxUtilities;
 
 /**
  * A class for installing the NimROD look and feel
+ * TODO: reload
  *
  */
 public class NimRODLnfInstaller implements LookAndFeelInstaller {
@@ -72,7 +73,7 @@ public class NimRODLnfInstaller implements LookAndFeelInstaller {
             jEdit.setProperty( "nimrod.currentTheme", themeName );
         }
         Properties currentTheme = NimRODLookAndFeelPlugin.getTheme( themeName );
-        if (currentTheme == null) {
+        if ( currentTheme == null ) {
             currentTheme = NimRODLookAndFeelPlugin.getDefaultTheme();
             themeName = "default";
         }
@@ -178,7 +179,7 @@ public class NimRODLnfInstaller implements LookAndFeelInstaller {
      * Secondary 2: Inactive window borders, shadows, mouse down, dimmed text
      * Secondary 3: Canvas color, normal background color
      * Black: User text and control text
-     * White: Hightlights, background for user text entry area
+     * White: Highlights, background for user text entry area
      *
      * Use a slider for the opacity settings:
      *
@@ -188,8 +189,6 @@ public class NimRODLnfInstaller implements LookAndFeelInstaller {
      * Font:
      * NimROD has a font setting, in which is uses a font and derives a bold font,
      * but I'm just using the jEdit font set in jEdit's appearance option pane.
-     *
-     * use jEdit FontSelectorDialog? Just use whatever is already selected in jEdit font settings?
      */
     class Configuration extends JDialog {
 
@@ -199,7 +198,7 @@ public class NimRODLnfInstaller implements LookAndFeelInstaller {
         private JTabbedPane tabs;
 
         public Configuration( NimRODTheme currentTheme ) {
-            super( jEdit.getActiveView(), "NimROD Theme Configuration", true );
+            super( jEdit.getActiveView(), jEdit.getProperty( "nimrod.dialog.title", "NimROD Theme Configuration" ), true );
             this.currentTheme = currentTheme;
             init();
             pack();
@@ -214,9 +213,9 @@ public class NimRODLnfInstaller implements LookAndFeelInstaller {
             JPanel advancedPanel = getAdvancedPanel();
             JPanel themePanel = getThemePanel();
 
-            tabs.addTab( "Basic", basicPanel );
-            tabs.addTab( "Advanced", advancedPanel );
-            tabs.addTab( "Themes", themePanel );
+            tabs.addTab( jEdit.getProperty( "nimrod.basic.text", "Basic" ), basicPanel );
+            tabs.addTab( jEdit.getProperty( "nimrod.advanced.text", "Advanced" ), advancedPanel );
+            tabs.addTab( jEdit.getProperty( "nimrod.themes.text", "Themes" ), themePanel );
 
             contentPane.add( tabs, BorderLayout.CENTER );
             setContentPane( contentPane );
@@ -258,6 +257,8 @@ public class NimRODLnfInstaller implements LookAndFeelInstaller {
                     public void actionPerformed( ActionEvent ae ) {
                         String themeName = currentThemeName;
                         if ( !themeName.equals( "default" ) ) {
+
+                            // TODO: put text in properties file
                             int response = JOptionPane.showConfirmDialog( null, "Update current theme " + themeName + "?", "Update Theme?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
                             if ( response != JOptionPane.YES_OPTION ) {
                                 themeName = JOptionPane.showInputDialog( null, "Enter name for theme:", "Theme Name", JOptionPane.QUESTION_MESSAGE );
@@ -400,6 +401,8 @@ public class NimRODLnfInstaller implements LookAndFeelInstaller {
                     public void actionPerformed( ActionEvent ae ) {
                         String themeName = currentThemeName;
                         if ( !themeName.equals( "default" ) ) {
+
+                            // TODO: put text in properties file
                             int response = JOptionPane.showConfirmDialog( null, "Update current theme " + themeName + "?", "Update Theme?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
                             if ( response != JOptionPane.YES_OPTION ) {
                                 themeName = JOptionPane.showInputDialog( null, "Enter name for theme:", "Theme Name", JOptionPane.QUESTION_MESSAGE );
@@ -454,15 +457,18 @@ public class NimRODLnfInstaller implements LookAndFeelInstaller {
             KappaLayout kl = new KappaLayout();
             JPanel buttonPanel = new JPanel( kl );
             JButton deleteButton = new JButton( jEdit.getProperty( "nimrod.Delete", "Delete" ) );
-            deleteButton.setMnemonic( KeyEvent.VK_S );
+            deleteButton.setMnemonic( KeyEvent.VK_D );
+            JButton renameButton = new JButton( jEdit.getProperty( "nimrod.Rename", "Rename" ) );
+            renameButton.setMnemonic( KeyEvent.VK_R );
             JButton okButton = new JButton( jEdit.getProperty( "nimrod.Ok", "Ok" ) );
             okButton.setMnemonic( KeyEvent.VK_O );
             JButton cancelButton = new JButton( jEdit.getProperty( "nimrod.Cancel", "Cancel" ) );
             cancelButton.setMnemonic( KeyEvent.VK_C );
             buttonPanel.add( "0, 0, 1, 1, W, w, 3", deleteButton );
-            buttonPanel.add( "1, 0, 1, 1, W, w, 3", KappaLayout.createHorizontalStrut( 66 ) );
-            buttonPanel.add( "2, 0, 1, 1, E, w, 3", okButton );
-            buttonPanel.add( "3, 0, 1, 1, E, w, 3", cancelButton );
+            buttonPanel.add( "1, 0, 1, 1, W, w, 3", renameButton );
+            buttonPanel.add( "2, 0, 1, 1, W, w, 3", KappaLayout.createHorizontalStrut( 66 ) );
+            buttonPanel.add( "3, 0, 1, 1, E, w, 3", okButton );
+            buttonPanel.add( "4, 0, 1, 1, E, w, 3", cancelButton );
             kl.makeColumnsSameWidth( 2, 3 );
 
             deleteButton.addActionListener( new ActionListener(){
@@ -472,11 +478,32 @@ public class NimRODLnfInstaller implements LookAndFeelInstaller {
                         if ( themeName == null ) {
                             return;
                         }
+
+                        // TODO: put text in properties file
                         int response = JOptionPane.showConfirmDialog( null, "Delete theme \"" + themeName + "\"?" );
                         if ( response == JOptionPane.YES_OPTION ) {
                             NimRODLookAndFeelPlugin.deleteTheme( themeName );
                             themeList.setListData( NimRODLookAndFeelPlugin.getThemeList() );
                         }
+                    }
+                }
+            );
+
+            renameButton.addActionListener( new ActionListener(){
+
+                    public void actionPerformed( ActionEvent ae ) {
+                        String oldName = themeList.getSelectedValue();
+                        if ( oldName == null ) {
+                            return;
+                        }
+
+                        // TODO: put text in properties file
+                        String newName = JOptionPane.showInputDialog( null, "Enter new name for theme " + oldName, "Rename Theme", JOptionPane.QUESTION_MESSAGE );
+                        if ( newName == null || newName.isEmpty() ) {
+                            return;
+                        }
+                        NimRODLookAndFeelPlugin.renameTheme( oldName, newName );
+                        themeList.setListData( NimRODLookAndFeelPlugin.getThemeList() );
                     }
                 }
             );
