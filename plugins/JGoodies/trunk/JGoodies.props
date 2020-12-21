@@ -1,6 +1,6 @@
 plugin.lookandfeel.JGoodiesLookAndFeelPlugin.name=JGoodiesLookAndFeel
 plugin.lookandfeel.JGoodiesLookAndFeelPlugin.author=Dale Anson
-plugin.lookandfeel.JGoodiesLookAndFeelPlugin.version=1.2d
+plugin.lookandfeel.JGoodiesLookAndFeelPlugin.version=2.5.3
 plugin.lookandfeel.JGoodiesLookAndFeelPlugin.docs=index.html
 plugin.lookandfeel.JGoodiesLookAndFeelPlugin.activate=startup
 plugin.lookandfeel.JGoodiesLookAndFeelPlugin.depend.0=jdk 11
