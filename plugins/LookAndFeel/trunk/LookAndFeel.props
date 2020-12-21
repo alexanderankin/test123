@@ -6,7 +6,7 @@ plugin.lookandfeel.LookAndFeelPlugin.activate=startup
 plugin.lookandfeel.LookAndFeelPlugin.depend.0=jdk 1.8
 plugin.lookandfeel.LookAndFeelPlugin.depend.1=jedit 05.04.00.00
 plugin.lookandfeel.LookAndFeelPlugin.depend.2=plugin editorscheme.EditorSchemePlugin 1.7
-plugin.lookandfeel.LookAndFeelPlugin.jars=skinlf.jar oalnf.jar kunststoff.jar metouia.jar toniclf.jar jgoodies_looks.jar napkinlaf.jar lipstikLF-1.2.jar squareness.jar tinylaf.jar ilf-gpl.jar
+plugin.lookandfeel.LookAndFeelPlugin.jars=skinlf.jar oalnf.jar kunststoff.jar metouia.jar toniclf.jar napkinlaf.jar lipstikLF-1.2.jar squareness.jar tinylaf.jar ilf-gpl.jar
 plugin.lookandfeel.LookAndFeelPlugin.option-pane=lookandfeel
 plugin.lookandfeel.LookAndFeelPlugin.description=The LookAndFeel plugin allows easily changing the look of the user interface from within jEdit.
 
