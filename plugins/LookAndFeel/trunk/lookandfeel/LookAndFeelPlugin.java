@@ -26,6 +26,7 @@ package lookandfeel;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Window;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -42,7 +43,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
 
-
+// TODO: update jgoodies to 2.5.3, it's in the lib directory, source and binaries are in src/jgoodies-looks-2.5.3
 public class LookAndFeelPlugin extends EBPlugin {
 
 	public static boolean loadedInitialLnF = false;
@@ -59,6 +60,7 @@ public class LookAndFeelPlugin extends EBPlugin {
 
 			// update jEdit GlobalOptions/Appearance to let the user know to use this plugin
 			// to adjust the look and feel
+			// TODO: on reloading the plugin, this also gets added to the look and feel list in the option pane, need to avoid that
 			UIManager.LookAndFeelInfo[] infos = new UIManager.LookAndFeelInfo [1];
 			infos[0] = new UIManager.LookAndFeelInfo( jEdit.getProperty( "lookandfeel.useLookAndFeelPlugin", "Use Look And Feel plugin" ), "" );
 			UIManager.setInstalledLookAndFeels( infos );
@@ -235,6 +237,14 @@ public class LookAndFeelPlugin extends EBPlugin {
 
 		// look and feels provided by this plugin or other plugins
 		String[] pluginNames = ServiceManager.getServiceNames( LookAndFeelInstaller.SERVICE_NAME );
+		ArrayList<String> checkedNames = new ArrayList<String>();
+		for (int i = 0; i < pluginNames.length; i++) {
+			LookAndFeelInstaller installer = getInstaller(pluginNames[i]);
+			if (installer != null) {
+				checkedNames.add(pluginNames[i]);	
+			}
+		}
+		pluginNames = checkedNames.toArray(new String[checkedNames.size()]);
 
 		String[] allNames = new String [systemNames.length + pluginNames.length];
 		System.arraycopy( systemNames, 0, allNames, 0, systemNames.length );

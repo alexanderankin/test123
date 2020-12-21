@@ -4,17 +4,17 @@
     <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="InfoNode">
         new lookandfeel.InfoNodeLnfInstaller();
     </SERVICE>
-    <!--
+    <!-- JGoodies has been moved to its own plugin
     <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="JGoodies Plastic 3D">
         new lookandfeel.JgoodiesExtWindows();
     </SERVICE>
-    -->
     <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="JGoodies Plastic 3D">
         new lookandfeel.JgoodiesPlastic3DLnfInstaller();
     </SERVICE>
     <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="JGoodies Plastic XP">
         new lookandfeel.JgoodiesPlasticXPLnfInstaller();
     </SERVICE>
+    -->
     <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="Kunststoff">
         new lookandfeel.KunststoffLnfInstaller();       
     </SERVICE>                                     
