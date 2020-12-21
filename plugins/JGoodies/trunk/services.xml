@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+<SERVICES>
+    <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="JGoodies Plastic">
+        new lookandfeel.PlasticLnfInstaller();
+    </SERVICE>
+    <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="JGoodies Plastic 3D">
+        new lookandfeel.Plastic3DLnfInstaller();
+    </SERVICE>
+    <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="JGoodies Plastic XP">
+        new lookandfeel.PlasticXPLnfInstaller();
+    </SERVICE>
+    <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="JGoodies Windows">
+        if (org.gjt.sp.jedit.OperatingSystem.isWindows()) {
+            return new lookandfeel.WindowsLnfInstaller();
+        }
+        else {
+            return null;
+        }
+    </SERVICE>
+</SERVICES>
