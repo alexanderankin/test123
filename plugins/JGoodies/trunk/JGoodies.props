@@ -1,0 +1,13 @@
+plugin.lookandfeel.JGoodiesLookAndFeelPlugin.name=JGoodiesLookAndFeel
+plugin.lookandfeel.JGoodiesLookAndFeelPlugin.author=Dale Anson
+plugin.lookandfeel.JGoodiesLookAndFeelPlugin.version=1.2d
+plugin.lookandfeel.JGoodiesLookAndFeelPlugin.docs=index.html
+plugin.lookandfeel.JGoodiesLookAndFeelPlugin.activate=startup
+plugin.lookandfeel.JGoodiesLookAndFeelPlugin.depend.0=jdk 11
+plugin.lookandfeel.JGoodiesLookAndFeelPlugin.depend.1=jedit 05.05.00.00
+plugin.lookandfeel.JGoodiesLookAndFeelPlugin.depend.2=plugin lookandfeel.LookAndFeelPlugin 2.3
+plugin.lookandfeel.JGoodiesLookAndFeelPlugin.jars=jgoodies-looks-2.5.3.jar jgoodies-common-1.8.1.jar
+plugin.lookandfeel.JGoodiesLookAndFeelPlugin.description=The JGoodies Look and Feel plugin provides the JGoodies Look and Feels to jEdit.
+
+
+jgoodies.theme.label=Theme
