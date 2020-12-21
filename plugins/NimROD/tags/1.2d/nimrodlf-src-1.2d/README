@@ -1,0 +1,1 @@
+Minor modification to NimRODMain, changed the constructor to public so it can be accessed from with jEdit.
