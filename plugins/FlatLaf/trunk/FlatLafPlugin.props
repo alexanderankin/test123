@@ -1,0 +1,13 @@
+plugin.lookandfeel.flatlaf.FlatLafPlugin.name=FlatLaf
+plugin.lookandfeel.flatlaf.FlatLafPlugin.author=Dale Anson
+plugin.lookandfeel.flatlaf.FlatLafPlugin.version=0.46
+plugin.lookandfeel.flatlaf.FlatLafPlugin.docs=index.html
+plugin.lookandfeel.flatlaf.FlatLafPlugin.activate=startup
+plugin.lookandfeel.flatlaf.FlatLafPlugin.depend.0=jdk 11
+plugin.lookandfeel.flatlaf.FlatLafPlugin.depend.1=jedit 05.05.00.00
+plugin.lookandfeel.flatlaf.FlatLafPlugin.depend.2=plugin lookandfeel.LookAndFeelPlugin 2.4
+plugin.lookandfeel.flatlaf.FlatLafPlugin.jars=flatlaf-0.46.jar flatlaf-intellij-themes-0.46.jar
+plugin.lookandfeel.flatlaf.FlatLafPlugin.description=The FlatLaf plugin provides the FlatLaf Look and Feel to jEdit.
+
+
+flatlaf.current.theme.label=Themes
