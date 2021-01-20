@@ -31,6 +31,8 @@ public class FlatLafInstaller implements LookAndFeelInstaller {
             Class c = Class.forName( classname );
             UIManager.put( "ClassLoader", c.getClassLoader() );
             UIManager.setLookAndFeel( ( javax.swing.LookAndFeel )c.newInstance() );
+            UIManager.put( "TabbedPane.tabInsets", new java.awt.Insets(1,8,1,8));
+            UIManager.put("TabbedPane.tabHeight", 12);
         }
         catch ( Exception e ) {
 
