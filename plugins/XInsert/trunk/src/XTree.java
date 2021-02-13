@@ -209,21 +209,7 @@ public class XTree extends JPanel {
     //Macros menu
     if(jEdit.getBooleanProperty("xinsert.display.macros", true)) {
       addMenu("Macros");
-      Vector vec = Macros.getMacroHierarchy();
-      Iterator iter = vec.iterator();
-      while(iter.hasNext()) {
-        Object o = iter.next();
-        if(o instanceof Vector) {
-          loadMacroVector((Vector)o);
-          }
-        else if(o instanceof String) {
-          loadNamedMacro(Macros.getMacro((String)o));
-          }
-        else {
-          loadNamedMacro((Macros.Macro)o);
-          }
-        }
-      closeMenu();
+      addEntries(Macros.getMacroHierarchy().iterator());
       }
     build();
     fillMap();
@@ -232,22 +218,26 @@ public class XTree extends JPanel {
     tree.setShowsRootHandles(true);
     }
 
-  private void loadMacroVector(Vector v) {
-    Iterator iter = v.iterator();
-    addMenu(iter.next().toString());
+  private void addEntries(Iterator iter) {
     while(iter.hasNext()) {
       Object o = iter.next();
-      if(o instanceof Vector) {
-        loadMacroVector((Vector)o);
+      if(o instanceof ArrayList) {
+        addMacroMenu((ArrayList)o);
         }
       else {
-        loadNamedMacro(Macros.getMacro(o.toString())); //NDT fix...
+        addMacroEntry(Macros.getMacro(o.toString())); //NDT fix...
         }
       }
     closeMenu();
     }
 
-  private void loadNamedMacro(Macros.Macro macro) {
+  private void addMacroMenu(ArrayList a) {
+    Iterator iter = a.iterator();
+    addMenu(iter.next().toString());
+    addEntries(iter);
+    }
+
+  private void addMacroEntry(Macros.Macro macro) {
     addInsert(macro.getLabel(), macro.getName(), XTreeItem.NAMED_MACRO_TYPE);
     }
 

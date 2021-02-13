@@ -1,18 +1,15 @@
-XInsert 2.5
+XInsert 2.7
 
 Requirements:
 	* jdk 1.5
 	* jEdit 4.3.1
 
 Announcement:
-	Release 2.5 - maintainance release
-	replaced the com.microstar parsing with SAX parsing
-	fixed #2941806 - XInsert Plugin 1st global var value lost after entry
-	implemented #2941806 - Xinsert plugin HTML tree to conform to spec
+	Release 2.7 - maintainance release
 
 Source:
 	https://svn.sourceforge.net/svnroot/jedit/plugins/XInsert/
-	tag: tags/release-2_5
+	tag: tags/release-2_7
 
 Short Description:
 	Insert text clips and execute macros and scripts from a dockable tree. 
