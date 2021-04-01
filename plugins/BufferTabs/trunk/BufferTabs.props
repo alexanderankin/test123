@@ -2,12 +2,12 @@ plugin.buffertabs.BufferTabsPlugin.name=BufferTabs
 plugin.buffertabs.BufferTabsPlugin.activate=startup
 plugin.buffertabs.BufferTabsPlugin.description=Show tabs to switch buffers
 plugin.buffertabs.BufferTabsPlugin.author=Andre Kaplan, Jason Ginchereau, Chris Samuels, Alain Robert, Matthieu Casanova, Shlomy Reinstein
-plugin.buffertabs.BufferTabsPlugin.version=1.2.4
+plugin.buffertabs.BufferTabsPlugin.version=1.2.5
 plugin.buffertabs.BufferTabsPlugin.docs=index.html
 plugin.buffertabs.BufferTabsPlugin.menu-item=buffertabs.toggle-vis
 
-plugin.buffertabs.BufferTabsPlugin.depend.0=jdk 1.6
-plugin.buffertabs.BufferTabsPlugin.depend.1=jedit 04.05.99.00
+plugin.buffertabs.BufferTabsPlugin.depend.0=jdk 11
+plugin.buffertabs.BufferTabsPlugin.depend.1=jedit 05.06.99.00
 plugin.buffertabs.BufferTabsPlugin.usePluginHome=true
 
 buffertabs.toggle-vis.label=BufferTabs
