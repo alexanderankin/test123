@@ -70,6 +70,7 @@ import org.gjt.sp.jedit.bufferset.BufferSet;
 import org.gjt.sp.jedit.bufferset.BufferSetListener;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.util.GenericGUIUtilities;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.ThreadUtilities;
 
@@ -841,7 +842,7 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
-			if (GUIUtilities.isPopupTrigger(e))
+			if (GenericGUIUtilities.isPopupTrigger(e))
 			{
 				if (!jEdit.getBooleanProperty("buffertabs.usePopup", true))
 				{
