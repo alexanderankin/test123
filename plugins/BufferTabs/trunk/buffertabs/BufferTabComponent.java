@@ -37,10 +37,10 @@ import org.gjt.sp.jedit.jEdit;
 @SuppressWarnings("serial")
 class BufferTabComponent extends JPanel
 {
-	private static CloseIcon icon = new CloseIcon();
-	private static Dimension iconDimension =
+	private static final CloseIcon  icon          = new CloseIcon();
+	private static final Dimension  iconDimension =
 		new Dimension(icon.getIconWidth(), icon.getIconHeight());
-	private BufferTabs pane;
+	private final        BufferTabs pane;
 	
 	BufferTabComponent(BufferTabs bufferTabs) {
 		super(new FlowLayout(FlowLayout.CENTER, 5, 0));
@@ -59,23 +59,28 @@ class BufferTabComponent extends JPanel
 		private static final int width = 9;
 		private static final int height = 11;
 		private static final int top = 3;
-		public void paintIcon(Component c, Graphics g, int x, int y) {
+
+		@Override
+        public void paintIcon(Component c, Graphics g, int x, int y) {
 			g.drawLine(0, top, width - 2, height - 1);
 			g.drawLine(1, top, width - 1, height - 1);
 			g.drawLine(width - 1, top, 1, height - 1);
 			g.drawLine(width - 2, top, 0, height - 1);
 		}
-		public int getIconWidth() {
+		@Override
+        public int getIconWidth() {
 			return width;
 		}
-		public int getIconHeight() {
+
+		@Override
+        public int getIconHeight() {
 			return height;
 		}
 	}
 	
 	private class BufferTabCloseButtonListener extends MouseAdapter {
 		
-		private BufferTabComponent component;
+		private final BufferTabComponent component;
 		
 		BufferTabCloseButtonListener(BufferTabComponent component) {
 			this.component = component;
@@ -106,7 +111,7 @@ class BufferTabComponent extends JPanel
 	
 	private class BufferTabLabel extends JLabel {
 		
-		private BufferTabComponent component;
+		private final BufferTabComponent component;
 		
 		BufferTabLabel(BufferTabComponent component) {
 			this.component = component;

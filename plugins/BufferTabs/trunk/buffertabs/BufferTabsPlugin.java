@@ -21,20 +21,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
-
 package buffertabs;
 
-
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.visitors.JEditVisitorAdapter;
 import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -44,7 +40,7 @@ import java.util.Map;
  */
 public class BufferTabsPlugin extends EditPlugin
 {
-	private static Map<EditPane, BufferTabs> tabsMap = new Hashtable<EditPane, BufferTabs>();
+	private static final Map<EditPane, BufferTabs> tabsMap = new HashMap<>();
 
 	private static JPopupMenu popupMenu;
 
@@ -71,27 +67,14 @@ public class BufferTabsPlugin extends EditPlugin
 	public void stop()
 	{
 		EditBus.removeFromBus(this);
-		jEdit.visit(new JEditVisitorAdapter()
-		{
-			@Override
-			public void visit(EditPane editPane)
-			{
-				editPaneDestroyed(editPane);
-			}
-		});
+		jEdit.getEditPaneManager().forEach(BufferTabsPlugin::editPaneDestroyed);
+        tabsMap.clear();
 	}
 
 	@Override
 	public void start()
 	{
-		jEdit.visit(new JEditVisitorAdapter()
-		{
-			@Override
-			public void visit(EditPane editPane)
-			{
-				editPaneCreated(editPane);
-			}
-		});
+        jEdit.getEditPaneManager().forEach(BufferTabsPlugin::editPaneCreated);
 		EditBus.addToBus(this);
 	}
 
@@ -114,19 +97,14 @@ public class BufferTabsPlugin extends EditPlugin
 		final String location = BufferTabsOptionPane
 			.getLocationProperty("buffertabs.location");
 
-		jEdit.visit(new JEditVisitorAdapter()
-		{
-			@Override
-			public void visit(EditPane editPane)
-			{
-				BufferTabs bt = tabsMap.get(editPane);
-				if (bt != null)
-				{
-					bt.setTabPlacement(location);
-					bt.updateTitles();
-				}
-			}
-		});
+		jEdit.getEditPaneManager().forEach(editPane -> {
+            BufferTabs bt = tabsMap.get(editPane);
+            if (bt != null)
+            {
+                bt.setTabPlacement(location);
+                bt.updateTitles();
+            }
+        });
 	}
 
 	public static BufferTabs getBufferTabsForEditPane(EditPane editPane)
@@ -182,7 +160,7 @@ public class BufferTabsPlugin extends EditPlugin
 		}
 		if (container != null)
 		{
-			((JComponent) container).revalidate();
+			container.revalidate();
 		}
 	}
 

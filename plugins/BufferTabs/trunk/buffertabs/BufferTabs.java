@@ -23,8 +23,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
-
 package buffertabs;
 
 import java.awt.Color;
@@ -260,7 +258,8 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		}
 	}
 
-	public void bufferRemoved(Buffer buffer, int index)
+	@Override
+    public void bufferRemoved(Buffer buffer, int index)
 	{
 		try
 		{
@@ -282,7 +281,8 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		}
 	}
 
-	public void bufferMoved(Buffer buffer, int oldIndex, int newIndex)
+	@Override
+    public void bufferMoved(Buffer buffer, int oldIndex, int newIndex)
 	{
 		try
 		{
@@ -296,7 +296,8 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		}
 	}
 
-	public void bufferAdded(Buffer buffer, int index)
+	@Override
+    public void bufferAdded(Buffer buffer, int index)
 	{
 		if (knownBuffers.contains(buffer))
 		{
@@ -339,43 +340,37 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 	{
 		try
 		{
-			final Method m = getClass().getMethod("setTabComponentAt",
-					new Class[] {int.class, Component.class});
-			if (m != null)
-			{
-				Runnable runnable = new Runnable()
-				{
-					public void run()
-					{
-						BufferTabComponent tab;
-						if (set)
-							tab = new BufferTabComponent(BufferTabs.this);
-						else
-							tab = null;
-						try
-						{
-							m.invoke(BufferTabs.this, index, tab);
-						}
-						catch (IllegalAccessException e)
-						{
-							Log.log(Log.ERROR, this, e);
-						}
-						catch (InvocationTargetException e)
-						{
-							Log.log(Log.ERROR, this, e);
-						}
-					}
-				};
-				ThreadUtilities.runInDispatchThread(runnable);
-			}
-		}
+			final Method m = getClass().getMethod("setTabComponentAt", int.class, Component.class);
+            Runnable runnable = new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    BufferTabComponent tab;
+                    if (set)
+                        tab = new BufferTabComponent(BufferTabs.this);
+                    else
+                        tab = null;
+                    try
+                    {
+                        m.invoke(BufferTabs.this, index, tab);
+                    }
+                    catch (IllegalAccessException | InvocationTargetException e)
+                    {
+                        Log.log(Log.ERROR, this, e);
+                    }
+                }
+            };
+            ThreadUtilities.runInDispatchThread(runnable);
+        }
 		catch (NoSuchMethodException e)
 		{
 			Log.log(Log.ERROR, this, e);
 		}
 	}
 
-	public void bufferSetSorted()
+	@Override
+    public void bufferSetSorted()
 	{
 		BufferSet bufferSet = editPane.getBufferSet();
 		removeAll();
@@ -473,11 +468,9 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 					}
 					catch (Exception e)
 					{
-						Log.log(Log.ERROR, BufferTabs.class, "propertiesChanged: 3 " + e.toString());
+						Log.log(Log.ERROR, BufferTabs.class, "propertiesChanged: 3 " + e);
 					}
 				}
-
-
 			}
 			if (ColorTabs.instance().isSelectedColorized())
 			{
@@ -503,23 +496,21 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 	{
 		private boolean enabled = true;
 
-
 		public boolean isEnabled()
 		{
 			return enabled;
 		}
-
 
 		public void setEnabled(boolean enabled)
 		{
 			this.enabled = enabled;
 		}
 
-
 		/**
 		 * Sets the EditPane's buffer when a tab is selected.
 		 */
-		public synchronized void stateChanged(ChangeEvent e)
+		@Override
+        public synchronized void stateChanged(ChangeEvent e)
 		{
 			int index = getSelectedIndex();
 			BufferSet bufferSet = editPane.getBufferSet();
@@ -582,7 +573,6 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		}
 	}
 
-
 	/**
 	 * Force the Look and Feel to use the given color as its 'selected' color.
 	 * TODO: This may cause side-effects with other tab panes.
@@ -619,7 +609,6 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		}
 	}
 
-
 	private void updateTitleAt(int index)
 	{
 		if (index < 0 || index >= getTabCount())
@@ -650,7 +639,6 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		setIconAt(index, icon);
 	}
 
-
 	public synchronized void updateTitles()
 	{
 		propertiesChanged(); //CES
@@ -679,7 +667,6 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		setTabPlacement(placement);
 	}
 
-
 	/**
 	 * Overridden so the JEditTextArea is at every index.
 	 */
@@ -696,7 +683,6 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		}
 	}
 
-
 	/**
 	 * Overridden so the JEditTextArea is at every index.
 	 */
@@ -707,7 +693,6 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 			return super.indexOfComponent(textArea);
 		return super.indexOfComponent(component);
 	}
-
 
 	@Override
 	protected String paramString()
@@ -752,14 +737,13 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 
 	private static int moving = -1;
 
-	class ReorderBuffersDisabledDialog extends JDialog
+	private static class ReorderBuffersDisabledDialog extends JDialog
 	{
 		private static final String GEOMETRY =
 			"buffertabs.reorderBuffersDisabledDialog.geometry";
 		private final JRadioButton disableSorting;
-		private final JRadioButton keepSorting;
 
-		ReorderBuffersDisabledDialog(Frame frame)
+        ReorderBuffersDisabledDialog(Frame frame)
 		{
 			super(frame, jEdit.getProperty(
 				"buffertabs.reorderBuffersDisabled.label"), true);
@@ -789,8 +773,8 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 			c.gridy += c.gridheight;
 			c.gridheight = 1;
 			add(disableSorting, c);
-			keepSorting = new JRadioButton(
-					jEdit.getProperty("buffertabs.keepBufferSorting.label"));
+            JRadioButton keepSorting = new JRadioButton(
+                jEdit.getProperty("buffertabs.keepBufferSorting.label"));
 			c.gridy++;
 			add(keepSorting, c);
 			ButtonGroup options = new ButtonGroup();
@@ -798,15 +782,11 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 			options.add(keepSorting);
 
 			JButton close = new JButton("Close");
-			close.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					saveGeometry();
-					save();
-					setVisible(false);
-				}
-			});
+			close.addActionListener(e -> {
+                saveGeometry();
+                save();
+                setVisible(false);
+            });
 			c.gridy++;
 			c.fill = GridBagConstraints.NONE;
 			add(close, c);
@@ -834,8 +814,6 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 	 */
 	class MouseHandler extends MouseAdapter
 	{
-
-
 		/**
 		 * Handles the right-click, displaying the popup
 		 */
@@ -903,7 +881,7 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 						if (areBuffersSorted())
 						{
 							JDialog dlg = new ReorderBuffersDisabledDialog(
-								editPane.getView());
+                                editPane.getView());
 							dlg.setVisible(true);
 							movingEnabled = !areBuffersSorted();
 						}
@@ -953,7 +931,7 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 
 	}
 
-	class MouseMotionHandler extends MouseMotionAdapter
+	private class MouseMotionHandler extends MouseMotionAdapter
 	{
 		@Override
 		public void mouseDragged(MouseEvent e)

@@ -20,8 +20,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
-
 package buffertabs;
 
 import java.awt.Dimension;
@@ -41,7 +39,6 @@ import javax.swing.JRadioButton;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.AbstractOptionPane;
 
-
 @SuppressWarnings("serial")
 public class BufferTabsOptionPane extends AbstractOptionPane implements ItemListener
 {
@@ -50,7 +47,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
 	private JCheckBox iconsCB;
 	private JCheckBox popupCB;
 	private JCheckBox closeButtonCB;
-	private JComboBox locationChoice;
+	private JComboBox<String> locationChoice;
 
 	private JRadioButton colorTabRB;
 	private JRadioButton colorTextRB;
@@ -70,8 +67,8 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
 		super("buffertabs");
 	}
 
-
-	public void _init() {
+	@Override
+    public void _init() {
 
 		final Dimension ySpace = new Dimension(0, 10);
 		final Dimension xSpace = new Dimension(15, 0);
@@ -87,7 +84,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
 
 
 		// Close tabs on option.
-		DoubleClickOptionSwitch dcSwitch = new DoubleClickOptionSwitch();
+		ItemListener dcSwitch = new DoubleClickOptionSwitch();
 
 		addComponent(new JLabel(jEdit.getProperty("options.buffertabs.close-tab-on.label")));
 
@@ -150,7 +147,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
 		addComponent(wrapTabsCB);
 		addComponent(new Box.Filler(ySpace, ySpace, ySpace));
 
-		locationChoice = new JComboBox(new String[] { "top", "bottom", "left", "right"});
+		locationChoice = new JComboBox<>(new String[] { "top", "bottom", "left", "right"});
 		JPanel locationChoicePanel = new JPanel(new FlowLayout(FlowLayout.LEADING, 0 , 0));
 		locationChoicePanel.add(new JLabel(jEdit.getProperty("options.buffertabs.location.label") + " "));
 		locationChoicePanel.add(locationChoice);
@@ -311,16 +308,14 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
 		colorTextRB.setEnabled( enableColorsCB.isSelected() );
 		colorSelTabRB.setEnabled( enableColorsCB.isSelected() && highlightColorsCB.isSelected());
 		colorSelTextRB.setEnabled( enableColorsCB.isSelected() && highlightColorsCB.isSelected());
-
-
 	}
-
 
 	/**
 	 * Called when the options dialog's `OK' button is pressed.
 	 * This should save any properties saved in this option pane.
 	 */
-	public void _save() {
+	@Override
+    public void _save() {
 		jEdit.setBooleanProperty("buffertabs.enable", enableCB.isSelected());
 		jEdit.setBooleanProperty("buffertabs.icons", iconsCB.isSelected());
 		jEdit.setBooleanProperty("buffertabs.nostretch", doNotStretchTabsCB.isSelected());
@@ -339,8 +334,6 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
 		jEdit.setBooleanProperty("buffertabs.close-tab-on.single-middle-click", middleClickCB.isSelected());		jEdit.setBooleanProperty( "buffertabs.color-selected-foreground", colorSelTextRB.isSelected() );
 		jEdit.setBooleanProperty("buffertabs.close-tab-on.double-left-click", doubleClickCB.isSelected());
 		jEdit.setBooleanProperty("buffertabs.toggle-docks-on.double-left-click", toggleDocksDoubleClickCB.isSelected());
-
-
 	}
 
 	public static boolean getWrapTabsProperty()
@@ -357,11 +350,11 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
 		return location;
 	}
 
-
 	/**
 	 * Update options pane to reflect option changes
 	 */
-	public void itemStateChanged( ItemEvent e ) {
+	@Override
+    public void itemStateChanged(ItemEvent e ) {
 		muteColorsCB.setEnabled( enableColorsCB.isSelected() );
 		variationColorsCB.setEnabled( muteColorsCB.isSelected() && enableColorsCB.isSelected());
 		highlightColorsCB.setEnabled( enableColorsCB.isSelected() );
@@ -378,7 +371,8 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
 	 */
 	private class DoubleClickOptionSwitch implements ItemListener {
 
-		public void itemStateChanged(ItemEvent e) {
+		@Override
+        public void itemStateChanged(ItemEvent e) {
 
 			JCheckBox cb = (JCheckBox)e.getSource();
 
