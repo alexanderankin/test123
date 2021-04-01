@@ -18,8 +18,6 @@
 *  along with this program; if not, write to the Free Software
 *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-
-
 package buffertabs;
 
 //{{{ Imports
@@ -37,7 +35,6 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StandardUtilities;
 //}}}
-
 
 /**
 *  An add-on to BufferTabs to allow colored backgrounds on tabs
@@ -59,21 +56,20 @@ public class ColorTabs
 	private static final int MUTE_RANGE = MUTE_HIGHEST_COLOR - MUTE_LOWEST_COLOR;
 	private static final float MUTE_RATIO = ((float) MUTE_RANGE / 254);
 	
-	private static ColorTabs colorTabs = null;
+	private static ColorTabs colorTabs;
 	
-	private boolean enabled             = false;
+	private boolean enabled;
 	private boolean selectedColorized   = true;
-	private boolean selectedForegroundColorized = false;
-	private boolean foregroundColorized = false;
+	private boolean selectedForegroundColorized;
+	private boolean foregroundColorized;
 	private boolean muteColors          = true;
 	private boolean colorVariation      = true;
 	
 	private List<ColorEntry> colors;
-	private final Map<String,Color> colorsAssigned = new HashMap<String,Color>();
+	private final Map<String,Color> colorsAssigned = new HashMap<>();
 	private final Object lock = new Object();
-	private Random rnd = null;
-	
-	
+	private Random rnd;
+
 	//{{{ ColorTabs constructor
 	/**
 	 *  Singleton class
@@ -96,7 +92,7 @@ public class ColorTabs
 	//{{{ isSelectedColorized() method
 	public boolean isSelectedColorized()
 	{
-		return this.selectedColorized;
+		return selectedColorized;
 	} //}}}
 
 	//{{{ setSelectedColorized() method
@@ -108,13 +104,13 @@ public class ColorTabs
 	//{{{ isForegroundColorized() method
 	public boolean isForegroundColorized() 
 	{
-		return this.foregroundColorized;
+		return foregroundColorized;
 	} //}}}
 
 	//{{{ isSelectedForegroundColorized() method
 	public boolean isSelectedForegroundColorized() 
 	{
-		return this.selectedForegroundColorized;
+		return selectedForegroundColorized;
 	} //}}}
 	
 	//{{{ setForegroundColorized() method
@@ -126,13 +122,13 @@ public class ColorTabs
 	//{{{ setSelectedForegroundColorized() method
 	public void setSelectedForegroundColorized(boolean foregroundColorized) 
 	{
-		this.selectedForegroundColorized = foregroundColorized;
+		selectedForegroundColorized = foregroundColorized;
 	} //}}}
 	
 	//{{{ hasMuteColors() method
 	public boolean hasMuteColors() 
 	{
-		return this.muteColors;
+		return muteColors;
 	} //}}}
 	
 	//{{{ setMuteColors() method
@@ -144,7 +140,7 @@ public class ColorTabs
 	//{{{ hasColorVariation() method
 	public boolean hasColorVariation() 
 	{
-		return this.colorVariation;
+		return colorVariation;
 	} //}}}
 
 	//{{{ setColorVariation() method
@@ -285,16 +281,15 @@ public class ColorTabs
 			{
 				return colorsAssigned.get(name);
 			}
-			
-			for (int i = 0; i < colors.size(); i++)
+
+            for (ColorEntry entry : colors)
 			{
-				ColorEntry entry = colors.get(i);
 				if (entry.re.matcher(name).matches())
 				{
-					Color newColor = null;
-					if (this.hasMuteColors())
+					Color newColor;
+					if (hasMuteColors())
 					{
-						if (this.isForegroundColorized())
+						if (isForegroundColorized())
 						{
 							newColor = alterColorDarken(entry.color);
 						}
@@ -307,7 +302,7 @@ public class ColorTabs
 					{
 						newColor = entry.color;
 					}
-					
+
 					colorsAssigned.put(name, newColor);
 					return newColor;
 				}
@@ -340,7 +335,7 @@ public class ColorTabs
 	{
 		synchronized (lock)
 		{
-			colors = new ArrayList<ColorEntry>();
+			colors = new ArrayList<>();
 			
 			if (!jEdit.getBooleanProperty("vfs.browser.colorize"))
 			{
@@ -385,11 +380,10 @@ public class ColorTabs
 	 * @author     Chris Samuels
 	 * @created    24 February 2003
 	 */
-	static class ColorEntry
+	private static class ColorEntry
 	{
-		Color color;
-		Pattern re;
-		
+		private final Color   color;
+		private final Pattern re;
 		
 		ColorEntry(Pattern re, Color color)
 		{
