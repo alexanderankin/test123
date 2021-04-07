@@ -500,8 +500,8 @@ errorSource.addError(new ErrorSource.DefaultError(
 <appendix id="changes"><title>Change log</title>
  <itemizedlist>
 
-  <listitem><formalpara><title>Version 2.4</title> <para> Requires Java 1.7, and jEdit
- 5.0 </para></formalpara>
+  <listitem><formalpara><title>Version 2.4</title> <para> Requires Java 11, and jEdit
+ 5.5 </para></formalpara>
  <itemizedlist>
   <listitem><para> Plugin Patch #182: ErrorList Avoid NPE on Error with null message (Eric
  Le Lay) </para></listitem>
