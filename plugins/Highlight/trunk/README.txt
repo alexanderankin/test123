@@ -1,0 +1,1 @@
+The plugin was moved to https://github.com/kpouer/jEdit-plugin-Highlight
