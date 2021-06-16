@@ -34,7 +34,7 @@ import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.Gutter;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextAreaExtension;
-//}}}
+
 import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.SyntaxUtilities;
 

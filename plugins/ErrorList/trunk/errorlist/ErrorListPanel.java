@@ -325,7 +325,7 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 		Enumeration<? extends TreeNode> e = node.children();
 		while ( e.hasMoreElements())
 		{
-			TreeNode n = e.nextElement();
+			TreeNode n = (TreeNode)e.nextElement();
 			TreePath path = parent.pathByAddingChild(n);
 			expandAll(path);
 		}
@@ -1276,7 +1276,7 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 		Enumeration<? extends TreeNode> e = node.children();
 		while ( e.hasMoreElements())
 		{
-			TreeNode n = e.nextElement();
+			TreeNode n = (TreeNode)e.nextElement();
 			TreePath path = parent.pathByAddingChild(n);
 			copyNode(path, allErrors, lastPath, selectedFiles);
 		}
