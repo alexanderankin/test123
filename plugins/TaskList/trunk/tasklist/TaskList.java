@@ -30,6 +30,7 @@ import javax.swing.event.*;
 import javax.swing.table.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.*;
+import org.gjt.sp.util.GenericGUIUtilities;
 import common.gui.CloseableTabbedPane;
 //}}}
 
@@ -300,7 +301,7 @@ public class TaskList extends JPanel implements EBComponent {
                         }
                     }
                 );
-                GUIUtilities.showPopupMenu( pm, tabs, x, y );
+                GenericGUIUtilities.showPopupMenu( pm, tabs, x, y );
             }
         };
 }

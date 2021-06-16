@@ -49,6 +49,7 @@ import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
 import org.gjt.sp.jedit.syntax.Token;
 
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.SyntaxUtilities;
 // }}}
 
 /**
@@ -368,7 +369,7 @@ public class TaskListPlugin extends EditPlugin {
         TaskListPlugin.clearTaskTypes();
         TaskListPlugin.loadTaskTypes();
 
-        highlightColor = GUIUtilities.parseColor( jEdit.getProperty( "tasklist.highlight.color" ) );
+        highlightColor = SyntaxUtilities.parseColor( jEdit.getProperty( "tasklist.highlight.color" ) );
 
         allowSingleClickSelection = jEdit.getBooleanProperty( "tasklist.single-click-selection", false );
 
@@ -405,7 +406,7 @@ public class TaskListPlugin extends EditPlugin {
      * Value is a HashMap with key of line number for Task, value is an actual Task.
      * DONE: replace reference to Buffer with String containing path for Buffer.
      */
-    private static Map<String, HashMap<Integer, Task>> bufferMap = new HashMap <String, HashMap <Integer, Task >>();
+    private static Map<String, HashMap<Integer, Task> > bufferMap = new HashMap <String, HashMap <Integer, Task > >();
 
     // view <=> task list map
     private static HashMap<View, TaskList> taskLists = new HashMap<View, TaskList>();
