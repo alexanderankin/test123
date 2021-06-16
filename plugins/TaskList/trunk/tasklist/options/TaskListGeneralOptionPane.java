@@ -165,7 +165,7 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane {
 	//{{{ createColorButton() method
 	private JButton createColorButton( String property ) {
 		JButton b = new JButton( " " );
-		b.setBackground( GUIUtilities.parseColor( jEdit.getProperty( property ) ) );
+		b.setBackground( SyntaxUtilities.parseColor( jEdit.getProperty( property ) ) );
 		b.addActionListener( new ColorButtonHandler() );
 		b.setRequestFocusEnabled( false );
 		return b;

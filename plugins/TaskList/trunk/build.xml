@@ -54,7 +54,7 @@
              srcdir="${src.dir}" 
              target="${compiler.target}"
              bootclasspath="${compiler.bootclasspath}"
-             extdirs="${compiler.extdirs}">
+             includeantruntime="false">
             <classpath refid="project.class.path"/>
             <compilerarg value="-Xlint:unchecked"/>
         </javac>
