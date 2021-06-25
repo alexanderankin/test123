@@ -10,7 +10,7 @@ use strict;
 use constant CUTOFF => 0x10FFFF;
 use constant CUTOFF_STRING => sprintf '0x%06X', CUTOFF;
 
-use subs qw( parse_ucd_file dump_blocks dump_points );
+use subs qw( parse_ucd_file dump_blocks );
 
 my @blocks = ();
 parse_ucd_file('zcat charactermap/unicode/Blocks.txt.gz |', sub {
@@ -22,16 +22,6 @@ parse_ucd_file('zcat charactermap/unicode/Blocks.txt.gz |', sub {
 	1;
 });
 dump_blocks(@blocks);
-
-my @points = ();
-parse_ucd_file('zcat charactermap/unicode/UnicodeData.txt.gz |', sub {
-	my ($point, $name, $oldname) = @_[0,1,10];
-	$name .= " ($oldname)" if $name eq '<control>' and $oldname;
-	return if hex($point) > CUTOFF;
-	push @points, [ $point, $name ];
-	1;
-});
-dump_points(@points);
 
 sub parse_ucd_file {
 	my $ucd_file = shift;
@@ -77,54 +67,4 @@ JAVA
 JAVA
 }
 
-sub dump_points {
-	my $size = @_;
-	my $storage = 1 + hex $_[-1][0];
-
-	print <<JAVA;
-// BEGIN GENERATED CODE: UnicodeData.txt, cutoff=@{[CUTOFF_STRING]}
-private static final int actualSize = $size;
-private static final String[] characterNames = new String[$storage];
-JAVA
-
-	my $method_index = -1;
-	while (@_) {
-		my @entries = splice @_, 0, 2048;
-
-		$method_index++;
-
-		print <<JAVA;
-
-private static void loadCharacterNames$method_index()
-{
-JAVA
-		for my $entry (@entries) {
-			my ($point, $name) = @$entry;
-
-			print <<JAVA;
-	characterNames[0x$point] = "$name";
-JAVA
-		}
-
-		print <<JAVA;
-}
-JAVA
-	}
-
-	print <<JAVA;
-
-static
-{
-JAVA
-	for (my $i = 0; $i <= $method_index; $i++) {
-		print <<JAVA;
-	loadCharacterNames$i();
-JAVA
-	}
-
-	print <<JAVA;
-}
-// END GENERATED CODE
-JAVA
-}
 

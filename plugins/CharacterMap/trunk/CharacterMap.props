@@ -2,13 +2,13 @@
 plugin.charactermap.CharacterMapPlugin.activate=defer
 plugin.charactermap.CharacterMapPlugin.name=Character Map
 plugin.charactermap.CharacterMapPlugin.author=Slava Pestov, Mark Wickens, Max Funk
-plugin.charactermap.CharacterMapPlugin.version=1.3.4
+plugin.charactermap.CharacterMapPlugin.version=1.3.5
 plugin.charactermap.CharacterMapPlugin.usePluginHome=true
 plugin.charactermap.CharacterMapPlugin.docs=CharacterMap.html
 plugin.charactermap.CharacterMapPlugin.description=Show ASCII and extended Unicode characters and insert them into the buffer.
 plugin.charactermap.CharacterMapPlugin.longdescription=description.html
-plugin.charactermap.CharacterMapPlugin.depend.0=jedit 04.04.99.02
-plugin.charactermap.CharacterMapPlugin.depend.1=jdk 1.6
+plugin.charactermap.CharacterMapPlugin.depend.0=jedit 05.06.99.00
+plugin.charactermap.CharacterMapPlugin.depend.1=jdk 11.0
 
 # Menu item: Start main window
 plugin.charactermap.CharacterMapPlugin.menu-item=character-map
