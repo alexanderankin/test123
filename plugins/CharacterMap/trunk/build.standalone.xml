@@ -1,114 +1,119 @@
 <?xml version="1.0"?>
 
 <!--
-	This is a build.xml file for building the jEdit CharacterMap plugin.
+    This is a build.xml file for building the jEdit CharacterMap plugin.
 
-	The 'compile' target compiles the plugin.
-
-	The 'build' target creates the plugin JAR file in directory "install.dir".
-
-	The 'clean' target deletes temporary files.
-
-	The 'dist' target (DEFAULT) runs 'clean' and then 'build'.
-
-	The 'run' target makes a test run of jEdit with the plugin.
+    The 'clean' target deletes temporary files.
+    The 'compile' target compiles the plugin.
+    The 'build' target creates the plugin JAR file in directory "install.dir".
+    The 'dist' target (DEFAULT) runs 'clean' and then 'build'.
+    The 'run' target makes a test run of jEdit with the plugin.
 -->
 
 <project name="CharacterMap" default="dist" basedir=".">
 
-	<!-- Read external configuration files -->
-	<property file="build.properties"/>
-	<property file="../build.properties"/>
-	<property file="../../build.properties"/>
+    <!-- Read external configuration files (requires ant-contrib) -->
+    <property file="build.properties" />
+    <property file="../build.properties" />
+    <property file="../../build.properties" />
 
-	<!-- Default directory where to install the plugin -->
-	<property name="install.dir" location="${user.home}/.jedit/jars"/>
+    <!-- Default directory where to install the plugin -->
+    <property name="install.dir" location="${user.home}/.jedit/jars"/>
 
-	<!-- Default directory for temporary files -->
-	<property name="build.dir" location="build"/>
+    <!-- Default directory for temporary files -->
+    <property name="build.dir" location="build"/>
 
-	<!-- Default directory of jedit settings for a test run -->
-	<property name="jedit.setting.dir" location="${build.dir}/settings"/>
+    <!-- Default directory of jedit settings for a test run -->
+    <property name="jedit.setting.dir" location="${build.dir}/settings"/>
 
-	<!-- Default directory of additional libraries -->
-	<property name="lib.dir" location="lib"/>
+    <!-- Default directory of additional libraries -->
+    <property name="lib.dir" location="lib"/>
 
-	<property name="jar.name"  value="CharacterMap.jar"/>
-	<property name="src.dir" location="."/>
+    <property name="jar.name"  value="CharacterMap.jar"/>
+    <property name="src.dir" location="."/>
 
-	<fail message="Set correct directories in build.properties">
-		<condition>
-			<not><available file="${jedit.install.dir}/jedit.jar"/></not>
-		</condition>
-	</fail>
+    <fail message="Set correct directories in build.properties">
+        <condition>
+            <not><available file="${jedit.install.dir}/jedit.jar"/></not>
+        </condition>
+    </fail>
 
-	<path id="project.class.path">
-		<pathelement location="${jedit.install.dir}/jedit.jar"/>
-		<pathelement location="."/>
-	</path>
+    <path id="project.class.path">
+        <pathelement location="${jedit.install.dir}/jedit.jar"/>
+        <pathelement location="."/>
+    </path>
 
-	<fileset id="jar-build" dir="${build.dir}">
-		<exclude name="**/settings/**"/>
-	</fileset>
-	<fileset id="jar-src"	dir="${src.dir}">
-		<include name="dockables.xml"/>
-		<include name="*.props"/>
-		<include name="lang_*"/>
-		<include name="*.html"/>
-	</fileset>
+    <fileset id="jar-build" dir="${build.dir}">
+        <exclude name="**/settings/**"/>
+    </fileset>
+    <fileset id="jar-src"	dir="${src.dir}">
+        <include name="dockables.xml"/>
+        <include name="*.props"/>
+        <include name="lang_*"/>
+        <include name="*.html"/>
+    </fileset>
 
 
-	<target name="compile">
-		<mkdir dir="${build.dir}"/>
-		<javac
-			srcdir="${src.dir}"
-			destdir="${build.dir}"
-			debug="on"
-			deprecation="on"
-			includeJavaRuntime="yes"
-			includeAntRuntime="no"
-		>
-			<compilerarg value="-Xlint"/>
-			<compilerarg value="-Xlint:-serial"/>
-			<classpath refid="project.class.path"/>
-		</javac>
-	</target>
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+        <delete>
+            <fileset dir="." includes="**/*~" defaultexcludes="no"/>
+        </delete>
+    </target>
 
-	<target name="dist" depends="clean,build">
-		<!-- Meta-Target for clean and build -->
-	</target>
+    <target name="compile">
+        <echo message="jedit.install.dir = ${jedit.install.dir}"/>
+        <echo message="jedit.plugins.dir = ${jedit.plugins.dir}"/>
+        <echo message="src.dir = ${src.dir}"/>
+        <echo message="lib.dir = ${lib.dir}"/>
+        <echo message="build.dir = ${build.dir}"/>		
+        <echo message="install.dir = ${install.dir}"/>	
+        <echo message="jedit.setting.dir = ${jedit.setting.dir}"/>	
+        <echo message="---"/>	
 
-	<target name="build" depends="compile">
-		<!-- remove warn (Win-FAT32) "*.class modified in future" -->
-		<sleep seconds="2"/>
-		<mkdir dir="${install.dir}"/>
-		<jar jarfile="${install.dir}/${jar.name}">
-			<fileset refid="jar-build"/>
-			<fileset refid="jar-src"/>
-		</jar>
-	</target>
+        <mkdir dir="${build.dir}"/>
+        <javac
+            srcdir="${src.dir}"
+            destdir="${build.dir}"
+            debug="on"
+            deprecation="on"
+            includeJavaRuntime="yes"
+            includeAntRuntime="no"
+        >
+            <compilerarg value="-Xlint"/>
+            <compilerarg value="-Xlint:-serial"/>
+            <classpath refid="project.class.path"/>
+        </javac>
+    </target>
 
-	<target name="run" depends="compile">
-		<sleep seconds="2"/>
-		<mkdir dir="${jedit.setting.dir}"/>
-		<mkdir dir="${jedit.setting.dir}/jars"/>
-		<jar jarfile="${jedit.setting.dir}/jars/${jar.name}">
-			<fileset refid="jar-build"/>
-			<fileset refid="jar-src"/>
-		</jar>
-		<!-- Start parameters as in jEdit's original build.xml -->
-		<java jar="${jedit.install.dir}/jedit.jar"
-			fork="true"
-			spawn="true">
-			<arg value="-settings=${jedit.setting.dir}"/>
-		</java>
-	</target>
+    <target name="build" depends="compile">
+        <!-- remove warn (Win-FAT32) "*.class modified in future" -->
+        <sleep seconds="2"/>
+        <mkdir dir="${install.dir}"/>
+        <jar jarfile="${install.dir}/${jar.name}">
+            <fileset refid="jar-build"/>
+            <fileset refid="jar-src"/>
+        </jar>
+    </target>
 
-	<target name="clean">
-		<delete dir="${build.dir}"/>
-		<delete>
-			<fileset dir="." includes="**/*~" defaultexcludes="no"/>
-		</delete>
-	</target>
+    <target name="dist" depends="clean, compile, build">
+        <!-- Meta-Target for clean and build -->
+    </target>
+
+    <target name="run" depends="compile">
+        <sleep seconds="2"/>
+        <mkdir dir="${jedit.setting.dir}"/>
+        <mkdir dir="${jedit.setting.dir}/jars"/>
+        <jar jarfile="${jedit.setting.dir}/jars/${jar.name}">
+            <fileset refid="jar-build"/>
+            <fileset refid="jar-src"/>
+        </jar>
+        <!-- Start parameters as in jEdit's original build.xml -->
+        <java jar="${jedit.install.dir}/jedit.jar"
+            fork="true"
+            spawn="true">
+            <arg value="-settings=${jedit.setting.dir}"/>
+        </java>
+    </target>
 
 </project>

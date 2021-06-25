@@ -144,7 +144,7 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 		//Initialise table option components
 		spinnerValues = new ArrayList<Integer>();
 		for (int i = 8; i >= 0; i -= 1) {
-			spinnerValues.add(new Integer(1 << i));
+			spinnerValues.add(Integer.valueOf(1 << i));
 		}
 
 		columnsSpinnerLabel = new JLabel(jEdit.getProperty(OPTION_PREFIX + "columns.label"));
@@ -155,7 +155,7 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 		columnsTextField.setColumns(3);
 		columnsTextField.setHorizontalAlignment(JTextField.LEFT);
 		int column = jEdit.getIntegerProperty(OPTION_PREFIX + "columns");
-		columnsSpinner.setValue(new Integer(column));
+		columnsSpinner.setValue(Integer.valueOf(column));
 
 		columnsSpinnerDockLRLabel = new JLabel(jEdit.getProperty(OPTION_PREFIX + "columns-dock-lr.label"));
 		spinnerModelDockLR = new SpinnerListModel(spinnerValues);
@@ -165,7 +165,7 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 		columnsTextField.setColumns(3);
 		columnsTextField.setHorizontalAlignment(JTextField.LEFT);
 		column = jEdit.getIntegerProperty(OPTION_PREFIX + "columns-dock-lr");
-		columnsSpinnerDockLR.setValue(new Integer(column));
+		columnsSpinnerDockLR.setValue(Integer.valueOf(column));
 
 		columnsSpinnerDockTBLabel = new JLabel(jEdit.getProperty(OPTION_PREFIX + "columns-dock-tb.label"));
 		spinnerModelDockTB = new SpinnerListModel(spinnerValues);
@@ -175,7 +175,7 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 		columnsTextField.setColumns(3);
 		columnsTextField.setHorizontalAlignment(JTextField.LEFT);
 		column = jEdit.getIntegerProperty(OPTION_PREFIX + "columns-dock-tb");
-		columnsSpinnerDockTB.setValue(new Integer(column));
+		columnsSpinnerDockTB.setValue(Integer.valueOf(column));
 
 		//Initialise color option components
 		normalColor = new ColorWellButton(
