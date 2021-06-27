@@ -7,7 +7,7 @@ plugin.charactermap.CharacterMapPlugin.usePluginHome=true
 plugin.charactermap.CharacterMapPlugin.docs=CharacterMap.html
 plugin.charactermap.CharacterMapPlugin.description=Show ASCII and extended Unicode characters and insert them into the buffer.
 plugin.charactermap.CharacterMapPlugin.longdescription=description.html
-plugin.charactermap.CharacterMapPlugin.depend.0=jedit 05.06.99.00
+plugin.charactermap.CharacterMapPlugin.depend.0=jedit 05.05.00.00
 plugin.charactermap.CharacterMapPlugin.depend.1=jdk 11.0
 
 # Menu item: Start main window
