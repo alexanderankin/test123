@@ -90,7 +90,9 @@ public class CommandoToolBar extends JToolBar
 	}
 	// }}}
 
-	/** Remove the instance from the all views */
+	/** Remove the instance from the all views 
+	 * @param v a view
+	*/
 	public static void remove(View v)
 	{
 		CommandoToolBar tb = smToolBarMap.get(v);

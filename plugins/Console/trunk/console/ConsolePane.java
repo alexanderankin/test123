@@ -237,6 +237,7 @@ public class ConsolePane extends JTextPane
 	/**
 	 *  Return InputStart position inside of current (associated with
 	 *  ConsolePane) document.
+	 * @return an int
 	 */
 	public int getInputStart()
 	{
@@ -257,6 +258,7 @@ public class ConsolePane extends JTextPane
 	 *  ConsolePane) document.
 	 *  ShellState class changes its InputStart position by oneself.
 	 *  (see "Console.ShellState.writeSafely()" ).
+	 * @param cmdStart start of command
 	 */
 	public void setInputStart(int cmdStart)
 	{

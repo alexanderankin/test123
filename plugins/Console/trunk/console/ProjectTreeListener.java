@@ -35,6 +35,8 @@ import org.gjt.sp.jedit.jEdit;
 
 import projectviewer.event.ViewerUpdate;
 import org.gjt.sp.jedit.bsh.NameSpace;
+
+import javax.swing.SwingUtilities;
 // }}}
 
 // {{{ ProjectTreeListener class
@@ -77,23 +79,13 @@ public class ProjectTreeListener implements EBComponent
 		if (vu.getType() != ViewerUpdate.Type.PROJECT_LOADED) return;
 		final View view = vu.getView();
 		if ((view == null) || (view != console.getView())) return;
-		new Thread()
+		
+		SwingUtilities.invokeLater(() ->
 		{
-			public void run()
-			{
-				try
-				{
-					sleep(500);
-				}
-				catch (InterruptedException ie)
-				{
-					interrupt();
-				}
 				String code = "changeToPvRoot(view);";
 				NameSpace namespace =  BeanShell.getNameSpace();
 				BeanShell.eval(view, namespace, code);
-			}
-		}.start();
+		});
 	} // }}}
 
 

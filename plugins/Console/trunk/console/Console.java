@@ -57,7 +57,6 @@ import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.util.Log;
-import org.gjt.sp.util.StringList;
 
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
@@ -209,6 +208,8 @@ implements EBComponent, DefaultFocusComponent
 	/**
 	 * Creates a ShellState (output instance) if necessary.
 	 * Sets the current active shell to be this new shell.
+	 * @param shell a shell
+	 * @return a shell
 	 */
 	public Shell setShell(Shell shell)
 	{
@@ -270,8 +271,10 @@ implements EBComponent, DefaultFocusComponent
 
 	//{{{ getOutputPane() method
 	/**
+	 * @return a text pane
 	 * @deprecated Use getConsolePane() instead.
 	 */
+	@Deprecated
 	public JTextPane getOutputPane()
 	{
 		return text;
@@ -286,7 +289,8 @@ implements EBComponent, DefaultFocusComponent
 
 	//{{{ getOutput() methods
 	/**
-	 * Returns the Output corresponding to a particular Shell, without changing
+	 * @param shellName the name of a shell
+	 * @return Returns the Output corresponding to a particular Shell, without changing
 	 * the selected Shell.
 	 */
 	public Output getOutput(String shellName) {
@@ -299,7 +303,7 @@ implements EBComponent, DefaultFocusComponent
 		return retval;
 	}
 	/**
-	 * Returns the output instance for the currently selected Shell.
+	 * @return Returns the output instance for the currently selected Shell.
 	 * @since Console 3.6
 	 */
 	public Output getOutput()
@@ -330,7 +334,7 @@ implements EBComponent, DefaultFocusComponent
 		else if (msg instanceof DockableWindowUpdate) {
 			DockableWindowUpdate dwu = (DockableWindowUpdate) msg;
 			if (dwu.getWhat() != null &&  dwu.getWhat().equals(DockableWindowUpdate.ACTIVATED))
-				if (dwu.getDockable().equals("console"))
+				if (dwu.getDockable().equals("console"))	// NOPMD
 					scrollToBottom();
 		}
 
@@ -339,7 +343,7 @@ implements EBComponent, DefaultFocusComponent
 		try {
 			dir = view.getEditPane().getBuffer().getDirectory();
 		}
-		catch (NullPointerException npe) {}
+		catch (NullPointerException npe) {} 	// NOPMD
 		// SshConsole always follows textPane.
 		if ( !dir.isEmpty() && (dir.startsWith("sftp://") ||
 			 jEdit.getBooleanProperty("console.changedir.followTextArea"))) {
@@ -386,6 +390,7 @@ implements EBComponent, DefaultFocusComponent
 	 * Returns this console's error source instance. Plugin shells can
 	 * either add errors to this error source, or use their own; both
 	 * methods will look the same to the user.
+	 * @return the default error source
 	 */
 	public DefaultErrorSource getErrorSource()
 	{
@@ -394,7 +399,7 @@ implements EBComponent, DefaultFocusComponent
 
 	//{{{ getInfoColor() method
 	/**
-	 * Returns the informational text color.
+	 * @return Returns the informational text color.
 	 */
 	public Color getInfoColor()
 	{
@@ -403,7 +408,7 @@ implements EBComponent, DefaultFocusComponent
 
 	//{{{ getWarningColor() method
 	/**
-	 * Returns the warning text color.
+	 * @return Returns the warning text color.
 	 */
 	public Color getWarningColor()
 	{
@@ -412,7 +417,7 @@ implements EBComponent, DefaultFocusComponent
 
 	//{{{ getErrorColor() method
 	/**
-	 * Returns the error text color.
+	 * @return Returns the error text color.
 	 */
 	public Color getErrorColor()
 	{
@@ -444,10 +449,13 @@ implements EBComponent, DefaultFocusComponent
 
 	//{{{ print() method
 	/**
+	 * @param color a color
+	 * @param msg a message
 	 * @deprecated Do not use the console as an <code>Output</code>
 	 * instance, use the <code>Output</code> given to you in
 	 * <code>Shell.execute()</code> instead.
 	 */
+	@Deprecated
 	public void print(Color color, String msg)
 	{
 		getOutput().print(color,msg);
@@ -455,6 +463,8 @@ implements EBComponent, DefaultFocusComponent
 
 	//{{{ writeAttrs() method
 	/**
+	 * @param attrs an attribute set
+	 * @param msg a message
 	 * @deprecated Do not use the console as an <code>Output</code>
 	 * instance, use the <code>Output</code> given to you in
 	 * <code>Shell.execute()</code> instead.
@@ -462,6 +472,7 @@ implements EBComponent, DefaultFocusComponent
 	 * see @ref Output for information about how to create additional
 	 *    console Output instances.
 	 */
+	@Deprecated
 	public void writeAttrs(AttributeSet attrs, String msg)
 	{
 		getOutput().writeAttrs(attrs,msg);
@@ -473,6 +484,7 @@ implements EBComponent, DefaultFocusComponent
 	 * instance, use the <code>Output</code> given to you in
 	 * <code>Shell.execute()</code> instead.
 	 */
+	@Deprecated
 	public void commandDone()
 	{
 		getOutput().commandDone();
@@ -480,6 +492,7 @@ implements EBComponent, DefaultFocusComponent
 
 	//{{{ getShellState() method
 	/**
+	 * @param shell a shell
 	 * @return the Output of a Shell, assuming the Shell was already created....
 	 *
 	 * @since Console 4.0.2.
@@ -602,8 +615,8 @@ implements EBComponent, DefaultFocusComponent
 		else
 			error.print(null,"");
 
-		errorSource.clear();
-		ErrorSource.unregisterErrorSource(errorSource);
+		///errorSource.clear();
+		///ErrorSource.unregisterErrorSource(errorSource);
 		try
 		{
 			shell.execute(this, input, output, error, cmd);
@@ -818,8 +831,11 @@ implements EBComponent, DefaultFocusComponent
 	}//}}}
 
 	//{{{ shellForVFS method
-	/** @return a shell that is suited for this path, based on passing this
-		path onto the handlesVFS() method of each Shell. */
+	/** 
+		@param path a path
+		@return a shell that is suited for this path, based on passing this
+		path onto the handlesVFS() method of each Shell. 
+	*/
 	static public String shellForVFS(String path) {
 		for (String name: Shell.getShellNames()) {
 			Shell s = Shell.getShell(name);
@@ -917,7 +933,7 @@ implements EBComponent, DefaultFocusComponent
 
 			if(longestCommonStart.length() != 0)
 			{
-				if(offset - info.offset
+				if(offset - info.offset		// NOPMD
 					!= longestCommonStart.length())
 				{
 					text.select(cmdStart + info.offset,caret);
@@ -995,7 +1011,7 @@ implements EBComponent, DefaultFocusComponent
 
 		//{{{ getInputStart() method
 		/**
-		 *  Return InputStart position inside of document.
+		 * @return Return InputStart position inside of document.
 		 */
 		public int getInputStart()
 		{
@@ -1006,6 +1022,7 @@ implements EBComponent, DefaultFocusComponent
 		//{{{ setInputStart() method
 		/**
 		 *  Setup InputStart position inside of document.
+		 * @param cmdStart the command
 		 */
 		public void setInputStart(int cmdStart)
 		{

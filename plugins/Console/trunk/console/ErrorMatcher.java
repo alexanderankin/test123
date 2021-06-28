@@ -212,7 +212,9 @@ public class ErrorMatcher implements Cloneable
 	} // }}}
 
 	// {{{ set()
-	/** Copies values from one ErrorMatcher into this */
+	/** Copies values from one ErrorMatcher into this 
+	 * @param other a new error matcher
+	*/
 	public void set(ErrorMatcher other)
 	{
 		clear();
@@ -272,6 +274,7 @@ public class ErrorMatcher implements Cloneable
 	 * TODO: also check that any referred to group number
 	 *     (from the filename/linenumber/error message), as well as
 	 *     the extralines, actually exists in the  regex.
+	 * @return true or false
 	 */
 	public boolean isValid()
 	{

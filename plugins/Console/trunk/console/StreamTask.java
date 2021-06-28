@@ -28,11 +28,11 @@ package console;
    
    	StreamTask
    	    | |
-   	    | +-- SimpleInputStreamTask --> InputStreamTask
+   	    | +-- SimpleInputStreamTask --&gt; InputStreamTask
    	    |
-    SimpleOutputStreamTask  --> ErrorStreamTask
+    SimpleOutputStreamTask  --&gt; ErrorStreamTask
    	    |
-   	ParsingOutputStreamTask --> OutputStreamTask</p>
+   	ParsingOutputStreamTask --&gt; OutputStreamTask</p>
  */
 public abstract class StreamTask extends Thread
 {

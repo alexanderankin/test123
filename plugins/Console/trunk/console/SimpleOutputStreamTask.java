@@ -103,6 +103,8 @@ public class SimpleOutputStreamTask extends StreamTask
 	// {{{ actionInsideWaitingLoop() method
 	/**
 	 * Run waiting loop inside.
+	 * @param isr an input stream reader
+	 * @throws Exception an exception
 	 */
 	protected void actionInsideWaitingLoop(InputStreamReader isr) throws Exception
 	{
@@ -115,6 +117,7 @@ public class SimpleOutputStreamTask extends StreamTask
 	 * - "finalOutputing()" method
 	 *
 	 * (under "try" section) 
+	 * @throws Exception an exception
 	 */
 	protected void afterWorking() throws Exception
 	{
@@ -124,6 +127,7 @@ public class SimpleOutputStreamTask extends StreamTask
 	/**
 	 * Run BEFORE main working loop starts
 	 * (under "try" section) 
+	 * @throws Exception an Exception
 	 */
 	protected void beforeWorking() throws Exception
 	{
@@ -150,6 +154,7 @@ public class SimpleOutputStreamTask extends StreamTask
 	 * By default dump data about exception to jEdit.Log
 	 * BEFORE "exception_dumpToOwner()" method
 	 * (under "catch" section)
+	 * @param e an exception
 	 */
 	protected void exception_dumpToLog(Exception e)
 	{
@@ -160,6 +165,7 @@ public class SimpleOutputStreamTask extends StreamTask
 	/**
 	 * By default do nothing AFTER "exception_dumpToLog" method
 	 * (under "catch" section)
+	 * @param e an exception
 	 */
 	protected void exception_dumpToOwner(Exception e)
 	{
@@ -238,6 +244,7 @@ public class SimpleOutputStreamTask extends StreamTask
 	 * - Clean internal buffer "lineBuffer"
 	 *
 	 * (under "try" section) 
+	 * @throws Exception an exception
 	 */
 	protected void outputData() throws Exception
 	{
@@ -249,6 +256,7 @@ public class SimpleOutputStreamTask extends StreamTask
 	/**
 	 * Setup waiting loop.
 	 * Output handler reads data from external stream inside this loop.
+	 * @param wl the loop
 	 */
 	public void setWaitingLoop(WLTypes wl)
 	{

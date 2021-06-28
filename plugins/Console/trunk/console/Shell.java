@@ -85,7 +85,7 @@ public abstract class Shell
 
 	//{{{ getShellNames() method
 	/**
-	 * Returns an array of all registered shells.
+	 * @return Returns an array of all registered shells.
 	 */
 	public static String[] getShellNames()
 	{
@@ -152,6 +152,7 @@ public abstract class Shell
 
 	//{{{ chDir()
 	/** A System Shell can override this method if it can respond to chDir messages
+		@param console a console
 		@param pathStr   vfs path to change directory
 	    @return true if the function did something, false if not.
 	*/
@@ -164,6 +165,7 @@ public abstract class Shell
 	 * Returns the Shell service singleton with the specified name
 	 * @param name The shell name. Common values are:
 	 *     "System", "BeanShell", "Factor", "Ant", "Python", etc....
+	 * @return a Shell
 	 */
 	public static Shell getShell(String name)
 	{
@@ -171,6 +173,11 @@ public abstract class Shell
 		if (name == null || name.isEmpty())
 			return null;
 		return (Shell)ServiceManager.getService(SERVICE, name);
+		// java.lang.ClassCastException: clojure.shell.ClojureShell cannot be cast to console.Shell
+		//  at console.Shell.getShell(Shell.java:173)
+		//  at console.ConsolePlugin.getAllShells(ConsolePlugin.java:312)
+		//  at console.ConsolePlugin.stop(ConsolePlugin.java:348)
+		// but ClojureShell extends ProcessShell which extends Shell, so what gives?
 	} //}}}
 	
 	public boolean isUserShell() {
@@ -184,6 +191,7 @@ public abstract class Shell
 	//{{{ openConsole() method
 	/**
 	 * Called when a Console dockable first selects this shell.
+	 * @param console a console
 	 * @since Console 4.0.2
 	 */
 	public void openConsole(Console console)
@@ -193,6 +201,7 @@ public abstract class Shell
 	//{{{ closeConsole() method
 	/**
 	 * Called when a Console dockable is closed.
+	 * @param console a console
 	 * @since Console 4.0.2
 	 */
 	public void closeConsole(Console console)
@@ -242,6 +251,9 @@ public abstract class Shell
 
 	/** A convenience function - you do not override this method.
 	 **
+	 * @param console a console
+	 * @param command the command
+	 * @param output the error output
 	 */
 	final public void execute(Console console, String command, Output output) {
 		execute(console, null, output, null, command);
@@ -293,6 +305,7 @@ public abstract class Shell
 	 * Returns possible completions for the specified command.
 	 * @param console The console instance
 	 * @param command The command
+	 * @return some completion info
 	 * @since Console 3.6
 	 */
 	public CompletionInfo getCompletions(Console console, String command)
@@ -302,7 +315,7 @@ public abstract class Shell
 
 	//{{{ getName() method
 	/**
-	 * Returns the name of the shell.
+	 * @return Returns the name of the shell.
 	 */
 	public String getName()
 	{
@@ -312,6 +325,7 @@ public abstract class Shell
 	//{{{ setName() method
 	/**
 	 * Sets the name of the shell.
+	 * @param name a name
 	 */
 	public void setName(String name)
 	{

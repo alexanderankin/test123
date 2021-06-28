@@ -43,6 +43,7 @@ public class DirectoryStack
 
 	// {{{ processLine() 	
 	/**
+	 * @param line a line
 	 * @return true if the directory has changed
 	 *    (i.e. an entering/leaving message has been encountered
 	 */

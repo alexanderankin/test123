@@ -667,7 +667,9 @@ public class Sequences
 	} //}}}
 	
 	//{{{ generateFullWorkingSet() method
-	/** Returns map of Records. Map contains information about ALL control functions. */
+	/** Returns map of Records. Map contains information about ALL control functions. 
+	 * @return an enum map
+	*/
 	public static EnumMap<CF, Record> generateFullWorkingSet()
 	{
 		return generateWorkingSet(CF.values());
@@ -678,6 +680,7 @@ public class Sequences
 	   Returns map of Records. Map contains information about SELECTED control functions only.
 	   If array of control functions is empty - returned Map is empty too.
 	   @param args array of control functions
+	   @return something
 	 */
 	public static EnumMap<CF, Record> generateWorkingSet(CF... args)
 	{
@@ -694,6 +697,7 @@ public class Sequences
 	   Returns control function's RegExp-pattern.
 	   @param cmd control function
 	   @param mode mode of control function's repersentation, MODE_7BIT and MODE_8BIT
+	   @return the pattern
 	 */
 	public static String getCFPattern(CF cmd, int mode)
 	{
@@ -711,6 +715,7 @@ public class Sequences
 	   Returns common control function's RegExp-pattern, which matches any sequence.
 	   @param mode mode of control function's repersentation, MODE_7BIT or MODE_8BIT
 	   @param exceptLF_CR enables skipping following symbols: Line Feed and Carriage Return
+	   @return the pattern
 	 */
 	public static String getCommonCFPattern(int mode, boolean exceptLF_CR)
 	{
@@ -727,6 +732,7 @@ public class Sequences
 	   @param exclC0Set array of excluded C0-functions
 	   @param exclC1Set array of excluded C1-functions
 	   @param exclSymSet array of excluded symbols (from CSI-functions)
+	   @return the pattern
 	 */
 	public static String getCommonCFPattern(int mode, C0[] exclC0Set, C1[] exclC1Set, Sym[] exclSymSet)
 	{

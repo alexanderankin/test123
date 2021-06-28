@@ -40,6 +40,7 @@ import org.gjt.sp.util.Log;
  */
 
 //{{{ ErrorThread class
+@Deprecated
 public class ErrorThread extends OutputThread
 {
 	//{{{ Private members
