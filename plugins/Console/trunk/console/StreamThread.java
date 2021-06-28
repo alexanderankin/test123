@@ -52,6 +52,7 @@ import jcfunc.parameters.*;
  */
 
 // {{{ class StreamThread
+@Deprecated
 class StreamThread extends OutputThread
 {
 	// {{{ Private members

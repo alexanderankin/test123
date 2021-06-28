@@ -26,7 +26,7 @@ package console;
  * @deprecated
  * Abstract class for StreamThread and ErrorThread.
  */
-
+@Deprecated
 abstract class OutputThread extends Thread
 {
 	OutputThread() {}

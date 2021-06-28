@@ -89,6 +89,8 @@ public class CommandOutputParser
 	// {{{ processLine methods
 	/** 
 	 * Processes a line without displaying it to the Output
+	 * @param text the text to process
+	 * @return see processLine(text, disp)
 	 */
 	final public int processLine(String text) {
 		return processLine(text, false);

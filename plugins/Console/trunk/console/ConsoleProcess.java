@@ -44,6 +44,7 @@ import org.gjt.sp.util.StringList;
  */
 
 // {{{ ConsoleProcess class
+@Deprecated
 class ConsoleProcess
 {
 	// {{{ Data members

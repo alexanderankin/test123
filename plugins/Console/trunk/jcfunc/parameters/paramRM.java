@@ -58,6 +58,7 @@ public enum paramRM
 	HEM(10),
 	
 	/** @deprecated POSITIONING UNIT MODE */
+	@Deprecated
 	PUM(11),
 	
 	/** SEND/RECEIVE MODE */
@@ -91,6 +92,7 @@ public enum paramRM
 	GRCM(21),
 	
 	/** @deprecated ZERO DEFAULT MODE */
+	@Deprecated
 	ZDM(22),
 
 	/** Don't define in Standart */

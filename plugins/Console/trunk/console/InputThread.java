@@ -37,6 +37,7 @@ import org.gjt.sp.util.Log;
  * @deprecated
  * Thread for feeding input to a running subprocess.
  */
+@Deprecated
 class InputThread extends Thread
 {
 	InputStream inputPipe;

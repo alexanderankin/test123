@@ -92,6 +92,10 @@ public abstract class SystemShellBuiltIn
 	//{{{ execute() method
 	/** 
 	 * Used by executeBuiltIn
+	 * @param console A console
+	 * @param output Some output
+	 * @param error Where to send the error output
+	 * @param args a list of arguments
 	 */
 	public void execute(Console console, Output output, Output error, 
 		Vector<String> args)
@@ -541,6 +545,7 @@ public abstract class SystemShellBuiltIn
 		/**
 		 * @deprecated
 		 */
+		@Deprecated
 		public void execute(Console console, Output output,
 			Output error, Vector<String> args, Hashtable<String, Object> values)
 		{

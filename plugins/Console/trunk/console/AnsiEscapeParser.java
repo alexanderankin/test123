@@ -65,9 +65,6 @@ public class AnsiEscapeParser
 	/**<p>
 	 * Parser's state is decribed by following properties:
 	 * @param ansi_mode - type of escaped sequencies (what kind of escaped sequencies parser processes?)
-	 *                    @see jcfunc.Sequences.MODE_7BIT
-	 *                    @see jcfunc.Sequences.MODE_8BIT
-	 *                    Usually use 7-bit mode.
 	 * @param behaviour - parser's behaviour proper (what parser does with found sequencies?)
 	 *                    @see Behaviour
 	 * @param func_arr  - array of processing functions (escaped sequence == ESC + function)
@@ -130,15 +127,13 @@ public class AnsiEscapeParser
 		// fill parsing control function's list
 		StringList funcs     = StringList.split( jEdit.getProperty("ansi-escape.func-list").toLowerCase(), "\\s+");
 		String avaible_funcs = jEdit.getProperty("ansi-escape.func-list-values");
-		String str = "";
 		
 		int i = 0;
 		while ( i < funcs.size() )
 		{
 			if ( !avaible_funcs.contains( funcs.get(i) ) )
 			{
-				str = funcs.remove(i);
-				str = null;
+				funcs.remove(i);
 				i--;
 			}
 			i++;
@@ -216,6 +211,7 @@ public class AnsiEscapeParser
 	 * Check two things:
 	 * @param behaviour - is it the current parser's behaviour?
 	 * @param line      - are there any matches?</p> 
+	 * @return true or false
 	 */
 	public boolean touch(Behaviour behaviour, String line)
 	{

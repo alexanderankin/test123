@@ -14,6 +14,7 @@ import javax.swing.text.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.util.StringList;
+import org.gjt.sp.util.GenericGUIUtilities;
 
 import console.ConsolePlugin;
 import console.Shell;
@@ -118,7 +119,7 @@ public class NewShellDialog extends JDialog {
                 }
             }
         );
-        GUIUtilities.makeSameSize( okButton, cancelButton );
+        GenericGUIUtilities.makeSameSize( okButton, cancelButton );
         JPanel panel = new JPanel( new BorderLayout() );
         panel.setBorder( BorderFactory.createEmptyBorder( 11, 11, 12, 12 ) );
         AbstractOptionPane dialogPanel = new AbstractOptionPane( jEdit.getProperty( "console.newshell.createNewShell", "Create New Shell" ) );

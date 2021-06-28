@@ -80,7 +80,7 @@ public class ConsolePlugin extends EditPlugin
 	public static final String MENU = "plugin.console.ConsolePlugin.menu";
 	public static final String CMD_PATH = "/console/bsh/";
 	/**
-	 * Return value of {@link #parseLine()} if the text does not match a
+	 * Return value of parseLine() if the text does not match a
 	 * known error pattern.
 	 */
 	public static final int NO_ERROR = -1;
@@ -319,7 +319,10 @@ public class ConsolePlugin extends EditPlugin
 	/** parseLine()
 	 * Publicly documented class for parsing output of user defined
 	 * programs through the system shell error parser.
-	 *
+	 * @param view a view
+	 * @param text some text
+	 * @param directory some directory somewhere
+	 * @param errorSource the error source
 	 * @return -1 if no error/warning, or an ErrorType.
 	 *      Possible values are:
 	 * 	@see errorlist.ErrorSource#ERROR
@@ -388,7 +391,7 @@ public class ConsolePlugin extends EditPlugin
 		rescanShells();
 		
 		if (PluginUpdate.REMOVED.equals(msg.getWhat())) {
-			if (baseShells != null) { 
+			if (baseShells != null) { 	// NOPMD
 				PluginJAR plugin = msg.getPluginJAR();
 				if (plugin == null) {
 					return;	
@@ -432,6 +435,7 @@ public class ConsolePlugin extends EditPlugin
 	// {{{ scanDirectory()
 	/**
 	 * Given a filename, performs translations so that it's a command name
+	 * @param directory the one to scan
 	 */
 
 	public static void scanDirectory(String directory)
@@ -783,6 +787,7 @@ public class ConsolePlugin extends EditPlugin
 	 * current buffer.
 	 * note: these might not be needed anymore as of 4.3pre3
 	 * @param buffer The buffer
+	 * @return the package name
 	 */
 	public static String getPackageName(Buffer buffer)
 	{
@@ -833,6 +838,7 @@ public class ConsolePlugin extends EditPlugin
 	 *
 	 * @param buffer
 	 *                The buffer
+	 * @return the classname
 	 */
 	public static String getClassName(Buffer buffer)
 	{
@@ -854,6 +860,7 @@ public class ConsolePlugin extends EditPlugin
 	 *
 	 * @param buffer
 	 *                The buffer
+	 * @return the package
 	 */
 	public static String getPackageRoot(Buffer buffer)
 	{
@@ -881,6 +888,7 @@ public class ConsolePlugin extends EditPlugin
 	 *                The view
 	 * @param text
 	 *                The string to expand
+	 * @return the variables
 	 */
 	public static String expandSystemShellVariables(View view, String text)
 	{
@@ -892,23 +900,24 @@ public class ConsolePlugin extends EditPlugin
 	 * Returns the value of the specified system shell environment variable.
 	 *
 	 * @param view The view
-	 * @param var  The variable name
+	 * @param variable  The variable name
+	 * @return the variable value
 	 */
-	public static String getSystemShellVariableValue(View view, String var)
+	public static String getSystemShellVariableValue(View view, String variable)
 	{
-		return getSystemShell().getVariableValue(view, var);
+		return getSystemShell().getVariableValue(view, variable);
 	} // }}}
 
 	// {{{ setSystemShellVariableValue() method
 	/**
 	 * Sets the value of the specified system shell environment variable.
 	 *
-	 * @param var The variable name
+	 * @param variable The variable name
 	 * @param value The value
 	 */
-	public static void setSystemShellVariableValue(String var, String value)
+	public static void setSystemShellVariableValue(String variable, String value)
 	{
-		getSystemShell().getVariables().put(var, value);
+		getSystemShell().getVariables().put(variable, value);
 	} // }}}
 
 	// {{{ getUserCommandDirectory()

@@ -28,7 +28,9 @@ public class PanelStack extends JPanel implements ActionListener
 	
 	/**
 	 * @deprecated - use @ref add(String, JPanel)
+	 * @param o an object
 	 */
+	@Deprecated
 	public void add(Object o) {
 		throw new RuntimeException ("Don't call this.");
 	}

@@ -48,7 +48,10 @@ import org.gjt.sp.util.ThreadUtilities;
 public class BufferOutput implements Output
 {
 	
-	/** Guess the edit mode of the output based on the command line executed. */
+	/** Guess the edit mode of the output based on the command line executed. 
+	 * @param command the command
+	 * @return return the result
+	*/
 	static public String guessMode(String command) {
 		command = command.toLowerCase();
 		if (command.contains("diff") || command.contains("patch"))
@@ -120,6 +123,7 @@ public class BufferOutput implements Output
 
 	/**
 	 * Should this run through error handlers and print in colors?
+	 * @param message the message, which isn't used, no idea why it's a parameter
 	 */
 	public void printColored(String message)
 	{

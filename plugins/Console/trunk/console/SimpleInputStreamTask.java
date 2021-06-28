@@ -56,6 +56,8 @@ public class SimpleInputStreamTask extends StreamTask
 	// {{{ actionInsideWaitingLoop() method
 	/**
 	 * Run waiting loop inside.
+	 * @param inr a reader
+	 * @throws Exception an exception
 	 */
 	protected void actionInsideWaitingLoop(BufferedReader inr) throws Exception
 	{
@@ -65,6 +67,7 @@ public class SimpleInputStreamTask extends StreamTask
 	/**
 	 * Run BEFORE main working loop starts
 	 * (under "try" section) 
+	 * @throws Exception an exception
 	 */
 	protected void beforeWorking() throws Exception
 	{
@@ -76,6 +79,7 @@ public class SimpleInputStreamTask extends StreamTask
 	 * @param _line string for flushing to working process
 	 *
 	 * (under "try" section) 
+	 * @throws Exception an exception
 	 */
 	protected void flushData(String _line) throws Exception
 	{
@@ -100,6 +104,7 @@ public class SimpleInputStreamTask extends StreamTask
 	 * By default dump data about exception to jEdit.Log
 	 * BEFORE "exception_dumpToOwner()" method
 	 * (under "catch" section)
+	 * @param e an exception
 	 */
 	protected void exception_dumpToLog(Exception e)
 	{
@@ -110,6 +115,7 @@ public class SimpleInputStreamTask extends StreamTask
 	/**
 	 * By default do nothing AFTER "exception_dumpToLog" method
 	 * (under "catch" section)
+	 * @param e an exception
 	 */
 	protected void exception_dumpToOwner(Exception e)
 	{
