@@ -53,6 +53,7 @@ import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.KeyEventTranslator;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.util.EnhancedTreeCellRenderer;
+import org.gjt.sp.util.GenericGUIUtilities;
 
 import sidekick.IAsset;
 import sidekick.SideKickPlugin;
@@ -175,8 +176,8 @@ public class SourceTree extends SideKickTree {
 
     public void handleMouse( MouseEvent evt ) {
         //{{{ handleMouse() method
-        if ( GUIUtilities.isPopupTrigger( evt ) ) {
-            GUIUtilities.showPopupMenu( getComponentPopupMenu(), evt.getComponent(), evt.getX(), evt.getY() );
+        if ( GenericGUIUtilities.isPopupTrigger( evt ) ) {
+            GenericGUIUtilities.showPopupMenu( getComponentPopupMenu(), evt.getComponent(), evt.getX(), evt.getY() );
             view.getTextArea().requestFocusInWindow();
         }
     } //}}}
@@ -265,10 +266,10 @@ public class SourceTree extends SideKickTree {
         		String t = st.nextToken();
         		if (line.length() + t.length() >= 80)
         		{
-        			sb.append(line + "<br>" + indent);
+        			sb.append(line).append("<br>").append(indent);
         			line.setLength(0);
         		}
-    			line.append(t + " ");
+    			line.append(t).append(' ');
         	}
     		sb.append(line);
         }
