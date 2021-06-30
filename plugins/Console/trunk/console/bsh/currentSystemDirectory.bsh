@@ -2,13 +2,17 @@
     System shell of the current Console. 
     By Alan Ezust
     
+    30 Jun 2021, danson, this doesn't work anymore, setAccessibility is no longer
+    available (don't know where it was to begin with), and without it,
+    shell.getConsoleState isn't accessible. Maybe make getConsoleState public or
+    protected?
+    
 */
 
 currentSystemDirectory() 
 {
     // To access non-public members
     setAccessibility(true);
-    
     
 	view.getDockableWindowManager().addDockableWindow("console");
 
