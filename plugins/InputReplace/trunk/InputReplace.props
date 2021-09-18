@@ -8,7 +8,7 @@ plugin.com.illcode.jedit.inputreplace.InputReplacePlugin.name=InputReplace
 plugin.com.illcode.jedit.inputreplace.InputReplacePlugin.author=Jesse Pavel
 
 # version number
-plugin.com.illcode.jedit.inputreplace.InputReplacePlugin.version=1.0.1
+plugin.com.illcode.jedit.inputreplace.InputReplacePlugin.version=1.1.0
 
 # online help
 plugin.com.illcode.jedit.inputreplace.InputReplacePlugin.docs=doc/InputReplace.html

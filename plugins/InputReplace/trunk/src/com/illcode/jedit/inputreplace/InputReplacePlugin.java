@@ -14,10 +14,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public final class InputReplacePlugin extends EditPlugin
 {
-    static int maxLength = 8;
+    static int minLength = 2,
+               maxLength = 8;
 
     private static Interpreter intr;
     private static Path functionsPath, tablePath;
@@ -29,10 +31,10 @@ public final class InputReplacePlugin extends EditPlugin
         int caretLine = textArea.getCaretLine();
         int caretCol = caretPos - textArea.getLineStartOffset(caretLine);
         int compositionLength = Math.min(maxLength, caretCol);
-        if (compositionLength < 2)
+        if (compositionLength < minLength)
             return;
         String line = textArea.getLineText(caretLine);
-        for (int len = compositionLength; len >= 2; len--) {
+        for (int len = compositionLength; len >= minLength; len--) {
             String token = line.substring(caretCol - len, caretCol);
             String replacement = replacementMap.get(token);
             if (replacement != null) {
@@ -73,6 +75,8 @@ public final class InputReplacePlugin extends EditPlugin
         }
     }
 
+    private static final Pattern CODEPOINT_PATTERN = Pattern.compile("U\\+(?:10)?\\p{XDigit}{4}");
+
     public static void reloadResources() {
         // Source the BeanShell functions
         intr.getNameSpace().clear();
@@ -94,7 +98,7 @@ public final class InputReplacePlugin extends EditPlugin
                 if (pieces.length != 2) continue;   // This is a malformed line, ignore it.
 
                 // The various types of entries we can find are:
-                if (pieces[1].matches("U\\+(?:10)?\\p{XDigit}{4}"))  {
+                if (CODEPOINT_PATTERN.matcher(pieces[1]).matches())  {
                     // A Unicode code point written in hex
                     replacementMap.put(pieces[0], new String(Character.toChars(Integer.parseInt(pieces[1].substring(2), 16))));
                 } else if (pieces[1].length() >= 7 && pieces[1].endsWith("FUNC")) {
@@ -121,6 +125,7 @@ public final class InputReplacePlugin extends EditPlugin
     public void start() {
         intr = new Interpreter();
         replacementMap = new HashMap<>(1000);
+        minLength = jEdit.getIntegerProperty("inputreplace.min-length", minLength);
         maxLength = jEdit.getIntegerProperty("inputreplace.max-length", maxLength);
         ensureResourcesPresent();
         reloadResources();

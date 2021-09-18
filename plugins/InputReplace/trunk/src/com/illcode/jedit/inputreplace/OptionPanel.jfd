@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "5.2.5.0.333" Java: "1.7.0_80" encoding: "UTF-8"
+JFDML JFormDesigner: "5.2.5.0.333" Java: "1.7.0_261" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
@@ -8,7 +8,7 @@ new FormModel {
 		}
 		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
 			"$columnSpecs": "0, 0"
-			"$rowSpecs": "0"
+			"$rowSpecs": "0, 0"
 			"$hGap": 5
 			"$vGap": 5
 			"$alignLeft": true
@@ -17,14 +17,27 @@ new FormModel {
 			name: "this"
 			"border": new javax.swing.border.EmptyBorder( 5, 5, 5, 5 )
 			add( new FormComponent( "javax.swing.JLabel" ) {
-				name: "label2"
-				"text": "Maximum Replace Length:"
+				name: "label3"
+				"text": "Minimum Replace Length:"
 			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) )
 			add( new FormComponent( "javax.swing.JSpinner" ) {
-				name: "lengthSpinner"
+				name: "minLengthSpinner"
+				"model": new javax.swing.SpinnerNumberModel( 2, 1, 12, 1 )
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+				"gridx": 1
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label2"
+				"text": "Maximum Replace Length:"
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+				"gridy": 1
+			} )
+			add( new FormComponent( "javax.swing.JSpinner" ) {
+				name: "maxLengthSpinner"
 				"model": new javax.swing.SpinnerNumberModel( 3, 2, 24, 1 )
 			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
 				"gridx": 1
+				"gridy": 1
 			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )
