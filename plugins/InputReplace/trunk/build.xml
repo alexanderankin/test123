@@ -7,6 +7,9 @@
     <property file="../build.properties"/>
 
     <property name="build.support" value="d:\\Relocations\\Code\\Source\\jEdit\\build-support" />
+    <property name="docs-proc.target" value="none" />
+    <property name="compiler.userargs" value="-source 7 -target 7"/>
+    
     <import file="${build.support}/plugin-build.xml" />
 
     <!-- Extra files that should be included in the jar -->

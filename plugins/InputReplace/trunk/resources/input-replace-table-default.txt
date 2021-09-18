@@ -105,12 +105,20 @@ u^      û
 \''     ”
 ...     …
 **      •
+mdot    ·
+not     ¬
 # A no-break hyphen
 \-      U+2011
 --      –
 ---     —
 \_      ␣
 nbsp    U+00A0
+ensp    U+2002
+emsp    U+2003
+<<      «
+>>      »
+\<      ‹
+\>      ›
 
 # Arrows
 <-      ←
@@ -121,6 +129,17 @@ nbsp    U+00A0
 ^-v     ↕
 <-/     ↩
 
+# Triangles
+ltri    ◀
+rtri    ▶
+utri    ▲
+dtri    ▼
+# (small triangles)
+lstri   ◂
+rstri   ▸
+ustri   ▴
+dstri   ▾
+
 # Numeral forms
 1/2     ½
 1/3     ⅓
@@ -129,14 +148,26 @@ nbsp    U+00A0
 1/8     ⅛
 2/3     ⅔
 3/4     ¾
+^0      ⁰
 ^1      ¹
 ^2      ²
 ^3      ³
 ^4      ⁴
+^5      ⁵
+^6      ⁶
+^7      ⁷
+^8      ⁸
+^9      ⁹
+_0      ₀
 _1      ₁
 _2      ₂
 _3      ₃
 _4      ₄
+_5      ₅
+_6      ₆
+_7      ₇
+_8      ₈
+_9      ₉
 
 # Currency and miscellaneous symbols
 c/      ¢
@@ -150,6 +181,7 @@ pil     ¶
 rpil    ⁋
 dag     †
 ddag    ‡
+sect    §
 (c)     ©
 (tm)    ™
 
@@ -180,7 +212,7 @@ ddag    ‡
 
 # Greek letters
 ohm     Ω
-\u      μ
+\u      µ
 lambda  λ
 
 # Functions
