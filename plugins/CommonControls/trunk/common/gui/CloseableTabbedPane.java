@@ -29,6 +29,7 @@ import javax.swing.event.EventListenerList;
  * This is a Java 5 version of a feature added to JTabbedPane in Java 1.6.
  * @deprecated use javax.swing.JTabbedPane
  */
+@Deprecated
 public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
     MouseMotionListener {
 

@@ -34,6 +34,7 @@ import javax.swing.Timer;
  * @deprecated use javax.swing.SwingWorker, as of Java 1.6.
  *
  */
+@Deprecated
 public abstract class SwingWorker<T, V> implements Future<T>, Runnable {
     /**
      * number of worker threads.

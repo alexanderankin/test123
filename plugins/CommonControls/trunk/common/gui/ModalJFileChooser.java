@@ -33,6 +33,7 @@ import javax.swing.filechooser.FileSystemView;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.util.GenericGUIUtilities;
 
 /**
  *  An implementation of JFileChooser that fixes the modal dialog being
@@ -114,7 +115,7 @@ public class ModalJFileChooser extends JFileChooser
 		} else {
 			parentDlg = (parent instanceof JDialog)
 							? (JDialog) parent
-							: GUIUtilities.getParentDialog(parent);
+							: GenericGUIUtilities.getParentDialog(parent);
 		}
 		JDialog dialog;
 		if (parentDlg != null) {
