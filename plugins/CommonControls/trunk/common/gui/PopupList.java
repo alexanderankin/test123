@@ -92,6 +92,7 @@ public class PopupList
 	*
 	* @deprecated As of CC 0.9.0, this method does nothing.
     */
+   @Deprecated
    public void enableKeyStrokeCycling(String anActionName)
    {
    }
@@ -101,6 +102,7 @@ public class PopupList
 	*
 	* @deprecated As of CC 0.9.0, this method does nothing.
     */
+   @Deprecated
    public void disableKeyStrokeCycling()
    {
    }
