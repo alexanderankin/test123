@@ -37,7 +37,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.TextUtilities;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.jEdit;
 
