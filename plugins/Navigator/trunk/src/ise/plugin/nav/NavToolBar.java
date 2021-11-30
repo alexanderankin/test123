@@ -9,6 +9,7 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.msg.*;
+import org.gjt.sp.util.GenericGUIUtilities;
 
 
 public class NavToolBar extends JToolBar {
@@ -36,7 +37,7 @@ public class NavToolBar extends JToolBar {
             public void mouseClicked(MouseEvent me) {
                 if (me.getButton() == MouseEvent.BUTTON3) {
                     NavHistoryPopup popup = NavigatorPlugin.backList(client.getView());
-                    GUIUtilities.showPopupMenu(popup, back, me.getX(), me.getY());
+                    GenericGUIUtilities.showPopupMenu(popup, back, me.getX(), me.getY());
                 }
             }
         } );
@@ -45,7 +46,7 @@ public class NavToolBar extends JToolBar {
             public void mouseClicked(MouseEvent me) {
                 if (me.getButton() == MouseEvent.BUTTON3) {
                     NavHistoryPopup popup = NavigatorPlugin.forwardList(client.getView());
-                    GUIUtilities.showPopupMenu(popup, forward, me.getX(), me.getY());
+                    GenericGUIUtilities.showPopupMenu(popup, forward, me.getX(), me.getY());
                 }
             }
         } );
