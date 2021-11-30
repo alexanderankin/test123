@@ -153,21 +153,18 @@ public class NavigatorPlugin extends EBPlugin {
      */
     public static void setToolBars() {
         SwingUtilities.invokeLater(
-            new Runnable() {
-                public void run() {
-                    if ( showOnToolBars() ) {
-                        clearToolBars(true);
-                        View[] views = jEdit.getViews();
-                        for (View view : views) {
-                            if (view.getToolBar() != null) {
-                                Navigator nav = getNavigator(view);
-                                if (nav != null) {
-                                    NavToolBar toolBar = new NavToolBar(nav);
-                                    view.getToolBar().add(toolBar);
-                                }
+            () -> {
+                if ( showOnToolBars() ) {
+                    clearToolBars(true);
+                    jEdit.getViewManager().forEach(view -> {
+                        if (view.getToolBar() != null) {
+                            Navigator nav = getNavigator(view);
+                            if (nav != null) {
+                                NavToolBar toolBar = new NavToolBar(nav);
+                                view.getToolBar().add(toolBar);
                             }
                         }
-                    }
+                    });
                 }
             }
         );
@@ -181,20 +178,19 @@ public class NavigatorPlugin extends EBPlugin {
      * only useful when reloading this plugin.
      */
     public void start() {
-        for ( View v : jEdit.getViews() ) {
+        jEdit.getViewManager().forEach(v -> {
             createNavigator( v );
             createNavigators( v );
-        }
+        });
         clearToolBars();
         setToolBars();
         if (bufferListener == null) {
             bufferListener = new BufferEditListener();   
         }
-        Buffer[] openBuffers = jEdit.getBuffers();
-        for (Buffer buffer : openBuffers) {
+        jEdit.getBufferManager().forEach(buffer -> {
             buffer.removeBufferListener(bufferListener);
             buffer.addBufferListener(bufferListener);
-        }
+        });
     }
 
     /**
@@ -267,17 +263,17 @@ public class NavigatorPlugin extends EBPlugin {
      */
     public static void clearToolBars( boolean force ) {
         if ( force || !showOnToolBars() ) {
-            for (View view : jEdit.getViews()) {
+            jEdit.getViewManager().forEach(view -> {
                 Container viewToolBar = view.getToolBar();
                 if (viewToolBar != null) {
                     for (Component comp : viewToolBar.getComponents()) {
                         if (comp instanceof NavToolBar) {
-                            viewToolBar.remove(comp);   
+                            viewToolBar.remove(comp);
                         }
                     }
                     viewToolBar.repaint();
                 }
-            }
+            });
         }
     }
 
