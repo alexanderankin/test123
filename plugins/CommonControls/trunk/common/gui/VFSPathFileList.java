@@ -118,7 +118,7 @@ public class VFSPathFileList extends JPanel
 			String path = (String) model.getElementAt(i);
 			paths.add(path);
 		}
-		return TextUtilities.join(paths, File.pathSeparator);
+        return String.join(File.pathSeparator, paths);
 	}
 
 	private void addPath(String path)
