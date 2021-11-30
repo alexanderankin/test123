@@ -4,15 +4,15 @@ plugin.CommonControlsPlugin.activate=defer
 
 plugin.CommonControlsPlugin.name=Common Controls
 plugin.CommonControlsPlugin.author=Sergey V. Udaltsov, Dale Anson, Marcelo Vanzin, Matthieu Casanova
-plugin.CommonControlsPlugin.version=1.7.5
+plugin.CommonControlsPlugin.version=2.0.0
 plugin.CommonControlsPlugin.docs=docs/users-guide.html
 plugin.CommonControlsPlugin.jars=kappalayout.jar
 plugin.CommonControlsPlugin.description=Shared GUI Code
 plugin.CommonControlsPlugin.longdescription=description.html
 plugin.CommonControlsPlugin.usePluginHome=true
 
-plugin.CommonControlsPlugin.depend.0=jedit 05.03.00.00
-plugin.CommonControlsPlugin.depend.1=jdk 1.7.0
+plugin.CommonControlsPlugin.depend.0=jedit 05.06.99.00
+plugin.CommonControlsPlugin.depend.1=jdk 11
 
 common.gui.error=Error
 
