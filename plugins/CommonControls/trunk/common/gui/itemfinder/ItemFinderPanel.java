@@ -44,7 +44,7 @@ import javax.swing.event.DocumentListener;
 
 import javax.swing.text.DefaultCaret;
 
-import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.util.GenericGUIUtilities;
 //}}}
 
 /**
@@ -275,7 +275,7 @@ public class ItemFinderPanel<E> extends JPanel
 				Rectangle bounds = getBounds();
 				Point locationOnScreen = getLocationOnScreen();
 				window.setLocation(locationOnScreen.x, locationOnScreen.y + bounds.height);
-				Rectangle screenBounds = GUIUtilities.getScreenBounds();
+				Rectangle screenBounds = GenericGUIUtilities.getScreenBounds();
 				window.pack();
 
 				Dimension preferredSize = itemList.getPreferredSize();
