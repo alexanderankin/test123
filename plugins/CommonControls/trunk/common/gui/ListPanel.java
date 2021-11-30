@@ -2,6 +2,7 @@ package common.gui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.List;
 import javax.swing.*;
 
 import common.gui.util.*;
@@ -84,9 +85,17 @@ public class ListPanel extends JPanel {
 		}
 	}
 
+    /**
+     * @deprecated since 2.0 replaced by {@link #getSelectedValuesList()}
+     */
+    @Deprecated
 	public Object[] getSelectedValues() {
 		return list.getSelectedValues();
 	}
+
+    public List getSelectedValuesList() {
+        return list.getSelectedValuesList();
+    }
 
 	public Object[] toArray() {
 		return ((DefaultListModel) list.getModel()).toArray();
