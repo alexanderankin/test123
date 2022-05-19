@@ -36,8 +36,8 @@
 	<COMMANDS>
 		<COMMAND SHELL="System">
 			buf = new StringBuffer();
-			if (buffer.getMode().getName().equals("c++")) buffer.append("g++");
-			else buffer.append("gcc");
+			if (buffer.getMode().getName().equals("c++")) buf.append("g++");
+			else buf.append("gcc");
 
 			if(!include.equals(""))
 			{
