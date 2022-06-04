@@ -61,8 +61,8 @@ public class TigerNode extends Asset implements SideKickElement {
     public static final int COMPILATION_UNIT = 0;
     public static final int EXTENDS = 1;
     public static final int IMPLEMENTS = 2;
-    public static final int PERMITS = 3;
     public static final int CONSTRUCTOR = 4;
+    public static final int PERMITS = 60;
     public static final int METHOD = 8;
     public static final int THROWS = 16;
     public static final int CLASS = 32;     // default sort after methods for inner classes
