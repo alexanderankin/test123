@@ -1,11 +1,9 @@
-// Generated from ANTLRv4Parser.g4 by ANTLR 4.x
+// Generated from /home/danson/src/jedit/plugins/AntlrSideKick/src/sidekick/antlr4/parser/ANTLRv4Parser.g4 by ANTLR 4.10.1
 
     package sidekick.antlr4.parser;
 
 
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -20,732 +18,732 @@ public class ANTLRv4ParserBaseListener implements ANTLRv4ParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterGrammarSpec(@NotNull ANTLRv4Parser.GrammarSpecContext ctx) { }
+	@Override public void enterGrammarSpec(ANTLRv4Parser.GrammarSpecContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitGrammarSpec(@NotNull ANTLRv4Parser.GrammarSpecContext ctx) { }
+	@Override public void exitGrammarSpec(ANTLRv4Parser.GrammarSpecContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterGrammarType(@NotNull ANTLRv4Parser.GrammarTypeContext ctx) { }
+	@Override public void enterGrammarType(ANTLRv4Parser.GrammarTypeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitGrammarType(@NotNull ANTLRv4Parser.GrammarTypeContext ctx) { }
+	@Override public void exitGrammarType(ANTLRv4Parser.GrammarTypeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPrequelConstruct(@NotNull ANTLRv4Parser.PrequelConstructContext ctx) { }
+	@Override public void enterPrequelConstruct(ANTLRv4Parser.PrequelConstructContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitPrequelConstruct(@NotNull ANTLRv4Parser.PrequelConstructContext ctx) { }
+	@Override public void exitPrequelConstruct(ANTLRv4Parser.PrequelConstructContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterOptionsSpec(@NotNull ANTLRv4Parser.OptionsSpecContext ctx) { }
+	@Override public void enterOptionsSpec(ANTLRv4Parser.OptionsSpecContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitOptionsSpec(@NotNull ANTLRv4Parser.OptionsSpecContext ctx) { }
+	@Override public void exitOptionsSpec(ANTLRv4Parser.OptionsSpecContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterOption(@NotNull ANTLRv4Parser.OptionContext ctx) { }
+	@Override public void enterOption(ANTLRv4Parser.OptionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitOption(@NotNull ANTLRv4Parser.OptionContext ctx) { }
+	@Override public void exitOption(ANTLRv4Parser.OptionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterOptionValue(@NotNull ANTLRv4Parser.OptionValueContext ctx) { }
+	@Override public void enterOptionValue(ANTLRv4Parser.OptionValueContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitOptionValue(@NotNull ANTLRv4Parser.OptionValueContext ctx) { }
+	@Override public void exitOptionValue(ANTLRv4Parser.OptionValueContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDelegateGrammars(@NotNull ANTLRv4Parser.DelegateGrammarsContext ctx) { }
+	@Override public void enterDelegateGrammars(ANTLRv4Parser.DelegateGrammarsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitDelegateGrammars(@NotNull ANTLRv4Parser.DelegateGrammarsContext ctx) { }
+	@Override public void exitDelegateGrammars(ANTLRv4Parser.DelegateGrammarsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDelegateGrammar(@NotNull ANTLRv4Parser.DelegateGrammarContext ctx) { }
+	@Override public void enterDelegateGrammar(ANTLRv4Parser.DelegateGrammarContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitDelegateGrammar(@NotNull ANTLRv4Parser.DelegateGrammarContext ctx) { }
+	@Override public void exitDelegateGrammar(ANTLRv4Parser.DelegateGrammarContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTokensSpec(@NotNull ANTLRv4Parser.TokensSpecContext ctx) { }
+	@Override public void enterTokensSpec(ANTLRv4Parser.TokensSpecContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTokensSpec(@NotNull ANTLRv4Parser.TokensSpecContext ctx) { }
+	@Override public void exitTokensSpec(ANTLRv4Parser.TokensSpecContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAction(@NotNull ANTLRv4Parser.ActionContext ctx) { }
+	@Override public void enterAction(ANTLRv4Parser.ActionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAction(@NotNull ANTLRv4Parser.ActionContext ctx) { }
+	@Override public void exitAction(ANTLRv4Parser.ActionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterActionScopeName(@NotNull ANTLRv4Parser.ActionScopeNameContext ctx) { }
+	@Override public void enterActionScopeName(ANTLRv4Parser.ActionScopeNameContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitActionScopeName(@NotNull ANTLRv4Parser.ActionScopeNameContext ctx) { }
+	@Override public void exitActionScopeName(ANTLRv4Parser.ActionScopeNameContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterModeSpec(@NotNull ANTLRv4Parser.ModeSpecContext ctx) { }
+	@Override public void enterModeSpec(ANTLRv4Parser.ModeSpecContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitModeSpec(@NotNull ANTLRv4Parser.ModeSpecContext ctx) { }
+	@Override public void exitModeSpec(ANTLRv4Parser.ModeSpecContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterRules(@NotNull ANTLRv4Parser.RulesContext ctx) { }
+	@Override public void enterRules(ANTLRv4Parser.RulesContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitRules(@NotNull ANTLRv4Parser.RulesContext ctx) { }
+	@Override public void exitRules(ANTLRv4Parser.RulesContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterRuleSpec(@NotNull ANTLRv4Parser.RuleSpecContext ctx) { }
+	@Override public void enterRuleSpec(ANTLRv4Parser.RuleSpecContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitRuleSpec(@NotNull ANTLRv4Parser.RuleSpecContext ctx) { }
+	@Override public void exitRuleSpec(ANTLRv4Parser.RuleSpecContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterParserRuleSpec(@NotNull ANTLRv4Parser.ParserRuleSpecContext ctx) { }
+	@Override public void enterParserRuleSpec(ANTLRv4Parser.ParserRuleSpecContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitParserRuleSpec(@NotNull ANTLRv4Parser.ParserRuleSpecContext ctx) { }
+	@Override public void exitParserRuleSpec(ANTLRv4Parser.ParserRuleSpecContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterExceptionGroup(@NotNull ANTLRv4Parser.ExceptionGroupContext ctx) { }
+	@Override public void enterExceptionGroup(ANTLRv4Parser.ExceptionGroupContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitExceptionGroup(@NotNull ANTLRv4Parser.ExceptionGroupContext ctx) { }
+	@Override public void exitExceptionGroup(ANTLRv4Parser.ExceptionGroupContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterExceptionHandler(@NotNull ANTLRv4Parser.ExceptionHandlerContext ctx) { }
+	@Override public void enterExceptionHandler(ANTLRv4Parser.ExceptionHandlerContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitExceptionHandler(@NotNull ANTLRv4Parser.ExceptionHandlerContext ctx) { }
+	@Override public void exitExceptionHandler(ANTLRv4Parser.ExceptionHandlerContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFinallyClause(@NotNull ANTLRv4Parser.FinallyClauseContext ctx) { }
+	@Override public void enterFinallyClause(ANTLRv4Parser.FinallyClauseContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitFinallyClause(@NotNull ANTLRv4Parser.FinallyClauseContext ctx) { }
+	@Override public void exitFinallyClause(ANTLRv4Parser.FinallyClauseContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterRulePrequel(@NotNull ANTLRv4Parser.RulePrequelContext ctx) { }
+	@Override public void enterRulePrequel(ANTLRv4Parser.RulePrequelContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitRulePrequel(@NotNull ANTLRv4Parser.RulePrequelContext ctx) { }
+	@Override public void exitRulePrequel(ANTLRv4Parser.RulePrequelContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterRuleReturns(@NotNull ANTLRv4Parser.RuleReturnsContext ctx) { }
+	@Override public void enterRuleReturns(ANTLRv4Parser.RuleReturnsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitRuleReturns(@NotNull ANTLRv4Parser.RuleReturnsContext ctx) { }
+	@Override public void exitRuleReturns(ANTLRv4Parser.RuleReturnsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterThrowsSpec(@NotNull ANTLRv4Parser.ThrowsSpecContext ctx) { }
+	@Override public void enterThrowsSpec(ANTLRv4Parser.ThrowsSpecContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitThrowsSpec(@NotNull ANTLRv4Parser.ThrowsSpecContext ctx) { }
+	@Override public void exitThrowsSpec(ANTLRv4Parser.ThrowsSpecContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLocalsSpec(@NotNull ANTLRv4Parser.LocalsSpecContext ctx) { }
+	@Override public void enterLocalsSpec(ANTLRv4Parser.LocalsSpecContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLocalsSpec(@NotNull ANTLRv4Parser.LocalsSpecContext ctx) { }
+	@Override public void exitLocalsSpec(ANTLRv4Parser.LocalsSpecContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterRuleAction(@NotNull ANTLRv4Parser.RuleActionContext ctx) { }
+	@Override public void enterRuleAction(ANTLRv4Parser.RuleActionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitRuleAction(@NotNull ANTLRv4Parser.RuleActionContext ctx) { }
+	@Override public void exitRuleAction(ANTLRv4Parser.RuleActionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterRuleModifiers(@NotNull ANTLRv4Parser.RuleModifiersContext ctx) { }
+	@Override public void enterRuleModifiers(ANTLRv4Parser.RuleModifiersContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitRuleModifiers(@NotNull ANTLRv4Parser.RuleModifiersContext ctx) { }
+	@Override public void exitRuleModifiers(ANTLRv4Parser.RuleModifiersContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterRuleModifier(@NotNull ANTLRv4Parser.RuleModifierContext ctx) { }
+	@Override public void enterRuleModifier(ANTLRv4Parser.RuleModifierContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitRuleModifier(@NotNull ANTLRv4Parser.RuleModifierContext ctx) { }
+	@Override public void exitRuleModifier(ANTLRv4Parser.RuleModifierContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterRuleBlock(@NotNull ANTLRv4Parser.RuleBlockContext ctx) { }
+	@Override public void enterRuleBlock(ANTLRv4Parser.RuleBlockContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitRuleBlock(@NotNull ANTLRv4Parser.RuleBlockContext ctx) { }
+	@Override public void exitRuleBlock(ANTLRv4Parser.RuleBlockContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterRuleAltList(@NotNull ANTLRv4Parser.RuleAltListContext ctx) { }
+	@Override public void enterRuleAltList(ANTLRv4Parser.RuleAltListContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitRuleAltList(@NotNull ANTLRv4Parser.RuleAltListContext ctx) { }
+	@Override public void exitRuleAltList(ANTLRv4Parser.RuleAltListContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLabeledAlt(@NotNull ANTLRv4Parser.LabeledAltContext ctx) { }
+	@Override public void enterLabeledAlt(ANTLRv4Parser.LabeledAltContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLabeledAlt(@NotNull ANTLRv4Parser.LabeledAltContext ctx) { }
+	@Override public void exitLabeledAlt(ANTLRv4Parser.LabeledAltContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLexerRule(@NotNull ANTLRv4Parser.LexerRuleContext ctx) { }
+	@Override public void enterLexerRule(ANTLRv4Parser.LexerRuleContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLexerRule(@NotNull ANTLRv4Parser.LexerRuleContext ctx) { }
+	@Override public void exitLexerRule(ANTLRv4Parser.LexerRuleContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLexerRuleBlock(@NotNull ANTLRv4Parser.LexerRuleBlockContext ctx) { }
+	@Override public void enterLexerRuleBlock(ANTLRv4Parser.LexerRuleBlockContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLexerRuleBlock(@NotNull ANTLRv4Parser.LexerRuleBlockContext ctx) { }
+	@Override public void exitLexerRuleBlock(ANTLRv4Parser.LexerRuleBlockContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLexerAltList(@NotNull ANTLRv4Parser.LexerAltListContext ctx) { }
+	@Override public void enterLexerAltList(ANTLRv4Parser.LexerAltListContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLexerAltList(@NotNull ANTLRv4Parser.LexerAltListContext ctx) { }
+	@Override public void exitLexerAltList(ANTLRv4Parser.LexerAltListContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLexerAlt(@NotNull ANTLRv4Parser.LexerAltContext ctx) { }
+	@Override public void enterLexerAlt(ANTLRv4Parser.LexerAltContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLexerAlt(@NotNull ANTLRv4Parser.LexerAltContext ctx) { }
+	@Override public void exitLexerAlt(ANTLRv4Parser.LexerAltContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLexerElements(@NotNull ANTLRv4Parser.LexerElementsContext ctx) { }
+	@Override public void enterLexerElements(ANTLRv4Parser.LexerElementsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLexerElements(@NotNull ANTLRv4Parser.LexerElementsContext ctx) { }
+	@Override public void exitLexerElements(ANTLRv4Parser.LexerElementsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLexerElement(@NotNull ANTLRv4Parser.LexerElementContext ctx) { }
+	@Override public void enterLexerElement(ANTLRv4Parser.LexerElementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLexerElement(@NotNull ANTLRv4Parser.LexerElementContext ctx) { }
+	@Override public void exitLexerElement(ANTLRv4Parser.LexerElementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLabeledLexerElement(@NotNull ANTLRv4Parser.LabeledLexerElementContext ctx) { }
+	@Override public void enterLabeledLexerElement(ANTLRv4Parser.LabeledLexerElementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLabeledLexerElement(@NotNull ANTLRv4Parser.LabeledLexerElementContext ctx) { }
+	@Override public void exitLabeledLexerElement(ANTLRv4Parser.LabeledLexerElementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLexerBlock(@NotNull ANTLRv4Parser.LexerBlockContext ctx) { }
+	@Override public void enterLexerBlock(ANTLRv4Parser.LexerBlockContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLexerBlock(@NotNull ANTLRv4Parser.LexerBlockContext ctx) { }
+	@Override public void exitLexerBlock(ANTLRv4Parser.LexerBlockContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLexerCommands(@NotNull ANTLRv4Parser.LexerCommandsContext ctx) { }
+	@Override public void enterLexerCommands(ANTLRv4Parser.LexerCommandsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLexerCommands(@NotNull ANTLRv4Parser.LexerCommandsContext ctx) { }
+	@Override public void exitLexerCommands(ANTLRv4Parser.LexerCommandsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLexerCommand(@NotNull ANTLRv4Parser.LexerCommandContext ctx) { }
+	@Override public void enterLexerCommand(ANTLRv4Parser.LexerCommandContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLexerCommand(@NotNull ANTLRv4Parser.LexerCommandContext ctx) { }
+	@Override public void exitLexerCommand(ANTLRv4Parser.LexerCommandContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLexerCommandName(@NotNull ANTLRv4Parser.LexerCommandNameContext ctx) { }
+	@Override public void enterLexerCommandName(ANTLRv4Parser.LexerCommandNameContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLexerCommandName(@NotNull ANTLRv4Parser.LexerCommandNameContext ctx) { }
+	@Override public void exitLexerCommandName(ANTLRv4Parser.LexerCommandNameContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLexerCommandExpr(@NotNull ANTLRv4Parser.LexerCommandExprContext ctx) { }
+	@Override public void enterLexerCommandExpr(ANTLRv4Parser.LexerCommandExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLexerCommandExpr(@NotNull ANTLRv4Parser.LexerCommandExprContext ctx) { }
+	@Override public void exitLexerCommandExpr(ANTLRv4Parser.LexerCommandExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAltList(@NotNull ANTLRv4Parser.AltListContext ctx) { }
+	@Override public void enterAltList(ANTLRv4Parser.AltListContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAltList(@NotNull ANTLRv4Parser.AltListContext ctx) { }
+	@Override public void exitAltList(ANTLRv4Parser.AltListContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAlternative(@NotNull ANTLRv4Parser.AlternativeContext ctx) { }
+	@Override public void enterAlternative(ANTLRv4Parser.AlternativeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAlternative(@NotNull ANTLRv4Parser.AlternativeContext ctx) { }
+	@Override public void exitAlternative(ANTLRv4Parser.AlternativeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterElement(@NotNull ANTLRv4Parser.ElementContext ctx) { }
+	@Override public void enterElement(ANTLRv4Parser.ElementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitElement(@NotNull ANTLRv4Parser.ElementContext ctx) { }
+	@Override public void exitElement(ANTLRv4Parser.ElementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLabeledElement(@NotNull ANTLRv4Parser.LabeledElementContext ctx) { }
+	@Override public void enterLabeledElement(ANTLRv4Parser.LabeledElementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLabeledElement(@NotNull ANTLRv4Parser.LabeledElementContext ctx) { }
+	@Override public void exitLabeledElement(ANTLRv4Parser.LabeledElementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterEbnf(@NotNull ANTLRv4Parser.EbnfContext ctx) { }
+	@Override public void enterEbnf(ANTLRv4Parser.EbnfContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitEbnf(@NotNull ANTLRv4Parser.EbnfContext ctx) { }
+	@Override public void exitEbnf(ANTLRv4Parser.EbnfContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterBlockSuffix(@NotNull ANTLRv4Parser.BlockSuffixContext ctx) { }
+	@Override public void enterBlockSuffix(ANTLRv4Parser.BlockSuffixContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitBlockSuffix(@NotNull ANTLRv4Parser.BlockSuffixContext ctx) { }
+	@Override public void exitBlockSuffix(ANTLRv4Parser.BlockSuffixContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterEbnfSuffix(@NotNull ANTLRv4Parser.EbnfSuffixContext ctx) { }
+	@Override public void enterEbnfSuffix(ANTLRv4Parser.EbnfSuffixContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitEbnfSuffix(@NotNull ANTLRv4Parser.EbnfSuffixContext ctx) { }
+	@Override public void exitEbnfSuffix(ANTLRv4Parser.EbnfSuffixContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLexerAtom(@NotNull ANTLRv4Parser.LexerAtomContext ctx) { }
+	@Override public void enterLexerAtom(ANTLRv4Parser.LexerAtomContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLexerAtom(@NotNull ANTLRv4Parser.LexerAtomContext ctx) { }
+	@Override public void exitLexerAtom(ANTLRv4Parser.LexerAtomContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAtom(@NotNull ANTLRv4Parser.AtomContext ctx) { }
+	@Override public void enterAtom(ANTLRv4Parser.AtomContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAtom(@NotNull ANTLRv4Parser.AtomContext ctx) { }
+	@Override public void exitAtom(ANTLRv4Parser.AtomContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterNotSet(@NotNull ANTLRv4Parser.NotSetContext ctx) { }
+	@Override public void enterNotSet(ANTLRv4Parser.NotSetContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitNotSet(@NotNull ANTLRv4Parser.NotSetContext ctx) { }
+	@Override public void exitNotSet(ANTLRv4Parser.NotSetContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterBlockSet(@NotNull ANTLRv4Parser.BlockSetContext ctx) { }
+	@Override public void enterBlockSet(ANTLRv4Parser.BlockSetContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitBlockSet(@NotNull ANTLRv4Parser.BlockSetContext ctx) { }
+	@Override public void exitBlockSet(ANTLRv4Parser.BlockSetContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterSetElement(@NotNull ANTLRv4Parser.SetElementContext ctx) { }
+	@Override public void enterSetElement(ANTLRv4Parser.SetElementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitSetElement(@NotNull ANTLRv4Parser.SetElementContext ctx) { }
+	@Override public void exitSetElement(ANTLRv4Parser.SetElementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterBlock(@NotNull ANTLRv4Parser.BlockContext ctx) { }
+	@Override public void enterBlock(ANTLRv4Parser.BlockContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitBlock(@NotNull ANTLRv4Parser.BlockContext ctx) { }
+	@Override public void exitBlock(ANTLRv4Parser.BlockContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterRuleref(@NotNull ANTLRv4Parser.RulerefContext ctx) { }
+	@Override public void enterRuleref(ANTLRv4Parser.RulerefContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitRuleref(@NotNull ANTLRv4Parser.RulerefContext ctx) { }
+	@Override public void exitRuleref(ANTLRv4Parser.RulerefContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterRange(@NotNull ANTLRv4Parser.RangeContext ctx) { }
+	@Override public void enterRange(ANTLRv4Parser.RangeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitRange(@NotNull ANTLRv4Parser.RangeContext ctx) { }
+	@Override public void exitRange(ANTLRv4Parser.RangeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTerminal(@NotNull ANTLRv4Parser.TerminalContext ctx) { }
+	@Override public void enterTerminal(ANTLRv4Parser.TerminalContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTerminal(@NotNull ANTLRv4Parser.TerminalContext ctx) { }
+	@Override public void exitTerminal(ANTLRv4Parser.TerminalContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterElementOptions(@NotNull ANTLRv4Parser.ElementOptionsContext ctx) { }
+	@Override public void enterElementOptions(ANTLRv4Parser.ElementOptionsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitElementOptions(@NotNull ANTLRv4Parser.ElementOptionsContext ctx) { }
+	@Override public void exitElementOptions(ANTLRv4Parser.ElementOptionsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterElementOption(@NotNull ANTLRv4Parser.ElementOptionContext ctx) { }
+	@Override public void enterElementOption(ANTLRv4Parser.ElementOptionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitElementOption(@NotNull ANTLRv4Parser.ElementOptionContext ctx) { }
+	@Override public void exitElementOption(ANTLRv4Parser.ElementOptionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterId(@NotNull ANTLRv4Parser.IdContext ctx) { }
+	@Override public void enterId(ANTLRv4Parser.IdContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitId(@NotNull ANTLRv4Parser.IdContext ctx) { }
+	@Override public void exitId(ANTLRv4Parser.IdContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterEveryRule(@NotNull ParserRuleContext ctx) { }
+	@Override public void enterEveryRule(ParserRuleContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitEveryRule(@NotNull ParserRuleContext ctx) { }
+	@Override public void exitEveryRule(ParserRuleContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void visitTerminal(@NotNull TerminalNode node) { }
+	@Override public void visitTerminal(TerminalNode node) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void visitErrorNode(@NotNull ErrorNode node) { }
+	@Override public void visitErrorNode(ErrorNode node) { }
 }
