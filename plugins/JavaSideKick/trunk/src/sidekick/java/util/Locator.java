@@ -14,7 +14,6 @@ import java.net.MalformedURLException;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
 import sidekick.java.classloader.AntClassLoader;
@@ -128,7 +127,7 @@ public final class Locator {
 	public List<String> getJarClassNames( File jar ) {
 		List<String> names = new ArrayList<String>();
 		try {
-			if (jar.isDirectory())
+			if (jar == null || !jar.exists() || jar.isDirectory())
 				return names;
 
 			JarFile jar_file = new JarFile( jar );
@@ -143,7 +142,7 @@ public final class Locator {
 			}
 		}
 		catch ( Exception e ) {
-			Log.log(Log.ERROR, this, "Error opening jar file: "+jar+" ("+e+")");
+			Log.log(Log.ERROR, this, "Error opening jar file: " + jar + " (" + e + ")");
 		}
 		return names;
 	}
@@ -254,7 +253,7 @@ public final class Locator {
 		LinkedList<String> list = new LinkedList<String>();
 
 		for ( String fullClassName : classNames ) {
-			int index = fullClassName.lastIndexOf( "/" ) + 1;
+			int index = fullClassName.lastIndexOf( '/' ) + 1;
 			String className = fullClassName.substring( index );
 			if ( className.equals( name ) ) {
 				org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "found it! -> "+className);
@@ -280,8 +279,8 @@ public final class Locator {
 
 		String name = packageName.replaceAll( "[.]", "/" );
 		for ( String fullClassName : classNames )
-			if ( fullClassName.startsWith( name ) && fullClassName.indexOf("/", name.length()) < 0 && fullClassName.indexOf( "$" ) < 0 )
-				list.add( fullClassName.substring( fullClassName.lastIndexOf( "/" ) + 1 ) );
+			if ( fullClassName.startsWith( name ) && fullClassName.indexOf('/', name.length()) < 0 && fullClassName.indexOf( '$' ) < 0 )
+				list.add( fullClassName.substring( fullClassName.lastIndexOf( '/' ) + 1 ) );
 
 		return list;
 	}
@@ -569,11 +568,5 @@ public final class Locator {
 			urls[ i ] = matches[ i ].toURI().toURL();
 
 		return urls;
-	}
-
-	private File[] copyOf( File[] array ) {
-		File[] rtn = new File[ array.length ];
-		System.arraycopy( array, 0, rtn, 0, array.length );
-		return rtn;
 	}
 }

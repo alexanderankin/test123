@@ -171,55 +171,29 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     compilationUnit.setResults( tigerParser.getResults() );
                     errorList = tigerParser.getErrors();
                     break;
-                default:    //case JAVA_9_PARSER:
-                    // use the Antlr parser for java files
+                default:    // java 17 parser
+                    // use the Antlr parser for java 17 and below files
                     // set up the Antlr parser to read the buffer
                     input = new StringReader( contents );
-                    ANTLRInputStream antlrInput = new ANTLRInputStream( input );
-                    Java8Lexer lexer = new Java8Lexer( antlrInput );
+                    CodePointCharStream antlrInput = CharStreams.fromReader( input );
+                    JavaLexer lexer = new JavaLexer( antlrInput );
                     CommonTokenStream tokens = new CommonTokenStream( lexer );
-                    Java8Parser java8Parser = new Java8Parser( tokens );
                     
-                    // for debugging, set "javasidekick.useTrace" to "true" as a
-                    // jEdit property to turn on antlr parser trace. This can be 
-                    // very verbose and grind jEdit to a halt.
-                    java8Parser.setTrace("true".equals( jEdit.getProperty( "javasidekick.useTrace" ) ));
-        
+                    // this is what you get when you name everything the same
+                    sidekick.java.parser.antlr.JavaParser javaParser = new sidekick.java.parser.antlr.JavaParser( tokens );
+                   
                     // add an error listener to the parser to capture any errors
-                    java8Parser.removeErrorListeners();
+                    javaParser.removeErrorListeners();
                     ErrorListener errorListener = new ErrorListener();
-                    java8Parser.addErrorListener( errorListener );
-        
+                    javaParser.addErrorListener( errorListener );
+
                     // parse the buffer contents
-                    ParseTree tree = java8Parser.compilationUnit();
+                    ParseTree tree = javaParser.compilationUnit();
                     ParseTreeWalker walker = new ParseTreeWalker();
+                    JavaSideKickListener listener = new JavaSideKickListener();
+                    walker.walk( listener, tree );
                     
-                    // temporary property to be able to switch between Java 8 parser
-                    // and Java 9 parser while Java 9 parser is work in progress
-                    if ("true".equals(jEdit.getProperty("javasidekick.useJava9"))) {
-                        Java9SideKickListener listener = new Java9SideKickListener();
-                        walker.walk( listener, tree );
-                        
-                        // build the tree
-                        compilationUnit = listener.getCompilationUnit();
-                        
-                        // for debugging, set "javasidekick.dump" to "true" as a jEdit
-                        // property. This will print out the CUNode and children.
-                        if ( "true".equals( jEdit.getProperty( "javasidekick.dump" ) ) ) {
-                            System.out.println( compilationUnit.dump() );
-                        }
-            
-                        compilationUnit.setResults( listener.getResults() );
-                    }
-                    else {
-                        Java8SideKickListener listener = new Java8SideKickListener();
-                        walker.walk( listener, tree );
-                        
-                        // build the tree
-                        compilationUnit = listener.getCompilationUnit();
-                        compilationUnit.setResults( listener.getResults() );
-                    }
-        
+                    compilationUnit = listener.getCompilationUnit();    // note that "results" are already included
                     
                     // convert the errors, if any
                     List<ParserException> parserExceptions = errorListener.getErrors();
@@ -238,11 +212,11 @@ public class JavaParser extends SideKickParser implements EBComponent {
             compilationUnit.setEnd( ElementUtil.createEndPosition( buffer, compilationUnit ) );
             root.setUserObject( compilationUnit );
             buffer.setProperty( COMPILATION_UNIT, compilationUnit );
-
+            
             ExpansionModel expansionModel = new ExpansionModel();
             expansionModel.add();            // cu
             parsedData.expansionModel = expansionModel.getModel();
-
+            
             // maybe show imports, but don't expand them
             if ( optionValues.getShowImports() == true ) {
                 ImportNode imports = compilationUnit.getImportNode();
@@ -260,9 +234,10 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     }
                 }
             }
-
+            
             // show constructors, fields, methods, etc
             addChildren( root, buffer, expansionModel );
+            
         } catch ( Exception e ) {       // NOPMD
             // there can be a lot of exceptions thrown if parse on keystroke is
             // enabled for code completion.
@@ -278,7 +253,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 // not to worry, StringReader won't actually throw an exception.
             }
         }
-
+        
         // only handle errors when buffer is saved or code completion is off. Otherwise,
         // there will be a lot of spurious errors shown when code completion is on and the
         // user is in the middle of typing something.
@@ -362,7 +337,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     if ( ordinal == TigerNode.ENUM ) {
                         // don't expand enum nodes
                         expansionModel.inc();
-                    } else if ( ordinal == TigerNode.CLASS && optionValues.getExpandClasses() ) {
+                    } else if ( (ordinal == TigerNode.CLASS || ordinal == TigerNode.MODULE) && optionValues.getExpandClasses() ) {
                         // maybe expand inner classes, depends on option setting
                         expansionModel.add();
                     } else if ( ordinal == TigerNode.CONSTRUCTOR || ordinal == TigerNode.METHOD ) {

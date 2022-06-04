@@ -31,18 +31,18 @@ package sidekick.java.node;
 import java.util.*;
 
 
-// an extension of TigerNode for a Java 9 module
-public class ModuleNode extends TigerNode {
+// an extension of TigerNode for a module directive
+public class DirectiveNode extends TigerNode {
     
-    public ModuleNode() {
+    public DirectiveNode() {
     }
 
-    public ModuleNode(String name) {
+    public DirectiveNode(String name) {
         super(name, 0);   
     }
     
     public int getOrdinal() {
-        return MODULE;
+        return DIRECTIVE;
     }
 }
 

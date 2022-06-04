@@ -4,7 +4,7 @@ import java.util.*;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.misc.NotNull;
+
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -83,7 +83,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	JavaLetter JavaLetterOrDigit*
      * 	;
      */
-    @Override public void exitIdentifier(@NotNull Java8Parser.IdentifierContext ctx) {
+    @Override public void exitIdentifier(Java8Parser.IdentifierContext ctx) {
         // nothing to do
     }
     
@@ -97,7 +97,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	NullLiteral
      * 	;
      */
-    @Override public void exitLiteral(@NotNull Java8Parser.LiteralContext ctx) { 
+    @Override public void exitLiteral(Java8Parser.LiteralContext ctx) { 
         // nothing to do
     }
 
@@ -107,7 +107,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	referenceType
      * 	;
      */
-    @Override public void exitType(@NotNull Java8Parser.TypeContext ctx) { 
+    @Override public void exitType(Java8Parser.TypeContext ctx) { 
         // nothing to do, one of the choices should already be on the stack
     }
 
@@ -117,7 +117,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	annotation* 'boolean'
      * 	;
      */
-    @Override public void exitPrimitiveType(@NotNull Java8Parser.PrimitiveTypeContext ctx) { 
+    @Override public void exitPrimitiveType(Java8Parser.PrimitiveTypeContext ctx) { 
         if (ctx.annotation() != null) {
             TigerNode type = stack.pop();
             setLocations(type, ctx);
@@ -134,7 +134,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	floatingPointType
      * 	;
      */
-    @Override public void exitNumericType(@NotNull Java8Parser.NumericTypeContext ctx) {
+    @Override public void exitNumericType(Java8Parser.NumericTypeContext ctx) {
         // nothing to do, one of the choices should already be on the stack
     }
 
@@ -147,7 +147,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	'char'
      * 	;
      */
-    @Override public void exitIntegralType(@NotNull Java8Parser.IntegralTypeContext ctx) {
+    @Override public void exitIntegralType(Java8Parser.IntegralTypeContext ctx) {
         TigerNode node = stack.pop();   // TerminalNode added to stack in visitTerminal
         Type type = new Type(node.getName());
         setLocations(type, ctx);
@@ -160,7 +160,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	'double'
      * 	;
      */
-    @Override public void exitFloatingPointType(@NotNull Java8Parser.FloatingPointTypeContext ctx) { 
+    @Override public void exitFloatingPointType(Java8Parser.FloatingPointTypeContext ctx) { 
         TigerNode node = stack.pop();   // TerminalNode added to stack in visitTerminal
         Type type = new Type(node.getName());
         setLocations(type, ctx);
@@ -174,7 +174,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	arrayType
      * 	;
      */
-    @Override public void exitReferenceType(@NotNull Java8Parser.ReferenceTypeContext ctx) { 
+    @Override public void exitReferenceType(Java8Parser.ReferenceTypeContext ctx) { 
         // nothing to do
     }
 
@@ -188,7 +188,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 		)*                                               
      * 	;
      */
-    @Override public void exitClassOrInterfaceType(@NotNull Java8Parser.ClassOrInterfaceTypeContext ctx) {
+    @Override public void exitClassOrInterfaceType(Java8Parser.ClassOrInterfaceTypeContext ctx) {
         TigerNode temp = null;
         if (ctx.classType_lf_classOrInterfaceType() != null) {
             temp = new TigerNode();
@@ -218,7 +218,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	classOrInterfaceType '.' annotationIdentifier typeArguments?
      * 	;
      */
-    @Override public void exitClassType(@NotNull Java8Parser.ClassTypeContext ctx) {
+    @Override public void exitClassType(Java8Parser.ClassTypeContext ctx) {
         TigerNode typeArgs = ctx.typeArguments() == null ? null : stack.pop();
         TigerNode id = stack.pop(); // annotationIdentifier
         setLocations(id, ctx);
@@ -236,7 +236,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'.' annotationIdentifier typeArguments?
      * 	;
      */
-    @Override public void exitClassType_lf_classOrInterfaceType(@NotNull Java8Parser.ClassType_lf_classOrInterfaceTypeContext ctx) {
+    @Override public void exitClassType_lf_classOrInterfaceType(Java8Parser.ClassType_lf_classOrInterfaceTypeContext ctx) {
         TigerNode typeArgs = ctx.typeArguments() == null ? null : stack.pop();
         TigerNode id = stack.pop(); // annotationIdentifier
         setLocations(id, ctx);
@@ -250,7 +250,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	annotationIdentifier typeArguments?
      * 	;
      */
-    @Override public void exitClassType_lfno_classOrInterfaceType(@NotNull Java8Parser.ClassType_lfno_classOrInterfaceTypeContext ctx) { 
+    @Override public void exitClassType_lfno_classOrInterfaceType(Java8Parser.ClassType_lfno_classOrInterfaceTypeContext ctx) { 
         TigerNode typeArgs = ctx.typeArguments() == null ? null : stack.pop();
         TigerNode id = stack.pop(); // annotationIdentifier
         setLocations(id, ctx);
@@ -263,7 +263,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	classType
      * 	;
      */
-    @Override public void exitInterfaceType(@NotNull Java8Parser.InterfaceTypeContext ctx) { 
+    @Override public void exitInterfaceType(Java8Parser.InterfaceTypeContext ctx) { 
         // nothing to do
     }
 
@@ -272,7 +272,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	classType_lf_classOrInterfaceType
      * 	;
      */
-    @Override public void exitInterfaceType_lf_classOrInterfaceType(@NotNull Java8Parser.InterfaceType_lf_classOrInterfaceTypeContext ctx) {
+    @Override public void exitInterfaceType_lf_classOrInterfaceType(Java8Parser.InterfaceType_lf_classOrInterfaceTypeContext ctx) {
         // nothing to do
     }
 
@@ -281,7 +281,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	classType_lfno_classOrInterfaceType
      * 	;
      */
-    @Override public void exitInterfaceType_lfno_classOrInterfaceType(@NotNull Java8Parser.InterfaceType_lfno_classOrInterfaceTypeContext ctx) {
+    @Override public void exitInterfaceType_lfno_classOrInterfaceType(Java8Parser.InterfaceType_lfno_classOrInterfaceTypeContext ctx) {
         // nothing to do
     }
 
@@ -290,7 +290,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	annotationIdentifier
      * 	;
      */
-    @Override public void exitTypeVariable(@NotNull Java8Parser.TypeVariableContext ctx) { 
+    @Override public void exitTypeVariable(Java8Parser.TypeVariableContext ctx) { 
         // nothing to do
     }
     
@@ -302,7 +302,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	;
      * Pushes a Type node onto the stack.
      */
-    @Override public void exitArrayType(@NotNull Java8Parser.ArrayTypeContext ctx) {
+    @Override public void exitArrayType(Java8Parser.ArrayTypeContext ctx) {
         TigerNode dims = stack.pop();
         TigerNode arrayType = stack.pop();
         Type at = new Type(arrayType.getName());
@@ -316,7 +316,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	annotationDim (annotationDim)*
      * 	;
      */
-    @Override public void exitDims(@NotNull Java8Parser.DimsContext ctx) { 
+    @Override public void exitDims(Java8Parser.DimsContext ctx) { 
         TigerNode dims = new TigerNode();
         setLocations(dims, ctx);
         for (int i = 0; i < ctx.annotationDim().size(); i++) {
@@ -331,7 +331,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	;
      * Push a Type node onto the stack. Only child will be possibly typeBound.
      */
-    @Override public void exitTypeParameter(@NotNull Java8Parser.TypeParameterContext ctx) {
+    @Override public void exitTypeParameter(Java8Parser.TypeParameterContext ctx) {
         TigerNode typeBound = ctx.typeBound() == null ? null : stack.pop();
         TigerNode identifier = stack.pop();  
         Type type = new Type(identifier.getName());
@@ -361,7 +361,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	annotation
      * 	;
      */
-    @Override public void exitTypeParameterModifier(@NotNull Java8Parser.TypeParameterModifierContext ctx) { 
+    @Override public void exitTypeParameterModifier(Java8Parser.TypeParameterModifierContext ctx) { 
         // nothing to do
     }
 
@@ -371,7 +371,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	'extends' classOrInterfaceType additionalBound*
      * 	;
      */
-    @Override public void exitTypeBound(@NotNull Java8Parser.TypeBoundContext ctx) { 
+    @Override public void exitTypeBound(Java8Parser.TypeBoundContext ctx) { 
         if (ctx.typeVariable() != null) {
             TigerNode type = stack.pop();
             setLocations(type, ctx);
@@ -398,7 +398,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'&' interfaceType
      * 	;
      */
-    @Override public void exitAdditionalBound(@NotNull Java8Parser.AdditionalBoundContext ctx) { 
+    @Override public void exitAdditionalBound(Java8Parser.AdditionalBoundContext ctx) { 
         TigerNode type = stack.pop();
         stack.pop();    // &
         stack.push(type);
@@ -409,7 +409,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'<' typeArgumentList '>'
      * 	;
      */
-    @Override public void exitTypeArguments(@NotNull Java8Parser.TypeArgumentsContext ctx) { 
+    @Override public void exitTypeArguments(Java8Parser.TypeArgumentsContext ctx) { 
         stack.pop();    // >
         TigerNode list = stack.pop();
         setLocations(list, ctx);
@@ -422,7 +422,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	typeArgument (',' typeArgument)*
      * 	;
      */
-    @Override public void exitTypeArgumentList(@NotNull Java8Parser.TypeArgumentListContext ctx) { 
+    @Override public void exitTypeArgumentList(Java8Parser.TypeArgumentListContext ctx) { 
         TigerNode list = new TigerNode();
         setLocations(list, ctx);
         if (ctx.typeArgument() != null) {
@@ -442,7 +442,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	wildcard
      * 	;
      */
-    @Override public void exitTypeArgument(@NotNull Java8Parser.TypeArgumentContext ctx) { 
+    @Override public void exitTypeArgument(Java8Parser.TypeArgumentContext ctx) { 
         // nothing to do
     }
     
@@ -451,7 +451,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	annotation* '?' wildcardBounds?
      * 	;
      */
-    @Override public void exitWildcard(@NotNull Java8Parser.WildcardContext ctx) { 
+    @Override public void exitWildcard(Java8Parser.WildcardContext ctx) { 
         TigerNode wildcard = new TigerNode();
         setLocations(wildcard, ctx);
         if (ctx.wildcardBounds() != null) {
@@ -474,7 +474,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	    SUPER referenceType
      * 	;
      */
-    @Override public void exitWildcardBounds(@NotNull Java8Parser.WildcardBoundsContext ctx) { 
+    @Override public void exitWildcardBounds(Java8Parser.WildcardBoundsContext ctx) { 
         TigerNode referenceType = stack.pop();
         setLocations(referenceType, ctx);
         stack.pop();    // 'extends' or SUPER
@@ -487,7 +487,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	packageName '.' identifier
      * 	;
      */
-    @Override public void exitPackageName(@NotNull Java8Parser.PackageNameContext ctx) {
+    @Override public void exitPackageName(Java8Parser.PackageNameContext ctx) {
         TigerNode identifier = stack.pop();
         setLocations(identifier, ctx);
         if (ctx.packageName() != null) {
@@ -504,7 +504,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	packageOrTypeName '.' identifier
      * 	;
      */
-    @Override public void exitTypeName(@NotNull Java8Parser.TypeNameContext ctx) { 
+    @Override public void exitTypeName(Java8Parser.TypeNameContext ctx) { 
         TigerNode identifier = stack.pop();
         setLocations(identifier, ctx);
         if (ctx.packageOrTypeName() != null) {
@@ -521,7 +521,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	packageOrTypeName '.' identifier
      * 	;
      */
-    @Override public void exitPackageOrTypeName(@NotNull Java8Parser.PackageOrTypeNameContext ctx) { 
+    @Override public void exitPackageOrTypeName(Java8Parser.PackageOrTypeNameContext ctx) { 
         TigerNode identifier = stack.pop();
         setLocations(identifier, ctx);
         if (ctx.packageOrTypeName() != null) {
@@ -538,7 +538,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	ambiguousName '.' Identifier
      * 	;
      */
-    @Override public void exitExpressionName(@NotNull Java8Parser.ExpressionNameContext ctx) { 
+    @Override public void exitExpressionName(Java8Parser.ExpressionNameContext ctx) { 
         TigerNode identifier = stack.pop();
         setLocations(identifier, ctx);
         if (ctx.ambiguousName() != null) {
@@ -555,7 +555,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	Identifier
      * 	;
      */
-    @Override public void exitMethodName(@NotNull Java8Parser.MethodNameContext ctx) { 
+    @Override public void exitMethodName(Java8Parser.MethodNameContext ctx) { 
         // nothing to do
     }
 
@@ -565,7 +565,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	ambiguousName '.' Identifier
      * 	;
      */
-    @Override public void exitAmbiguousName(@NotNull Java8Parser.AmbiguousNameContext ctx) {
+    @Override public void exitAmbiguousName(Java8Parser.AmbiguousNameContext ctx) {
         TigerNode identifier = stack.pop();
         setLocations(identifier, ctx);
         if (ctx.ambiguousName() != null) {
@@ -583,7 +583,7 @@ public class Java9SideKickListener extends Java8BaseListener {
       * 	|                       importDeclaration* moduleDeclaration  EOF    
       * 	;
       */
-    @Override public void exitCompilationUnit(@NotNull Java8Parser.CompilationUnitContext ctx) { 
+    @Override public void exitCompilationUnit(Java8Parser.CompilationUnitContext ctx) { 
         try {
             cuNode = new CUNode();
             setLocations(cuNode, ctx);
@@ -642,7 +642,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	packageModifier* 'package' Identifier ('.' Identifier)* ';'
      * 	;
      */
-    @Override public void exitPackageDeclaration(@NotNull Java8Parser.PackageDeclarationContext ctx) { 
+    @Override public void exitPackageDeclaration(Java8Parser.PackageDeclarationContext ctx) { 
         stack.pop();    // ;
         TigerNode packageNode = new TigerNode();
         setLocations(packageNode, ctx);
@@ -682,7 +682,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	annotation
      * 	;
      */
-    @Override public void exitPackageModifier(@NotNull Java8Parser.PackageModifierContext ctx) { 
+    @Override public void exitPackageModifier(Java8Parser.PackageModifierContext ctx) { 
         // nothing to do
     }
 
@@ -694,7 +694,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	staticImportOnDemandDeclaration
      * 	;
      */
-    @Override public void exitImportDeclaration(@NotNull Java8Parser.ImportDeclarationContext ctx) {
+    @Override public void exitImportDeclaration(Java8Parser.ImportDeclarationContext ctx) {
         // nothing to do
     }
 
@@ -703,7 +703,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'import' typeName ';'
      * 	;
      */
-    @Override public void exitSingleTypeImportDeclaration(@NotNull Java8Parser.SingleTypeImportDeclarationContext ctx) {
+    @Override public void exitSingleTypeImportDeclaration(Java8Parser.SingleTypeImportDeclarationContext ctx) {
         stack.pop();    // ;
         TigerNode typeName = stack.pop();
         stack.pop();    // import
@@ -717,7 +717,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'import' packageOrTypeName '.' '*' ';'
      * 	;
      */
-    @Override public void exitTypeImportOnDemandDeclaration(@NotNull Java8Parser.TypeImportOnDemandDeclarationContext ctx) { 
+    @Override public void exitTypeImportOnDemandDeclaration(Java8Parser.TypeImportOnDemandDeclarationContext ctx) { 
         stack.pop();    // ;
         stack.pop();    // *
         stack.pop();    // .
@@ -733,7 +733,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'import' 'static' typeName '.' Identifier ';'
      * 	;
      */
-    @Override public void exitSingleStaticImportDeclaration(@NotNull Java8Parser.SingleStaticImportDeclarationContext ctx) { 
+    @Override public void exitSingleStaticImportDeclaration(Java8Parser.SingleStaticImportDeclarationContext ctx) { 
         stack.pop();    // ;
         TigerNode identifier = stack.pop();
         stack.pop();    // .
@@ -750,7 +750,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'import' 'static' typeName '.' '*' ';'
      * 	;
      */
-    @Override public void exitStaticImportOnDemandDeclaration(@NotNull Java8Parser.StaticImportOnDemandDeclarationContext ctx) { 
+    @Override public void exitStaticImportOnDemandDeclaration(Java8Parser.StaticImportOnDemandDeclarationContext ctx) { 
         stack.pop();    // ;
         stack.pop();    // *
         stack.pop();    // .
@@ -769,7 +769,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	';'
      * 	;
      */
-    @Override public void exitTypeDeclaration(@NotNull Java8Parser.TypeDeclarationContext ctx) { 
+    @Override public void exitTypeDeclaration(Java8Parser.TypeDeclarationContext ctx) { 
         if (";".equals(ctx.getText())) {
             stack.pop();    // ;   
         }
@@ -781,7 +781,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      *     ;
      * TODO: this parses correctly but nothing shows in the sidekick tree
      */
-    @Override public void exitModuleDeclaration(@NotNull Java8Parser.ModuleDeclarationContext ctx) { 
+    @Override public void exitModuleDeclaration(Java8Parser.ModuleDeclarationContext ctx) { 
         stack.pop();    // }
         
         // pop the module statements
@@ -845,7 +845,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      *     |   'provides' typeName 'with' typeName (',' typeName)* ';'
      *     ;
      */
-    @Override public void exitModuleStatement(@NotNull Java8Parser.ModuleStatementContext ctx) {
+    @Override public void exitModuleStatement(Java8Parser.ModuleStatementContext ctx) {
         stack.pop();    // ;
         String text = ctx.getText();
         
@@ -903,7 +903,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      *     |   'static'
      *     ;
      */
-    @Override public void exitRequiresModifier(@NotNull Java8Parser.RequiresModifierContext ctx) {
+    @Override public void exitRequiresModifier(Java8Parser.RequiresModifierContext ctx) {
         // nothing to do
     }
 
@@ -913,7 +913,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      *     |   moduleName '.' Identifier
      *     ;
      */
-    @Override public void exitModuleName(@NotNull Java8Parser.ModuleNameContext ctx) { 
+    @Override public void exitModuleName(Java8Parser.ModuleNameContext ctx) { 
         TigerNode identifier = stack.pop();
         setLocations(identifier, ctx);
         if (ctx.moduleName() != null) {
@@ -930,7 +930,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	enumDeclaration
      * 	;
      */
-    @Override public void exitClassDeclaration(@NotNull Java8Parser.ClassDeclarationContext ctx) { 
+    @Override public void exitClassDeclaration(Java8Parser.ClassDeclarationContext ctx) { 
         // nothing to do
     }
     
@@ -939,7 +939,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	classModifiers 'class' identifier typeParameters? superclass? superinterfaces? classBody
      * 	;
      */
-    @Override public void exitNormalClassDeclaration(@NotNull Java8Parser.NormalClassDeclarationContext ctx) { 
+    @Override public void exitNormalClassDeclaration(Java8Parser.NormalClassDeclarationContext ctx) { 
         TigerNode body = stack.pop();
         TigerNode superInterfaces = ctx.superinterfaces() == null ? null : stack.pop();
         TigerNode superClass = ctx.superclass() == null ? null : stack.pop();
@@ -973,7 +973,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      *     :   classModifier*
      *     ;
      */
-    @Override public void exitClassModifiers(@NotNull Java8Parser.ClassModifiersContext ctx) { 
+    @Override public void exitClassModifiers(Java8Parser.ClassModifiersContext ctx) { 
         TigerNode list = new TigerNode();
         if (ctx.classModifier() != null) {
             setLocations(list, ctx);
@@ -1005,7 +1005,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	'strictfp'
      * 	;
      */
-    @Override public void exitClassModifier(@NotNull Java8Parser.ClassModifierContext ctx) {
+    @Override public void exitClassModifier(Java8Parser.ClassModifierContext ctx) {
         // nothing to do
     }
     
@@ -1014,7 +1014,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'<' typeParameterList '>'
      * 	;
      */
-    @Override public void exitTypeParameters(@NotNull Java8Parser.TypeParametersContext ctx) {
+    @Override public void exitTypeParameters(Java8Parser.TypeParametersContext ctx) {
         stack.pop();    // >
         TigerNode list = stack.pop();
         setLocations(list, ctx);
@@ -1027,7 +1027,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	typeParameter (',' typeParameter)*
      * 	;
      */
-    @Override public void exitTypeParameterList(@NotNull Java8Parser.TypeParameterListContext ctx) { 
+    @Override public void exitTypeParameterList(Java8Parser.TypeParameterListContext ctx) { 
         TigerNode list = new TigerNode();
         setLocations(list, ctx);
         for (int i = 0; i < ctx.typeParameter().size(); i++) {
@@ -1044,7 +1044,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'extends' classType
      * 	;
      */
-    @Override public void exitSuperclass(@NotNull Java8Parser.SuperclassContext ctx) {
+    @Override public void exitSuperclass(Java8Parser.SuperclassContext ctx) {
         TigerNode type = stack.pop();
         setLocations(type, ctx);
         stack.pop();    // extends
@@ -1056,7 +1056,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'implements' interfaceTypeList
      * 	;
      */
-    @Override public void exitSuperinterfaces(@NotNull Java8Parser.SuperinterfacesContext ctx) { 
+    @Override public void exitSuperinterfaces(Java8Parser.SuperinterfacesContext ctx) { 
         TigerNode list = stack.pop();
         setLocations(list, ctx);
         stack.pop();    // implements
@@ -1069,7 +1069,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	;
      * Pushes a TigerNode with Type children onto the stack.
      */
-    @Override public void exitInterfaceTypeList(@NotNull Java8Parser.InterfaceTypeListContext ctx) { 
+    @Override public void exitInterfaceTypeList(Java8Parser.InterfaceTypeListContext ctx) { 
         TigerNode list = new TigerNode();
         setLocations(list, ctx);
         for (int i = 0; i < ctx.interfaceType().size(); i++) {
@@ -1088,7 +1088,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'{' classBodyDeclaration* '}'
      * 	;
      */
-    @Override public void exitClassBody(@NotNull Java8Parser.ClassBodyContext ctx) { 
+    @Override public void exitClassBody(Java8Parser.ClassBodyContext ctx) { 
         stack.pop();    // }
         BlockNode block = new BlockNode();
         setLocations(block, ctx);
@@ -1110,7 +1110,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	constructorDeclaration
      * 	;
      */
-    @Override public void exitClassBodyDeclaration(@NotNull Java8Parser.ClassBodyDeclarationContext ctx) {
+    @Override public void exitClassBodyDeclaration(Java8Parser.ClassBodyDeclarationContext ctx) {
         // nothing to do
     }
     
@@ -1123,7 +1123,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	';'
      * 	;
      */
-    @Override public void exitClassMemberDeclaration(@NotNull Java8Parser.ClassMemberDeclarationContext ctx) { 
+    @Override public void exitClassMemberDeclaration(Java8Parser.ClassMemberDeclarationContext ctx) { 
         if (";".equals(ctx.getText())) {
             stack.pop();    // ;   
         }
@@ -1134,7 +1134,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	fieldModifiers unannType variableDeclaratorList ';'
      * 	;
      */
-    @Override public void exitFieldDeclaration(@NotNull Java8Parser.FieldDeclarationContext ctx) { 
+    @Override public void exitFieldDeclaration(Java8Parser.FieldDeclarationContext ctx) { 
         stack.pop();    // ;
         TigerNode list = stack.pop();
         
@@ -1174,7 +1174,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * TODO: fix this, see methodModifiers
      * Pushes a TigerNode with the modifiers set.
      */
-    @Override public void exitFieldModifiers(@NotNull Java8Parser.FieldModifiersContext ctx) { 
+    @Override public void exitFieldModifiers(Java8Parser.FieldModifiersContext ctx) { 
         TigerNode list = new TigerNode();
         if (ctx.fieldModifier() != null) {
             setLocations(list, ctx);
@@ -1206,7 +1206,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	'volatile'
      * 	;
      */
-    @Override public void exitFieldModifier(@NotNull Java8Parser.FieldModifierContext ctx) {
+    @Override public void exitFieldModifier(Java8Parser.FieldModifierContext ctx) {
         // nothing to do
     }
     
@@ -1216,7 +1216,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	;
      * Pushes a TigerNode whose children are VariableDeclarator nodes.
      */
-    @Override public void exitVariableDeclaratorList(@NotNull Java8Parser.VariableDeclaratorListContext ctx) { 
+    @Override public void exitVariableDeclaratorList(Java8Parser.VariableDeclaratorListContext ctx) { 
         TigerNode list = new TigerNode();
         setLocations(list, ctx);
         for (int i = 0; i < ctx.variableDeclarator().size(); i++) {
@@ -1234,7 +1234,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	variableDeclaratorId ('=' variableInitializer)?
      * 	;
      */
-    @Override public void exitVariableDeclarator(@NotNull Java8Parser.VariableDeclaratorContext ctx) {
+    @Override public void exitVariableDeclarator(Java8Parser.VariableDeclaratorContext ctx) {
         TigerNode value = null;
         if (ctx.variableInitializer() != null) {
             value = stack.pop();
@@ -1252,7 +1252,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	identifier dims?
      * 	;
      */
-    @Override public void exitVariableDeclaratorId(@NotNull Java8Parser.VariableDeclaratorIdContext ctx) { 
+    @Override public void exitVariableDeclaratorId(Java8Parser.VariableDeclaratorIdContext ctx) { 
         TigerNode dims = ctx.dims() == null ? null : stack.pop();
         TigerNode id = stack.pop();
         setLocations(id, ctx);
@@ -1266,7 +1266,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	arrayInitializer
      * 	;
      */
-    @Override public void exitVariableInitializer(@NotNull Java8Parser.VariableInitializerContext ctx) { 
+    @Override public void exitVariableInitializer(Java8Parser.VariableInitializerContext ctx) { 
         // nothing to do
     }
     
@@ -1277,7 +1277,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	;
      * Wrap whatever is on the top of the stack as a Type
      */
-    @Override public void exitUnannType(@NotNull Java8Parser.UnannTypeContext ctx) { 
+    @Override public void exitUnannType(Java8Parser.UnannTypeContext ctx) { 
         // convert the type to a Type
         TigerNode tn = stack.pop();
         Type type = new Type(tn.getName());
@@ -1293,7 +1293,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	;
      * Rolls up to unannType.
      */
-    @Override public void exitUnannPrimitiveType(@NotNull Java8Parser.UnannPrimitiveTypeContext ctx) { 
+    @Override public void exitUnannPrimitiveType(Java8Parser.UnannPrimitiveTypeContext ctx) { 
         // nothing to do
     }
     
@@ -1304,7 +1304,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	unannArrayType
      * 	;
      */
-    @Override public void exitUnannReferenceType(@NotNull Java8Parser.UnannReferenceTypeContext ctx) { 
+    @Override public void exitUnannReferenceType(Java8Parser.UnannReferenceTypeContext ctx) { 
         // nothing to do
     }
     
@@ -1319,7 +1319,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	;
      * Rolls up to unannType.
      */
-    @Override public void exitUnannClassOrInterfaceType(@NotNull Java8Parser.UnannClassOrInterfaceTypeContext ctx) { 
+    @Override public void exitUnannClassOrInterfaceType(Java8Parser.UnannClassOrInterfaceTypeContext ctx) { 
         TigerNode temp = null;
         if (ctx.unannInterfaceType_lf_unannClassOrInterfaceType() != null) {
             temp = new TigerNode();
@@ -1349,7 +1349,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	unannClassOrInterfaceType '.' annotationIdentifier typeArguments?
      * 	;
      */
-    @Override public void exitUnannClassType(@NotNull Java8Parser.UnannClassTypeContext ctx) { 
+    @Override public void exitUnannClassType(Java8Parser.UnannClassTypeContext ctx) { 
         TigerNode args = ctx.typeArguments() == null ? null : stack.pop();
         TigerNode id = stack.pop();
         setLocations(id, ctx);
@@ -1367,7 +1367,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'.' annotationIdentifier typeArguments?
      * 	;
      */
-    @Override public void exitUnannClassType_lf_unannClassOrInterfaceType(@NotNull Java8Parser.UnannClassType_lf_unannClassOrInterfaceTypeContext ctx) { 
+    @Override public void exitUnannClassType_lf_unannClassOrInterfaceType(Java8Parser.UnannClassType_lf_unannClassOrInterfaceTypeContext ctx) { 
         TigerNode args = ctx.typeArguments() == null ? null : stack.pop();
         TigerNode id = stack.pop();
         stack.pop();    // .
@@ -1382,7 +1382,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	identifier typeArguments?
      * 	;
      */
-    @Override public void exitUnannClassType_lfno_unannClassOrInterfaceType(@NotNull Java8Parser.UnannClassType_lfno_unannClassOrInterfaceTypeContext ctx) {
+    @Override public void exitUnannClassType_lfno_unannClassOrInterfaceType(Java8Parser.UnannClassType_lfno_unannClassOrInterfaceTypeContext ctx) {
         TigerNode args = ctx.typeArguments() == null ? null : stack.pop();
         TigerNode id = stack.pop();
         setLocations(id, ctx);
@@ -1395,7 +1395,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	unannClassType
      * 	;
      */
-    @Override public void exitUnannInterfaceType(@NotNull Java8Parser.UnannInterfaceTypeContext ctx) { 
+    @Override public void exitUnannInterfaceType(Java8Parser.UnannInterfaceTypeContext ctx) { 
         // nothing to do
     }
     
@@ -1404,7 +1404,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	unannClassType_lf_unannClassOrInterfaceType
      * 	;
      */
-    @Override public void exitUnannInterfaceType_lf_unannClassOrInterfaceType(@NotNull Java8Parser.UnannInterfaceType_lf_unannClassOrInterfaceTypeContext ctx) { 
+    @Override public void exitUnannInterfaceType_lf_unannClassOrInterfaceType(Java8Parser.UnannInterfaceType_lf_unannClassOrInterfaceTypeContext ctx) { 
         // nothing to do
     }
     
@@ -1413,7 +1413,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	unannClassType_lfno_unannClassOrInterfaceType
      * 	;
      */
-    @Override public void exitUnannInterfaceType_lfno_unannClassOrInterfaceType(@NotNull Java8Parser.UnannInterfaceType_lfno_unannClassOrInterfaceTypeContext ctx) { 
+    @Override public void exitUnannInterfaceType_lfno_unannClassOrInterfaceType(Java8Parser.UnannInterfaceType_lfno_unannClassOrInterfaceTypeContext ctx) { 
         // nothing to do
     }
     
@@ -1423,7 +1423,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	;
      * Rolls up to unannType.
      */
-    @Override public void exitUnannTypeVariable(@NotNull Java8Parser.UnannTypeVariableContext ctx) { 
+    @Override public void exitUnannTypeVariable(Java8Parser.UnannTypeVariableContext ctx) { 
         // nothing to do
     }
     
@@ -1435,7 +1435,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	;
      * Rolls up to unannType.
      */
-    @Override public void exitUnannArrayType(@NotNull Java8Parser.UnannArrayTypeContext ctx) { 
+    @Override public void exitUnannArrayType(Java8Parser.UnannArrayTypeContext ctx) { 
         TigerNode dims = stack.pop();
         TigerNode type = stack.pop();
         setLocations(type, ctx);
@@ -1448,7 +1448,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	methodModifiers methodHeader methodBody
      * 	;
      */
-    @Override public void exitMethodDeclaration(@NotNull Java8Parser.MethodDeclarationContext ctx) { 
+    @Override public void exitMethodDeclaration(Java8Parser.MethodDeclarationContext ctx) { 
         
         TigerNode body = stack.pop();
         TigerNode h = stack.pop();
@@ -1492,7 +1492,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      *     ;
      * TODO: fix this. This is not necessary, and is a work-around for a flaw in the grammar. See the Java8.g4 file for details.
      */
-    @Override public void exitMethodModifiers(@NotNull Java8Parser.MethodModifiersContext ctx) { 
+    @Override public void exitMethodModifiers(Java8Parser.MethodModifiersContext ctx) { 
         TigerNode list = new TigerNode();
         if (ctx.methodModifier() != null) {
             setLocations(list, ctx);
@@ -1526,7 +1526,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	'strictfp'
      * 	;
      */
-    @Override public void exitMethodModifier(@NotNull Java8Parser.MethodModifierContext ctx) { 
+    @Override public void exitMethodModifier(Java8Parser.MethodModifierContext ctx) { 
         // nothing to do here
     }
     
@@ -1536,7 +1536,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	typeParameters annotation* result methodDeclarator throws_?
      * 	;
      */
-    @Override public void exitMethodHeader(@NotNull Java8Parser.MethodHeaderContext ctx) { 
+    @Override public void exitMethodHeader(Java8Parser.MethodHeaderContext ctx) { 
         TigerNode throws_ = ctx.throws_() == null ? null : stack.pop();
         MethodNode decl = (MethodNode)stack.pop();
         setLocations(decl, ctx);
@@ -1562,7 +1562,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	'void'
      * 	;
      */
-    @Override public void exitResult(@NotNull Java8Parser.ResultContext ctx) { 
+    @Override public void exitResult(Java8Parser.ResultContext ctx) { 
         // nothing to do here
         
     }
@@ -1572,7 +1572,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	identifier '(' formalParameterList? ')' dims?
      * 	;
      */
-    @Override public void exitMethodDeclarator(@NotNull Java8Parser.MethodDeclaratorContext ctx) {
+    @Override public void exitMethodDeclarator(Java8Parser.MethodDeclaratorContext ctx) {
         
         TigerNode dims = ctx.dims() == null ? null : stack.pop();
         stack.pop();    // )
@@ -1592,7 +1592,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	                     lastFormalParameter
      * 	;
      */
-    @Override public void exitFormalParameterList(@NotNull Java8Parser.FormalParameterListContext ctx) {
+    @Override public void exitFormalParameterList(Java8Parser.FormalParameterListContext ctx) {
         // only need to handle the first choice
         if (ctx.formalParameters() != null) {
             TigerNode last = stack.pop();
@@ -1612,7 +1612,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	receiverParameter (',' formalParameter)*
      * 	;
      */
-    @Override public void exitFormalParameters(@NotNull Java8Parser.FormalParametersContext ctx) { 
+    @Override public void exitFormalParameters(Java8Parser.FormalParametersContext ctx) { 
         TigerNode params = new TigerNode();
         setLocations(params, ctx);
         int size = ctx.formalParameter() == null ? 0 : ctx.formalParameter().size();
@@ -1633,7 +1633,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	variableModifier* unannType variableDeclaratorId
      * 	;
      */
-    @Override public void exitFormalParameter(@NotNull Java8Parser.FormalParameterContext ctx) { 
+    @Override public void exitFormalParameter(Java8Parser.FormalParameterContext ctx) { 
         TigerNode var = stack.pop();
         setLocations(var, ctx);
         TigerNode unannType = stack.pop();
@@ -1661,7 +1661,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	'final'
      * 	;
      */
-    @Override public void exitVariableModifier(@NotNull Java8Parser.VariableModifierContext ctx) { 
+    @Override public void exitVariableModifier(Java8Parser.VariableModifierContext ctx) { 
         // nothing to do here
     }
     
@@ -1671,7 +1671,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	formalParameter
      * 	;
      */
-    @Override public void exitLastFormalParameter(@NotNull Java8Parser.LastFormalParameterContext ctx) { 
+    @Override public void exitLastFormalParameter(Java8Parser.LastFormalParameterContext ctx) { 
         if (ctx.variableDeclaratorId() != null) {
             // first choice
             TigerNode id = stack.pop();
@@ -1699,7 +1699,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	annotation* unannType (identifier '.')? 'this'
      * 	;
      */
-    @Override public void exitReceiverParameter(@NotNull Java8Parser.ReceiverParameterContext ctx) { 
+    @Override public void exitReceiverParameter(Java8Parser.ReceiverParameterContext ctx) { 
         TigerNode param = stack.pop();
         setLocations(param, ctx);
         TigerNode identifier = null;
@@ -1724,7 +1724,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	;
      * Push a TigerNode whose only child is a list of ThrowsNodes onto the stack.
      */
-    @Override public void exitThrows_(@NotNull Java8Parser.Throws_Context ctx) { 
+    @Override public void exitThrows_(Java8Parser.Throws_Context ctx) { 
         TigerNode list = stack.pop();
         setLocations(list, ctx);
         stack.pop();    // throws
@@ -1736,7 +1736,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	exceptionType (',' exceptionType)*
      * 	;
      */
-    @Override public void exitExceptionTypeList(@NotNull Java8Parser.ExceptionTypeListContext ctx) { 
+    @Override public void exitExceptionTypeList(Java8Parser.ExceptionTypeListContext ctx) { 
         TigerNode list = new TigerNode("exceptionTypeList");
         setLocations(list, ctx);
         int count = ctx.exceptionType().size();
@@ -1759,7 +1759,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	typeVariable
      * 	;
      */
-    @Override public void exitExceptionType(@NotNull Java8Parser.ExceptionTypeContext ctx) { 
+    @Override public void exitExceptionType(Java8Parser.ExceptionTypeContext ctx) { 
         // nothing to do
     }
     
@@ -1769,7 +1769,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	';'
      * 	;
      */
-    @Override public void exitMethodBody(@NotNull Java8Parser.MethodBodyContext ctx) { 
+    @Override public void exitMethodBody(Java8Parser.MethodBodyContext ctx) { 
         //if (";".equals(ctx.getText())) {
         //    stack.pop();    // ;   
         //}
@@ -1781,7 +1781,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	block
      * 	;
      */
-    @Override public void exitInstanceInitializer(@NotNull Java8Parser.InstanceInitializerContext ctx) {
+    @Override public void exitInstanceInitializer(Java8Parser.InstanceInitializerContext ctx) {
         // nothing to do
     }
     
@@ -1790,7 +1790,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'static' block
      * 	;
      */
-    @Override public void exitStaticInitializer(@NotNull Java8Parser.StaticInitializerContext ctx) { 
+    @Override public void exitStaticInitializer(Java8Parser.StaticInitializerContext ctx) { 
         TigerNode block = stack.pop();
         setLocations(block, ctx);
         stack.pop();    // static
@@ -1803,7 +1803,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	constructorModifiers constructorDeclarator throws_? constructorBody
      * 	;
      */
-    @Override public void exitConstructorDeclaration(@NotNull Java8Parser.ConstructorDeclarationContext ctx) { 
+    @Override public void exitConstructorDeclaration(Java8Parser.ConstructorDeclarationContext ctx) { 
         ConstructorNode constructor = new ConstructorNode();
         setLocations(constructor, ctx);
         TigerNode body = stack.pop();   // body
@@ -1825,7 +1825,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      *     :   constructorModifier*
      *     ;
      */
-    @Override public void exitConstructorModifiers(@NotNull Java8Parser.ConstructorModifiersContext ctx) { 
+    @Override public void exitConstructorModifiers(Java8Parser.ConstructorModifiersContext ctx) { 
         TigerNode list = new TigerNode();
         if (ctx.constructorModifier() != null) {
             setLocations(list, ctx);
@@ -1853,7 +1853,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	'private'
      * 	;
      */
-    @Override public void exitConstructorModifier(@NotNull Java8Parser.ConstructorModifierContext ctx) {
+    @Override public void exitConstructorModifier(Java8Parser.ConstructorModifierContext ctx) {
         // nothing to do
     }
     
@@ -1862,7 +1862,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	typeParameters? simpleTypeName '(' formalParameterList? ')'
      * 	;
      */
-    @Override public void exitConstructorDeclarator(@NotNull Java8Parser.ConstructorDeclaratorContext ctx) { 
+    @Override public void exitConstructorDeclarator(Java8Parser.ConstructorDeclaratorContext ctx) { 
         stack.pop();    // )
         TigerNode list = ctx.formalParameterList() == null ? null : stack.pop();
         stack.pop();    // (
@@ -1878,7 +1878,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	identifier
      * 	;
      */
-    @Override public void exitSimpleTypeName(@NotNull Java8Parser.SimpleTypeNameContext ctx) { 
+    @Override public void exitSimpleTypeName(Java8Parser.SimpleTypeNameContext ctx) { 
         // nothing to do
     }
     
@@ -1887,7 +1887,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'{' explicitConstructorInvocation? blockStatements? '}'
      * 	;
      */
-    @Override public void exitConstructorBody(@NotNull Java8Parser.ConstructorBodyContext ctx) {
+    @Override public void exitConstructorBody(Java8Parser.ConstructorBodyContext ctx) {
         BlockNode block = new BlockNode();
         setLocations(block, ctx);
         stack.pop();    // }
@@ -1909,7 +1909,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	primary        '.' typeArguments? SUPER  '(' argumentList? ')' ';'
      * 	;
      */
-    @Override public void exitExplicitConstructorInvocation(@NotNull Java8Parser.ExplicitConstructorInvocationContext ctx) { 
+    @Override public void exitExplicitConstructorInvocation(Java8Parser.ExplicitConstructorInvocationContext ctx) { 
         stack.pop();    // ;
         stack.pop();    // )
         TigerNode list = ctx.argumentList() == null ? null : stack.pop();
@@ -1934,7 +1934,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	classModifiers 'enum' identifier superinterfaces? enumBody
      * 	;
      */
-    @Override public void exitEnumDeclaration(@NotNull Java8Parser.EnumDeclarationContext ctx) { 
+    @Override public void exitEnumDeclaration(Java8Parser.EnumDeclarationContext ctx) { 
         TigerNode body = stack.pop();
         TigerNode interfaces = ctx.superinterfaces() == null ? null : stack.pop();
         TigerNode identifier = stack.pop();
@@ -1953,7 +1953,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'{' enumConstantList? COMMA? enumBodyDeclarations? '}'
      * 	;
      */
-    @Override public void exitEnumBody(@NotNull Java8Parser.EnumBodyContext ctx) { 
+    @Override public void exitEnumBody(Java8Parser.EnumBodyContext ctx) { 
         // TODO: this should make a BlockNode
         TigerNode enumBody = new TigerNode();
         setLocations(enumBody, ctx);
@@ -1973,7 +1973,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	enumConstant (',' enumConstant)*
      * 	;
      */
-    @Override public void exitEnumConstantList(@NotNull Java8Parser.EnumConstantListContext ctx) { 
+    @Override public void exitEnumConstantList(Java8Parser.EnumConstantListContext ctx) { 
         TigerNode list = new TigerNode();
         setLocations(list, ctx);
         for (int i = 0; i < ctx.enumConstant().size(); i++) {
@@ -1989,7 +1989,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	enumConstantModifier* identifier ('(' argumentList? ')')? classBody?
      * 	;
      */
-    @Override public void exitEnumConstant(@NotNull Java8Parser.EnumConstantContext ctx) { 
+    @Override public void exitEnumConstant(Java8Parser.EnumConstantContext ctx) { 
         TigerNode body = ctx.classBody() == null ? null : stack.pop();
         TigerNode list = null;
         if (ctx.argumentList() != null) {
@@ -2022,7 +2022,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	annotation
      * 	;
      */
-    @Override public void exitEnumConstantModifier(@NotNull Java8Parser.EnumConstantModifierContext ctx) { 
+    @Override public void exitEnumConstantModifier(Java8Parser.EnumConstantModifierContext ctx) { 
         // nothing to do
     }
     
@@ -2031,7 +2031,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	';' classBodyDeclaration*
      * 	;
      */
-    @Override public void exitEnumBodyDeclarations(@NotNull Java8Parser.EnumBodyDeclarationsContext ctx) { 
+    @Override public void exitEnumBodyDeclarations(Java8Parser.EnumBodyDeclarationsContext ctx) { 
         if (ctx.classBodyDeclaration() != null) {
             TigerNode list = new TigerNode();
             setLocations(list, ctx);
@@ -2050,7 +2050,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	annotationTypeDeclaration
      * 	;
      */
-    @Override public void exitInterfaceDeclaration(@NotNull Java8Parser.InterfaceDeclarationContext ctx) {
+    @Override public void exitInterfaceDeclaration(Java8Parser.InterfaceDeclarationContext ctx) {
         // nothing to do
     }
     
@@ -2062,7 +2062,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      *      interfaceModifier* 'interface' identifier typeParameters? extendsInterfaces? interfaceBody
      * There is no need for interfaceModifiers
      */
-    @Override public void exitNormalInterfaceDeclaration(@NotNull Java8Parser.NormalInterfaceDeclarationContext ctx) {
+    @Override public void exitNormalInterfaceDeclaration(Java8Parser.NormalInterfaceDeclarationContext ctx) {
         TigerNode body = stack.pop();
         TigerNode extendsInterfaces = ctx.extendsInterfaces() == null ? null : stack.pop();
         TigerNode typeParameters = ctx.typeParameters() == null ? null : stack.pop();
@@ -2083,7 +2083,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      *     ;
      * TODO: fix this. This is not necessary, and is a work-around for a flaw in the grammar. See the Java8.g4 file for details.
      */
-    @Override public void exitInterfaceModifiers(@NotNull Java8Parser.InterfaceModifiersContext ctx) { 
+    @Override public void exitInterfaceModifiers(Java8Parser.InterfaceModifiersContext ctx) { 
         TigerNode list = new TigerNode();
         if (ctx.interfaceModifier() != null) {
             setLocations(list, ctx);
@@ -2114,7 +2114,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	'strictfp'
      * 	;
      */
-    @Override public void exitInterfaceModifier(@NotNull Java8Parser.InterfaceModifierContext ctx) { 
+    @Override public void exitInterfaceModifier(Java8Parser.InterfaceModifierContext ctx) { 
         // nothing to do
     }
     
@@ -2123,7 +2123,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'extends' interfaceTypeList
      * 	;
      */
-    @Override public void exitExtendsInterfaces(@NotNull Java8Parser.ExtendsInterfacesContext ctx) { 
+    @Override public void exitExtendsInterfaces(Java8Parser.ExtendsInterfacesContext ctx) { 
         TigerNode list = stack.pop();
         setLocations(list, ctx);
         stack.pop();    // extends
@@ -2135,7 +2135,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'{' interfaceMemberDeclaration* '}'
      * 	;
      */
-    @Override public void exitInterfaceBody(@NotNull Java8Parser.InterfaceBodyContext ctx) {
+    @Override public void exitInterfaceBody(Java8Parser.InterfaceBodyContext ctx) {
         stack.pop();    // }
         BlockNode block = new BlockNode();
         setLocations(block, ctx);
@@ -2157,7 +2157,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	';'
      * 	;
      */
-    @Override public void exitInterfaceMemberDeclaration(@NotNull Java8Parser.InterfaceMemberDeclarationContext ctx) { 
+    @Override public void exitInterfaceMemberDeclaration(Java8Parser.InterfaceMemberDeclarationContext ctx) { 
         if (";".equals(ctx.getText())) {
             stack.pop();    // ;   
         }
@@ -2168,7 +2168,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	constantModifier* unannType variableDeclaratorList ';'
      * 	;
      */
-    @Override public void exitConstantDeclaration(@NotNull Java8Parser.ConstantDeclarationContext ctx) { 
+    @Override public void exitConstantDeclaration(Java8Parser.ConstantDeclarationContext ctx) { 
         stack.pop();    // ;
         TigerNode list = stack.pop();
         TigerNode type = stack.pop();
@@ -2210,7 +2210,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	'final'
      * 	;
      */
-    @Override public void exitConstantModifier(@NotNull Java8Parser.ConstantModifierContext ctx) {
+    @Override public void exitConstantModifier(Java8Parser.ConstantModifierContext ctx) {
         // nothing to do
     }
 
@@ -2219,7 +2219,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	interfaceMethodModifier* methodHeader methodBody
      * 	;
      */
-    @Override public void exitInterfaceMethodDeclaration(@NotNull Java8Parser.InterfaceMethodDeclarationContext ctx) {
+    @Override public void exitInterfaceMethodDeclaration(Java8Parser.InterfaceMethodDeclarationContext ctx) {
         TigerNode body = stack.pop();
         TigerNode header = stack.pop();
         setLocations(header, ctx);
@@ -2252,7 +2252,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	'strictfp'
      * 	;
      */
-    @Override public void exitInterfaceMethodModifier(@NotNull Java8Parser.InterfaceMethodModifierContext ctx) { 
+    @Override public void exitInterfaceMethodModifier(Java8Parser.InterfaceMethodModifierContext ctx) { 
         // nothing to do
     }
     
@@ -2261,7 +2261,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	interfaceModifier* '@' 'interface' identifier annotationTypeBody
      * 	;
      */
-    @Override public void exitAnnotationTypeDeclaration(@NotNull Java8Parser.AnnotationTypeDeclarationContext ctx) { 
+    @Override public void exitAnnotationTypeDeclaration(Java8Parser.AnnotationTypeDeclarationContext ctx) { 
         TigerNode annotationTypeBody = stack.pop();
         TigerNode identifier = stack.pop();
         stack.pop();    // interface
@@ -2291,7 +2291,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'{' annotationTypeMemberDeclaration* '}'
      * 	;
      */
-    @Override public void exitAnnotationTypeBody(@NotNull Java8Parser.AnnotationTypeBodyContext ctx) { 
+    @Override public void exitAnnotationTypeBody(Java8Parser.AnnotationTypeBodyContext ctx) { 
         stack.pop();    // }
         BlockNode block = new BlockNode();
         setLocations(block, ctx);
@@ -2313,7 +2313,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	';'
      * 	;
      */
-    @Override public void exitAnnotationTypeMemberDeclaration(@NotNull Java8Parser.AnnotationTypeMemberDeclarationContext ctx) {
+    @Override public void exitAnnotationTypeMemberDeclaration(Java8Parser.AnnotationTypeMemberDeclarationContext ctx) {
         if (";".equals(ctx.getText())) {
             stack.pop();    // ;   
         }
@@ -2324,7 +2324,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	annotationTypeElementModifier* unannType identifier '(' ')' dims? defaultValue? ';'
      * 	;
      */
-    @Override public void exitAnnotationTypeElementDeclaration(@NotNull Java8Parser.AnnotationTypeElementDeclarationContext ctx) { 
+    @Override public void exitAnnotationTypeElementDeclaration(Java8Parser.AnnotationTypeElementDeclarationContext ctx) { 
         stack.pop();    // ;
         TigerNode value = ctx.defaultValue() == null ? null : stack.pop();
         TigerNode dims = ctx.dims() == null ? null : stack.pop();
@@ -2359,7 +2359,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	'abstract'
      * 	;
      */
-    @Override public void exitAnnotationTypeElementModifier(@NotNull Java8Parser.AnnotationTypeElementModifierContext ctx) { 
+    @Override public void exitAnnotationTypeElementModifier(Java8Parser.AnnotationTypeElementModifierContext ctx) { 
         // nothing to do
     }
     
@@ -2368,7 +2368,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'default' elementValue
      * 	;
      */
-    @Override public void exitDefaultValue(@NotNull Java8Parser.DefaultValueContext ctx) { 
+    @Override public void exitDefaultValue(Java8Parser.DefaultValueContext ctx) { 
         TigerNode value = stack.pop();
         setLocations(value, ctx);
         stack.pop();    // default
@@ -2382,7 +2382,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	singleElementAnnotation
      * 	;
      */
-    @Override public void exitAnnotation(@NotNull Java8Parser.AnnotationContext ctx) { 
+    @Override public void exitAnnotation(Java8Parser.AnnotationContext ctx) { 
         // nothing to do
     }
 
@@ -2391,7 +2391,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      *     :   annotation* Identifier
      *     ;
      */
-    @Override public void exitAnnotationIdentifier(@NotNull Java8Parser.AnnotationIdentifierContext ctx) { 
+    @Override public void exitAnnotationIdentifier(Java8Parser.AnnotationIdentifierContext ctx) { 
         TigerNode identifier = stack.pop();
         setLocations(identifier, ctx);
         if (ctx.annotation() != null) {
@@ -2408,7 +2408,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      *     : annotation* squareBrackets
      *     ;
      */
-    @Override public void exitAnnotationDim(@NotNull Java8Parser.AnnotationDimContext ctx) { 
+    @Override public void exitAnnotationDim(Java8Parser.AnnotationDimContext ctx) { 
         stack.pop();    // []
         TigerNode node = new TigerNode();
         setLocations(node, ctx);
@@ -2429,7 +2429,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'@' typeName '(' elementValuePairList? ')'
      * 	;
      */
-    @Override public void exitNormalAnnotation(@NotNull Java8Parser.NormalAnnotationContext ctx) { 
+    @Override public void exitNormalAnnotation(Java8Parser.NormalAnnotationContext ctx) { 
         stack.pop();    // )
         TigerNode pairs = stack.pop();
         stack.pop();    // (
@@ -2448,7 +2448,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	elementValuePair (',' elementValuePair)*
      * 	;
      */
-    @Override public void exitElementValuePairList(@NotNull Java8Parser.ElementValuePairListContext ctx) {
+    @Override public void exitElementValuePairList(Java8Parser.ElementValuePairListContext ctx) {
         TigerNode list = new TigerNode();
         if (ctx.elementValuePair() != null) {
             for (int i = 0; i < ctx.elementValuePair().size(); i++) {
@@ -2467,7 +2467,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	Identifier '=' elementValue
      * 	;
      */
-    @Override public void exitElementValuePair(@NotNull Java8Parser.ElementValuePairContext ctx) {
+    @Override public void exitElementValuePair(Java8Parser.ElementValuePairContext ctx) {
         TigerNode elementValue = stack.pop();
         stack.pop();    // =
         TigerNode identifier = stack.pop();
@@ -2483,7 +2483,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	annotation
      * 	;
      */
-    @Override public void exitElementValue(@NotNull Java8Parser.ElementValueContext ctx) { 
+    @Override public void exitElementValue(Java8Parser.ElementValueContext ctx) { 
         // nothing to do
     }
 
@@ -2492,7 +2492,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'{' elementValueList? COMMA? '}'
      * 	;
      */
-    @Override public void exitElementValueArrayInitializer(@NotNull Java8Parser.ElementValueArrayInitializerContext ctx) {
+    @Override public void exitElementValueArrayInitializer(Java8Parser.ElementValueArrayInitializerContext ctx) {
         BlockNode block = new BlockNode();
         setLocations(block, ctx);
         stack.pop();    // }
@@ -2510,7 +2510,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	elementValue (',' elementValue)*
      * 	;
      */
-    @Override public void exitElementValueList(@NotNull Java8Parser.ElementValueListContext ctx) { 
+    @Override public void exitElementValueList(Java8Parser.ElementValueListContext ctx) { 
         TigerNode node = new TigerNode();
         setLocations(node, ctx);
         if (ctx.elementValue() != null) {
@@ -2530,7 +2530,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'@' typeName
      * 	;
      */
-    @Override public void exitMarkerAnnotation(@NotNull Java8Parser.MarkerAnnotationContext ctx) {
+    @Override public void exitMarkerAnnotation(Java8Parser.MarkerAnnotationContext ctx) {
         TigerNode typeName = stack.pop();
         stack.pop();    // @
         AnnotationNode an = new AnnotationNode(typeName.getName());
@@ -2543,7 +2543,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'@' typeName '(' elementValue ')'
      * 	;
      */
-    @Override public void exitSingleElementAnnotation(@NotNull Java8Parser.SingleElementAnnotationContext ctx) { 
+    @Override public void exitSingleElementAnnotation(Java8Parser.SingleElementAnnotationContext ctx) { 
         stack.pop();    // )
         TigerNode elementValue = stack.pop();
         stack.pop();    // (
@@ -2560,7 +2560,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'{' variableInitializerList? COMMA? '}'
      * 	;
      */
-    @Override public void exitArrayInitializer(@NotNull Java8Parser.ArrayInitializerContext ctx) { 
+    @Override public void exitArrayInitializer(Java8Parser.ArrayInitializerContext ctx) { 
         BlockNode block = new BlockNode();
         setLocations(block, ctx);
         
@@ -2581,7 +2581,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	variableInitializer (',' variableInitializer)*
      * 	;
      */
-    @Override public void exitVariableInitializerList(@NotNull Java8Parser.VariableInitializerListContext ctx) { 
+    @Override public void exitVariableInitializerList(Java8Parser.VariableInitializerListContext ctx) { 
         TigerNode list = new TigerNode();
         setLocations(list, ctx);
         for (int i = 0; i < ctx.variableInitializer().size(); i++) {
@@ -2598,7 +2598,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'{' blockStatements? '}'
      * 	;
      */
-    @Override public void exitBlock(@NotNull Java8Parser.BlockContext ctx) {
+    @Override public void exitBlock(Java8Parser.BlockContext ctx) {
         BlockNode block = new BlockNode();
         setLocations(block, ctx);
         stack.pop();    // }
@@ -2616,7 +2616,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	;
      * Pushes a BlockNode onto the stack;
      */
-    @Override public void exitBlockStatements(@NotNull Java8Parser.BlockStatementsContext ctx) { 
+    @Override public void exitBlockStatements(Java8Parser.BlockStatementsContext ctx) { 
         BlockNode block = new BlockNode();
         for (int i = 0; i < ctx.blockStatement().size(); i++) {
             TigerNode child = stack.pop();
@@ -2639,7 +2639,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	statement
      * 	;
      */
-    @Override public void exitBlockStatement(@NotNull Java8Parser.BlockStatementContext ctx) {
+    @Override public void exitBlockStatement(Java8Parser.BlockStatementContext ctx) {
         // nothing to do
     }
     
@@ -2648,7 +2648,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	localVariableDeclaration ';'
      * 	;
      */
-    @Override public void exitLocalVariableDeclarationStatement(@NotNull Java8Parser.LocalVariableDeclarationStatementContext ctx) { 
+    @Override public void exitLocalVariableDeclarationStatement(Java8Parser.LocalVariableDeclarationStatementContext ctx) { 
         stack.pop();    // ;
     }
     
@@ -2662,7 +2662,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * as children of a block node.
      * Change this to have just one node...
      */
-    @Override public void exitLocalVariableDeclaration(@NotNull Java8Parser.LocalVariableDeclarationContext ctx) { 
+    @Override public void exitLocalVariableDeclaration(Java8Parser.LocalVariableDeclarationContext ctx) { 
         TigerNode list = stack.pop();   // children of this list will be VariableDeclarator nodes
         Type unannType = (Type)stack.pop();
         ModifierSet m = new ModifierSet();
@@ -2702,7 +2702,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      *     | "var"	
      *     ;
      */
-	@Override public void exitLocalVariableType(@NotNull Java8Parser.LocalVariableTypeContext ctx) {
+	@Override public void exitLocalVariableType(Java8Parser.LocalVariableTypeContext ctx) {
     }
 
     
@@ -2717,7 +2717,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	forStatement
      * 	;
      */
-    @Override public void exitStatement(@NotNull Java8Parser.StatementContext ctx) { 
+    @Override public void exitStatement(Java8Parser.StatementContext ctx) { 
         // nothing to do
     }
     
@@ -2730,7 +2730,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	forStatementNoShortIf
      * 	;
      */
-    @Override public void exitStatementNoShortIf(@NotNull Java8Parser.StatementNoShortIfContext ctx) { 
+    @Override public void exitStatementNoShortIf(Java8Parser.StatementNoShortIfContext ctx) { 
         // nothing to do
     }
     
@@ -2750,7 +2750,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	tryStatement
      * 	;
      */
-    @Override public void exitStatementWithoutTrailingSubstatement(@NotNull Java8Parser.StatementWithoutTrailingSubstatementContext ctx) {
+    @Override public void exitStatementWithoutTrailingSubstatement(Java8Parser.StatementWithoutTrailingSubstatementContext ctx) {
         // nothing to do
     }
     
@@ -2759,7 +2759,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	';'
      * 	;
      */
-    @Override public void exitEmptyStatement(@NotNull Java8Parser.EmptyStatementContext ctx) { 
+    @Override public void exitEmptyStatement(Java8Parser.EmptyStatementContext ctx) { 
         //stack.pop();    // ;
     }
     
@@ -2768,7 +2768,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	identifier ':' statement
      * 	;
      */
-    @Override public void exitLabeledStatement(@NotNull Java8Parser.LabeledStatementContext ctx) { 
+    @Override public void exitLabeledStatement(Java8Parser.LabeledStatementContext ctx) { 
         TigerNode stmt = stack.pop();
         stack.pop();    // :
         TigerNode identifier = stack.pop();
@@ -2783,7 +2783,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	identifier ':' statementNoShortIf
      * 	;
      */
-    @Override public void exitLabeledStatementNoShortIf(@NotNull Java8Parser.LabeledStatementNoShortIfContext ctx) { 
+    @Override public void exitLabeledStatementNoShortIf(Java8Parser.LabeledStatementNoShortIfContext ctx) { 
         TigerNode stmt = stack.pop();
         stack.pop();    // :
         TigerNode identifier = stack.pop();
@@ -2797,7 +2797,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	statementExpression ';'
      * 	;
      */
-    @Override public void exitExpressionStatement(@NotNull Java8Parser.ExpressionStatementContext ctx) {
+    @Override public void exitExpressionStatement(Java8Parser.ExpressionStatementContext ctx) {
         stack.pop();    // ;
     }
     
@@ -2811,7 +2811,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	methodInvocation
      * 	|	classInstanceCreationExpression
      */
-    @Override public void exitStatementExpression(@NotNull Java8Parser.StatementExpressionContext ctx) {
+    @Override public void exitStatementExpression(Java8Parser.StatementExpressionContext ctx) {
         // nothing to do 
     }
     
@@ -2820,7 +2820,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'if' '(' expression ')' statement
      * 	;
      */
-    @Override public void exitIfThenStatement(@NotNull Java8Parser.IfThenStatementContext ctx) { 
+    @Override public void exitIfThenStatement(Java8Parser.IfThenStatementContext ctx) { 
         TigerNode stmt = stack.pop();
         stack.pop();    // )
         TigerNode expression = stack.pop();
@@ -2837,7 +2837,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'if' '(' expression ')' statementNoShortIf 'else' statement
      * 	;
      */
-    @Override public void exitIfThenElseStatement(@NotNull Java8Parser.IfThenElseStatementContext ctx) { 
+    @Override public void exitIfThenElseStatement(Java8Parser.IfThenElseStatementContext ctx) { 
         TigerNode stmt2 = stack.pop();
         stack.pop();    // else
         TigerNode stmt1 = stack.pop();
@@ -2856,7 +2856,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'if' '(' expression ')' statementNoShortIf 'else' statementNoShortIf
      * 	;
      */
-    @Override public void exitIfThenElseStatementNoShortIf(@NotNull Java8Parser.IfThenElseStatementNoShortIfContext ctx) { 
+    @Override public void exitIfThenElseStatementNoShortIf(Java8Parser.IfThenElseStatementNoShortIfContext ctx) { 
         TigerNode stmt2 = stack.pop();
         stack.pop();    // else
         TigerNode stmt1 = stack.pop();
@@ -2876,7 +2876,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	'assert' expression ':' expression ';'
      * 	;
      */
-    @Override public void exitAssertStatement(@NotNull Java8Parser.AssertStatementContext ctx) {
+    @Override public void exitAssertStatement(Java8Parser.AssertStatementContext ctx) {
         stack.pop();    // ;
         TigerNode expression1 = stack.pop();
         TigerNode expression2 = null;
@@ -2896,7 +2896,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'switch' '(' expression ')' switchBlock
      * 	;
      */
-    @Override public void exitSwitchStatement(@NotNull Java8Parser.SwitchStatementContext ctx) { 
+    @Override public void exitSwitchStatement(Java8Parser.SwitchStatementContext ctx) { 
         TigerNode block = stack.pop();
         stack.pop();    // )
         TigerNode expression = stack.pop();
@@ -2914,7 +2914,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'{' switchBlockStatementGroup* switchLabel* '}'
      * 	;
      */
-    @Override public void exitSwitchBlock(@NotNull Java8Parser.SwitchBlockContext ctx) { 
+    @Override public void exitSwitchBlock(Java8Parser.SwitchBlockContext ctx) { 
         TigerNode block = new BlockNode();
         setLocations(block, ctx);
 
@@ -2942,7 +2942,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	switchLabels blockStatements
      * 	;
      */
-    @Override public void exitSwitchBlockStatementGroup(@NotNull Java8Parser.SwitchBlockStatementGroupContext ctx) { 
+    @Override public void exitSwitchBlockStatementGroup(Java8Parser.SwitchBlockStatementGroupContext ctx) { 
         TigerNode block = stack.pop();
         TigerNode labels = stack.pop();
         setLocations(labels, ctx);
@@ -2955,7 +2955,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	switchLabel switchLabel*
      * 	;
      */
-    @Override public void exitSwitchLabels(@NotNull Java8Parser.SwitchLabelsContext ctx) { 
+    @Override public void exitSwitchLabels(Java8Parser.SwitchLabelsContext ctx) { 
         TigerNode list = new TigerNode();
         setLocations(list, ctx);
         for (int i = 0; i < ctx.switchLabel().size(); i++) {
@@ -2971,7 +2971,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	'default' ':'
      * 	;
      */
-    @Override public void exitSwitchLabel(@NotNull Java8Parser.SwitchLabelContext ctx) { 
+    @Override public void exitSwitchLabel(Java8Parser.SwitchLabelContext ctx) { 
         stack.pop();    // :
         if (ctx.constantExpression() != null || ctx.enumConstantName() != null) {
             TigerNode expression = stack.pop();
@@ -2994,7 +2994,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	identifier
      * 	;
      */
-    @Override public void exitEnumConstantName(@NotNull Java8Parser.EnumConstantNameContext ctx) {
+    @Override public void exitEnumConstantName(Java8Parser.EnumConstantNameContext ctx) {
         // nothing to do here
     }
     
@@ -3003,7 +3003,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'while' '(' expression ')' statement
      * 	;
      */
-    @Override public void exitWhileStatement(@NotNull Java8Parser.WhileStatementContext ctx) { 
+    @Override public void exitWhileStatement(Java8Parser.WhileStatementContext ctx) { 
         TigerNode stmt = stack.pop();
         stack.pop();    // )
         TigerNode expression = stack.pop();
@@ -3020,7 +3020,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'while' '(' expression ')' statementNoShortIf
      * 	;
      */
-    @Override public void exitWhileStatementNoShortIf(@NotNull Java8Parser.WhileStatementNoShortIfContext ctx) { 
+    @Override public void exitWhileStatementNoShortIf(Java8Parser.WhileStatementNoShortIfContext ctx) { 
         TigerNode stmt = stack.pop();
         stack.pop();    // )
         TigerNode expression = stack.pop();
@@ -3037,7 +3037,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'do' statement 'while' '(' expression ')' ';'
      * 	;
      */
-    @Override public void exitDoStatement(@NotNull Java8Parser.DoStatementContext ctx) { 
+    @Override public void exitDoStatement(Java8Parser.DoStatementContext ctx) { 
         stack.pop();    // ;
         stack.pop();    // )
         TigerNode expression = stack.pop();
@@ -3057,7 +3057,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	enhancedForStatement
      * 	;
      */
-    @Override public void exitForStatement(@NotNull Java8Parser.ForStatementContext ctx) { 
+    @Override public void exitForStatement(Java8Parser.ForStatementContext ctx) { 
         // nothing to do here
     }
     
@@ -3067,7 +3067,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	enhancedForStatementNoShortIf
      * 	;
      */
-    @Override public void exitForStatementNoShortIf(@NotNull Java8Parser.ForStatementNoShortIfContext ctx) { 
+    @Override public void exitForStatementNoShortIf(Java8Parser.ForStatementNoShortIfContext ctx) { 
         // nothing to do here
     }
     
@@ -3076,7 +3076,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'for' '(' forInit? ';' expression? ';' forUpdate? ')' statement
      * 	;
      */
-    @Override public void exitBasicForStatement(@NotNull Java8Parser.BasicForStatementContext ctx) { 
+    @Override public void exitBasicForStatement(Java8Parser.BasicForStatementContext ctx) { 
         TigerNode stmt = stack.pop();
         stack.pop();    // )
         TigerNode forUpdate = null;
@@ -3106,7 +3106,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'for' '(' forInit? ';' expression? ';' forUpdate? ')' statementNoShortIf
      * 	;
      */
-    @Override public void exitBasicForStatementNoShortIf(@NotNull Java8Parser.BasicForStatementNoShortIfContext ctx) { 
+    @Override public void exitBasicForStatementNoShortIf(Java8Parser.BasicForStatementNoShortIfContext ctx) { 
         TigerNode stmt = stack.pop();
         stack.pop();    // )
         TigerNode forUpdate = null;
@@ -3137,7 +3137,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	localVariableDeclaration
      * 	;
      */
-    @Override public void exitForInit(@NotNull Java8Parser.ForInitContext ctx) { 
+    @Override public void exitForInit(Java8Parser.ForInitContext ctx) { 
         // nothing to do
     }
     
@@ -3146,7 +3146,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	statementExpressionList
      * 	;
      */
-    @Override public void exitForUpdate(@NotNull Java8Parser.ForUpdateContext ctx) {
+    @Override public void exitForUpdate(Java8Parser.ForUpdateContext ctx) {
         // nothing to do
     }
     
@@ -3155,7 +3155,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	statementExpression (',' statementExpression)*
      * 	;
      */
-    @Override public void exitStatementExpressionList(@NotNull Java8Parser.StatementExpressionListContext ctx) { 
+    @Override public void exitStatementExpressionList(Java8Parser.StatementExpressionListContext ctx) { 
         TigerNode list = new TigerNode();
         setLocations(list, ctx);
         for (int i = 0; i < ctx.statementExpression().size(); i++) {
@@ -3172,7 +3172,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'for' '(' variableModifier* unannType variableDeclaratorId ':' expression ')' statement
      * 	;
      */
-    @Override public void exitEnhancedForStatement(@NotNull Java8Parser.EnhancedForStatementContext ctx) { 
+    @Override public void exitEnhancedForStatement(Java8Parser.EnhancedForStatementContext ctx) { 
         TigerNode stmt = stack.pop();
         stack.pop();    // )
         TigerNode expression = stack.pop();
@@ -3207,7 +3207,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'for' '(' variableModifier* unannType variableDeclaratorId ':' expression ')' statementNoShortIf
      * 	;
      */
-    @Override public void exitEnhancedForStatementNoShortIf(@NotNull Java8Parser.EnhancedForStatementNoShortIfContext ctx) { 
+    @Override public void exitEnhancedForStatementNoShortIf(Java8Parser.EnhancedForStatementNoShortIfContext ctx) { 
         TigerNode stmt = stack.pop();
         stack.pop();    // )
         TigerNode expression = stack.pop();
@@ -3242,7 +3242,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'break' identifier? ';'
      * 	;
      */
-    @Override public void exitBreakStatement(@NotNull Java8Parser.BreakStatementContext ctx) {
+    @Override public void exitBreakStatement(Java8Parser.BreakStatementContext ctx) {
         stack.pop();    // ;
         TigerNode identifier = ctx.identifier() == null ? null : stack.pop();
         stack.pop();    // break
@@ -3258,7 +3258,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'continue' identifier? ';'
      * 	;
      */
-    @Override public void exitContinueStatement(@NotNull Java8Parser.ContinueStatementContext ctx) { 
+    @Override public void exitContinueStatement(Java8Parser.ContinueStatementContext ctx) { 
         stack.pop();    // ;
         TigerNode identifier = ctx.identifier() == null ? null : stack.pop();
         stack.pop();    // continue
@@ -3274,7 +3274,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'return' expression? ';'
      * 	;
      */
-    @Override public void exitReturnStatement(@NotNull Java8Parser.ReturnStatementContext ctx) { 
+    @Override public void exitReturnStatement(Java8Parser.ReturnStatementContext ctx) { 
         
         stack.pop();    // ;
         TigerNode expression = ctx.expression() == null ? null : stack.pop();
@@ -3291,7 +3291,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'throw' expression ';'
      * 	;
      */
-    @Override public void exitThrowStatement(@NotNull Java8Parser.ThrowStatementContext ctx) { 
+    @Override public void exitThrowStatement(Java8Parser.ThrowStatementContext ctx) { 
         stack.pop();    // ;
         TigerNode expression = stack.pop();
         stack.pop();    // throw
@@ -3306,7 +3306,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'synchronized' '(' expression ')' block
      * 	;
      */
-    @Override public void exitSynchronizedStatement(@NotNull Java8Parser.SynchronizedStatementContext ctx) {
+    @Override public void exitSynchronizedStatement(Java8Parser.SynchronizedStatementContext ctx) {
         TigerNode block = stack.pop();
         stack.pop();    // )
         TigerNode expression = stack.pop();
@@ -3325,7 +3325,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	tryWithResourcesStatement
      * 	;
      */
-    @Override public void exitTryStatement(@NotNull Java8Parser.TryStatementContext ctx) { 
+    @Override public void exitTryStatement(Java8Parser.TryStatementContext ctx) { 
         // 3rd choice
         if (ctx.tryWithResourcesStatement() != null) {
             // nothing to do
@@ -3363,7 +3363,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	catchClause catchClause*
      * 	;
      */
-    @Override public void exitCatches(@NotNull Java8Parser.CatchesContext ctx) {
+    @Override public void exitCatches(Java8Parser.CatchesContext ctx) {
         TigerNode list = new TigerNode();
         setLocations(list, ctx);
         for (int i = 0; i < ctx.catchClause().size(); i++) {
@@ -3377,7 +3377,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'catch' '(' catchFormalParameter ')' block
      * 	;
      */
-    @Override public void exitCatchClause(@NotNull Java8Parser.CatchClauseContext ctx) { 
+    @Override public void exitCatchClause(Java8Parser.CatchClauseContext ctx) { 
         TigerNode block = stack.pop();
         stack.pop();    // )
         TigerNode catchFormalParameter = stack.pop();
@@ -3395,7 +3395,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	variableModifier* catchType variableDeclaratorId
      * 	;
      */
-    @Override public void exitCatchFormalParameter(@NotNull Java8Parser.CatchFormalParameterContext ctx) { 
+    @Override public void exitCatchFormalParameter(Java8Parser.CatchFormalParameterContext ctx) { 
         TigerNode variableDeclaratorId = stack.pop();
         TigerNode catchType = stack.pop();
         setLocations(catchType, ctx);
@@ -3422,7 +3422,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	unannClassType ('|' classType)*
      * 	;
      */
-    @Override public void exitCatchType(@NotNull Java8Parser.CatchTypeContext ctx) { 
+    @Override public void exitCatchType(Java8Parser.CatchTypeContext ctx) { 
         TigerNode classType = null;
         if (ctx.classType() != null) {
             classType = new TigerNode();
@@ -3442,7 +3442,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'finally' block
      * 	;
      */
-    @Override public void exitFinally_(@NotNull Java8Parser.Finally_Context ctx) {
+    @Override public void exitFinally_(Java8Parser.Finally_Context ctx) {
         TigerNode finally_ = new TigerNode("finally");
         setLocations(finally_, ctx);
         finally_.addChild(0, stack.pop());     // block
@@ -3455,7 +3455,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'try' resourceSpecification block catches? finally_?
      * 	;
      */
-    @Override public void exitTryWithResourcesStatement(@NotNull Java8Parser.TryWithResourcesStatementContext ctx) { 
+    @Override public void exitTryWithResourcesStatement(Java8Parser.TryWithResourcesStatementContext ctx) { 
         TigerNode finally_ = ctx.finally_() == null ? null : stack.pop();
         TigerNode catches = ctx.catches() == null ? null : stack.pop();
         TigerNode block = stack.pop();
@@ -3475,7 +3475,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'(' resourceList SEMI? ')'
      * 	;
      */
-    @Override public void exitResourceSpecification(@NotNull Java8Parser.ResourceSpecificationContext ctx) { 
+    @Override public void exitResourceSpecification(Java8Parser.ResourceSpecificationContext ctx) { 
         stack.pop();    // )
         if (ctx.SEMI() != null) {
             stack.pop();    // SEMI   
@@ -3491,7 +3491,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	resource (';' resource)*
      * 	;
      */
-    @Override public void exitResourceList(@NotNull Java8Parser.ResourceListContext ctx) { 
+    @Override public void exitResourceList(Java8Parser.ResourceListContext ctx) { 
         TigerNode list = new TigerNode();
         setLocations(list, ctx);
         for (int i = 0; i < ctx.resource().size(); i++) {
@@ -3509,7 +3509,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|   variableAccess    // danson, java 9
      * 	;
      */
-    @Override public void exitResource(@NotNull Java8Parser.ResourceContext ctx) { 
+    @Override public void exitResource(Java8Parser.ResourceContext ctx) { 
         if (ctx.variableAccess() != null) {
             return;   
         }
@@ -3542,7 +3542,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      *     |   fieldAccess
      *     ;
      */
-    @Override public void exitVariableAccess(@NotNull Java8Parser.VariableAccessContext ctx) { 
+    @Override public void exitVariableAccess(Java8Parser.VariableAccessContext ctx) { 
         // nothing to do
     }
     
@@ -3555,7 +3555,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 		)*
      * 	;
      */
-    @Override public void exitPrimary(@NotNull Java8Parser.PrimaryContext ctx) { 
+    @Override public void exitPrimary(Java8Parser.PrimaryContext ctx) { 
         TigerNode endList = null;
         if (ctx.primaryNoNewArray_lf_primary() != null) {
             endList = new TigerNode();
@@ -3585,7 +3585,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	methodReference
      * 	;
      */
-    @Override public void exitPrimaryNoNewArray(@NotNull Java8Parser.PrimaryNoNewArrayContext ctx) { 
+    @Override public void exitPrimaryNoNewArray(Java8Parser.PrimaryNoNewArrayContext ctx) { 
         if (ctx.literal() != null) {
             // nothing to do, literal should be on the top of the stack
             return;
@@ -3629,7 +3629,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:
      * 	;
      */
-    @Override public void exitPrimaryNoNewArray_lf_arrayAccess(@NotNull Java8Parser.PrimaryNoNewArray_lf_arrayAccessContext ctx) {
+    @Override public void exitPrimaryNoNewArray_lf_arrayAccess(Java8Parser.PrimaryNoNewArray_lf_arrayAccessContext ctx) {
         // nothing to do
     }
     
@@ -3647,7 +3647,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	methodReference
      * 	;
      */
-    @Override public void exitPrimaryNoNewArray_lfno_arrayAccess(@NotNull Java8Parser.PrimaryNoNewArray_lfno_arrayAccessContext ctx) { 
+    @Override public void exitPrimaryNoNewArray_lfno_arrayAccess(Java8Parser.PrimaryNoNewArray_lfno_arrayAccessContext ctx) { 
         if (ctx.literal() != null) {
             // nothing to do, literal should be on the top of the stack
             return;
@@ -3695,7 +3695,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	methodReference_lf_primary
      * 	;
      */
-    @Override public void exitPrimaryNoNewArray_lf_primary(@NotNull Java8Parser.PrimaryNoNewArray_lf_primaryContext ctx) { 
+    @Override public void exitPrimaryNoNewArray_lf_primary(Java8Parser.PrimaryNoNewArray_lf_primaryContext ctx) { 
         // nothing to do
     }
     
@@ -3704,7 +3704,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:
      * 	;
      */
-    @Override public void exitPrimaryNoNewArray_lf_primary_lf_arrayAccess_lf_primary(@NotNull Java8Parser.PrimaryNoNewArray_lf_primary_lf_arrayAccess_lf_primaryContext ctx) { 
+    @Override public void exitPrimaryNoNewArray_lf_primary_lf_arrayAccess_lf_primary(Java8Parser.PrimaryNoNewArray_lf_primary_lf_arrayAccess_lf_primaryContext ctx) { 
         // nothing to do
     }
     
@@ -3716,7 +3716,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	methodReference_lf_primary
      * 	;
      */
-    @Override public void exitPrimaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primary(@NotNull Java8Parser.PrimaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primaryContext ctx) {
+    @Override public void exitPrimaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primary(Java8Parser.PrimaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primaryContext ctx) {
         // nothing to do
     }
     
@@ -3736,7 +3736,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	methodReference_lfno_primary
      * 	;
      */
-    @Override public void exitPrimaryNoNewArray_lfno_primary(@NotNull Java8Parser.PrimaryNoNewArray_lfno_primaryContext ctx) { 
+    @Override public void exitPrimaryNoNewArray_lfno_primary(Java8Parser.PrimaryNoNewArray_lfno_primaryContext ctx) { 
         if (ctx.literal() != null || 
             "this".equals(ctx.getText()) || 
         ctx.classInstanceCreationExpression_lfno_primary() != null || 
@@ -3787,7 +3787,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:
      * 	;
      */
-    @Override public void exitPrimaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primary(@NotNull Java8Parser.PrimaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primaryContext ctx) { 
+    @Override public void exitPrimaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primary(Java8Parser.PrimaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primaryContext ctx) { 
         // nothing to do
     }
     
@@ -3806,7 +3806,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	-methodReference_lfno_primary
      * 	;
      */
-    @Override public void exitPrimaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primary(@NotNull Java8Parser.PrimaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primaryContext ctx) { 
+    @Override public void exitPrimaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primary(Java8Parser.PrimaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primaryContext ctx) { 
         if (ctx.literal() != null) {
             // nothing to do, literal should be on the top of the stack
             return;
@@ -3863,7 +3863,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	primary        '.' 'new' typeArguments? annotationIdentifier                             typeArgumentsOrDiamond? '(' argumentList? ')' classBody?
      * 	;
      */
-    @Override public void exitClassInstanceCreationExpression(@NotNull Java8Parser.ClassInstanceCreationExpressionContext ctx) { 
+    @Override public void exitClassInstanceCreationExpression(Java8Parser.ClassInstanceCreationExpressionContext ctx) { 
         TigerNode classBody = ctx.classBody() == null ? null : stack.pop();
         stack.pop();    // )
         TigerNode argumentList = ctx.argumentList() == null ? null : stack.pop();
@@ -3901,7 +3901,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'.' 'new' typeArguments? annotationIdentifier typeArgumentsOrDiamond? '(' argumentList? ')' classBody?
      * 	;
      */
-    @Override public void exitClassInstanceCreationExpression_lf_primary(@NotNull Java8Parser.ClassInstanceCreationExpression_lf_primaryContext ctx) { 
+    @Override public void exitClassInstanceCreationExpression_lf_primary(Java8Parser.ClassInstanceCreationExpression_lf_primaryContext ctx) { 
         TigerNode classBody = ctx.classBody() == null ? null : stack.pop();
         stack.pop();    // )
         TigerNode argumentList = ctx.argumentList() == null ? null : stack.pop();
@@ -3926,7 +3926,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	expressionName '.' 'new' typeArguments? annotationIdentifier                             typeArgumentsOrDiamond? '(' argumentList? ')' classBody?
      * 	;
      */
-    @Override public void exitClassInstanceCreationExpression_lfno_primary(@NotNull Java8Parser.ClassInstanceCreationExpression_lfno_primaryContext ctx) {
+    @Override public void exitClassInstanceCreationExpression_lfno_primary(Java8Parser.ClassInstanceCreationExpression_lfno_primaryContext ctx) {
         TigerNode classBody = ctx.classBody() == null ? null : stack.pop();
         stack.pop();    // )
         TigerNode argumentList = ctx.argumentList() == null ? null : stack.pop();
@@ -3965,7 +3965,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	'<>'
      * 	;
      */
-    @Override public void exitTypeArgumentsOrDiamond(@NotNull Java8Parser.TypeArgumentsOrDiamondContext ctx) { 
+    @Override public void exitTypeArgumentsOrDiamond(Java8Parser.TypeArgumentsOrDiamondContext ctx) { 
         // nothing to do
     }
     
@@ -3976,7 +3976,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	typeName '.' SUPER '.' identifier
      * 	;
      */
-    @Override public void exitFieldAccess(@NotNull Java8Parser.FieldAccessContext ctx) { 
+    @Override public void exitFieldAccess(Java8Parser.FieldAccessContext ctx) { 
         TigerNode identifier = stack.pop();
         stack.pop();    // .
         TigerNode primary = stack.pop();    // primary or SUPER
@@ -4000,7 +4000,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'.' identifier
      * 	;
      */
-    @Override public void exitFieldAccess_lf_primary(@NotNull Java8Parser.FieldAccess_lf_primaryContext ctx) { 
+    @Override public void exitFieldAccess_lf_primary(Java8Parser.FieldAccess_lf_primaryContext ctx) { 
         TigerNode identifier = stack.pop();
         stack.pop();    // .
         setLocations(identifier, ctx);
@@ -4013,7 +4013,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	typeName '.' SUPER '.' identifier
      * 	;
      */
-    @Override public void exitFieldAccess_lfno_primary(@NotNull Java8Parser.FieldAccess_lfno_primaryContext ctx) { 
+    @Override public void exitFieldAccess_lfno_primary(Java8Parser.FieldAccess_lfno_primaryContext ctx) { 
         TigerNode identifier = stack.pop();
         stack.pop();    // .
         TigerNode super_ = stack.pop();
@@ -4041,7 +4041,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 		)*                                                           
      * 	;
      */
-    @Override public void exitArrayAccess(@NotNull Java8Parser.ArrayAccessContext ctx) { 
+    @Override public void exitArrayAccess(Java8Parser.ArrayAccessContext ctx) { 
         TigerNode endList = null;
         if (ctx.primaryNoNewArray_lf_arrayAccess() != null) {
             endList = new TigerNode();
@@ -4072,7 +4072,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 		)*
      * 	;
      */
-    @Override public void exitArrayAccess_lf_primary(@NotNull Java8Parser.ArrayAccess_lf_primaryContext ctx) { 
+    @Override public void exitArrayAccess_lf_primary(Java8Parser.ArrayAccess_lf_primaryContext ctx) { 
         TigerNode endList = null;
         if (ctx.primaryNoNewArray_lf_primary_lf_arrayAccess_lf_primary() != null) {
             endList = new TigerNode();
@@ -4105,7 +4105,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	;
      * These are ugly names!
      */
-    @Override public void exitArrayAccess_lfno_primary(@NotNull Java8Parser.ArrayAccess_lfno_primaryContext ctx) {
+    @Override public void exitArrayAccess_lfno_primary(Java8Parser.ArrayAccess_lfno_primaryContext ctx) {
         TigerNode endList = null;
         if (ctx.primaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primary() != null) {
             endList = new TigerNode();
@@ -4138,7 +4138,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	typeName '.' SUPER '.' typeArguments? identifier '(' argumentList? ')'  
      * 	;
      */
-    @Override public void exitMethodInvocation(@NotNull Java8Parser.MethodInvocationContext ctx) { 
+    @Override public void exitMethodInvocation(Java8Parser.MethodInvocationContext ctx) { 
         stack.pop();    // )
         TigerNode argumentList = ctx.argumentList() == null ? null : stack.pop();
         stack.pop();    // (
@@ -4192,7 +4192,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'.' typeArguments? identifier '(' argumentList? ')'
      * 	;
      */
-    @Override public void exitMethodInvocation_lf_primary(@NotNull Java8Parser.MethodInvocation_lf_primaryContext ctx) { 
+    @Override public void exitMethodInvocation_lf_primary(Java8Parser.MethodInvocation_lf_primaryContext ctx) { 
         stack.pop();    // )
         TigerNode argumentList = ctx.argumentList() == null ? null : stack.pop();
         stack.pop();    // (
@@ -4216,7 +4216,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	typeName '.' SUPER '.' typeArguments? identifier '(' argumentList? ')'
      * 	;
      */
-    @Override public void exitMethodInvocation_lfno_primary(@NotNull Java8Parser.MethodInvocation_lfno_primaryContext ctx) { 
+    @Override public void exitMethodInvocation_lfno_primary(Java8Parser.MethodInvocation_lfno_primaryContext ctx) { 
         stack.pop();    // )
         TigerNode argumentList = ctx.argumentList() == null ? null : stack.pop();
         stack.pop();    // (
@@ -4269,7 +4269,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	expression (',' expression)*
      * 	;
      */
-    @Override public void exitArgumentList(@NotNull Java8Parser.ArgumentListContext ctx) { 
+    @Override public void exitArgumentList(Java8Parser.ArgumentListContext ctx) { 
         TigerNode list = new TigerNode();
         setLocations(list, ctx);
         for (int i = 0; i < ctx.expression().size(); i++) {
@@ -4292,7 +4292,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	arrayType '::' 'new'                               
      * 	;
      */
-    @Override public void exitMethodReference(@NotNull Java8Parser.MethodReferenceContext ctx) {
+    @Override public void exitMethodReference(Java8Parser.MethodReferenceContext ctx) {
         if (ctx.expressionName() != null || ctx.referenceType() != null || ctx.primary() != null) {
             TigerNode identifier = stack.pop();
             TigerNode typeArguments = null;
@@ -4371,7 +4371,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'::' typeArguments? identifier
      * 	;
      */
-    @Override public void exitMethodReference_lf_primary(@NotNull Java8Parser.MethodReference_lf_primaryContext ctx) {
+    @Override public void exitMethodReference_lf_primary(Java8Parser.MethodReference_lf_primaryContext ctx) {
         TigerNode identifier = stack.pop();
         setLocations(identifier, ctx);
         if (ctx.typeArguments() != null) {
@@ -4391,7 +4391,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	arrayType '::' 'new'
      * 	;
      */
-    @Override public void exitMethodReference_lfno_primary(@NotNull Java8Parser.MethodReference_lfno_primaryContext ctx) { 
+    @Override public void exitMethodReference_lfno_primary(Java8Parser.MethodReference_lfno_primaryContext ctx) { 
         if (ctx.expressionName() != null || ctx.referenceType() != null) {
             TigerNode identifier = stack.pop();
             TigerNode typeArguments = null;
@@ -4473,7 +4473,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	'new' classOrInterfaceType dims arrayInitializer
      * 	;
      */
-    @Override public void exitArrayCreationExpression(@NotNull Java8Parser.ArrayCreationExpressionContext ctx) { 
+    @Override public void exitArrayCreationExpression(Java8Parser.ArrayCreationExpressionContext ctx) { 
         if (ctx.arrayInitializer() != null) {
             // last 2 choices
             TigerNode arrayInitializer = stack.pop();
@@ -4508,7 +4508,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	dimExpr dimExpr*
      * 	;
      */
-    @Override public void exitDimExprs(@NotNull Java8Parser.DimExprsContext ctx) { 
+    @Override public void exitDimExprs(Java8Parser.DimExprsContext ctx) { 
         TigerNode exprs = new TigerNode();
         setLocations(exprs, ctx);
         for (int i = 0; i < ctx.dimExpr().size(); i++) {
@@ -4522,7 +4522,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	annotation* '[' expression ']'
      * 	;
      */
-    @Override public void exitDimExpr(@NotNull Java8Parser.DimExprContext ctx) { 
+    @Override public void exitDimExpr(Java8Parser.DimExprContext ctx) { 
         stack.pop();    // ]
         TigerNode expression = stack.pop();
         setLocations(expression, ctx);
@@ -4540,7 +4540,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	expression
      * 	;
      */
-    @Override public void exitConstantExpression(@NotNull Java8Parser.ConstantExpressionContext ctx) { 
+    @Override public void exitConstantExpression(Java8Parser.ConstantExpressionContext ctx) { 
         // nothing to do
     }
     
@@ -4550,7 +4550,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	assignmentExpression
      * 	;
      */
-    @Override public void exitExpression(@NotNull Java8Parser.ExpressionContext ctx) { 
+    @Override public void exitExpression(Java8Parser.ExpressionContext ctx) { 
         // nothing to do
     }
     
@@ -4559,7 +4559,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	lambdaParameters '->' lambdaBody
      * 	;
      */
-    @Override public void exitLambdaExpression(@NotNull Java8Parser.LambdaExpressionContext ctx) { 
+    @Override public void exitLambdaExpression(Java8Parser.LambdaExpressionContext ctx) { 
         TigerNode body = stack.pop();
         stack.pop();    // ->
         TigerNode parameters = stack.pop();
@@ -4577,7 +4577,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	'(' inferredFormalParameterList ')'
      * 	;
      */
-    @Override public void exitLambdaParameters(@NotNull Java8Parser.LambdaParametersContext ctx) { 
+    @Override public void exitLambdaParameters(Java8Parser.LambdaParametersContext ctx) { 
         if (ctx.identifier() == null) {
             stack.pop();    // )
             if (ctx.formalParameterList() != null || ctx.inferredFormalParameterList() != null) {
@@ -4599,7 +4599,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	identifier (',' identifier)*
      * 	;
      */
-    @Override public void exitInferredFormalParameterList(@NotNull Java8Parser.InferredFormalParameterListContext ctx) { 
+    @Override public void exitInferredFormalParameterList(Java8Parser.InferredFormalParameterListContext ctx) { 
         if (ctx.identifier() != null) {
             TigerNode list = new TigerNode();
             setLocations(list, ctx);
@@ -4616,7 +4616,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	block
      * 	;
      */
-    @Override public void exitLambdaBody(@NotNull Java8Parser.LambdaBodyContext ctx) { 
+    @Override public void exitLambdaBody(Java8Parser.LambdaBodyContext ctx) { 
         // nothing to do
     }
     
@@ -4626,7 +4626,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	assignment
      * 	;
      */
-    @Override public void exitAssignmentExpression(@NotNull Java8Parser.AssignmentExpressionContext ctx) {
+    @Override public void exitAssignmentExpression(Java8Parser.AssignmentExpressionContext ctx) {
         // nothing to do
     }
     
@@ -4635,7 +4635,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	leftHandSide assignmentOperator expression
      * 	;
      */
-    @Override public void exitAssignment(@NotNull Java8Parser.AssignmentContext ctx) { 
+    @Override public void exitAssignment(Java8Parser.AssignmentContext ctx) { 
         TigerNode expression = stack.pop();
         stack.pop();    // assignmentOperator
         TigerNode leftHandSide = stack.pop();
@@ -4650,7 +4650,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	arrayAccess
      * 	;
      */
-    @Override public void exitLeftHandSide(@NotNull Java8Parser.LeftHandSideContext ctx) { 
+    @Override public void exitLeftHandSide(Java8Parser.LeftHandSideContext ctx) { 
         // nothing to do
     }
     
@@ -4670,7 +4670,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	'|='
      * 	;
      */
-    @Override public void exitAssignmentOperator(@NotNull Java8Parser.AssignmentOperatorContext ctx) {
+    @Override public void exitAssignmentOperator(Java8Parser.AssignmentOperatorContext ctx) {
         // nothing to do
     }
     
@@ -4680,7 +4680,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      *     |   '-'
      *     ;
      */
-    @Override public void exitAdditiveOperator(@NotNull Java8Parser.AdditiveOperatorContext ctx) {
+    @Override public void exitAdditiveOperator(Java8Parser.AdditiveOperatorContext ctx) {
         // nothing to do
     }
     
@@ -4693,7 +4693,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      *     |   'instanceof'
      *     ;
      */
-    @Override public void exitRelationalOperator(@NotNull Java8Parser.RelationalOperatorContext ctx) { 
+    @Override public void exitRelationalOperator(Java8Parser.RelationalOperatorContext ctx) { 
         // nothing to do
     }
     
@@ -4704,7 +4704,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      *     |   '%'
      *     ;
      */
-    @Override public void exitMultiplicativeOperator(@NotNull Java8Parser.MultiplicativeOperatorContext ctx) { 
+    @Override public void exitMultiplicativeOperator(Java8Parser.MultiplicativeOperatorContext ctx) { 
         // nothing to do
     }
     
@@ -4713,7 +4713,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      *     :   '[]'
      *     ;
      */
-    @Override public void exitSquareBrackets(@NotNull Java8Parser.SquareBracketsContext ctx) { 
+    @Override public void exitSquareBrackets(Java8Parser.SquareBracketsContext ctx) { 
         // nothing to do
     }
     
@@ -4724,7 +4724,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|   conditionalOrExpression '?' expression ':' lambdaExpression
      * 	;
      */
-    @Override public void exitConditionalExpression(@NotNull Java8Parser.ConditionalExpressionContext ctx) { 
+    @Override public void exitConditionalExpression(Java8Parser.ConditionalExpressionContext ctx) { 
         TigerNode conditionalExpression = stack.pop();  // conditionalExpression or lambdaExpression
         if (ctx.expression() != null) {
             stack.pop();    // :
@@ -4748,7 +4748,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	conditionalOrExpression '||' conditionalAndExpression
      * 	;
      */
-    @Override public void exitConditionalOrExpression(@NotNull Java8Parser.ConditionalOrExpressionContext ctx) { 
+    @Override public void exitConditionalOrExpression(Java8Parser.ConditionalOrExpressionContext ctx) { 
         TigerNode conditionalAndExpression = stack.pop();
         if (ctx.conditionalOrExpression() != null) {
             stack.pop();    // ||
@@ -4769,7 +4769,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	conditionalAndExpression '&&' inclusiveOrExpression
      * 	;
      */
-    @Override public void exitConditionalAndExpression(@NotNull Java8Parser.ConditionalAndExpressionContext ctx) { 
+    @Override public void exitConditionalAndExpression(Java8Parser.ConditionalAndExpressionContext ctx) { 
         TigerNode inclusiveOrExpression = stack.pop();
         if (ctx.conditionalAndExpression() != null) {
             stack.pop();    // &&
@@ -4790,7 +4790,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	inclusiveOrExpression '|' exclusiveOrExpression
      * 	;
      */
-    @Override public void exitInclusiveOrExpression(@NotNull Java8Parser.InclusiveOrExpressionContext ctx) { 
+    @Override public void exitInclusiveOrExpression(Java8Parser.InclusiveOrExpressionContext ctx) { 
         TigerNode exclusiveOrExpression = stack.pop();
         if (ctx.inclusiveOrExpression() != null) {
             stack.pop();    // |
@@ -4811,7 +4811,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	exclusiveOrExpression '^' andExpression
      * 	;
      */
-    @Override public void exitExclusiveOrExpression(@NotNull Java8Parser.ExclusiveOrExpressionContext ctx) { 
+    @Override public void exitExclusiveOrExpression(Java8Parser.ExclusiveOrExpressionContext ctx) { 
         TigerNode andExpression = stack.pop();
         if (ctx.exclusiveOrExpression() != null) {
             stack.pop();    // ^
@@ -4832,7 +4832,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	andExpression '&' equalityExpression
      * 	;
      */
-    @Override public void exitAndExpression(@NotNull Java8Parser.AndExpressionContext ctx) { 
+    @Override public void exitAndExpression(Java8Parser.AndExpressionContext ctx) { 
         TigerNode equalityExpression = stack.pop();
         if (ctx.andExpression() != null) {
             stack.pop();    // &
@@ -4854,7 +4854,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	equalityExpression '!=' relationalExpression
      * 	;
      */
-    @Override public void exitEqualityExpression(@NotNull Java8Parser.EqualityExpressionContext ctx) {
+    @Override public void exitEqualityExpression(Java8Parser.EqualityExpressionContext ctx) {
         TigerNode relationalExpression = stack.pop();
         if (ctx.equalityExpression() != null) {
             stack.pop();    // == or !=
@@ -4879,7 +4879,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	relationalExpression relationalOperator referenceType
      * 	;
      */
-    @Override public void exitRelationalExpression(@NotNull Java8Parser.RelationalExpressionContext ctx) { 
+    @Override public void exitRelationalExpression(Java8Parser.RelationalExpressionContext ctx) { 
         TigerNode shiftExpression = stack.pop();    // shiftExpression or referenceType
         if (ctx.relationalOperator() != null) {
             stack.pop();    // operator
@@ -4902,7 +4902,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	shiftExpression shiftOperator additiveExpression
      * 	;
      */
-    @Override public void exitShiftExpression(@NotNull Java8Parser.ShiftExpressionContext ctx) {
+    @Override public void exitShiftExpression(Java8Parser.ShiftExpressionContext ctx) {
         TigerNode additiveExpression = stack.pop();
         if (ctx.shiftOperator() != null) {
             stack.pop();    // operator
@@ -4924,7 +4924,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      *     |   '>' '>' '>'
      *     ;
      */
-    @Override public void exitShiftOperator(@NotNull Java8Parser.ShiftOperatorContext ctx) {
+    @Override public void exitShiftOperator(Java8Parser.ShiftOperatorContext ctx) {
         // the angle brackets are on the stack individually, so need to pop off the
         // right amount and create a single node for them
         int length = ctx.getText().length();
@@ -4947,7 +4947,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	additiveExpression additiveOperator multiplicativeExpression
      * 	;
      */
-    @Override public void exitAdditiveExpression(@NotNull Java8Parser.AdditiveExpressionContext ctx) { 
+    @Override public void exitAdditiveExpression(Java8Parser.AdditiveExpressionContext ctx) { 
         TigerNode multiplicativeExpression = stack.pop();
         if (ctx.additiveOperator() != null) {
             stack.pop();    // operator
@@ -4970,7 +4970,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	multiplicativeExpression multiplicativeOperator unaryExpression
      * 	;
      */
-    @Override public void exitMultiplicativeExpression(@NotNull Java8Parser.MultiplicativeExpressionContext ctx) { 
+    @Override public void exitMultiplicativeExpression(Java8Parser.MultiplicativeExpressionContext ctx) { 
         TigerNode unaryExpression = stack.pop();
         if (ctx.multiplicativeOperator() != null) {
             stack.pop();    // operator
@@ -4994,7 +4994,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	unaryExpressionNotPlusMinus
      * 	;
      */
-    @Override public void exitUnaryExpression(@NotNull Java8Parser.UnaryExpressionContext ctx) { 
+    @Override public void exitUnaryExpression(Java8Parser.UnaryExpressionContext ctx) { 
         TigerNode unaryExpression = null;
         if (ctx.unaryExpression() != null) {
             unaryExpression = stack.pop();   
@@ -5012,7 +5012,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'++' unaryExpression
      * 	;
      */
-    @Override public void exitPreIncrementExpression(@NotNull Java8Parser.PreIncrementExpressionContext ctx) { 
+    @Override public void exitPreIncrementExpression(Java8Parser.PreIncrementExpressionContext ctx) { 
         TigerNode unaryExpression = stack.pop();
         setLocations(unaryExpression, ctx);
         stack.pop();    // ++
@@ -5024,7 +5024,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'--' unaryExpression
      * 	;
      */
-    @Override public void exitPreDecrementExpression(@NotNull Java8Parser.PreDecrementExpressionContext ctx) {
+    @Override public void exitPreDecrementExpression(Java8Parser.PreDecrementExpressionContext ctx) {
         TigerNode unaryExpression = stack.pop();
         setLocations(unaryExpression, ctx);
         stack.pop();    // --
@@ -5039,7 +5039,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	castExpression
      * 	;
      */
-    @Override public void exitUnaryExpressionNotPlusMinus(@NotNull Java8Parser.UnaryExpressionNotPlusMinusContext ctx) { 
+    @Override public void exitUnaryExpressionNotPlusMinus(Java8Parser.UnaryExpressionNotPlusMinusContext ctx) { 
         TigerNode unaryExpressionNotPlusMinus = stack.pop();
         setLocations(unaryExpressionNotPlusMinus, ctx);
         if (ctx.unaryExpression() != null) {
@@ -5058,7 +5058,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 		)*
      * 	;
      */
-    @Override public void exitPostfixExpression(@NotNull Java8Parser.PostfixExpressionContext ctx) {
+    @Override public void exitPostfixExpression(Java8Parser.PostfixExpressionContext ctx) {
         TigerNode temp = null;
         if (ctx.postIncrementExpression_lf_postfixExpression() != null) {
             for (int i = 0; i < ctx.postIncrementExpression_lf_postfixExpression().size(); i++) {
@@ -5089,7 +5089,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	postfixExpression '++'
      * 	;
      */
-    @Override public void exitPostIncrementExpression(@NotNull Java8Parser.PostIncrementExpressionContext ctx) { 
+    @Override public void exitPostIncrementExpression(Java8Parser.PostIncrementExpressionContext ctx) { 
         stack.pop();    // ++
         TigerNode postfixExpression = stack.pop();
         setLocations(postfixExpression, ctx);
@@ -5101,7 +5101,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'++'
      * 	;
      */
-    @Override public void exitPostIncrementExpression_lf_postfixExpression(@NotNull Java8Parser.PostIncrementExpression_lf_postfixExpressionContext ctx) { 
+    @Override public void exitPostIncrementExpression_lf_postfixExpression(Java8Parser.PostIncrementExpression_lf_postfixExpressionContext ctx) { 
         // nothing to do
     }
     
@@ -5110,7 +5110,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	postfixExpression '--'
      * 	;
      */
-    @Override public void exitPostDecrementExpression(@NotNull Java8Parser.PostDecrementExpressionContext ctx) {
+    @Override public void exitPostDecrementExpression(Java8Parser.PostDecrementExpressionContext ctx) {
         stack.pop();    // --
         TigerNode postfixExpression = stack.pop();
         setLocations(postfixExpression, ctx);
@@ -5122,7 +5122,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	:	'--'
      * 	;
      */
-    @Override public void exitPostDecrementExpression_lf_postfixExpression(@NotNull Java8Parser.PostDecrementExpression_lf_postfixExpressionContext ctx) { 
+    @Override public void exitPostDecrementExpression_lf_postfixExpression(Java8Parser.PostDecrementExpression_lf_postfixExpressionContext ctx) { 
         // nothing to do?
     }
     
@@ -5133,7 +5133,7 @@ public class Java9SideKickListener extends Java8BaseListener {
      * 	|	'(' referenceType additionalBound* ')' lambdaExpression                
      * 	;                                                                         
      */
-    @Override public void exitCastExpression(@NotNull Java8Parser.CastExpressionContext ctx) { 
+    @Override public void exitCastExpression(Java8Parser.CastExpressionContext ctx) { 
         TigerNode expression = stack.pop();   // unaryExpression, unaryExpressionNotPlusMinus, or lambdaExpression
         setLocations(expression, ctx);
         stack.pop();    // )
@@ -5148,12 +5148,12 @@ public class Java9SideKickListener extends Java8BaseListener {
         stack.push(expression);
     }
 
-    @Override public void exitEveryRule(@NotNull ParserRuleContext ctx) { }
+    @Override public void exitEveryRule(ParserRuleContext ctx) { }
 
-    @Override public void visitTerminal(@NotNull TerminalNode node) { 
+    @Override public void visitTerminal(TerminalNode node) { 
         TigerNode tn = new TigerNode(node.getText());
         stack.push(tn);
     }
 
-    @Override public void visitErrorNode(@NotNull ErrorNode node) { }
+    @Override public void visitErrorNode(ErrorNode node) { }
 }

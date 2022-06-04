@@ -57,7 +57,8 @@ public class ClassNode extends TigerNode {
     }
 
     // list is a list of Types
-    // why is this a list? Java doesn't have multiple inheritance.
+    // why is this a list? Java doesn't have multiple inheritance, there can only
+    // ever be one item in the list.
     public void setExtendsList( List<Type> list ) {
         if ( list == null )
             return ;
@@ -79,11 +80,22 @@ public class ClassNode extends TigerNode {
 
     // list is a list of Types
     public void setImplementsList( List<TigerNode> list ) {
-        if ( list == null )
-            return ;
+        if ( list == null ) {
+            return;
+        }
         for ( Iterator<TigerNode> it = list.iterator(); it.hasNext(); ) {
             TigerNode t = it.next();
             addChild( new ImplementsNode( t.getName() ) );
+        }
+    }
+    
+    public void setPermitsList( List<TigerNode> list ) {
+        if (list == null) {
+            return;   
+        }
+        for (Iterator<TigerNode> it = list.iterator(); it.hasNext();) {
+            TigerNode t = it.next();
+            addChild(new PermitsNode( t.getName() ) );
         }
     }
     
