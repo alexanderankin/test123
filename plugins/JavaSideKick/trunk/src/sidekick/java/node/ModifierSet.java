@@ -71,6 +71,8 @@ public final class ModifierSet {
     public static final int STRICTFP = 0x0800;      // Declared strictfp; floating-point mode is FP-strict
     public static final int ANNOTATION = 0x1000;    // There is an annotation in the modifiers
     public static final int DEFAULT = 0x2000;
+    public static final int SEALED = 0x4000;        // java 17
+    public static final int NON_SEALED = 0x8000;    // java 17
     
     
     private int myModifiers = 0;
@@ -140,6 +142,14 @@ public final class ModifierSet {
     public static boolean isVolatile( int modifiers ) {
         return ( modifiers & VOLATILE ) != 0;
     }
+    
+    public static boolean isSealed( int modifiers ) {
+        return ( modifiers & SEALED ) != 0;   
+    }
+
+    public static boolean isNonSealed( int modifiers ) {
+        return ( modifiers & NON_SEALED ) != 0;   
+    }
 
     /**
      * Removes the given modifier.
@@ -197,6 +207,12 @@ public final class ModifierSet {
         if ( ModifierSet.isVolatile( modifiers ) ) {
             sb.append( "volatile " );
         }
+        if ( ModifierSet.isSealed( modifiers ) ) {
+            sb.append( "sealed " );   
+        }
+        if ( ModifierSet.isNonSealed( modifiers ) ) {
+            sb.append( "non_sealed " );   
+        }
         return sb.toString().trim();
     }
     
@@ -242,6 +258,12 @@ public final class ModifierSet {
                 break;
             case "default":
                 modifier += DEFAULT;
+                break;
+            case "sealed":
+                modifier += SEALED;
+                break;
+            case "non_sealed":
+                modifier += NON_SEALED;
                 break;
             }
         }

@@ -5,8 +5,6 @@ package sidekick.java.parser.antlr;
 import java.util.*;
 
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.NotNull;
-import org.antlr.v4.runtime.misc.Nullable;
 
 public class ErrorListener extends BaseErrorListener {
 
@@ -16,8 +14,7 @@ public class ErrorListener extends BaseErrorListener {
         return errors;
     }
 
-    @Override
-    public <T extends Token> void syntaxError( @NotNull Recognizer<T, ?> recognizer, @Nullable T offendingSymbol, int line, int charPositionInLine, @NotNull String msg, @Nullable RecognitionException e ) {
+    public <T extends Token> void syntaxError( Recognizer<T, ?> recognizer, T offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e ) {
         int length = 0;
         if ( e != null && e.getOffendingToken() != null ) {
             int startOffset = e.getOffendingToken().getStartIndex();

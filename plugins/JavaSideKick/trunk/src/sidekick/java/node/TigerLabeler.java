@@ -349,6 +349,7 @@ public class TigerLabeler {
                         icon = E_IMPORT_ICON;
                         break;
                     case TigerNode.CLASS:
+                    case TigerNode.MODULE:
                         if (((ClassNode) tn).isInnerClass()) {
                             if (ModifierSet.isPublic(modifiers))
                                 icon = E_INNER_CLASS_PUBLIC_ICON;
@@ -453,6 +454,9 @@ public class TigerLabeler {
                         break;
                     case TigerNode.CLASS:
                         icon = ((ClassNode) tn).isInnerClass() ? INNER_CLASS_ICON : CLASS_ICON;
+                        break;
+                    case TigerNode.MODULE:
+                        icon = CLASS_ICON;
                         break;
                     case TigerNode.EXTENDS:
                         icon = EXTENDS_ICON;
@@ -596,6 +600,9 @@ public class TigerLabeler {
                     case TigerNode.IMPLEMENTS:
                         sb.append("implements ");
                         break;
+                    case TigerNode.PERMITS:
+                        sb.append("permits ");
+                        break;
                     case TigerNode.MODULE:
                         sb.append("module ");
                         break;
@@ -643,6 +650,9 @@ public class TigerLabeler {
                 case TigerNode.IMPLEMENTS:
                     sb.append("interface ");
                     break;
+                case TigerNode.PERMITS:
+                    sb.append("subclass ");
+                    break;
             }
             sb.append(tn.getName());
 
@@ -657,6 +667,9 @@ public class TigerLabeler {
                 }
                 else if (tn.getOrdinal() == TigerNode.IMPLEMENTS) {
                     typeParams = ((ImplementsNode) tn).getTypeParams();
+                }
+                else if (tn.getOrdinal() == TigerNode.PERMITS) {
+                    typeParams = ((PermitsNode) tn).getTypeParams();
                 }
                 else if (tn.getOrdinal() == TigerNode.FIELD) {
                     typeParams = ((FieldNode) tn).getTypeParams();

@@ -25,24 +25,33 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-
 package sidekick.java.node;
 
-import java.util.*;
 
-
-// an extension of TigerNode for a Java 9 module
-public class ModuleNode extends TigerNode {
+/**
+ * an extension of TigerNode for a "permits" clause. These will be shown 
+ * "permits" clauses as child nodes of class nodes. 
+ */
+public class PermitsNode extends Type {
     
-    public ModuleNode() {
+    public PermitsNode(String name) {
+        super(name);   
+        setVisible(true);
+    }
+    
+    public PermitsNode( Type type ) {
+        super(type);
+        setVisible(true);
     }
 
-    public ModuleNode(String name) {
-        super(name, 0);   
-    }
-    
     public int getOrdinal() {
-        return MODULE;
+        return PERMITS;
+    }
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append( getStartLocation().line ).append( ": " ).append( ModifierSet.toString( getModifiers() ) ).append( " " ).append( getType().toString() );
+        return sb.toString();
     }
 }
 

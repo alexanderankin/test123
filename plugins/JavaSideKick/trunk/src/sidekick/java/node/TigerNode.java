@@ -61,6 +61,7 @@ public class TigerNode extends Asset implements SideKickElement {
     public static final int COMPILATION_UNIT = 0;
     public static final int EXTENDS = 1;
     public static final int IMPLEMENTS = 2;
+    public static final int PERMITS = 3;
     public static final int CONSTRUCTOR = 4;
     public static final int METHOD = 8;
     public static final int THROWS = 16;
@@ -69,6 +70,7 @@ public class TigerNode extends Asset implements SideKickElement {
     public static final int INTERFACE = 64;
     public static final int INITIALIZER = 96;
     public static final int FIELD = 128;
+    public static final int DIRECTIVE = 129;
     public static final int ENUM = 256;
     public static final int IMPORT = 512;
     public static final int BLOCK = 1024;
@@ -89,8 +91,7 @@ public class TigerNode extends Asset implements SideKickElement {
     // name for this node
     private String name;
 
-
-    // TODO: deprecate this. modifiers, see ModifierSet
+    // modifiers for this node, although the node could be just a carrier for modifiers
     private int modifiers = 0;
     
     // start end end locations for this node in the source file
