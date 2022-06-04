@@ -297,7 +297,9 @@ public class Os {
    /**
     * Dale Anson: One of the main reasons I borrowed this class from Ant was to
     * be able to read environment variables. It makes sense to add a method to
-    * easily fetch the value of an environment variable here.
+    * easily fetch the value of an environment variable here. There were a bunch
+    * of uses of "var" as a variable name, I changed those to "v" since "var" is
+    * now a java keyword.
     * @param name the name of an environment variable. Much of this code was
     * copied from org.apache.tools.ant.taskdefs.Execute.
     * @return the value of the environment variable, or null if there is no value
@@ -321,30 +323,30 @@ public class Os {
 
          // this portion copied from org.apache.tools.ant.taskdefs.Execute //
          Vector<String> procEnvironment = new Vector<String>();
-         String var = null;
+         String v = null;
          String line, lineSep = System.getProperty( "line.separator" );
          while ( ( line = in.readLine() ) != null ) {
             if ( line.indexOf( '=' ) == -1 ) {
-               // Chunk part of previous env var (UNIX env vars can
+               // Chunk part of previous env v (UNIX env vs can
                // contain embedded new lines).
-               if ( var == null ) {
-                  var = lineSep + line;
+               if ( v == null ) {
+                  v = lineSep + line;
                }
                else {
-                  var += lineSep + line;
+                  v += lineSep + line;
                }
             }
             else {
-               // New env var...append the previous one if we have it.
-               if ( var != null ) {
-                  procEnvironment.addElement( var );
+               // New env v...append the previous one if we have it.
+               if ( v != null ) {
+                  procEnvironment.addElement( v );
                }
-               var = line;
+               v = line;
             }
          }
-         // Since we "look ahead" before adding, there's one last env var.
-         if ( var != null ) {
-            procEnvironment.addElement( var );
+         // Since we "look ahead" before adding, there's one last env v.
+         if ( v != null ) {
+            procEnvironment.addElement( v );
          }
          // end copy from Execute //
 
@@ -352,10 +354,10 @@ public class Os {
          if ( procEnvironment.size() > 0 ) {
             java.util.Iterator it = procEnvironment.iterator();
             while ( it.hasNext() ) {
-               var = ( String ) it.next();
-               int index = var.indexOf( "=" );
-               String key = var.substring( 0, index );
-               String value = var.substring( index + 1 );
+               v = ( String ) it.next();
+               int index = v.indexOf( "=" );
+               String key = v.substring( 0, index );
+               String value = v.substring( index + 1 );
                environment.put( key, value );
             }
          }
