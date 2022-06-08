@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2005, Dale Anson
+Copyright (c) 2022, Dale Anson
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -29,24 +29,33 @@ package sidekick.java.node;
 
 import java.util.*;
 
-// an extension of TigerNode for a constructor
-public class ConstructorNode extends TigerNode implements Parameterizable {
+// an extension of TigerNode for a Record
+public class RecordNode extends TigerNode implements Parameterizable {
     String typeParams = null;
     List<Parameter> params = null;
 
-    public ConstructorNode() { 
+    public RecordNode() { 
     }
 
-    public ConstructorNode( String name, int modifiers, String typeParams, List<Parameter> params ) {
+    public RecordNode( String name, int modifiers ) {
         super( name, modifiers );
-        this.typeParams = typeParams;
-        this.params = params;
     }
 
     public int getOrdinal() {
-        return CONSTRUCTOR;
+        return RECORD;
     }
 
+    // list is a list of Types
+    public void setImplementsList( List<TigerNode> list ) {
+        if ( list == null ) {
+            return;
+        }
+        for ( Iterator<TigerNode> it = list.iterator(); it.hasNext(); ) {
+            TigerNode t = it.next();
+            addChild( new ImplementsNode( t.getName() ) );
+        }
+    }
+    
     public void addParameter( Parameter p ) {
         if ( params == null ) {
             params = new ArrayList<Parameter>();
@@ -58,20 +67,12 @@ public class ConstructorNode extends TigerNode implements Parameterizable {
         params = p;
     }
 
-    /**
-     * @return raw value for  params
-     */
-    /*
-    public String getParams() {
-        return params.toString();
-    }
-    */
     public List<Parameter> getParameters() {
         return params;
     }
 
     /**
-     * Returns a string showing the  parameters for this method.  The
+     * Returns a string showing the formal parameters for this method.  The
      * returned string is a comma separated list of parameter types, if
      * <code>withNames</code> is true, then the returned string is a comma
      * separated list of type:name.
@@ -81,7 +82,7 @@ public class ConstructorNode extends TigerNode implements Parameterizable {
      * <p>
      * Example: method is "void getX(int a, int b)",
      * <code>withNames</code> is true, returned string is "int a,int b".
-     * @param withNames should returned string include the  parameter names
+     * @param withNames should returned string include the formal parameter names
      * @param typeAsSuffix if true and if withNames is true, name and type will
      * be reversed, e.g. method is "void getX(int a, int b), returned string is
      * "a : int, b : int"
@@ -91,7 +92,7 @@ public class ConstructorNode extends TigerNode implements Parameterizable {
      * "a : int, b : final int"
      * @return parameters as string, see above
      */
-    public String getParameters( boolean withNames, boolean typeAsSuffix, boolean includeFinal, boolean includeTypeArgs ) {
+    public String getParams( boolean withNames, boolean typeAsSuffix, boolean includeTypeArgs ) {
 
         if ( params == null || params.size() == 0 ) {
             return "";
@@ -101,15 +102,9 @@ public class ConstructorNode extends TigerNode implements Parameterizable {
         for ( Iterator it = params.iterator(); it.hasNext(); ) {
             Parameter param = ( Parameter ) it.next();
             if ( typeAsSuffix ) {
-                if ( includeFinal && param.isFinal() ) {
-                    sb.append( "final " );
-                }
                 sb.append( param.getType() );
                 if ( includeTypeArgs && param.getType() != null ) {
                     sb.append( param.getRealType().typeArgs );
-                }
-                if ( param.isVarArg() ) {
-                    sb.append( "..." );
                 }
                 if ( withNames ) {
                     sb.append( " : " ).append( param.getType() );
@@ -118,15 +113,9 @@ public class ConstructorNode extends TigerNode implements Parameterizable {
                 if ( withNames ) {
                     sb.append( param.getName() ).append( " : " );
                 }
-                if ( includeFinal && param.isFinal() ) {
-                    sb.append( "final " );
-                }
                 sb.append( param.getType() );
                     if ( includeTypeArgs ) {
                     sb.append( param.getTypeParams() );
-                }
-                if ( param.isVarArg() ) {
-                    sb.append( "..." );
                 }
             }
             if ( it.hasNext() ) {
@@ -143,21 +132,8 @@ public class ConstructorNode extends TigerNode implements Parameterizable {
         return typeParams == null ? "" : typeParams;
     }
 
-    public void setThrows( List t ) {
-        if ( t == null ) {
-            return;
-        }
-        for ( Iterator it = t.iterator(); it.hasNext(); ) {
-            TigerNode tn = ( TigerNode ) it.next();
-            ThrowsNode thn = new ThrowsNode( tn.getName() );
-            thn.setStartLocation( tn.getStartLocation() );
-            thn.setEndLocation( tn.getEndLocation() );
-            addChild( thn );
-        }
-    }
 
     /**
-     * Overridden to return true if the node is a ThrowsNode.
      */
     public boolean canAdd( TigerNode node ) {
         return true;
@@ -166,7 +142,7 @@ public class ConstructorNode extends TigerNode implements Parameterizable {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append( super.toString() );
-        sb.append( '(' ).append( getParameters( true, false, true, true ) ).append( ')' );  // NOPMD 
+        sb.append( '(' ).append( getParams( true, true, true ) ).append( ')' );     // NOPMD sometimes PMD doesn't know what it's doing
         sb.append( ": <init>" );
         return sb.toString();
     }

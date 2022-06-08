@@ -824,7 +824,7 @@ TigerNode javacode_production() :
     }
     mn.setName(identifier);
     if (params != null) {
-        mn.setFormalParams(params);
+        mn.setParameters(params);
     }
     if (bn != null) {
         mn.setEndLocation(bn.getEndLocation());
@@ -858,7 +858,7 @@ TigerNode bnf_production() :
     }
     mn.setName(identifier);
     if (params != null) {
-        mn.setFormalParams(params);
+        mn.setParameters(params);
     }
     if (end_t != null ) {
         mn.setEndLocation(getEndLocation(end_t));
@@ -2170,7 +2170,7 @@ TigerNode MethodDeclaration(Modifier m):
         else
             node.setStartLocation(getLocation(m));
         node.setModifiers(m.modifiers);
-        node.setFormalParams(m_node.getFormalParams());
+        node.setParameters(m_node.getParameter());
         node.setReturnType(return_type);
         node.setTypeParams(type_params);
         node.setThrows(name_list);
@@ -2214,7 +2214,7 @@ MethodNode MethodDeclarator():
         MethodNode node = new MethodNode();
         node.setName(t.image);
         node.setStartLocation(getLocation(t));
-        node.setFormalParams(f);
+        node.setParameters(f);
         return node;
     }
 }

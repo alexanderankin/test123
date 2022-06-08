@@ -88,13 +88,12 @@ public class JavaSideKickListener extends JavaParserBaseListener {
      */
     private String getQualifiedName(QualifiedNameContext qnc) {
         StringBuilder sb = new StringBuilder();
-        for ( int i = 0; i < qnc.identifier().size(); i++ ) {
-            sb.append( qnc.identifier( i ).IDENTIFIER().getSymbol().getText() );
-            if ( i < qnc.identifier().size() - 1 ) {
-                sb.append( '.' );
-            }
+        List<IdentifierContext> idList = qnc.identifier();
+        for (IdentifierContext id : idList) {
+            sb.append(id.getText());
+            sb.append('.');
         }
-        return sb.toString();
+        return sb.substring(0, sb.length() - 1);
     }
     
 
@@ -160,25 +159,6 @@ public class JavaSideKickListener extends JavaParserBaseListener {
 
     /**
      * moduleDeclaration
-     *     : OPEN? MODULE qualifiedName moduleBody
-     *     ;
-     *
-     * moduleBody
-     *     : '{' moduleDirective* '}'
-     *     ;
-     * 
-     * moduleDirective
-     * 	: REQUIRES requiresModifier* qualifiedName ';'
-     * 	| EXPORTS qualifiedName (TO qualifiedName)? ';'
-     * 	| OPENS qualifiedName (TO qualifiedName)? ';'
-     * 	| USES qualifiedName ';'
-     * 	| PROVIDES qualifiedName WITH qualifiedName ';'
-     * 	;
-     * 
-     * requiresModifier
-     * 	: TRANSITIVE
-     * 	| STATIC
-     * 	;
      */
     private TigerNode processModuleDeclaration(ModuleDeclarationContext ctx) {
         String name = "";
@@ -237,12 +217,11 @@ public class JavaSideKickListener extends JavaParserBaseListener {
      *     ;
      */
     public TigerNode processImportDeclaration( ImportDeclarationContext ctx ) {
-        String name = ctx.getText().substring("import".length());
-        if (name.startsWith("static")) {
-            name = name.substring("static".length());   
-        }
-        TigerNode node = new ImportNode( name );
+        TigerNode node = new ImportNode();
         setLocations( node, ctx );
+        if (ctx.qualifiedName() != null) {
+            node.setName(getQualifiedName(ctx.qualifiedName()));   
+        }
         return node;
     }
 
@@ -254,19 +233,6 @@ public class JavaSideKickListener extends JavaParserBaseListener {
      *     | ';'
      *     ;
      *     
- 	 * classOrInterfaceModifier
- 	 *     : annotation
- 	 *     | PUBLIC
- 	 *     | PROTECTED
- 	 *     | PRIVATE
- 	 *     | STATIC
- 	 *     | ABSTRACT
- 	 *     | FINAL        // FINAL for class only -- does not apply to interfaces
- 	 *     | STRICTFP
- 	 *     | SEALED       // Java17
- 	 *     | NON_SEALED   // Java17
- 	 *     ;
-     *
      */
 	public TigerNode processTypeDeclaration(TypeDeclarationContext ctx) {
 	    // modifiers
@@ -340,13 +306,25 @@ public class JavaSideKickListener extends JavaParserBaseListener {
  	*       (PERMITS typeList)? // Java17
  	*       classBody
  	*     ;
- 	* 
  	*/
 	private TigerNode processClassDeclaration(ClassDeclarationContext ctx, int modifiers) { 
         ClassNode classNode = new ClassNode( ctx.identifier().getText() );
         setLocations( classNode, ctx );
         classNode.setModifiers(modifiers);
         
+	    // type parameters
+	    if (ctx.typeParameters() != null) {
+	        TypeParametersContext tpc = ctx.typeParameters();
+	        if (tpc != null) {
+                List<TypeParameterContext> typeParameterList = tpc.typeParameter();
+                StringBuilder sb = new StringBuilder();
+                for (TypeParameterContext typeParameter : typeParameterList) {
+                    sb.append(typeParameter.getText());
+                }
+                classNode.setTypeParams(sb.toString());
+	        }
+	    }
+	    
         // PERMITS = allowed subclasses
         // Some confusion here -- both implements and permits
         // are followed by a typeList, but the context only has one typeList method,
@@ -418,31 +396,19 @@ public class JavaSideKickListener extends JavaParserBaseListener {
             }
         }
 
-        // add the children of this class. Only need the fields and methods here,
-        // the inner classes and interface declarations are handled elsewhere
-        // classBody
-        //     : '{' classBodyDeclaration* '}'
-        //     ;
-        // classBodyDeclaration
-        //     : ';'
-        //     | STATIC? block
-        //     | modifier* memberDeclaration
-        //     ;
-        // memberDeclaration
-        //     : methodDeclaration
-        //     | genericMethodDeclaration
-        //     | fieldDeclaration
-        //     | constructorDeclaration
-        //     | genericConstructorDeclaration
-        //     | interfaceDeclaration
-        //     | annotationTypeDeclaration
-        //     | classDeclaration
-        //     | enumDeclaration
-        //     | recordDeclaration //Java17
-        //     ;
-        
         ClassBodyContext classBodyContext = ctx.classBody();
         List<ClassBodyDeclarationContext> declarations = ( List <ClassBodyDeclarationContext> )classBodyContext.classBodyDeclaration();
+        processClassBodyDeclaration( classNode, declarations);
+        
+        results.incClassCount();
+        return classNode;
+	
+	}
+	
+	/**
+ 	 * This is used by class, record, and enum declarations.	
+ 	 */
+	private void processClassBodyDeclaration( TigerNode node, List<ClassBodyDeclarationContext> declarations) {
         for ( ClassBodyDeclarationContext declaration : declarations ) {
             // do member modifiers here
             List<ModifierContext> mcl = declaration.modifier();
@@ -457,73 +423,65 @@ public class JavaSideKickListener extends JavaParserBaseListener {
                 
                 // methods
                 if ( dctx.methodDeclaration() != null ) {
-                    classNode.addChild(processMethodDeclaration( dctx.methodDeclaration(), memberModifiers ));
+                    node.addChild(processMethodDeclaration( dctx.methodDeclaration(), memberModifiers ));
                 }
                 
                 // generic methods
                 if ( dctx.genericMethodDeclaration() != null) {
-                    classNode.addChild(processGenericMethodDeclaration(dctx.genericMethodDeclaration(), memberModifiers));    
+                    node.addChild(processGenericMethodDeclaration(dctx.genericMethodDeclaration(), memberModifiers));    
                 }
                 
                 // fields
                 if ( dctx.fieldDeclaration() != null ) {
                     List<TigerNode> fields = processFieldDeclaration( dctx.fieldDeclaration(), memberModifiers ); 
                     for (TigerNode field : fields) {
-                        classNode.addChild(field);   
+                        node.addChild(field);   
                     }
                 }
                 
                 // constructors
                 if ( dctx.constructorDeclaration() != null) {
-                    classNode.addChild(processConstructorDeclaration( dctx.constructorDeclaration(), memberModifiers));   
+                    node.addChild(processConstructorDeclaration( dctx.constructorDeclaration(), memberModifiers));   
                 }
                 
                 // generic constructors
                 if ( dctx.genericConstructorDeclaration() != null) {
-                    classNode.addChild(processGenericConstructorDeclaration( dctx.genericConstructorDeclaration(), memberModifiers));   
+                    node.addChild(processGenericConstructorDeclaration( dctx.genericConstructorDeclaration(), memberModifiers));   
                 }
                 
                 // interfaces
                 if ( dctx.interfaceDeclaration() != null) {
-                    classNode.addChild(processInterfaceDeclaration( dctx.interfaceDeclaration(), memberModifiers));   
+                    node.addChild(processInterfaceDeclaration( dctx.interfaceDeclaration(), memberModifiers));   
                 }
                 
                 // annotation types
                 if ( dctx.annotationTypeDeclaration() != null) {
-                    classNode.addChild(processAnnotationTypeDeclaration( dctx.annotationTypeDeclaration(), memberModifiers));   
+                    node.addChild(processAnnotationTypeDeclaration( dctx.annotationTypeDeclaration(), memberModifiers));   
                 }
                 
                 // classes
                 if ( dctx.classDeclaration() != null) {
-                    classNode.addChild(processClassDeclaration( dctx.classDeclaration(), memberModifiers));   
+                    node.addChild(processClassDeclaration( dctx.classDeclaration(), memberModifiers));   
                 }
                 
                 // enums
                 if ( dctx.enumDeclaration() != null) {
-                    classNode.addChild(processEnumDeclaration( dctx.enumDeclaration(), memberModifiers));   
+                    node.addChild(processEnumDeclaration( dctx.enumDeclaration(), memberModifiers));   
                 }
                 
                 // records
                 if ( dctx.recordDeclaration() != null) {
-                    classNode.addChild(processRecordDeclaration( dctx.recordDeclaration(), memberModifiers));   
+                    node.addChild(processRecordDeclaration( dctx.recordDeclaration(), memberModifiers));   
                 }
-
             }
         }
-        
-        results.incClassCount();
-        return classNode;
-	
 	}
-	
     /**
      * methodDeclaration
      *     : typeTypeOrVoid identifier formalParameters ('[' ']')* (THROWS qualifiedNameList)? methodBody
      *     ;
-     *
-     * Modifiers are handled ahead of time in classBodyDeclaration.
      */
-    private TigerNode processMethodDeclaration( MethodDeclarationContext methodCtx, int modifiers ) {
+    private MethodNode processMethodDeclaration( MethodDeclarationContext methodCtx, int modifiers ) {
         MethodNode methodNode = new MethodNode();
 
         setLocations( methodNode, methodCtx );
@@ -581,7 +539,7 @@ public class JavaSideKickListener extends JavaParserBaseListener {
             }
             paramName.append("this");
             parameterNode.setName( paramName.toString() );
-            methodNode.addFormalParameter( parameterNode );
+            methodNode.addParameter( parameterNode );
         }
         // other parameters
         FormalParameterListContext paramsListCtx = paramsCtx.formalParameterList();
@@ -602,11 +560,10 @@ public class JavaSideKickListener extends JavaParserBaseListener {
                         paramModifierNames[i] = param.variableModifier( i ).getText();
                     }
                     parameterNode.setModifiers( ModifierSet.getModifiers( paramModifierNames ));
-                    methodNode.addFormalParameter( parameterNode );
+                    methodNode.addParameter( parameterNode );
                 }
             }
             // last formal parameter -- modifier* type annotation* ... variableId
-            // I'm not handling the annotations, they aren't necessary to show in the sidekick tree.
             if (paramsListCtx.lastFormalParameter() != null) {
                 LastFormalParameterContext lfpc = paramsListCtx.lastFormalParameter();
                 if ( lfpc != null ) {
@@ -623,7 +580,15 @@ public class JavaSideKickListener extends JavaParserBaseListener {
                     }
                     parameterNode.setModifiers( ModifierSet.getModifiers( modifierNames ) );
                     
-                    methodNode.addFormalParameter( parameterNode );
+                    // annotations
+                    if (lfpc.annotation() != null) {
+                        List<AnnotationContext> annotationList = lfpc.annotation();
+                        for (AnnotationContext annotation : annotationList) {
+                            parameterNode.addAnnotation(processAnnotation(annotation));    
+                        }
+                    }
+                    
+                    methodNode.addParameter( parameterNode );
                 }
             }
         }
@@ -652,10 +617,24 @@ public class JavaSideKickListener extends JavaParserBaseListener {
      *     : typeParameters methodDeclaration
      *     ;
      *
-     * Treat this as a regular method, no worries about the type parameters.
+     * Treat this as a regular method
      */
-    private TigerNode processGenericMethodDeclaration(GenericMethodDeclarationContext ctx, int modifiers) {
-        return processMethodDeclaration(ctx.methodDeclaration(), modifiers);       
+    private MethodNode processGenericMethodDeclaration(GenericMethodDeclarationContext ctx, int modifiers) {
+        MethodNode methodNode =  processMethodDeclaration(ctx.methodDeclaration(), modifiers);       
+
+	    // type parameters
+	    if (ctx.typeParameters() != null) {
+	        TypeParametersContext tpc = ctx.typeParameters();
+	        if (tpc != null) {
+                List<TypeParameterContext> typeParameterList = tpc.typeParameter();
+                StringBuilder sb = new StringBuilder();
+                for (TypeParameterContext typeParameter : typeParameterList) {
+                    sb.append(typeParameter.getText());
+                }
+                methodNode.setTypeParams(sb.toString());
+	        }
+	    }
+	    return methodNode;
     }
     
     
@@ -663,8 +642,6 @@ public class JavaSideKickListener extends JavaParserBaseListener {
  	 * fieldDeclaration
  	 *     : typeType variableDeclarators ';'
  	 *     ;
- 	 *
- 	 * Modifiers are parsed ahead of time in classBodyDeclaration
  	 */
     private List<TigerNode> processFieldDeclaration( FieldDeclarationContext fieldCtx, int modifiers ) {
         // type
@@ -711,7 +688,7 @@ public class JavaSideKickListener extends JavaParserBaseListener {
      *     : identifier formalParameters (THROWS qualifiedNameList)? constructorBody=block
      *     ;
      */
-    private TigerNode processConstructorDeclaration(ConstructorDeclarationContext ctx, int modifiers) {
+    private ConstructorNode processConstructorDeclaration(ConstructorDeclarationContext ctx, int modifiers) {
         ConstructorNode constructorNode = new ConstructorNode();
 
         setLocations( constructorNode, ctx );
@@ -741,7 +718,7 @@ public class JavaSideKickListener extends JavaParserBaseListener {
             }
             paramName.append("this");
             parameterNode.setName( paramName.toString() );
-            constructorNode.addFormalParameter( parameterNode );
+            constructorNode.addParameter( parameterNode );
         }
         
         // other parameters
@@ -763,7 +740,7 @@ public class JavaSideKickListener extends JavaParserBaseListener {
                         paramModifierNames[i] = param.variableModifier( i ).getText();
                     }
                     parameterNode.setModifiers( ModifierSet.getModifiers( paramModifierNames ));
-                    constructorNode.addFormalParameter( parameterNode );
+                    constructorNode.addParameter( parameterNode );
                 }
             }
             // last formal parameter -- modifier* type annotation* ... variableId
@@ -784,7 +761,7 @@ public class JavaSideKickListener extends JavaParserBaseListener {
                     }
                     parameterNode.setModifiers( ModifierSet.getModifiers( modifierNames ) );
                     
-                    constructorNode.addFormalParameter( parameterNode );
+                    constructorNode.addParameter( parameterNode );
                 }
             }
         }
@@ -813,10 +790,23 @@ public class JavaSideKickListener extends JavaParserBaseListener {
      *     : typeParameters constructorDeclaration
      *     ;
      *
-     * Tread this as a regular constructor, no worries about the type parameters.
      */
     private TigerNode processGenericConstructorDeclaration(GenericConstructorDeclarationContext ctx, int modifiers) {
-        return processConstructorDeclaration(ctx.constructorDeclaration(), modifiers); 
+        ConstructorNode node = processConstructorDeclaration(ctx.constructorDeclaration(), modifiers);
+
+	    // type parameters
+	    if (ctx.typeParameters() != null) {
+	        TypeParametersContext tpc = ctx.typeParameters();
+	        if (tpc != null) {
+                List<TypeParameterContext> typeParameterList = tpc.typeParameter();
+                StringBuilder sb = new StringBuilder();
+                for (TypeParameterContext typeParameter : typeParameterList) {
+                    sb.append(typeParameter.getText());
+                }
+                node.setTypeParams(sb.toString());
+	        }
+	    }
+        return node;
     }
     
 	/**
@@ -891,25 +881,6 @@ public class JavaSideKickListener extends JavaParserBaseListener {
         
         // add the children of this class. Only need the fields and methods here,
         // the inner classes and interface declarations are handled elsewhere
-        // classBody
-        //     : '{' classBodyDeclaration* '}'
-        //     ;
-        // classBodyDeclaration
-        //     : ';'
-        //     | STATIC? block
-        //     | modifier* memberDeclaration
-        //     ;
-        // interfaceMemberDeclaration
-        //     : constDeclaration
-        //     | interfaceMethodDeclaration
-        //     | genericInterfaceMethodDeclaration
-        //     | interfaceDeclaration
-        //     | annotationTypeDeclaration
-        //     | classDeclaration
-        //     | enumDeclaration
-        //     | recordDeclaration // Java17
-        //     ;
-        //         
         InterfaceBodyContext interfaceBodyContext = ctx.interfaceBody();
         List<InterfaceBodyDeclarationContext> declarations = ( List <InterfaceBodyDeclarationContext> )interfaceBodyContext.interfaceBodyDeclaration();
         for ( InterfaceBodyDeclarationContext declaration : declarations ) {
@@ -938,8 +909,29 @@ public class JavaSideKickListener extends JavaParserBaseListener {
                 }
                 
                 // interface generic methods
+                // genericInterfaceMethodDeclaration
+                //     : interfaceMethodModifier* typeParameters interfaceCommonBodyDeclaration
+                //     ;
+                //
+                // Treat this as a regular interface method
                 if ( dctx.genericInterfaceMethodDeclaration() != null) {
-                    interfaceNode.addChild(processInterfaceGenericMethodDeclaration( dctx.genericInterfaceMethodDeclaration().interfaceCommonBodyDeclaration(), memberModifiers));    
+                    GenericInterfaceMethodDeclarationContext gimd = dctx.genericInterfaceMethodDeclaration();
+                    MethodNode methodNode = processInterfaceGenericMethodDeclaration( gimd.interfaceCommonBodyDeclaration(), memberModifiers);
+
+                    // type parameters
+                    if (gimd.typeParameters() != null) {
+                        TypeParametersContext tpc = ctx.typeParameters();
+                        if (tpc != null) {
+                            List<TypeParameterContext> typeParameterList = tpc.typeParameter();
+                            StringBuilder sb = new StringBuilder();
+                            for (TypeParameterContext typeParameter : typeParameterList) {
+                                sb.append(typeParameter.getText());
+                            }
+                            methodNode.setTypeParams(sb.toString());
+                        }
+                    }
+
+                    interfaceNode.addChild(methodNode);    
                 }
                 
                 // interfaces
@@ -972,11 +964,82 @@ public class JavaSideKickListener extends JavaParserBaseListener {
         results.incClassCount();
         return interfaceNode;
 	}
+	
+	/**
+ 	 * 
+ 	 * annotation
+ 	 *     : ('@' qualifiedName | altAnnotationQualifiedName) ('(' ( elementValuePairs | elementValue )? ')')?
+ 	 *     ;
+ 	 * 
+ 	 */
+	private AnnotationNode processAnnotation(AnnotationContext ctx) {
+	    String name = null;
+	    if (ctx.qualifiedName() != null) {
+	        name = ctx.qualifiedName().getText();    
+	    }
+	    else if (ctx.altAnnotationQualifiedName() != null) {
+	        name = ctx.altAnnotationQualifiedName().getText();   
+	    }
+	    AnnotationNode annotationNode = new AnnotationNode(name);
+	    setLocations(annotationNode, ctx);
+	    
+	    if (ctx.elementValue() != null) {
+	        ElementValueContext evc = ctx.elementValue();
+	        if (evc.annotation() != null) {
+	            annotationNode.addAnnotation(processAnnotation(evc.annotation()));   
+	        }
+	        else if (evc.expression() != null) {
+	            TigerNode child = new TigerNode(evc.expression().getText());
+	            setLocations(child, evc);
+	            annotationNode.addChild(child);
+	        }
+	    }
+	    else if (ctx.elementValuePairs() != null) {
+	        // TODO: finish this    
+	    }
+	    return annotationNode;
+	}
 
 	/**
  	 * annotationTypeDeclaration
  	 *     : '@' INTERFACE identifier annotationTypeBody
  	 *     ;
+  	 * annotationTypeBody
+  	 *     : '{' (annotationTypeElementDeclaration)* '}'
+  	 *     ;
+  	 * 
+  	 * annotationTypeElementDeclaration
+  	 *     : modifier* annotationTypeElementRest
+  	 *     | ';' // this is not allowed by the grammar, but apparently allowed by the actual compiler
+  	 *     ;
+  	 * 
+  	 * annotationTypeElementRest
+  	 *     : typeType annotationMethodOrConstantRest ';'
+  	 *     | classDeclaration ';'?
+  	 *     | interfaceDeclaration ';'?
+  	 *     | enumDeclaration ';'?
+  	 *     | annotationTypeDeclaration ';'?
+  	 *     | recordDeclaration ';'? // Java17
+  	 *     ;
+  	 * 
+  	 * annotationMethodOrConstantRest
+  	 *     : annotationMethodRest
+  	 *     | annotationConstantRest
+  	 *     ;
+  	 * 
+  	 * annotationMethodRest
+  	 *     : identifier '(' ')' defaultValue?
+  	 *     ;
+  	 * 
+  	 * annotationConstantRest
+  	 *     : variableDeclarators
+  	 *     ;
+  	 * 
+  	 * defaultValue
+  	 *     : DEFAULT elementValue
+  	 *     ;
+ 	 *
+ 	 * TODO: handle the annotationTypeBody
  	 */
 	private TigerNode processAnnotationTypeDeclaration(AnnotationTypeDeclarationContext ctx, int modifiers) {
 	    String name = "@ interface " + ctx.identifier().getText();
@@ -987,54 +1050,153 @@ public class JavaSideKickListener extends JavaParserBaseListener {
  	 * enumDeclaration
  	 *     : ENUM identifier (IMPLEMENTS typeList)? '{' enumConstants? ','? enumBodyDeclarations? '}'
  	 *     ;
-  	 * enumConstants
-  	 *     : enumConstant (',' enumConstant)*
-  	 *     ;
-  	 * 
-  	 * enumConstant
-  	 *     : annotation* identifier arguments? classBody?
-  	 *     ;
-  	 * 
-  	 * enumBodyDeclarations
-  	 *     : ';' classBodyDeclaration*
-  	 *     ;
   	 */
 	private TigerNode processEnumDeclaration(EnumDeclarationContext ctx, int modifiers) {
-	    // TODO: fill this in, the following is temporary and only gets the name of the enum.
-	    // An enum declaration is similar to a class declaration, so there is a lot more to do here.
 	    EnumNode node = new EnumNode(ctx.identifier().getText(), modifiers);
 	    setLocations(node, ctx);
+	    
+	    if (ctx.typeList() != null) {
+            TypeListContext tlc = ctx.typeList();
+            List<TypeTypeContext> ttc = tlc.typeType();
+            List<TigerNode> implementsTypes = new ArrayList<TigerNode>();
+            for (TypeTypeContext t : ttc) {
+                ClassOrInterfaceTypeContext coitc = t.classOrInterfaceType();
+                if (coitc != null) {
+                    TigerNode type = new TigerNode(coitc.getText());
+                    setLocations(type, coitc);
+                    implementsTypes.add(type);
+                }
+            }
+            node.setImplementsList( implementsTypes );
+	    }
+	    
+	    if (ctx.enumConstants() != null) {
+	        EnumConstantsContext enumConstants = ctx.enumConstants();
+	        List<EnumConstantContext> enumConstantsList = enumConstants.enumConstant();
+	        for (EnumConstantContext enumConstant : enumConstantsList) {
+	            String constantName = enumConstant.identifier().getText();
+	            TigerNode constantNode = new TigerNode(constantName) {
+	                public int getOrdinal() {
+	                    return TigerNode.ENUM;   
+	                }
+	            };
+	            setLocations(constantNode, enumConstant);
+	            node.addChild(constantNode);
+	            
+                // annotation
+                //    : ('@' qualifiedName | altAnnotationQualifiedName) ('(' ( elementValuePairs | elementValue )? ')')?
+                //    ;
+                //	             
+                if (enumConstant.annotation() != null) {
+                    List<AnnotationContext> annotationList = enumConstant.annotation();
+                    for (AnnotationContext annotation : annotationList) {
+                        AnnotationNode annotationNode = processAnnotation(annotation);
+                        constantNode.addAnnotation(annotationNode);
+                    }
+                }
+                
+                // arguments
+                //     : '(' expressionList? ')'
+                //     ;                
+                if (enumConstant.arguments() != null) {
+                    ArgumentsContext ac = enumConstant.arguments();
+                    ExpressionListContext elc = ac.expressionList();
+                    if (elc != null) {
+                        List<ExpressionContext> expressionList = elc.expression();
+                        for (ExpressionContext expression : expressionList) {
+                            // TODO: really should go deeper into these expressions
+                            TigerNode child = null;
+                            if (expression.primary() != null) {
+                                child = new TigerNode(expression.primary().getText());
+                            }
+                            else if (expression.methodCall() != null) {
+                                child = new TigerNode(expression.methodCall().getText());
+                            }
+                            else if (expression.creator() != null) {
+                                child = new TigerNode(expression.creator().getText());
+                            }
+                            if (child != null) {
+                                setLocations(child, expression);
+                                constantNode.addChild(child);
+                            }
+                        }
+                    }
+                }
+                
+                if (enumConstant.classBody() != null) {
+                    ClassBodyContext classBodyContext = enumConstant.classBody();
+                    List<ClassBodyDeclarationContext> declarations = ( List <ClassBodyDeclarationContext> )classBodyContext.classBodyDeclaration();
+                    processClassBodyDeclaration( constantNode, declarations);
+                }
+	        }
+	    }
+	    
+	    if (ctx.enumBodyDeclarations() != null) {
+	        EnumBodyDeclarationsContext ebdc = ctx.enumBodyDeclarations();
+            List<ClassBodyDeclarationContext> declarations = ebdc.classBodyDeclaration();
+            processClassBodyDeclaration( node, declarations);
+	    }
+	    
 	    return node;
 	}
 	
 	/**
-	 * java 14
+	 * java 17
  	 * recordDeclaration
  	 *     : RECORD identifier typeParameters? recordHeader
  	 *       (IMPLEMENTS typeList)?
  	 *       recordBody
  	 *     ;
-  	 * recordHeader
-  	 *     : '(' recordComponentList? ')'
-  	 *     ;
-  	 * 
-  	 * recordComponentList
-  	 *     : recordComponent (',' recordComponent)*
-  	 *     ;
-  	 * 
-  	 * recordComponent
-  	 *     : typeType identifier
-  	 *     ;
-  	 * 
-  	 * recordBody
-  	 *     : '{' classBodyDeclaration* '}'
-  	 *     ;
+  	 *
   	 */
 	private TigerNode processRecordDeclaration(RecordDeclarationContext ctx, int modifiers) {
-	    // TODO: fill this in, the following is temporary and only gets the name of the record.
-	    // QUESTION: do I need to make a RecordNode?
-	    TigerNode node = new TigerNode(ctx.identifier().getText(), modifiers);
+	    String name = ctx.identifier().getText();
+	    RecordNode node = new RecordNode(name, modifiers);
 	    setLocations(node, ctx);
+	    
+	    // type parameters
+	    if (ctx.typeParameters() != null) {
+	        TypeParametersContext tpc = ctx.typeParameters();
+	        if (tpc != null) {
+                List<TypeParameterContext> typeParameterList = tpc.typeParameter();
+                StringBuilder sb = new StringBuilder();
+                for (TypeParameterContext typeParameter : typeParameterList) {
+                    sb.append(typeParameter.getText());
+                }
+                node.setTypeParams(sb.toString());
+	        }
+	    }
+	    
+	    
+        if ( ctx.typeList() != null ) {
+            TypeListContext tlc = ctx.typeList();
+            List<TypeTypeContext> ttc = tlc.typeType();
+            List<TigerNode> implementsTypes = new ArrayList<TigerNode>();
+            for (TypeTypeContext t : ttc) {
+                ClassOrInterfaceTypeContext coitc = t.classOrInterfaceType();
+                if (coitc != null) {
+                    TigerNode type = new TigerNode(coitc.getText());
+                    setLocations(type, coitc);
+                    implementsTypes.add(type);
+                }
+            }
+            node.setImplementsList( implementsTypes );
+        }
+        
+        RecordHeaderContext recordHeader = ctx.recordHeader();
+        RecordComponentListContext recordComponentList = recordHeader.recordComponentList();
+        if (recordComponentList != null) {
+            List<RecordComponentContext> recordComponents = recordComponentList.recordComponent();
+            for (RecordComponentContext recordComponent : recordComponents) {
+                Type type = new Type(recordComponent.typeType().getText());
+                String componentName = recordComponent.identifier().getText();
+                RecordComponent rc = new RecordComponent(type, componentName);
+                node.addParameter(rc);
+            }
+	    }
+        RecordBodyContext recordBody = ctx.recordBody();
+        List<ClassBodyDeclarationContext> classBody = recordBody.classBodyDeclaration();
+        processClassBodyDeclaration(node, classBody);
 	    return node;
 	}
 	
@@ -1078,14 +1240,8 @@ public class JavaSideKickListener extends JavaParserBaseListener {
  	 *     : interfaceMethodModifier* interfaceCommonBodyDeclaration
  	 *     ;
  	 * 
-	 * 
- 	 * interfaceCommonBodyDeclaration
- 	 *     : annotation* typeTypeOrVoid identifier formalParameters ('[' ']')* (THROWS qualifiedNameList)? methodBody
- 	 *     ;
- 	 *
- 	 * 
  	 */
-	private TigerNode processInterfaceMethodDeclaration( InterfaceCommonBodyDeclarationContext ctx, int modifiers ) {
+	private MethodNode processInterfaceMethodDeclaration( InterfaceCommonBodyDeclarationContext ctx, int modifiers ) {
         MethodNode methodNode = new MethodNode();
 
         setLocations( methodNode, ctx );
@@ -1106,32 +1262,6 @@ public class JavaSideKickListener extends JavaParserBaseListener {
         methodNode.setName(name);
         
         // parameters
-        /*
-         * formalParameters
-         *     : '(' ( receiverParameter?
-         *           | receiverParameter (',' formalParameterList)?
-         *           | formalParameterList?
-         *           ) ')'
-         *     ;
-         * 
-         * receiverParameter
-         *     : typeType (identifier '.')* THIS
-         *     ;
-         * 
-         * formalParameterList
-         *     : formalParameter (',' formalParameter)* (',' lastFormalParameter)?
-         *     | lastFormalParameter
-         *     ;
-         * 
-         * formalParameter
-         *     : variableModifier* typeType variableDeclaratorId
-         *     ;
-         * 
-         * lastFormalParameter
-         *     : variableModifier* typeType annotation* '...' variableDeclaratorId
-         *     ;
-         * 
-         */
         FormalParametersContext paramsCtx = ctx.formalParameters();
 
         // receiver parameters -- type identifier.this
@@ -1149,7 +1279,7 @@ public class JavaSideKickListener extends JavaParserBaseListener {
             }
             paramName.append("this");
             parameterNode.setName( paramName.toString() );
-            methodNode.addFormalParameter( parameterNode );
+            methodNode.addParameter( parameterNode );
         }
         
         // other parameters
@@ -1171,11 +1301,10 @@ public class JavaSideKickListener extends JavaParserBaseListener {
                         paramModifierNames[i] = param.variableModifier( i ).getText();
                     }
                     parameterNode.setModifiers( ModifierSet.getModifiers( paramModifierNames ));
-                    methodNode.addFormalParameter( parameterNode );
+                    methodNode.addParameter( parameterNode );
                 }
             }
             // last formal parameter -- modifier* type annotation* ... variableId
-            // I'm not handling the annotations, they aren't necessary to show in the sidekick tree.
             if (paramsListCtx.lastFormalParameter() != null) {
                 LastFormalParameterContext lfpc = paramsListCtx.lastFormalParameter();
                 if ( lfpc != null ) {
@@ -1192,7 +1321,15 @@ public class JavaSideKickListener extends JavaParserBaseListener {
                     }
                     parameterNode.setModifiers( ModifierSet.getModifiers( modifierNames ) );
                     
-                    methodNode.addFormalParameter( parameterNode );
+                    // annotations
+                    if (lfpc.annotation() != null) {
+                        List<AnnotationContext> annotationList = lfpc.annotation();
+                        for (AnnotationContext annotation : annotationList) {
+                            parameterNode.addAnnotation(processAnnotation(annotation));    
+                        }
+                    }
+                    
+                    methodNode.addParameter( parameterNode );
                 }
             }
         }
@@ -1221,9 +1358,9 @@ public class JavaSideKickListener extends JavaParserBaseListener {
  	 *     : interfaceMethodModifier* typeParameters interfaceCommonBodyDeclaration
  	 *     ;
  	 *
-     * Treat this as a regular interface method, no worries about the type parameters.
+     * Treat this as a regular interface method
  	 */
-	private TigerNode processInterfaceGenericMethodDeclaration( InterfaceCommonBodyDeclarationContext ctx, int modifiers) {
+	private MethodNode processInterfaceGenericMethodDeclaration( InterfaceCommonBodyDeclarationContext ctx, int modifiers) {
         return processInterfaceMethodDeclaration(ctx, modifiers);
 	}
 }

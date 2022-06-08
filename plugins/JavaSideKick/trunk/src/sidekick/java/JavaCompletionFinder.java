@@ -686,7 +686,7 @@ public class JavaCompletionFinder {
 
             // If we're in a method, check its parameters
             if ( tn.getOrdinal() == TigerNode.CONSTRUCTOR || tn.getOrdinal() == TigerNode.METHOD ) {
-                List params = ( ( Parameterizable )tn ).getFormalParams();
+                List params = ( ( Parameterizable )tn ).getParameters();
                 if ( params != null ) {
                     for ( Iterator jt = params.iterator(); jt.hasNext();  ) {
                         Parameter param = ( Parameter )jt.next();
@@ -1003,7 +1003,7 @@ public class JavaCompletionFinder {
 
             // check parameters to constructors and methods
             if ( tn.getOrdinal() == TigerNode.CONSTRUCTOR || tn.getOrdinal() == TigerNode.METHOD ) {
-                List params = ( ( Parameterizable )tn ).getFormalParams();
+                List params = ( ( Parameterizable )tn ).getParameters();
                 if ( params != null ) {
                     for ( Iterator jt = params.iterator(); jt.hasNext();  ) {
                         Parameter param = ( Parameter )jt.next();    // Parameter is a subclass of FieldNode
@@ -1355,7 +1355,7 @@ public class JavaCompletionFinder {
                     break;
                 case TigerNode.METHOD:
                     MethodNode mn = ( MethodNode )child;
-                    String more = "(" + mn.getFormalParams( true, false, true, true ) + ") : " + mn.getReturnType().getType();
+                    String more = "(" + mn.getParameters( true, false, true, true ) + ") : " + mn.getReturnType().getType();
                     members.add( new JavaCompletionCandidate( mn.getName() + more,
                     TigerLabeler.getMethodIcon() ) );
                     break;

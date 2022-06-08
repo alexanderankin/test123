@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package sidekick.java.node;
 
-
+import java.util.*;
 
 // an extension of TigerNode for an enum
 public class EnumNode extends TigerNode {
@@ -35,6 +35,17 @@ public class EnumNode extends TigerNode {
         super( name, modifiers );
     }
 
+    
+    // list is a list of Types
+    public void setImplementsList( List<TigerNode> list ) {
+        if ( list == null ) {
+            return;
+        }
+        for ( Iterator<TigerNode> it = list.iterator(); it.hasNext(); ) {
+            TigerNode t = it.next();
+            addChild( new ImplementsNode( t.getName() ) );
+        }
+    }
     
     public String toString() {
         StringBuffer sb = new StringBuffer();

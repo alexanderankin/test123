@@ -500,7 +500,7 @@ if (start_t != null){
     }
     mn.setName(identifier);
     if (params != null) {
-        mn.setFormalParams(params);
+        mn.setParameters(params);
     }
     if (bn != null) {
         mn.setEndLocation(bn.getEndLocation());
@@ -563,7 +563,7 @@ if (resultType != null) {
     }
     mn.setName(identifier);
     if (params != null) {
-        mn.setFormalParams(params);
+        mn.setParameters(params);
     }
     if (end_t != null ) {
         mn.setEndLocation(getEndLocation(end_t));
@@ -2769,7 +2769,7 @@ if (m_node == null)
         else
             node.setStartLocation(getLocation(m));
         node.setModifiers(m.modifiers);
-        node.setFormalParams(m_node.getFormalParams());
+        node.setParameters(m_node.getParameters());
         node.setReturnType(return_type);
         node.setTypeParams(type_params);
         node.setThrows(name_list);
@@ -2821,7 +2821,7 @@ if (t == null)
         MethodNode node = new MethodNode();
         node.setName(t.image);
         node.setStartLocation(getLocation(t));
-        node.setFormalParams(f);
+        node.setParameters(f);
         {if ("" != null) return node;}
     throw new Error("Missing return statement in function");
   }
@@ -3054,7 +3054,7 @@ cn.setName(t.image);
             cn.setStartLocation(getLocation(m));
         }
         cn.setEndLocation(getEndLocation(end_t));
-        cn.setFormalParams(params);
+        cn.setParameters(params);
         cn.setTypeParams(type_params);
         cn.setThrows(name_list);
         if (annotations != null)
