@@ -681,10 +681,10 @@ public class TigerLabeler {
             // for constructors and methods, maybe add the arguments
             if (options.getShowArguments()) {
                 if (tn.getOrdinal() == TigerNode.CONSTRUCTOR) {
-                    sb.append('(').append(((ConstructorNode) tn).getFormalParams(options.getShowArgumentNames(), options.getTypeIsSuffixed(), options.getShowMiscMod(), options.getShowTypeArgs())).append(')');
+                    sb.append('(').append(((ConstructorNode) tn).getParameters(options.getShowArgumentNames(), options.getTypeIsSuffixed(), options.getShowMiscMod(), options.getShowTypeArgs())).append(')');
                 }
                 else if (tn.getOrdinal() == TigerNode.METHOD || tn.getOrdinal() == TigerNode.BNF_PRODUCTION) {
-                    sb.append('(').append(((MethodNode) tn).getFormalParams(options.getShowArgumentNames(), options.getTypeIsSuffixed(), options.getShowMiscMod(), options.getShowTypeArgs())).append(')');
+                    sb.append('(').append(((MethodNode) tn).getParameters(options.getShowArgumentNames(), options.getTypeIsSuffixed(), options.getShowMiscMod(), options.getShowTypeArgs())).append(')');
                 }
             }
 

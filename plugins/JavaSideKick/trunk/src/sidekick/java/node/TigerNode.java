@@ -67,6 +67,7 @@ public class TigerNode extends Asset implements SideKickElement {
     public static final int THROWS = 16;
     public static final int CLASS = 32;     // default sort after methods for inner classes
     public static final int MODULE = 33;
+    public static final int RECORD = 34;
     public static final int INTERFACE = 64;
     public static final int INITIALIZER = 96;
     public static final int FIELD = 128;

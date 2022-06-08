@@ -30,7 +30,7 @@ package sidekick.java.node;
 import java.util.List;
 
 public interface Parameterizable {
-    public void addFormalParameter(Parameter p);
-    public List getFormalParams();
+    public void addParameter(Parameter p);
+    public List getParameters();
 }
 

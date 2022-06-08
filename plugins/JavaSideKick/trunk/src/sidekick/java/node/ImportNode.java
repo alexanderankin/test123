@@ -32,6 +32,9 @@ import java.util.*;
 // an extension of TigerNode for an import statement
 public class ImportNode extends TigerNode {
     
+    public ImportNode() {
+    }
+    
     public ImportNode(String name) {
         super( name, 0 );
     }

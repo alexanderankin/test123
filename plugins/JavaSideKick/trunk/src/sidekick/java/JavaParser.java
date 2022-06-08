@@ -337,7 +337,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     if ( ordinal == TigerNode.ENUM ) {
                         // don't expand enum nodes
                         expansionModel.inc();
-                    } else if ( (ordinal == TigerNode.CLASS || ordinal == TigerNode.MODULE) && optionValues.getExpandClasses() ) {
+                    } else if ( (ordinal == TigerNode.CLASS || ordinal == TigerNode.MODULE || ordinal == TigerNode.RECORD) && optionValues.getExpandClasses() ) {
                         // maybe expand inner classes, depends on option setting
                         expansionModel.add();
                     } else if ( ordinal == TigerNode.CONSTRUCTOR || ordinal == TigerNode.METHOD ) {
@@ -458,7 +458,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
 
     // check if a node should be visible based on the 'top level' or 'member visible' settings
     private boolean isVisible( TigerNode tn ) {
-        if ( ( tn.getOrdinal() == TigerNode.CLASS || tn.getOrdinal() == TigerNode.INTERFACE || tn.getOrdinal() == TigerNode.MODULE) && 
+        if ( ( tn.getOrdinal() == TigerNode.CLASS || tn.getOrdinal() == TigerNode.INTERFACE || tn.getOrdinal() == TigerNode.MODULE || tn.getOrdinal() == TigerNode.RECORD) && 
                tn.getParent() != null && tn.getParent().getOrdinal() == TigerNode.COMPILATION_UNIT ) {
             int visible_level = optionValues.getTopLevelVisIndex();
             switch ( visible_level ) {

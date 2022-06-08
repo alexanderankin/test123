@@ -33,17 +33,17 @@ import java.util.*;
 public class MethodNode extends TigerNode implements Parameterizable {
 
     String typeParams = null;
-    List<Parameter> formalParams = null;
+    List<Parameter> params = null;
     Type returnType = null;
 
     public MethodNode() {
         super();
     }
 
-    public MethodNode( String name, int modifiers, String typeParams, List formalParams, Type returnType ) {
+    public MethodNode( String name, int modifiers, String typeParams, List params, Type returnType ) {
         super( name, modifiers );
         this.typeParams = typeParams;
-        this.formalParams = formalParams;
+        this.params = params;
         setReturnType( returnType );
     }
 
@@ -51,22 +51,22 @@ public class MethodNode extends TigerNode implements Parameterizable {
         return METHOD;
     }
 
-    public void addFormalParameter( Parameter p ) {
-        if ( formalParams == null ) {
-            formalParams = new ArrayList<Parameter>();
+    public void addParameter( Parameter p ) {
+        if ( params == null ) {
+            params = new ArrayList<Parameter>();
         }
-        formalParams.add( p );
+        params.add( p );
     }
 
-    public void setFormalParams( List<Parameter> p ) {
-        formalParams = p;
+    public void setParameters( List<Parameter> p ) {
+        params = p;
     }
 
     /**
      * @return raw value for formal params
      */
-    public List<Parameter> getFormalParams() {
-        return formalParams;
+    public List<Parameter> getParameters() {
+        return params;
     }
 
     /**
@@ -90,14 +90,14 @@ public class MethodNode extends TigerNode implements Parameterizable {
      * "a : int, b : final int"
      * @return parameters as string, see above
      */
-    public String getFormalParams( boolean withNames, boolean typeAsSuffix, boolean includeFinal, boolean includeTypeArgs ) {
+    public String getParameters( boolean withNames, boolean typeAsSuffix, boolean includeFinal, boolean includeTypeArgs ) {
 
-        if ( formalParams == null || formalParams.size() == 0 ) {
+        if ( params == null || params.size() == 0 ) {
             return "";
         }
 
         StringBuffer sb = new StringBuffer();
-        for ( Iterator it = formalParams.iterator(); it.hasNext(); ) {
+        for ( Iterator it = params.iterator(); it.hasNext(); ) {
             Parameter param = ( Parameter ) it.next();
             if ( typeAsSuffix ) {
                 if ( includeFinal && param.isFinal() ) {
@@ -175,7 +175,7 @@ public class MethodNode extends TigerNode implements Parameterizable {
         if ( getTypeParams() != null ) {
             sb.append( getTypeParams() );
         }
-        sb.append( '(' ).append( getFormalParams( true, false, true, true ) ).append( ')' );
+        sb.append( '(' ).append( getParameters( true, false, true, true ) ).append( ')' );
         if ( returnType != null ) {
             sb.append( ": " ).append( returnType );
         }
