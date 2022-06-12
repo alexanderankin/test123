@@ -1,8 +1,9 @@
 <project name="Antlr" default="dist" basedir=".">
    <property file="build.properties" />
    <property file="../build.properties" />
-   <property name="compiler.source" value="1.7" />
-   <property name="compiler.target" value="1.7" />
+   <property name="compiler.source" value="11" />
+   <property name="compiler.target" value="11" />
+   <property name="compiler.userargs" value="-Xlint:unchecked -Xlint:deprecation" />
    <property name="src.dir" value="src" />
 
    <property name="antlr.jar" value="lib/antlr-4.10.1-complete.jar"/>

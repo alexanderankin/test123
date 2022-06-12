@@ -10,5 +10,5 @@ plugin.antlr.AntlrPlugin.version=4.10
 
 # Dependencies
 plugin.antlr.AntlrPlugin.depend.0=jedit 05.04.00.00
-plugin.antlr.AntlrPlugin.depend.1=jdk 1.7.0
+plugin.antlr.AntlrPlugin.depend.1=jdk 11
 plugin.antlr.AntlrPlugin.jars=antlr-4.10.1-complete.jar
