@@ -7,7 +7,7 @@ import sidekick.Asset;
 import sidekick.util.Location;
 import sidekick.util.SideKickElement;
 
-public class AntlrNode extends Asset implements Comparable, SideKickElement {
+public class AntlrNode extends Asset implements Comparable<AntlrNode>, SideKickElement {
 
     private Icon icon = null;
     private Location startLocation = new Location();
@@ -85,7 +85,10 @@ public class AntlrNode extends Asset implements Comparable, SideKickElement {
         return name + ": " + getStartLocation() + ":" + getEndLocation();   
     }
 
-    public int compareTo(Object o) {
+    public int compareTo(AntlrNode o) {
+        if (o == null) {
+            return 1;   
+        }
         return toString().compareToIgnoreCase(o.toString());
     }
 }

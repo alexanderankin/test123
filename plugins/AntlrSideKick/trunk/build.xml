@@ -2,9 +2,10 @@
 <project name="AntlrSideKick" default="dist" basedir=".">
    <property file="build.properties" />
    <property file="../build.properties" />
-   <property name="compiler.source" value="1.7" />
-   <property name="compiler.target" value="1.7" />
-   <property name="src.dir" value="src" />
+   <property name="compiler.source" value="11" />
+   <property name="compiler.target" value="11" />
+    <property name="compiler.userargs" value="-Xlint:unchecked -Xlint:deprecation" />
+    <property name="src.dir" value="src" />
    
    <!-- Documentation process
       none: if you supply your own html file as this template does.

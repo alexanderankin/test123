@@ -34,7 +34,7 @@ public class AntlrSideKickListener extends ANTLRv4ParserBaseListener {
         return parserRules;   
     }
     
-	@Override public void enterLexerRule(@NotNull ANTLRv4Parser.LexerRuleContext ctx) {
+	@Override public void enterLexerRule(ANTLRv4Parser.LexerRuleContext ctx) {
         AntlrNode node = new AntlrNode();
         node.setName(ctx.TOKEN_REF().getText());
         Location startLocation;
@@ -55,7 +55,7 @@ public class AntlrSideKickListener extends ANTLRv4ParserBaseListener {
         lexerRules.add(node);
 	}
 	
-	@Override public void enterParserRuleSpec(@NotNull ANTLRv4Parser.ParserRuleSpecContext ctx) {
+	@Override public void enterParserRuleSpec( ANTLRv4Parser.ParserRuleSpecContext ctx) {
         AntlrNode node = new AntlrNode();
         node.setName(ctx.RULE_REF().getText());
         node.setStartLocation(new Location(ctx.RULE_REF().getSymbol().getLine(), ctx.RULE_REF().getSymbol().getCharPositionInLine()));

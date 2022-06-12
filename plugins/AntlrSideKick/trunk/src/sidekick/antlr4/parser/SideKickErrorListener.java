@@ -15,11 +15,11 @@ public class SideKickErrorListener extends BaseErrorListener {
         return errors;
     }
 
-    public <T extends Token> void syntaxError( @NotNull Recognizer<T, ?> recognizer,
+    public <T extends Token> void syntaxError( Recognizer<T, ?> recognizer,
 											  T offendingSymbol,
 											  int line,
 											  int charPositionInLine,
-											  @NotNull String msg,
+											  String msg,
 											  RecognitionException e ) {
         int length = 0;
         if ( e != null && e.getOffendingToken() != null ) {
