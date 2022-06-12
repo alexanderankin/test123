@@ -87,7 +87,7 @@ public class AntlrParser extends SideKickParser {
             // set up the parser to read the buffer
             String contents = buffer.getText( 0, buffer.getLength() );
             input = new StringReader( contents );
-            ANTLRInputStream antlrInput = new ANTLRInputStream( input );
+            CodePointCharStream antlrInput = CharStreams.fromReader( input );
             ANTLRv4Lexer lexer = new ANTLRv4Lexer( antlrInput );
             CommonTokenStream tokens = new CommonTokenStream( lexer );
             ANTLRv4Parser antlrParser = new ANTLRv4Parser( tokens );

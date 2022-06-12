@@ -9,8 +9,8 @@ plugin.sidekick.antlr4.AntlrSideKickPlugin.usePluginHome=false
 plugin.sidekick.antlr4.AntlrSideKickPlugin.version=4.10
 
 # Dependencies
-plugin.sidekick.antlr4.AntlrSideKickPlugin.depend.0=jedit 05.02.01.00
-plugin.sidekick.antlr4.AntlrSideKickPlugin.depend.1=jdk 1.7.0
+plugin.sidekick.antlr4.AntlrSideKickPlugin.depend.0=jedit 05.04.00.00
+plugin.sidekick.antlr4.AntlrSideKickPlugin.depend.1=jdk 11
 plugin.sidekick.antlr4.AntlrSideKickPlugin.depend.2=plugin antlr.AntlrPlugin 4.10
 plugin.sidekick.antlr4.AntlrSideKickPlugin.depend.3=plugin eclipseicons.EclipseIconsPlugin 1.0
 plugin.sidekick.antlr4.AntlrSideKickPlugin.depend.4=plugin sidekick.SideKickPlugin 1.7
