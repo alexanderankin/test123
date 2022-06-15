@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+	<ACTION NAME="antlr4-generate-files">
+		<CODE>
+			sidekick.antlr4.AntlrSideKickPlugin.generateFiles(buffer);
+		</CODE>
+	</ACTION>
+</ACTIONS>
