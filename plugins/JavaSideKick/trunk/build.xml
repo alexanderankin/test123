@@ -89,10 +89,11 @@
                nowarn="on"
                destdir="${classes.dir}"
                srcdir="${src.dir}"
-               target="1.7"
-			   source="1.7"
+               target="11"
+			   source="11"
 			   includeantruntime="false">
-            <!-- compilerarg value="-Xlint:unchecked"/ -->
+            <compilerarg value="-Xlint:deprecation"/>
+            <!--<compilerarg value="-Xlint:unchecked"/>-->
             <classpath refid="classpathref" />
             <exclude name="**/obsolete/*"/>
             <exclude name="**/test/*"/>

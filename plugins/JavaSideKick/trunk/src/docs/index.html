@@ -26,6 +26,7 @@
         <p> <strong>Version @@build.num@@ (@@tstamp@@)</strong> </p>
         <p> Dale Anson </p>
         <p> Sreenivasa Viswanadha (base Java 1.5 grammar for javacc) </p>
+        <p> Michał Lorek (Antlr grammar for Java 17)</p>
         <p> André Kaplan (JBrowse maintainer) </p>
         <p> George Latkiewicz (original JBrowse author) </p>
         <p> Alain Robert (JBrowse contributor) </p>
@@ -67,7 +68,7 @@ The Java SideKick plug-in provides a highly customizable tool for navigating thr
 </p>
 <p> JavaSideKick parses and displays these files: </p>
 <ul>
-<li>Java source files (.java). All Java 1.8 and earlier syntax is supported, including generics, varargs, autobox, enhanced "for" loop syntax, annotations, enhanced try/catch, and lambda expressions.</li>
+<li>Java source files (.java). All Java 18 and earlier syntax is supported, including generics, varargs, autobox, enhanced "for" loop syntax, annotations, enhanced try/catch, lambda expressions, sealed classes, records, modules, etc.</li>
 <li>JavaCC source files (.jj, .jjt).  JavaCC files for JavaCC version 4.0 and 3.x are supported.  Earlier versions have not been tested.</li>
 <li>Property files conforming to java.util.Properties.</li>
 </ul>
@@ -619,7 +620,8 @@ Classpath settings have been migrated to the <a href="/Classpath.jar!/index.html
 
 
 <h4>Building a Parser with javacc</h4>
-
+<p><strong>This is out of date,</strong> it still applies to the javacc parser and the properties parser,
+but the java parser uses Antlr rather than javacc.</p>
 The source code for the JavaSideKick plugin is ready to build with javac and
 jar.  On occasion, it may be necessary to make changes to the parser.  The
 parser is actually created by <a href="https://javacc.java.net/">javacc</a>.
