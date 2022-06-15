@@ -4,7 +4,7 @@ import javax.swing.text.Position;
 import sidekick.util.Location;
 import sidekick.util.SideKickElement;
 
-public class Property implements Comparable, SideKickElement {
+public class Property implements Comparable<Property>, SideKickElement {
 
     private String key = null;
     private String value = null;
@@ -89,7 +89,9 @@ public class Property implements Comparable, SideKickElement {
         return (p.equals(" = ") ? "" : p); // + " : " + getStartLocation() + ":" + getEndLocation() + ":" + getStartPosition().getOffset() + ":" + getEndPosition().getOffset();
     }
 
-    public int compareTo(Object o) {
+    public int compareTo(Property o) {
+        if (o == null)
+            return 1;
         return toString().compareToIgnoreCase(o.toString());
     }
 }
