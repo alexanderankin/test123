@@ -40,7 +40,7 @@ public class MethodNode extends TigerNode implements Parameterizable {
         super();
     }
 
-    public MethodNode( String name, int modifiers, String typeParams, List params, Type returnType ) {
+    public MethodNode( String name, int modifiers, String typeParams, List<Parameter> params, Type returnType ) {
         super( name, modifiers );
         this.typeParams = typeParams;
         this.params = params;
