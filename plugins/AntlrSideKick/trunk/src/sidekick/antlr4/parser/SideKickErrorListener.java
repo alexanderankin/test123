@@ -1,7 +1,6 @@
 package sidekick.antlr4.parser;
 
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.NotNull;
 
 import java.util.*;
 
