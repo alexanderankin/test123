@@ -1,6 +1,5 @@
 package sidekick.antlr4.parser;
 
-import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import sidekick.util.Location;
@@ -17,7 +16,6 @@ import javax.swing.ImageIcon;
 
 public class AntlrSideKickListener extends ANTLRv4ParserBaseListener {
     
-    Deque<AntlrNode> stack = new ArrayDeque<AntlrNode>();
     List<AntlrNode> lexerRules = new ArrayList<AntlrNode>();
     List<AntlrNode> parserRules = new ArrayList<AntlrNode>();
     
