@@ -336,6 +336,11 @@ public class Session implements Cloneable
 			}
 			view.setUserTitle(userTitle);
 		}
+		else
+		{
+			view.setUserTitle(jEdit.getProperty("view.title"));
+			view.updateTitle();	
+		}
 	}
 
 
