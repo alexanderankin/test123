@@ -112,11 +112,12 @@ public class SessionsPlugin extends EBPlugin
 		for (int i = 0; i < views.length; i++)
 		{
 			removeSessionSwitcher(views[i]);
+
+			// update the title bar
+			views[i].setUserTitle(jEdit.getProperty("view.title"));
+			views[i].updateTitle();	
 		}
 		
-		// update the title bar
-		// TODO: unused, why is this here?
-		SessionManager mgr = SessionManager.getInstance();
 	}
 
 
@@ -231,19 +232,18 @@ public class SessionsPlugin extends EBPlugin
 	{
 		boolean show = jEdit.getBooleanProperty("sessions.switcher.showToolBar", false);
 		View view = jEdit.getFirstView();
-
+		SessionManager mgr = SessionManager.getInstance();
+		
 		while (view != null)
 		{
 			if (show)
 				addSessionSwitcher(view);
 			else
 				removeSessionSwitcher(view);
+			Session s = mgr.getSession(view);
+			s.updateTitle(view);
 			view = view.getNext();
 		}
-		
-		// TODO: unused, why is this here?
-		SessionManager mgr = SessionManager.getInstance();
-		
 	}
 
 
