@@ -7,7 +7,7 @@ plugin.sessions.SessionsPlugin.name=Sessions
 plugin.sessions.SessionsPlugin.usePluginHome=true
 
 plugin.sessions.SessionsPlugin.author=Dirk Moebius (former), Steve Jakob(Former)
-plugin.sessions.SessionsPlugin.version=1.7
+plugin.sessions.SessionsPlugin.version=1.8
 plugin.sessions.SessionsPlugin.description=A plugin to manage lists of open files and switch between them.
 plugin.sessions.SessionsPlugin.docs=sessions/SessionsPlugin.html
 plugin.sessions.SessionsPlugin.depend.0=jedit 05.05.00.99
