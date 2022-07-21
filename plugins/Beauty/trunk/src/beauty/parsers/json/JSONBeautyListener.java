@@ -1,6 +1,5 @@
 package beauty.parsers.json;
 
-import org.antlr.v4.runtime.misc.NotNull;
 
 public class JSONBeautyListener extends JSONBaseListener {
 
@@ -26,7 +25,7 @@ public class JSONBeautyListener extends JSONBaseListener {
         return output.toString();
     } 
     
-    @Override public void enterObject( @NotNull JSONParser.ObjectContext ctx ) {
+    @Override public void enterObject( JSONParser.ObjectContext ctx ) {
         outdent();
         if ( output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
             output.append( '\n' );
@@ -37,7 +36,7 @@ public class JSONBeautyListener extends JSONBaseListener {
         indent();
     } 
     
-    @Override public void exitObject( @NotNull JSONParser.ObjectContext ctx ) {
+    @Override public void exitObject( JSONParser.ObjectContext ctx ) {
         // if there is a trailing comma and whitespace from adding the children
         // of this object, remove the comma and whitespace from the output.
         chopToComma();
@@ -48,7 +47,7 @@ public class JSONBeautyListener extends JSONBaseListener {
         output.append( '}' );
     } 
     
-    @Override public void enterArray( @NotNull JSONParser.ArrayContext ctx ) {
+    @Override public void enterArray( JSONParser.ArrayContext ctx ) {
         // if the array has more than one value, format like this:
         // [
         //     values
@@ -67,7 +66,7 @@ public class JSONBeautyListener extends JSONBaseListener {
         }
     } 
     
-    @Override public void exitArray( @NotNull JSONParser.ArrayContext ctx ) {
+    @Override public void exitArray( JSONParser.ArrayContext ctx ) {
         // if there is a trailing comma and whitespace from adding the children
         // of this array, remove the comma and whitespace from the output.
         chopToComma();
@@ -85,11 +84,11 @@ public class JSONBeautyListener extends JSONBaseListener {
         output.append( ']' );
     } 
     
-    @Override public void enterPair( @NotNull JSONParser.PairContext ctx ) {
+    @Override public void enterPair( JSONParser.PairContext ctx ) {
         output.append( ctx.STRING().getText() ).append( ": " );
     } 
     
-    @Override public void exitPair( @NotNull JSONParser.PairContext ctx ) {
+    @Override public void exitPair( JSONParser.PairContext ctx ) {
         if ( ctx.getParent() instanceof JSONParser.ArrayContext || ctx.getParent() instanceof JSONParser.ObjectContext ) {
             outdent();
             output.append( ",\n" );
@@ -97,7 +96,7 @@ public class JSONBeautyListener extends JSONBaseListener {
         }
     } 
     
-    @Override public void enterValue( @NotNull JSONParser.ValueContext ctx ) {
+    @Override public void enterValue( JSONParser.ValueContext ctx ) {
         if ( ctx.STRING() != null ) {
             output.append( ctx.STRING().getText() );
         } else if ( ctx.NUMBER() != null ) {
@@ -105,7 +104,7 @@ public class JSONBeautyListener extends JSONBaseListener {
         }
     } 
     
-    @Override public void exitValue( @NotNull JSONParser.ValueContext ctx ) {
+    @Override public void exitValue( JSONParser.ValueContext ctx ) {
         if ( ctx.getParent() instanceof JSONParser.ArrayContext || ctx.getParent() instanceof JSONParser.ObjectContext ) {
             outdent();
             output.append( ",\n" );
