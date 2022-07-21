@@ -275,20 +275,21 @@ Parser methods follow.
  	*     ;
  	*/
 	@Override public void exitClassBody(ClassBodyContext ctx) { 
-	    String lbrace = stack.pop();
+	    String rbrace = stack.pop();
 	    StringBuilder classBodyDecl = new StringBuilder();
 	    if (ctx.classBodyDeclaration() != null) {
 	        int size = ctx.classBodyDeclaration().size();
 	        List<String> parts = reverse(size);
-	        for (int i = 0; i < size; i++) {
-	            classBodyDecl.append(parts.get(i)).append('\n');   
+	        for (String part : parts) {
+	            classBodyDecl.append(indent(part)).append('\n');   
 	        }
+	        trimEnd(classBodyDecl);
 	    }
-	    String rbrace = stack.pop();
-	    classBodyDecl.insert(0, '\n');
-	    classBodyDecl.insert(0, rbrace);
-	    classBodyDecl.append('\n').append(lbrace);
-	    stack.push(classBodyDecl.toString());
+	    String lbrace = stack.pop();
+	    
+	    StringBuilder classBody = new StringBuilder();
+	    classBody.append('\n').append(lbrace).append('\n').append(classBodyDecl).append('\n').append(rbrace);
+	    stack.push(classBody.toString());
 	}
 	
 	
@@ -307,8 +308,8 @@ Parser methods follow.
 	    if (ctx.block() != null) {
 	         StringBuilder block = new StringBuilder(stack.pop());
 	         if (ctx.STATIC() != null) {
-	             block.insert(0, "static ");
 	             stack.pop();    // static keyword
+	             block.insert(0, "static ");
 	         }
 	         stack.push(block.toString());
 	         return;
@@ -319,8 +320,8 @@ Parser methods follow.
             if (ctx.modifier() != null) {
                 int size = ctx.modifier().size();
                 List<String> parts = reverse(size);
-                for (int i = 0; i < size; i++) {
-                    modifiers.append(parts.get(i)).append(' ');
+                for (String part : parts) {
+                    modifiers.append(part).append(' ');
                 }
             }
             modifiers.append(memberDeclaration);
@@ -370,7 +371,6 @@ Parser methods follow.
 	    StringBuilder classDecl = new StringBuilder();
 	    classDecl.append("class ").append(identifier).append(' ').append(typeParameters).append(' ').append(extendsType).append(implementsList).append(permitsList).append(classBody);
 	    stack.push(classDecl.toString());
-	    System.out.println("+++++ classDecl: " + classDecl);
 	}
 	
 	/**
@@ -517,54 +517,341 @@ Parser methods follow.
 	@Override public void exitExplicitGenericInvocationSuffix(ExplicitGenericInvocationSuffixContext ctx) { }
 
 	
+	/*
+	* Yes, this is ugly.
+	*
+  	* expression
+  	*     : primary
+  	*     | expression bop='.'
+  	*       (
+  	*          identifier
+  	*        | methodCall
+  	*        | THIS
+  	*        | NEW nonWildcardTypeArguments? innerCreator
+  	*        | SUPER superSuffix
+  	*        | explicitGenericInvocation
+  	*       )
+  	*     | expression '[' expression ']'
+  	*     | methodCall
+  	*     | NEW creator
+  	*     | '(' annotation* typeType ('&' typeType)* ')' expression
+  	*     | expression postfix=('++' | '--')
+  	*     | prefix=('+'|'-'|'++'|'--') expression
+  	*     | prefix=('~'|'!') expression
+  	*     | expression bop=('*'|'/'|'%') expression
+  	*     | expression bop=('+'|'-') expression
+  	*     | expression ('<' '<' | '>' '>' '>' | '>' '>') expression
+  	*     | expression bop=('<=' | '>=' | '>' | '<') expression
+  	*     | expression bop=INSTANCEOF (typeType | pattern)
+  	*     | expression bop=('==' | '!=') expression
+  	*     | expression bop='&' expression
+  	*     | expression bop='^' expression
+  	*     | expression bop='|' expression
+  	*     | expression bop='&&' expression
+  	*     | expression bop='||' expression
+  	*     | <assoc=right> expression bop='?' expression ':' expression
+  	*     | <assoc=right> expression
+  	*       bop=('=' | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '^=' | '>>=' | '>>>=' | '<<=' | '%=')
+  	*       expression
+  	*     | lambdaExpression // Java8
+  	*     | switchExpression // Java17
+  	* 
+  	*     // Java 8 methodReference
+  	*     | expression '::' typeArguments? identifier
+  	*     | typeType '::' (typeArguments? identifier | NEW)
+  	*     | classType '::' typeArguments? NEW
+  	*     ;
+  	*/
+	@Override public void exitExpression(ExpressionContext ctx) { 
+	    // a few of the choices can be skipped since they should already be on the stack
+	    if (ctx.primary() != null)
+	        return;
+	    if (ctx.methodCall() != null && ctx.expression() == null)
+	        return;
+	    if (ctx.lambdaExpression() != null)
+	        return;
+	    if (ctx.switchExpression() != null)
+	        return;
+	    
+	    // things with NEW
+	    if (ctx.NEW() != null) {
+	        if (ctx.creator() != null) {
+	            // NEW creator
+	            String creator = stack.pop();
+	            stack.pop();    // new keyword
+	            stack.push("new " + creator);
+	            return;
+	        }
+	        if (ctx.classType() != null || ctx.typeType() != null) {
+	            // classType '::' typeArguments? NEW
+	            // typeType '::' (typeArguments? identifier | NEW)
+	            // in typeType case, there is a NEW, so there won't be an identifier,
+	            // and the processing is the same as classType. Need to handle the
+	            // case with an identifier separately.
+	            stack.pop();    // new keyword
+	            String typeArguments = "";
+	            if (ctx.typeArguments() != null) {
+	                typeArguments = stack.pop();
+	            }
+	            stack.pop();    // :: 
+	            StringBuilder classType = new StringBuilder();
+                classType.append(stack.pop());  // classType
+	            classType.append(padOperator("::"));
+	            classType.append(typeArguments);
+	            classType.append("new");
+	            stack.push(classType.toString());
+	            return;
+	        }
+	    }
+	    if (ctx.typeType() != null && ctx.identifier() != null) {
+	        // typeType '::' (typeArguments? identifier | NEW)
+	        // the case with NEW has already been handled above, just need to do 
+	        // the case with an identifier
+	        String identifier = stack.pop();
+            String typeArguments = "";
+            if (ctx.typeArguments() != null) {
+                typeArguments = stack.pop();
+            }
+            stack.pop();    // :: 
+            StringBuilder typeType = new StringBuilder();
+            typeType.append(stack.pop());   // typeType
+            typeType.append(padOperator("::"));
+            typeType.append(typeArguments);
+            if (typeArguments.length() > 0) {
+                typeType.append(' ');
+            }
+            typeType.append(identifier);
+            stack.push(typeType.toString());
+            return;
+	    }
+	    if (ctx.COLONCOLON() != null) {
+	        // expression '::' typeArguments? identifier
+	        // This is the only remaining item with ::
+	        String identifier = stack.pop();
+            String typeArguments = "";
+            if (ctx.typeArguments() != null) {
+                typeArguments = stack.pop();
+            }
+            stack.pop();    // :: 
+            StringBuilder expression = new StringBuilder();
+            expression.append(stack.pop());   // typeType
+            expression.append(padOperator("::"));
+            expression.append(typeArguments);
+            if (typeArguments.length() > 0) {
+                expression.append(' ');
+            }
+            expression.append(identifier);
+            stack.push(expression.toString());
+            return;
+	    }
+	    
+	    // all the rest of the cases have at least one expression
+	    int expressionCount = ctx.expression().size();
+	    if (expressionCount == 1) {
+            //expression bop='.'
+            //      (
+            //         identifier
+            //       | methodCall
+            //       | THIS
+            //       | NEW nonWildcardTypeArguments? innerCreator
+            //       | SUPER superSuffix
+            //       | explicitGenericInvocation
+            //      )
+	        if (ctx.identifier() != null) {
+	            String identifier = stack.pop();
+	            stack.pop();    // . bop
+	            StringBuilder expression = new StringBuilder(stack.pop());
+	            expression.append('.');
+	            expression.append(identifier);
+	            stack.push(expression.toString());
+	            return;
+	        }
+	        if (ctx.methodCall() != null) {
+	            String methodCall = stack.pop();
+	            stack.pop();    // . bop
+	            StringBuilder expression = new StringBuilder(stack.pop());
+	            expression.append('.');
+	            expression.append(methodCall);
+	            stack.push(expression.toString());
+	            return;
+	        }
+	        if (ctx.THIS() != null) {
+	            String this_ = stack.pop();
+	            stack.pop();    // . bop
+	            StringBuilder expression = new StringBuilder(stack.pop());
+	            expression.append('.');
+	            expression.append(this_);
+	            stack.push(expression.toString());
+	            return;
+	        }
+	        if (ctx.NEW() != null) {
+	            String innerCreator = stack.pop();
+	            String typeArgs = "";
+	            if (ctx.nonWildcardTypeArguments() != null) {
+	                 typeArgs = stack.pop() + ' ';   
+	            }
+	            stack.pop();    // new keyword
+	            stack.pop();    // . bop
+	            StringBuilder expression = new StringBuilder(stack.pop());
+	            expression.append('.');
+	            expression.append("new ");
+	            expression.append(typeArgs);
+	            expression.append(innerCreator);
+	            stack.push(expression.toString());
+	            return;
+	        }
+	        if (ctx.SUPER() != null) {
+	            String superSuffix = stack.pop();
+	            stack.pop();    // super keyword
+	            stack.pop();    // . bop
+	            StringBuilder expression = new StringBuilder(stack.pop());
+	            expression.append('.');
+	            expression.append("super ");
+	            expression.append(superSuffix);
+	            stack.push(expression.toString());
+	            return;
+	        }
+	        if (ctx.explicitGenericInvocation() != null) {
+	            String invocation = stack.pop();
+	            stack.pop();    // . bop
+	            StringBuilder expression = new StringBuilder(stack.pop());
+	            expression.append('.');
+                expression.append(invocation);
+	            stack.push(expression.toString());
+	            return;
+	        }
+	        if (ctx.typeType() != null) {
+	            // '(' annotation* typeType ('&' typeType)* ')' expression
+	            String expression = stack.pop();
+	            stack.pop();    // )
+	            String typeTypes = "";
+	            if (ctx.typeType().size() > 1) {
+	                List<String> parts = new ArrayList<String>();
+	                for (int i = 0; i < ctx.typeType().size() - 1; i++) {
+	                    parts.add(stack.pop());    // typeType
+	                    parts.add(stack.pop());    // &
+	                }
+	                Collections.reverse(parts);
+	                StringBuilder sb = new StringBuilder();
+	                for (String part : parts) {
+	                    sb.append(part).append(' ');   
+	                }
+	                typeTypes = sb.toString();
+	            }
+	            String typeType = stack.pop();
+	            String annotations = "";
+	            if (ctx.annotation() != null) {
+	                int size = ctx.annotation().size();
+	                List<String> parts = reverse(size);
+	                StringBuilder sb = new StringBuilder();
+	                for (String part : parts) {
+	                    sb.append(part).append(' ');   
+	                }
+	                annotations = sb.toString();
+	            }
+	            stack.pop();    // (
+	            StringBuilder sb = new StringBuilder();
+	            sb.append('(');
+	            sb.append(annotations);
+	            sb.append(typeType);
+	            if (typeTypes.length() > 0) {
+	                sb.append(' ').append(typeTypes);   
+	            }
+	            sb.append(')');
+	            sb.append(expression);
+	            stack.push(sb.toString());
+	            return;
+	        }
+	        if (ctx.INSTANCEOF() != null) {
+	            // expression bop=INSTANCEOF (typeType | pattern)
+	            String typeOrPattern = stack.pop();
+	            String instanceOf = stack.pop();
+	            StringBuilder expression = new StringBuilder(stack.pop());
+	            expression.append(' ').append(instanceOf).append(' ').append(typeOrPattern);
+	            stack.push(expression.toString());
+	            return;
+	        }
+	        
+	        // there are 3 remaining cases with one expression:
+            // | expression postfix=('++' | '--')
+            // | prefix=('+'|'-'|'++'|'--') expression
+            // | prefix=('~'|'!') expression
+            String post = stack.peek();
+            if (post.indexOf('+') > -1 || post.indexOf('-') > -1) {
+                // it's the first case, the postfix expression
+                post = stack.pop();     // ++ or --
+                StringBuilder expression = new StringBuilder(stack.pop());
+                expression.append(padOperator(post));
+                stack.push(expression.toString());
+                return;
+            }
+            else {
+                // it's one of the prefix expressions, and they are all the same
+                StringBuilder expression = new StringBuilder(stack.pop());
+                expression.append(padOperator(stack.pop()));    // one of + - ++ -- ~ !
+                stack.push(expression.toString());
+                return;
+            }
+            
+            
+	    }
+	    else if (expressionCount == 2) {
+	        if (ctx.RBRACK() != null) {
+	            // expression '[' expression ']'
+	            stack.pop();    // ]
+	            String expression = stack.pop();
+	            stack.pop();    // [
+	            StringBuilder sb = new StringBuilder(stack.pop());
+	            sb.append('[').append(expression).append(']');
+	            stack.push(sb.toString());
+	            return;
+	        }
+	        // the rest of the cases with 2 expressions can be handled the same
+            // expression bop=('*'|'/'|'%') expression
+            // expression bop=('+'|'-') expression
+            // expression ('<' '<' | '>' '>' '>' | '>' '>') expression
+            // expression bop=('<=' | '>=' | '>' | '<') expression
+            // expression bop=INSTANCEOF (typeType | pattern)
+            // expression bop=('==' | '!=') expression
+            // expression bop='&' expression
+            // expression bop='^' expression
+            // expression bop='|' expression
+            // expression bop='&&' expression
+            // expression bop='||' expression
+            // <assoc=right> expression
+            // bop=('=' | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '^=' | '>>=' | '>>>=' | '<<=' | '%=')
+            // expression
+            
+            String expression = stack.pop();
+            String bop = stack.pop();
+            StringBuilder sb = new StringBuilder(stack.pop());
+            sb.append(padOperator(bop));
+            sb.append(expression);
+            stack.push(sb.toString());
+            return;
+	    }
+	    else if (expressionCount == 3) {
+	        // only have one case with 3 expressions
+	        //<assoc=right> expression bop='?' expression ':' expression
+	        String exp2 = stack.pop();
+	        stack.pop();    // :
+	        String exp1 = stack.pop();
+	        stack.pop();    // ?
+	        StringBuilder expression = new StringBuilder(stack.pop());
+	        expression.append(padOperator("?")).append(exp1).append(padOperator(":")).append(exp2);
+	        stack.push(expression.toString());
+	        return;
+	    }
+	}
+	
 	/**
- 	* expression
- 	*     : primary
- 	*     | expression bop='.'
- 	*       (
- 	*          identifier
- 	*        | methodCall
- 	*        | THIS
- 	*        | NEW nonWildcardTypeArguments? innerCreator
- 	*        | SUPER superSuffix
- 	*        | explicitGenericInvocation
- 	*       )
- 	*     | expression '[' expression ']'
- 	*     | methodCall
- 	*     | NEW creator
- 	*     | '(' annotation* typeType ('&' typeType)* ')' expression
- 	*     | expression postfix=('++' | '--')
- 	*     | prefix=('+'|'-'|'++'|'--') expression
- 	*     | prefix=('~'|'!') expression
- 	*     | expression bop=('*'|'/'|'%') expression
- 	*     | expression bop=('+'|'-') expression
- 	*     | expression ('<' '<' | '>' '>' '>' | '>' '>') expression
- 	*     | expression bop=('<=' | '>=' | '>' | '<') expression
- 	*     | expression bop=INSTANCEOF (typeType | pattern)
- 	*     | expression bop=('==' | '!=') expression
- 	*     | expression bop='&' expression
- 	*     | expression bop='^' expression
- 	*     | expression bop='|' expression
- 	*     | expression bop='&&' expression
- 	*     | expression bop='||' expression
- 	*     | <assoc=right> expression bop='?' expression ':' expression
- 	*     | <assoc=right> expression
- 	*       bop=('=' | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '^=' | '>>=' | '>>>=' | '<<=' | '%=')
- 	*       expression
- 	*     | lambdaExpression // Java8
- 	*     | switchExpression // Java17
- 	* 
- 	*     // Java 8 methodReference
- 	*     | expression '::' typeArguments? identifier
- 	*     | typeType '::' (typeArguments? identifier | NEW)
- 	*     | classType '::' typeArguments? NEW
+ 	* expressionList
+ 	*     : expression (',' expression)*
  	*     ;
  	*/
-	@Override public void exitExpression(ExpressionContext ctx) { 
-	    // TODO: finish this? Should one of the choices already be on the stack?
-	    stack.push(ctx.getText());
+	@Override public void exitExpressionList(ExpressionListContext ctx) { 
+	    
 	}
-	@Override public void exitExpressionList(ExpressionListContext ctx) { }
 	
 	
 	/**
@@ -573,11 +860,11 @@ Parser methods follow.
  	*     ;
  	*/
     @Override public void exitFieldDeclaration(FieldDeclarationContext ctx) { 
-        printStack("field declaration");
         stack.pop();    // semicolon
         String variableDeclarators = stack.pop();
         StringBuilder fieldDecl = new StringBuilder(stack.pop());   // typeType
         fieldDecl.append(' ').append(variableDeclarators).append(';');
+        stack.push(fieldDecl.toString());
     }
     
 	@Override public void exitFinallyBlock(FinallyBlockContext ctx) { }
@@ -589,7 +876,21 @@ Parser methods follow.
 	@Override public void exitFormalParameters(FormalParametersContext ctx) { }
 	@Override public void exitGenericConstructorDeclaration(GenericConstructorDeclarationContext ctx) { }
 	@Override public void exitGenericInterfaceMethodDeclaration(GenericInterfaceMethodDeclarationContext ctx) { }
-	@Override public void exitGenericMethodDeclaration(GenericMethodDeclarationContext ctx) { }
+	
+	
+	/**
+ 	* genericMethodDeclaration
+ 	*     : typeParameters methodDeclaration
+ 	*     ;
+ 	*/
+	@Override public void exitGenericMethodDeclaration(GenericMethodDeclarationContext ctx) { 
+	    String method = stack.pop();
+	    String typeParameters = stack.pop();
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(typeParameters).append(' ').append(method);
+	    stack.push(sb.toString());
+	}
+	
 	@Override public void exitGuardedPattern(GuardedPatternContext ctx) { }
 	
 	
@@ -724,9 +1025,51 @@ Parser methods follow.
 	    // Nothing to do here, one of the choices should already be on the stack.
 	}
 	
-	@Override public void exitMethodBody(MethodBodyContext ctx) { }
+	/**
+ 	* methodBody
+ 	*     : block
+ 	*     | ';'
+ 	*     ;
+ 	*/
+	@Override public void exitMethodBody(MethodBodyContext ctx) {
+	    // Nothing to do here, one of the choices should already be on the stack.
+	}
+	
 	@Override public void exitMethodCall(MethodCallContext ctx) { }
-	@Override public void exitMethodDeclaration(MethodDeclarationContext ctx) { }
+	
+	
+	/**
+ 	* methodDeclaration
+ 	*     : typeTypeOrVoid identifier formalParameters ('[' ']')*
+ 	*       (THROWS qualifiedNameList)?
+ 	*       methodBody
+ 	*     ;
+ 	*/
+	@Override public void exitMethodDeclaration(MethodDeclarationContext ctx) { 
+	    String methodBody = stack.pop();
+	    String throwsList = "";
+	    if (ctx.THROWS() != null) {
+	        String qualifiedNameList = stack.pop();
+	        stack.pop();    // throws keyword
+	        throwsList = "throws " + qualifiedNameList;
+	    }
+	    StringBuilder brackets = new StringBuilder();
+	    if (ctx.RBRACK() != null) {
+	        int size = ctx.RBRACK().size() * 2;     // * 2 for LBRACK
+	        for (int i = 0; i < size; i++) {
+	            stack.pop();    
+	            if (i % 2 == 0) {
+	                brackets.append("[]");    
+	            }
+	        }
+	    }
+	    String formalParameters = stack.pop();
+	    String identifier = stack.pop();
+	    String typeOrVoid = stack.pop();
+	    StringBuilder method = new StringBuilder();
+	    method.append(typeOrVoid).append(' ').append(identifier).append(' ').append(formalParameters).append(' ').append(brackets).append(throwsList).append(methodBody);
+	    stack.push(method.toString());
+	}
 	
 	/**
  	* modifier
@@ -1014,7 +1357,6 @@ Parser methods follow.
 	    }
 	    typeDeclaration.append(declaration);
 	    stack.push(typeDeclaration.toString());
-	    System.out.println("+++++ typeDeclaration: " + typeDeclaration);
 	}
 	
 	@Override public void exitTypeList(TypeListContext ctx) { }
@@ -1027,8 +1369,52 @@ Parser methods follow.
  	*     ;
  	*/
 	@Override public void exitTypeType(TypeTypeContext ctx) { 
-	    // TODO: finish this! Next line is temporary!
-	    stack.push(ctx.getText());
+	    
+	    int annotationCount = 0;    // keep track of how many annotations have been popped
+	    
+	    // handle the end part, (annotation* '[' ']')*
+	    StringBuilder endPart = new StringBuilder();
+	    if (ctx.RBRACK() != null) {
+	        for (int i = 0; i < ctx.RBRACK().size(); i++) {
+	            // get the brackets
+	            endPart.append(stack.pop());    // ]
+	            endPart.append(stack.pop());    // [
+	            
+                // any annotations?
+                if (ctx.annotation() != null) {
+                    for (int j = 0; j < ctx.annotation().size(); j++) {
+                        String ann = stack.peek();
+                        if (ann.indexOf('@') > -1) {    
+                            // using indexOf to be able to check for altAnnotationQualifiedName
+                            // as well as regular annotation
+                            endPart.append(stack.pop());    // annotation
+                            ++ annotationCount;
+                        }
+                        else {
+                            break;   
+                        }
+                    }
+                }
+	        }
+	    }
+	    
+	    String type = stack.pop();    // one of (classOrInterfaceType | primitiveType)
+	    
+	    // handle the rest of the annotations, if any
+	    StringBuilder typeType = new StringBuilder();
+	    if (ctx.annotation() != null) {
+	        List<String> anns = reverse(ctx.annotation().size() - annotationCount);
+	        for (String a : anns) {
+	            typeType.append(a).append(' ');
+	        }
+	    }
+	    
+	    // put it all together
+	    typeType.append(type);
+	    if (endPart.length() > 0) {
+	        typeType.append(' ').append(endPart);
+	    }
+	    stack.push(typeType.toString());
 	}
 	
 	
@@ -1039,7 +1425,7 @@ Parser methods follow.
  	*     ;
  	*/
 	@Override public void exitTypeTypeOrVoid(TypeTypeOrVoidContext ctx) {
-		    // Nothing to do here, one of the choices should already be on the stack.
+	    // Nothing to do here, one of the choices should already be on the stack.
 	}
 	
 	/**
@@ -1048,13 +1434,17 @@ Parser methods follow.
  	*     ;
  	*/
 	@Override public void exitVariableDeclarator(VariableDeclaratorContext ctx) {
-	    StringBuilder variableDecl = new StringBuilder();
+	    printStack("variable declarator");
+	    String variableInitializer = "";
+	    String equals = "";
 	    if (ctx.variableInitializer() != null) {
-	        List<String> parts = reverse(2);    // = and variableInitializer
-	        variableDecl.append(padOperator(parts.get(0)));    // =
-	        variableDecl.append(parts.get(1));    // variableInitializer
+	        variableInitializer = stack.pop();
+	        equals = padOperator(stack.pop());
 	    }
-	    variableDecl.insert(0, stack.pop());    // variableDeclaratorId
+	    StringBuilder variableDecl = new StringBuilder();
+	    variableDecl.append(stack.pop());    // variableDeclaratorId
+	    variableDecl.append(equals);
+	    variableDecl.append(variableInitializer);
 	    stack.push(variableDecl.toString());
 	}
 	
@@ -1085,10 +1475,13 @@ Parser methods follow.
  	*/
 	@Override public void exitVariableDeclarators(VariableDeclaratorsContext ctx) { 
 	    int size = ctx.variableDeclarator().size();
+	    if (size == 1) {
+	        return;    // only have one variableDeclarator and it's already on the stack   
+	    }
 	    if (ctx.COMMA() != null) {
 	        size += ctx.COMMA().size();
 	    }
-	    String variableDecls = reverse(size, " ", 2);
+	    String variableDecls = reverse(size, " ", 2);    // TODO: check this, space or comma?
 	    stack.push(variableDecls);
 	}
 	
