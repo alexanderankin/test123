@@ -1,4 +1,4 @@
-// Generated from /home/danson/src/jedit/plugins/Beauty/src/beauty/parsers/json/JSON.g4 by ANTLR 4.x
+// Generated from /home/danson/src/jedit/plugins/Beauty/src/beauty/parsers/json/JSON.g4 by ANTLR 4.10.1
 
     package beauty.parsers.json;
 
@@ -11,23 +11,38 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
 
+@SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class JSONParser extends Parser {
+	static { RuntimeMetaData.checkVersion("4.10.1", RuntimeMetaData.VERSION); }
+
+	protected static final DFA[] _decisionToDFA;
+	protected static final PredictionContextCache _sharedContextCache =
+		new PredictionContextCache();
 	public static final int
 		T__0=1, T__1=2, STRING=3, NUMBER=4, WS=5, LBRACE=6, RBRACE=7, LSQUARE=8, 
 		RSQUARE=9, DQUOTE=10;
 	public static final int
 		RULE_json = 0, RULE_object = 1, RULE_pair = 2, RULE_array = 3, RULE_value = 4;
-	public static final String[] ruleNames = {
-		"json", "object", "pair", "array", "value"
-	};
+	private static String[] makeRuleNames() {
+		return new String[] {
+			"json", "object", "pair", "array", "value"
+		};
+	}
+	public static final String[] ruleNames = makeRuleNames();
 
-	private static final String[] _LITERAL_NAMES = {
-		null, "','", "':'", null, null, null, "'{'", "'}'", "'['", "']'", "'\"'"
-	};
-	private static final String[] _SYMBOLIC_NAMES = {
-		null, null, null, "STRING", "NUMBER", "WS", "LBRACE", "RBRACE", "LSQUARE", 
-		"RSQUARE", "DQUOTE"
-	};
+	private static String[] makeLiteralNames() {
+		return new String[] {
+			null, "','", "':'", null, null, null, "'{'", "'}'", "'['", "']'", "'\"'"
+		};
+	}
+	private static final String[] _LITERAL_NAMES = makeLiteralNames();
+	private static String[] makeSymbolicNames() {
+		return new String[] {
+			null, null, null, "STRING", "NUMBER", "WS", "LBRACE", "RBRACE", "LSQUARE", 
+			"RSQUARE", "DQUOTE"
+		};
+	}
+	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
 	/**
@@ -56,7 +71,7 @@ public class JSONParser extends Parser {
 	}
 
 	@Override
-	@NotNull
+
 	public Vocabulary getVocabulary() {
 		return VOCABULARY;
 	}
@@ -70,10 +85,14 @@ public class JSONParser extends Parser {
 	@Override
 	public String getSerializedATN() { return _serializedATN; }
 
+	@Override
+	public ATN getATN() { return _ATN; }
+
 	public JSONParser(TokenStream input) {
 		super(input);
-		_interp = new ParserATNSimulator(this,_ATN);
+		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
+
 	public static class JsonContext extends ParserRuleContext {
 		public ObjectContext object() {
 			return getRuleContext(ObjectContext.class,0);
@@ -95,12 +114,12 @@ public class JSONParser extends Parser {
 		}
 	}
 
-	@RuleVersion(0)
 	public final JsonContext json() throws RecognitionException {
 		JsonContext _localctx = new JsonContext(_ctx, getState());
 		enterRule(_localctx, 0, RULE_json);
 		try {
 			setState(12);
+			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case LBRACE:
 				enterOuterAlt(_localctx, 1);
@@ -133,7 +152,7 @@ public class JSONParser extends Parser {
 
 	public static class ObjectContext extends ParserRuleContext {
 		public TerminalNode LBRACE() { return getToken(JSONParser.LBRACE, 0); }
-		public List<? extends PairContext> pair() {
+		public List<PairContext> pair() {
 			return getRuleContexts(PairContext.class);
 		}
 		public PairContext pair(int i) {
@@ -154,13 +173,13 @@ public class JSONParser extends Parser {
 		}
 	}
 
-	@RuleVersion(0)
 	public final ObjectContext object() throws RecognitionException {
 		ObjectContext _localctx = new ObjectContext(_ctx, getState());
 		enterRule(_localctx, 2, RULE_object);
 		int _la;
 		try {
 			setState(27);
+			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,2,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
@@ -230,7 +249,6 @@ public class JSONParser extends Parser {
 		}
 	}
 
-	@RuleVersion(0)
 	public final PairContext pair() throws RecognitionException {
 		PairContext _localctx = new PairContext(_ctx, getState());
 		enterRule(_localctx, 4, RULE_pair);
@@ -258,7 +276,7 @@ public class JSONParser extends Parser {
 
 	public static class ArrayContext extends ParserRuleContext {
 		public TerminalNode LSQUARE() { return getToken(JSONParser.LSQUARE, 0); }
-		public List<? extends ValueContext> value() {
+		public List<ValueContext> value() {
 			return getRuleContexts(ValueContext.class);
 		}
 		public ValueContext value(int i) {
@@ -279,13 +297,13 @@ public class JSONParser extends Parser {
 		}
 	}
 
-	@RuleVersion(0)
 	public final ArrayContext array() throws RecognitionException {
 		ArrayContext _localctx = new ArrayContext(_ctx, getState());
 		enterRule(_localctx, 6, RULE_array);
 		int _la;
 		try {
 			setState(46);
+			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
@@ -359,12 +377,12 @@ public class JSONParser extends Parser {
 		}
 	}
 
-	@RuleVersion(0)
 	public final ValueContext value() throws RecognitionException {
 		ValueContext _localctx = new ValueContext(_ctx, getState());
 		enterRule(_localctx, 8, RULE_value);
 		try {
 			setState(52);
+			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case STRING:
 				enterOuterAlt(_localctx, 1);
@@ -410,24 +428,47 @@ public class JSONParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\uaf6f\u8320\u479d\ub75c\u4880\u1605\u191c\uab37\3\f9\4\2\t\2\4\3\t"+
-		"\3\4\4\t\4\4\5\t\5\4\6\t\6\3\2\3\2\5\2\17\n\2\3\3\3\3\3\3\3\3\7\3\25\n"+
-		"\3\f\3\16\3\30\13\3\3\3\3\3\3\3\3\3\5\3\36\n\3\3\4\3\4\3\4\3\4\3\5\3\5"+
-		"\3\5\3\5\7\5(\n\5\f\5\16\5+\13\5\3\5\3\5\3\5\3\5\5\5\61\n\5\3\6\3\6\3"+
-		"\6\3\6\5\6\67\n\6\3\6\2\2\2\7\2\2\4\2\6\2\b\2\n\2\2\2;\2\16\3\2\2\2\4"+
-		"\35\3\2\2\2\6\37\3\2\2\2\b\60\3\2\2\2\n\66\3\2\2\2\f\17\5\4\3\2\r\17\5"+
-		"\b\5\2\16\f\3\2\2\2\16\r\3\2\2\2\17\3\3\2\2\2\20\21\7\b\2\2\21\26\5\6"+
-		"\4\2\22\23\7\3\2\2\23\25\5\6\4\2\24\22\3\2\2\2\25\30\3\2\2\2\26\24\3\2"+
-		"\2\2\26\27\3\2\2\2\27\31\3\2\2\2\30\26\3\2\2\2\31\32\7\t\2\2\32\36\3\2"+
-		"\2\2\33\34\7\b\2\2\34\36\7\t\2\2\35\20\3\2\2\2\35\33\3\2\2\2\36\5\3\2"+
-		"\2\2\37 \7\5\2\2 !\7\4\2\2!\"\5\n\6\2\"\7\3\2\2\2#$\7\n\2\2$)\5\n\6\2"+
-		"%&\7\3\2\2&(\5\n\6\2\'%\3\2\2\2(+\3\2\2\2)\'\3\2\2\2)*\3\2\2\2*,\3\2\2"+
-		"\2+)\3\2\2\2,-\7\13\2\2-\61\3\2\2\2./\7\n\2\2/\61\7\13\2\2\60#\3\2\2\2"+
-		"\60.\3\2\2\2\61\t\3\2\2\2\62\67\7\5\2\2\63\67\7\6\2\2\64\67\5\4\3\2\65"+
-		"\67\5\b\5\2\66\62\3\2\2\2\66\63\3\2\2\2\66\64\3\2\2\2\66\65\3\2\2\2\67"+
-		"\13\3\2\2\2\b\16\26\35)\60\66";
+		"\u0004\u0001\n7\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
+		"\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004\u0001"+
+		"\u0000\u0001\u0000\u0003\u0000\r\b\u0000\u0001\u0001\u0001\u0001\u0001"+
+		"\u0001\u0001\u0001\u0005\u0001\u0013\b\u0001\n\u0001\f\u0001\u0016\t\u0001"+
+		"\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0003\u0001\u001c\b\u0001"+
+		"\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0003\u0001\u0003"+
+		"\u0001\u0003\u0001\u0003\u0005\u0003&\b\u0003\n\u0003\f\u0003)\t\u0003"+
+		"\u0001\u0003\u0001\u0003\u0001\u0003\u0001\u0003\u0003\u0003/\b\u0003"+
+		"\u0001\u0004\u0001\u0004\u0001\u0004\u0001\u0004\u0003\u00045\b\u0004"+
+		"\u0001\u0004\u0000\u0000\u0005\u0000\u0002\u0004\u0006\b\u0000\u00009"+
+		"\u0000\f\u0001\u0000\u0000\u0000\u0002\u001b\u0001\u0000\u0000\u0000\u0004"+
+		"\u001d\u0001\u0000\u0000\u0000\u0006.\u0001\u0000\u0000\u0000\b4\u0001"+
+		"\u0000\u0000\u0000\n\r\u0003\u0002\u0001\u0000\u000b\r\u0003\u0006\u0003"+
+		"\u0000\f\n\u0001\u0000\u0000\u0000\f\u000b\u0001\u0000\u0000\u0000\r\u0001"+
+		"\u0001\u0000\u0000\u0000\u000e\u000f\u0005\u0006\u0000\u0000\u000f\u0014"+
+		"\u0003\u0004\u0002\u0000\u0010\u0011\u0005\u0001\u0000\u0000\u0011\u0013"+
+		"\u0003\u0004\u0002\u0000\u0012\u0010\u0001\u0000\u0000\u0000\u0013\u0016"+
+		"\u0001\u0000\u0000\u0000\u0014\u0012\u0001\u0000\u0000\u0000\u0014\u0015"+
+		"\u0001\u0000\u0000\u0000\u0015\u0017\u0001\u0000\u0000\u0000\u0016\u0014"+
+		"\u0001\u0000\u0000\u0000\u0017\u0018\u0005\u0007\u0000\u0000\u0018\u001c"+
+		"\u0001\u0000\u0000\u0000\u0019\u001a\u0005\u0006\u0000\u0000\u001a\u001c"+
+		"\u0005\u0007\u0000\u0000\u001b\u000e\u0001\u0000\u0000\u0000\u001b\u0019"+
+		"\u0001\u0000\u0000\u0000\u001c\u0003\u0001\u0000\u0000\u0000\u001d\u001e"+
+		"\u0005\u0003\u0000\u0000\u001e\u001f\u0005\u0002\u0000\u0000\u001f \u0003"+
+		"\b\u0004\u0000 \u0005\u0001\u0000\u0000\u0000!\"\u0005\b\u0000\u0000\""+
+		"\'\u0003\b\u0004\u0000#$\u0005\u0001\u0000\u0000$&\u0003\b\u0004\u0000"+
+		"%#\u0001\u0000\u0000\u0000&)\u0001\u0000\u0000\u0000\'%\u0001\u0000\u0000"+
+		"\u0000\'(\u0001\u0000\u0000\u0000(*\u0001\u0000\u0000\u0000)\'\u0001\u0000"+
+		"\u0000\u0000*+\u0005\t\u0000\u0000+/\u0001\u0000\u0000\u0000,-\u0005\b"+
+		"\u0000\u0000-/\u0005\t\u0000\u0000.!\u0001\u0000\u0000\u0000.,\u0001\u0000"+
+		"\u0000\u0000/\u0007\u0001\u0000\u0000\u000005\u0005\u0003\u0000\u0000"+
+		"15\u0005\u0004\u0000\u000025\u0003\u0002\u0001\u000035\u0003\u0006\u0003"+
+		"\u000040\u0001\u0000\u0000\u000041\u0001\u0000\u0000\u000042\u0001\u0000"+
+		"\u0000\u000043\u0001\u0000\u0000\u00005\t\u0001\u0000\u0000\u0000\u0006"+
+		"\f\u0014\u001b\'.4";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
+		_decisionToDFA = new DFA[_ATN.getNumberOfDecisions()];
+		for (int i = 0; i < _ATN.getNumberOfDecisions(); i++) {
+			_decisionToDFA[i] = new DFA(_ATN.getDecisionState(i), i);
+		}
 	}
 }

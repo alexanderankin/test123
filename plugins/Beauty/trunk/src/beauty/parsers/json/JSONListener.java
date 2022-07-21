@@ -1,9 +1,7 @@
-// Generated from /home/danson/src/jedit/plugins/Beauty/src/beauty/parsers/json/JSON.g4 by ANTLR 4.x
+// Generated from /home/danson/src/jedit/plugins/Beauty/src/beauty/parsers/json/JSON.g4 by ANTLR 4.10.1
 
     package beauty.parsers.json;
 
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -15,50 +13,50 @@ public interface JSONListener extends ParseTreeListener {
 	 * Enter a parse tree produced by {@link JSONParser#json}.
 	 * @param ctx the parse tree
 	 */
-	void enterJson(@NotNull JSONParser.JsonContext ctx);
+	void enterJson(JSONParser.JsonContext ctx);
 	/**
 	 * Exit a parse tree produced by {@link JSONParser#json}.
 	 * @param ctx the parse tree
 	 */
-	void exitJson(@NotNull JSONParser.JsonContext ctx);
+	void exitJson(JSONParser.JsonContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link JSONParser#object}.
 	 * @param ctx the parse tree
 	 */
-	void enterObject(@NotNull JSONParser.ObjectContext ctx);
+	void enterObject(JSONParser.ObjectContext ctx);
 	/**
 	 * Exit a parse tree produced by {@link JSONParser#object}.
 	 * @param ctx the parse tree
 	 */
-	void exitObject(@NotNull JSONParser.ObjectContext ctx);
+	void exitObject(JSONParser.ObjectContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link JSONParser#pair}.
 	 * @param ctx the parse tree
 	 */
-	void enterPair(@NotNull JSONParser.PairContext ctx);
+	void enterPair(JSONParser.PairContext ctx);
 	/**
 	 * Exit a parse tree produced by {@link JSONParser#pair}.
 	 * @param ctx the parse tree
 	 */
-	void exitPair(@NotNull JSONParser.PairContext ctx);
+	void exitPair(JSONParser.PairContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link JSONParser#array}.
 	 * @param ctx the parse tree
 	 */
-	void enterArray(@NotNull JSONParser.ArrayContext ctx);
+	void enterArray(JSONParser.ArrayContext ctx);
 	/**
 	 * Exit a parse tree produced by {@link JSONParser#array}.
 	 * @param ctx the parse tree
 	 */
-	void exitArray(@NotNull JSONParser.ArrayContext ctx);
+	void exitArray(JSONParser.ArrayContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link JSONParser#value}.
 	 * @param ctx the parse tree
 	 */
-	void enterValue(@NotNull JSONParser.ValueContext ctx);
+	void enterValue(JSONParser.ValueContext ctx);
 	/**
 	 * Exit a parse tree produced by {@link JSONParser#value}.
 	 * @param ctx the parse tree
 	 */
-	void exitValue(@NotNull JSONParser.ValueContext ctx);
+	void exitValue(JSONParser.ValueContext ctx);
 }
