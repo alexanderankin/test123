@@ -111,6 +111,7 @@ public class JavaParserBeautyListener extends JavaParserBaseListener {
             JavaLexer lexer = new JavaLexer( antlrInput );
             CommonTokenStream tokens = new CommonTokenStream( lexer );
             JavaParser javaParser = new JavaParser( tokens );
+            javaParser.setTrace(true);
             
             // parse and beautify the buffer contents
             JavaParserBeautyListener listener = new JavaParserBeautyListener(16 * 1024, tokens);
@@ -155,7 +156,20 @@ Parser methods follow.
  	*     ;
  	*/
 	@Override public void exitAnnotation(AnnotationContext ctx) {
-	
+	    StringBuilder elements = new StringBuilder();
+	    if (ctx.RPAREN() != null) {
+	        pop();    // )
+	        String element = "";
+	        if (ctx.elementValue() != null || ctx.elementValuePairs() != null) {
+	            element = pop();
+	        }
+	        pop();    // (
+	        elements.append('(').append(element).append(')');
+	    }
+	    String name = pop();
+	    StringBuilder annotation = new StringBuilder();
+	    annotation.append('@').append(name).append(elements);
+	    push(annotation);
 	}
 	
 	/**
@@ -163,7 +177,9 @@ Parser methods follow.
  	*     : variableDeclarators
  	*     ;
  	*/
-	@Override public void exitAnnotationConstantRest(AnnotationConstantRestContext ctx) { }
+	@Override public void exitAnnotationConstantRest(AnnotationConstantRestContext ctx) { 
+	    // Nothing to do here, the only choice should already be on the stack.
+	}
 	
 	/**
  	* annotationMethodOrConstantRest
@@ -171,28 +187,60 @@ Parser methods follow.
  	*     | annotationConstantRest
  	*     ;
  	*/
-	@Override public void exitAnnotationMethodOrConstantRest(AnnotationMethodOrConstantRestContext ctx) { }
+	@Override public void exitAnnotationMethodOrConstantRest(AnnotationMethodOrConstantRestContext ctx) { 
+	    // Nothing to do here, one of the choices should already be on the stack.
+	}
 	
 	/**
  	* annotationMethodRest
  	*     : identifier '(' ')' defaultValue?
  	*     ;
  	*/
-	@Override public void exitAnnotationMethodRest(AnnotationMethodRestContext ctx) { }
+	@Override public void exitAnnotationMethodRest(AnnotationMethodRestContext ctx) {
+	    String defaultValue = "";
+	    if (ctx.defaultValue() != null) {
+	        defaultValue = pop();
+	    }
+	    pop();    // )
+	    pop();    // (
+	    StringBuilder identifier = new StringBuilder(pop());
+	    identifier.append("()").append(defaultValue);
+	    push(identifier);
+	}
 	
 	/**
  	* 	annotationTypeBody
  	*     : '{' (annotationTypeElementDeclaration)* '}'
  	*     ;
  	*/
- 	@Override public void exitAnnotationTypeBody(AnnotationTypeBodyContext ctx) { }
+ 	@Override public void exitAnnotationTypeBody(AnnotationTypeBodyContext ctx) { 
+ 	    pop();    // }
+ 	    StringBuilder body = new StringBuilder("{\n");
+ 	    if (ctx.annotationTypeElementDeclaration() != null) {
+ 	        int size = ctx.annotationTypeElementDeclaration().size();
+ 	        List<String> parts = reverse(size);
+ 	        for (String part : parts) {
+ 	            body.append(indent(part)).append('\n');
+ 	        }
+ 	    }
+ 	    body.append("}");
+ 	    push(body);       // push it right off of the cliff
+ 	}
  	
  	/**
   	* annotationTypeDeclaration
   	*     : '@' INTERFACE identifier annotationTypeBody
   	*     ;
   	*/
-	@Override public void exitAnnotationTypeDeclaration(AnnotationTypeDeclarationContext ctx) { }
+	@Override public void exitAnnotationTypeDeclaration(AnnotationTypeDeclarationContext ctx) { 
+	    String body = pop();
+	    String identifier = pop();
+	    pop();    // interface keyword
+	    pop();    // @
+	    StringBuilder sb = new StringBuilder();
+	    sb.append('@').append("interface").append(' ').append(identifier).append(' ').append(body);
+	    push(sb);
+	}
 	@Override public void exitAnnotationTypeElementDeclaration(AnnotationTypeElementDeclarationContext ctx) { }
 	
 	/**
@@ -207,7 +255,7 @@ Parser methods follow.
  	*/
     @Override public void exitAnnotationTypeElementRest(AnnotationTypeElementRestContext ctx) { 
         if (ctx.SEMI() != null) {
-            stack.pop();    // pop the semicolon
+            pop();    // pop the semicolon
             StringBuilder type = new StringBuilder();
             if (ctx.typeType() != null) {
                 List<String> parts = reverse(2);    // typeType and annotationMethodOrConstantRest
@@ -216,24 +264,79 @@ Parser methods follow.
                 }
             }
             else {
-                type.append(stack.pop());   // one of the other 5 choices   
+                type.append(pop());   // one of the other 5 choices   
             }
             type.append(';');
-            stack.push(type.toString());
+            push(type);
         }
     }
     
-	@Override public void exitArguments(ArgumentsContext ctx) { }
-	@Override public void exitArrayCreatorRest(ArrayCreatorRestContext ctx) { }
-	@Override public void exitArrayInitializer(ArrayInitializerContext ctx) { }
+    /**
+     * arguments
+     *     : '(' expressionList? ')'
+     *     ;
+     */
+	@Override public void exitArguments(ArgumentsContext ctx) { 
+ 	    pop();    // )
+ 	    StringBuilder expressionList = new StringBuilder("{\n");
+ 	    if (ctx.expressionList() != null) {
+ 	        expressionList.append(pop());   
+ 	    }
+ 	    pop();    // (
+ 	    expressionList.insert(0, padParen("("));
+ 	    expressionList.append(padParen(")"));
+ 	    push(expressionList);      
+	}
 	
+	
+	/**
+ 	* arrayCreatorRest
+ 	*     : '[' (']' ('[' ']')* arrayInitializer | expression ']' ('[' expression ']')* ('[' ']')*)
+ 	*     ;
+ 	*/
+	@Override public void exitArrayCreatorRest(ArrayCreatorRestContext ctx) {
+	    // TODO: this is a pain and not right
+	    int size = ctx.LBRACK().size();
+	    size += ctx.RBRACK().size();
+	    if (ctx.expression() != null) {
+	        size += ctx.expression().size();   
+	    }
+	    if (ctx.arrayInitializer() != null) {
+	        ++ size;   
+	    }
+	    pop(size);
+	    push(ctx.getText());
+	}
+	
+	
+	/**
+ 	* arrayInitializer
+ 	*     : '{' (variableInitializer (',' variableInitializer)* (',')? )? '}'
+ 	*     ;
+ 	*/
+	@Override public void exitArrayInitializer(ArrayInitializerContext ctx) { 
+	    pop();    // }
+	    int size = ctx.variableInitializer().size();
+	    if (ctx.COMMA() != null) {
+	        size += ctx.COMMA().size();   
+	    }
+	    String variableInitializers = reverse(size, " ", 2);
+	    pop();    // {
+	    StringBuilder sb = new StringBuilder();
+	    sb.append('{').append(variableInitializers).append('}');
+	    push(sb);
+	}
+	
+	@Override public void enterBlock(BlockContext ctx) {
+	    ++tabCount;
+	}
 	/**
  	* block
  	*     : '{' blockStatement* '}'
  	*     ;
  	*/
 	@Override public void exitBlock(BlockContext ctx) { 
-	    String lbrace = stack.pop();
+	    String lbrace = pop();
 	    StringBuilder blockStatements = new StringBuilder();
 	    if (ctx.blockStatement() != null) {
 	        int size = ctx.blockStatement().size();
@@ -242,11 +345,12 @@ Parser methods follow.
 	            blockStatements.append(parts.get(i)).append('\n');   
 	        }
 	    }
-	    String rbrace = stack.pop();
-	    blockStatements.insert(0, '\n');
-	    blockStatements.insert(0, rbrace);
-	    blockStatements.append('\n').append(lbrace);
-	    stack.push(blockStatements.toString());
+	    String rbrace = pop();
+	    
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(rbrace).append('\n').append(indent(blockStatements.toString())).append('\n').append(lbrace);
+	    push(sb);
+	    --tabCount;
 	}
 	
 	/**
@@ -258,16 +362,47 @@ Parser methods follow.
  	*/
 	@Override public void exitBlockStatement(BlockStatementContext ctx) { 
 	    if (ctx.SEMI() != null) {
-	        stack.pop();    // semi
-	        String localVariableDeclaration = stack.pop();
-	        stack.push(localVariableDeclaration + ';');
+	        pop();    // semi
+	        String localVariableDeclaration = pop();
+	        push(localVariableDeclaration + ';');
 	        return;
 	    }
 	    // Nothing else to do here, one of the other choices should already be on the stack.
 	}
 	
-	@Override public void exitCatchClause(CatchClauseContext ctx) { }
-	@Override public void exitCatchType(CatchTypeContext ctx) { }
+	/**
+ 	* catchClause
+ 	*     : CATCH '(' variableModifier* catchType identifier ')' block
+ 	*     ;
+ 	*/
+	@Override public void exitCatchClause(CatchClauseContext ctx) { 
+	    String block = pop();
+	    pop();    // )
+	    String identifier = pop();
+	    String catchType = pop();
+	    String variableModifiers = "";
+	    if (ctx.variableModifier() != null) {
+	        int size = ctx.variableModifier().size();
+	        variableModifiers = reverse(size, " ");
+	    }
+	    pop();    // (
+	    pop();    // catch keyword
+	    StringBuilder sb = new StringBuilder("catch ");
+	    sb.append(padParen("(")).append(variableModifiers).append(catchType).append(' ').append(identifier).append(padParen(")")).append(block);
+	    push(sb);
+	}
+	
+	
+	/**
+ 	* catchType
+ 	*     : qualifiedName ('|' qualifiedName)*
+ 	*     ;
+ 	*/
+	@Override public void exitCatchType(CatchTypeContext ctx) { 
+	    int size = ctx.qualifiedName().size();
+	    String qualifiedNames = reverse(size * 2 - 1, padOperator("|"));
+	    push(qualifiedNames);
+	}
 	
 	/**
  	* classBody
@@ -275,7 +410,7 @@ Parser methods follow.
  	*     ;
  	*/
 	@Override public void exitClassBody(ClassBodyContext ctx) { 
-	    String rbrace = stack.pop();
+	    String rbrace = pop();
 	    StringBuilder classBodyDecl = new StringBuilder();
 	    if (ctx.classBodyDeclaration() != null) {
 	        int size = ctx.classBodyDeclaration().size();
@@ -285,11 +420,11 @@ Parser methods follow.
 	        }
 	        trimEnd(classBodyDecl);
 	    }
-	    String lbrace = stack.pop();
+	    String lbrace = pop();
 	    
 	    StringBuilder classBody = new StringBuilder();
 	    classBody.append('\n').append(lbrace).append('\n').append(classBodyDecl).append('\n').append(rbrace);
-	    stack.push(classBody.toString());
+	    push(classBody);
 	}
 	
 	
@@ -306,16 +441,16 @@ Parser methods follow.
 	    }
 	    
 	    if (ctx.block() != null) {
-	         StringBuilder block = new StringBuilder(stack.pop());
+	         StringBuilder block = new StringBuilder(pop());
 	         if (ctx.STATIC() != null) {
-	             stack.pop();    // static keyword
+	             pop();    // static keyword
 	             block.insert(0, "static ");
 	         }
-	         stack.push(block.toString());
+	         push(block);
 	         return;
 	    }
 	    else {
-            String memberDeclaration = stack.pop();
+            String memberDeclaration = pop();
             StringBuilder modifiers = new StringBuilder();
             if (ctx.modifier() != null) {
                 int size = ctx.modifier().size();
@@ -325,12 +460,27 @@ Parser methods follow.
                 }
             }
             modifiers.append(memberDeclaration);
-            stack.push(modifiers.toString());
+            push(modifiers);
 	    }
 	}
 	
 	
-	@Override public void exitClassCreatorRest(ClassCreatorRestContext ctx) { }
+	/**
+ 	* classCreatorRest
+ 	*     : arguments classBody?
+ 	*     ;
+ 	*/
+	@Override public void exitClassCreatorRest(ClassCreatorRestContext ctx) {
+	    String classBody = "";
+	    if (ctx.classBody() != null) {
+	        classBody = pop();
+	    }
+	    String arguments = pop();
+	    StringBuilder sb = new StringBuilder(arguments);
+	    if (classBody.length() > 0) {
+	        sb.append(' ').append(classBody);   
+	    }
+	}
 	
 	/**
  	* classDeclaration
@@ -342,35 +492,35 @@ Parser methods follow.
  	*     ;
  	*/
 	@Override public void exitClassDeclaration(ClassDeclarationContext ctx) { 
-	    String classBody = stack.pop();
+	    String classBody = pop();
 	    String permitsList = "";
 	    if (ctx.PERMITS() != null) {
-	        String typeList = stack.pop();
+	        String typeList = pop();
 	        permitsList = "permits " + typeList;
-	        stack.pop();    // permits keyword
+	        pop();    // permits keyword
 	    }
 	    String implementsList = "";
 	    if (ctx.IMPLEMENTS() != null) {
-	         String typeList = stack.pop();
+	         String typeList = pop();
 	         implementsList = "implements " + typeList;
-	         stack.pop();     // implements keyword
+	         pop();     // implements keyword
 	    }
 	    String extendsType = "";
 	    if (ctx.EXTENDS() != null) {
-	         String typeType = stack.pop();
+	         String typeType = pop();
 	         extendsType = "extends " + typeType;
-	         stack.pop();    // extends keyword
+	         pop();    // extends keyword
 	    }
 	    String typeParameters = "";
 	    if (ctx.typeParameters() != null) {
-	         typeParameters = stack.pop();   
+	         typeParameters = pop();   
 	    }
-	    String identifier = stack.pop();
-	    stack.pop();    // class keyword
+	    String identifier = pop();
+	    pop();    // class keyword
 	    
 	    StringBuilder classDecl = new StringBuilder();
 	    classDecl.append("class ").append(identifier).append(' ').append(typeParameters).append(' ').append(extendsType).append(implementsList).append(permitsList).append(classBody);
-	    stack.push(classDecl.toString());
+	    push(classDecl);
 	}
 	
 	/**
@@ -396,9 +546,33 @@ Parser methods follow.
  	* classOrInterfaceType
  	*     : identifier typeArguments? ('.' identifier typeArguments?)*
  	*     ;
+  	* typeArguments
+  	*     : '<' typeArgument (',' typeArgument)* '>'
+  	*     ;
  	*/
-	@Override public void exitClassOrInterfaceType(ClassOrInterfaceTypeContext ctx) { 
-	    // TODO: fill this in!
+	@Override public void exitClassOrInterfaceType(ClassOrInterfaceTypeContext ctx) {
+	    int size = ctx.identifier().size();
+	    if (size == 1) {
+	         return;    // only have an identifier, and it's already on the stack   
+	    }
+	    
+	    // there are at least 2 identifiers
+	    List<String> parts = new ArrayList<String>();
+	    for (int i = 0; i < size - 1; i++) {
+	        String maybeType = stack.peek();
+	        if (maybeType.startsWith("<")) {
+	            parts.add(pop());    // typeArguments
+	        }
+            parts.add(pop());    // identifier
+            parts.add(pop());    // .
+	    }
+	    parts.add(pop());    // first identifier
+	    Collections.reverse(parts);
+	    StringBuilder sb = new StringBuilder();
+	    for (String part : parts) {
+	        sb.append(part);
+	    }
+	    push(sb);
 	}
 	
 	/**
@@ -406,8 +580,25 @@ Parser methods follow.
  	*     : (classOrInterfaceType '.')? annotation* identifier typeArguments?
  	*     ;
  	*/
-	@Override public void exitClassType(ClassTypeContext ctx) { 
-	    // TODO: fill this in!
+	@Override public void exitClassType(ClassTypeContext ctx) {
+	    String typeArguments = "";
+	    if (ctx.typeArguments() != null) {
+	        typeArguments = pop();   
+	    }
+	    String identifier = pop();
+	    String annotations = "";
+	    if (ctx.annotation() != null) {
+	        int size = ctx.annotation().size();
+	        annotations = reverse(size, " ");
+	    }
+	    String classOrInterfaceType = "";
+	    if (ctx.classOrInterfaceType() != null) {
+	        pop();    // .
+	        classOrInterfaceType = pop() + ".";
+	    }
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(classOrInterfaceType).append(annotations).append(' ').append(identifier).append(typeArguments);
+	    push(sb);
 	}
 	
     /*
@@ -419,7 +610,7 @@ Parser methods follow.
     */
 	@Override public void exitCompilationUnit(CompilationUnitContext ctx) {
         if (ctx.moduleDeclaration() != null) {
-            String moduleDeclaration = stack.pop();
+            String moduleDeclaration = pop();
             output.append(moduleDeclaration);
 	    }
         else {	    
@@ -437,7 +628,7 @@ Parser methods follow.
             }
             String packageDeclaration = "";
             if (ctx.packageDeclaration() != null) {
-                packageDeclaration = stack.pop();
+                packageDeclaration = pop();
                 packageDeclaration = getBlankLines(blankLinesBeforePackage) + removeBlankLines(packageDeclaration, BOTH);
                 packageDeclaration = removeExcessWhitespace(packageDeclaration) + getBlankLines(blankLinesAfterPackage);
             }
@@ -473,7 +664,7 @@ Parser methods follow.
  	*     ;
  	*/
 	@Override public void exitElementValueArrayInitializer(ElementValueArrayInitializerContext ctx) { 
-	    String rbrace = stack.pop();
+	    String rbrace = pop();
 	    StringBuilder elements = new StringBuilder();
 	    if (ctx.elementValue() != null) {
 	        int size = ctx.elementValue().size();
@@ -488,10 +679,10 @@ Parser methods follow.
 	            }
 	        }
 	    }
-	    String lbrace = stack.pop();
+	    String lbrace = pop();
 	    elements.insert(0, lbrace);
 	    elements.append(rbrace);
-	    stack.push(elements.toString());
+	    push(elements);
 	}
 	
 	/**
@@ -499,22 +690,164 @@ Parser methods follow.
  	*     : identifier '=' elementValue
  	*     ;
  	*/
-	@Override public void exitElementValuePair(ElementValuePairContext ctx) { }
+	@Override public void exitElementValuePair(ElementValuePairContext ctx) {
+	    String value = pop();
+	    pop();    // equals
+	    String identifier = pop();
+	    StringBuilder pair = new StringBuilder();
+	    pair.append(identifier).append(padOperator("=")).append(value);
+	    push(pair);
+	}
 	
 	/**
  	* 	elementValuePairs
  	*     : elementValuePair (',' elementValuePair)*
  	*     ;
  	*/
-    @Override public void exitElementValuePairs(ElementValuePairsContext ctx) { }
-	@Override public void exitEnhancedForControl(EnhancedForControlContext ctx) { }
-	@Override public void exitEnumBodyDeclarations(EnumBodyDeclarationsContext ctx) { }
-	@Override public void exitEnumConstant(EnumConstantContext ctx) { }
-	@Override public void exitEnumConstants(EnumConstantsContext ctx) { }
-	@Override public void exitEnumDeclaration(EnumDeclarationContext ctx) { }
-	@Override public void exitEveryRule(ParserRuleContext ctx) { }
-	@Override public void exitExplicitGenericInvocation(ExplicitGenericInvocationContext ctx) { }
-	@Override public void exitExplicitGenericInvocationSuffix(ExplicitGenericInvocationSuffixContext ctx) { }
+    @Override public void exitElementValuePairs(ElementValuePairsContext ctx) { 
+        int size = ctx.elementValuePair().size();
+        String pairs = reverse(size * 2 - 1, " ", 2);
+        push(pairs);
+    }
+    
+    
+    /**
+     * enhancedForControl
+     *     : variableModifier* (typeType | VAR) variableDeclaratorId ':' expression
+     *     ;
+     */
+	@Override public void exitEnhancedForControl(EnhancedForControlContext ctx) { 
+	    String expression = pop();
+	    pop();    // :
+	    String variableDeclaratorId = pop();
+	    String typeOrVar = pop();
+	    String variableModifiers = "";
+	    if (ctx.variableModifier() != null) {
+	        int size = ctx.variableModifier().size();
+	        variableModifiers = reverse(size, " ");
+	    }
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(variableModifiers).append(typeOrVar).append(' ').append(variableDeclaratorId).append(padOperator(":")).append(expression);
+	    push(sb);
+	}
+	
+	
+	/**
+ 	* enumBodyDeclarations
+ 	*     : ';' classBodyDeclaration*
+ 	*     ;
+ 	*/
+	@Override public void exitEnumBodyDeclarations(EnumBodyDeclarationsContext ctx) { 
+	    String classBodyDeclaration = "";
+	    if (ctx.classBodyDeclaration() != null) {
+	        int size = ctx.classBodyDeclaration().size();
+	        classBodyDeclaration = reverse(size, " ");    // TODO: should space be \n?
+	    }
+	    pop();    // ;
+	    push(";" + classBodyDeclaration);
+	}
+	
+	
+	/**
+ 	* enumConstant
+ 	*     : annotation* identifier arguments? classBody?
+ 	*     ;
+ 	*/
+	@Override public void exitEnumConstant(EnumConstantContext ctx) { 
+	    String classBody = "";
+	    if (ctx.classBody() != null) {
+	        classBody = pop();    
+	    }
+	    String arguments = "";
+	    if (ctx.arguments() != null) {
+	        arguments = pop();    
+	    }
+	    String identifier = pop();
+	    String annotations = "";
+	    if (ctx.annotation() != null) {
+	        int size = ctx.annotation().size();
+	        annotations = reverse(size, " ");
+	    }
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(annotations).append(identifier).append(' ');
+	    if (arguments.length() > 0) {
+	        sb.append(arguments).append(' ');   
+	    }
+	    sb.append(classBody);
+	    push(sb);
+	}
+	
+	/**
+ 	* enumConstants
+ 	*     : enumConstant (',' enumConstant)*
+ 	*     ;
+ 	*/
+	@Override public void exitEnumConstants(EnumConstantsContext ctx) { 
+	    int size = ctx.enumConstant().size();
+	    String enumConstants = reverse(size * 2 - 1, " ", 2);
+	    push(enumConstants);
+	}
+	
+	
+	/**
+ 	* enumDeclaration
+ 	*     : ENUM identifier (IMPLEMENTS typeList)? '{' enumConstants? ','? enumBodyDeclarations? '}'
+ 	*     ;
+ 	*/
+	@Override public void exitEnumDeclaration(EnumDeclarationContext ctx) { 
+	    pop();    // }
+	    String enumBodyDeclarations = ctx.enumBodyDeclarations() == null ? "" : pop();
+	    String comma = ctx.COMMA() == null ? " " : ", ";
+	    String enumConstants = ctx.enumConstants() == null ? "" : pop();
+	    pop();    // {
+	    String typeList = " ";
+	    if (ctx.typeList() != null) {
+	        typeList = "implements " + pop();
+	        pop();    // implements keyword
+	    }
+	    String identifier = pop();
+	    pop();    // enum keyword
+	    StringBuilder sb = new StringBuilder();
+	    sb.append("enum ").append(identifier).append(typeList).append('{').append(enumConstants).append(comma).append(enumBodyDeclarations);
+	    push(sb);
+	}
+	
+	@Override public void exitEveryRule(ParserRuleContext ctx) { 
+	    // Nothing to do here
+	}
+	
+	
+	/**
+ 	* explicitGenericInvocation
+ 	*     : nonWildcardTypeArguments explicitGenericInvocationSuffix
+ 	*     ;
+ 	*/
+	@Override public void exitExplicitGenericInvocation(ExplicitGenericInvocationContext ctx) { 
+	    String suffix = pop();
+	    String args = pop();
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(args).append(' ').append(suffix);
+	    push(sb);
+	}
+	
+	/**
+ 	* explicitGenericInvocationSuffix
+ 	*     : SUPER superSuffix
+ 	*     | identifier arguments
+ 	*     ;
+ 	*/
+	@Override public void exitExplicitGenericInvocationSuffix(ExplicitGenericInvocationSuffixContext ctx) { 
+	    if (ctx.SUPER() != null) {
+	        String suffix = pop();
+	        pop();    // super keyword
+	        push("super " + suffix);
+	    }
+	    else {
+	        String arguments = pop();
+	        String identifier = pop();
+	        push(identifier + " " + arguments);
+	    }
+	}
 
 	
 	/*
@@ -577,9 +910,9 @@ Parser methods follow.
 	    if (ctx.NEW() != null) {
 	        if (ctx.creator() != null) {
 	            // NEW creator
-	            String creator = stack.pop();
-	            stack.pop();    // new keyword
-	            stack.push("new " + creator);
+	            String creator = pop();
+	            pop();    // new keyword
+	            push("new " + creator);
 	            return;
 	        }
 	        if (ctx.classType() != null || ctx.typeType() != null) {
@@ -588,60 +921,63 @@ Parser methods follow.
 	            // in typeType case, there is a NEW, so there won't be an identifier,
 	            // and the processing is the same as classType. Need to handle the
 	            // case with an identifier separately.
-	            stack.pop();    // new keyword
+	            String new_ = "";
+	            if (ctx.NEW() != null) {
+	                new_ = pop();
+	            }
+	            String identifier = ctx.identifier() == null ? "" : pop();;
 	            String typeArguments = "";
 	            if (ctx.typeArguments() != null) {
-	                typeArguments = stack.pop();
+	                typeArguments = pop();
 	            }
-	            stack.pop();    // :: 
-	            StringBuilder classType = new StringBuilder();
-                classType.append(stack.pop());  // classType
-	            classType.append(padOperator("::"));
-	            classType.append(typeArguments);
-	            classType.append("new");
-	            stack.push(classType.toString());
+	            pop();    // :: 
+	            StringBuilder type = new StringBuilder();
+                type.append(pop());  // classType or typeType
+	            type.append(padOperator("::"));
+	            type.append(typeArguments);
+	            type.append(identifier);
+	            type.append(new_);
+	            push(type);
 	            return;
 	        }
 	    }
-	    if (ctx.typeType() != null && ctx.identifier() != null) {
+	    if (ctx.typeType() != null && ctx.identifier() != null && ctx.COLONCOLON() != null) {
 	        // typeType '::' (typeArguments? identifier | NEW)
 	        // the case with NEW has already been handled above, just need to do 
 	        // the case with an identifier
-	        String identifier = stack.pop();
-            String typeArguments = "";
-            if (ctx.typeArguments() != null) {
-                typeArguments = stack.pop();
-            }
-            stack.pop();    // :: 
+	        String identifier = pop();
+            String typeArguments = ctx.typeArguments() == null ? "" : pop();
+            pop();    // :: 
             StringBuilder typeType = new StringBuilder();
-            typeType.append(stack.pop());   // typeType
+            typeType.append(pop());   // typeType
+            System.out.println("+++++ 2 = " + ctx.getText());
             typeType.append(padOperator("::"));
             typeType.append(typeArguments);
             if (typeArguments.length() > 0) {
                 typeType.append(' ');
             }
             typeType.append(identifier);
-            stack.push(typeType.toString());
+            push(typeType);
             return;
 	    }
 	    if (ctx.COLONCOLON() != null) {
 	        // expression '::' typeArguments? identifier
 	        // This is the only remaining item with ::
-	        String identifier = stack.pop();
+	        String identifier = pop();
             String typeArguments = "";
             if (ctx.typeArguments() != null) {
-                typeArguments = stack.pop();
+                typeArguments = pop();
             }
-            stack.pop();    // :: 
+            pop();    // :: 
             StringBuilder expression = new StringBuilder();
-            expression.append(stack.pop());   // typeType
+            expression.append(pop());   // typeType
             expression.append(padOperator("::"));
             expression.append(typeArguments);
             if (typeArguments.length() > 0) {
                 expression.append(' ');
             }
             expression.append(identifier);
-            stack.push(expression.toString());
+            push(expression);
             return;
 	    }
 	    
@@ -658,78 +994,78 @@ Parser methods follow.
             //       | explicitGenericInvocation
             //      )
 	        if (ctx.identifier() != null) {
-	            String identifier = stack.pop();
-	            stack.pop();    // . bop
-	            StringBuilder expression = new StringBuilder(stack.pop());
+	            String identifier = pop();
+	            pop();    // . bop
+	            StringBuilder expression = new StringBuilder(pop());
 	            expression.append('.');
 	            expression.append(identifier);
-	            stack.push(expression.toString());
+	            push(expression);
 	            return;
 	        }
 	        if (ctx.methodCall() != null) {
-	            String methodCall = stack.pop();
-	            stack.pop();    // . bop
-	            StringBuilder expression = new StringBuilder(stack.pop());
+	            String methodCall = pop();
+	            pop();    // . bop
+	            StringBuilder expression = new StringBuilder(pop());
 	            expression.append('.');
 	            expression.append(methodCall);
-	            stack.push(expression.toString());
+	            push(expression);
 	            return;
 	        }
 	        if (ctx.THIS() != null) {
-	            String this_ = stack.pop();
-	            stack.pop();    // . bop
-	            StringBuilder expression = new StringBuilder(stack.pop());
+	            String this_ = pop();
+	            pop();    // . bop
+	            StringBuilder expression = new StringBuilder(pop());
 	            expression.append('.');
 	            expression.append(this_);
-	            stack.push(expression.toString());
+	            push(expression);
 	            return;
 	        }
 	        if (ctx.NEW() != null) {
-	            String innerCreator = stack.pop();
+	            String innerCreator = pop();
 	            String typeArgs = "";
 	            if (ctx.nonWildcardTypeArguments() != null) {
-	                 typeArgs = stack.pop() + ' ';   
+	                 typeArgs = pop() + ' ';   
 	            }
-	            stack.pop();    // new keyword
-	            stack.pop();    // . bop
-	            StringBuilder expression = new StringBuilder(stack.pop());
+	            pop();    // new keyword
+	            pop();    // . bop
+	            StringBuilder expression = new StringBuilder(pop());
 	            expression.append('.');
 	            expression.append("new ");
 	            expression.append(typeArgs);
 	            expression.append(innerCreator);
-	            stack.push(expression.toString());
+	            push(expression);
 	            return;
 	        }
 	        if (ctx.SUPER() != null) {
-	            String superSuffix = stack.pop();
-	            stack.pop();    // super keyword
-	            stack.pop();    // . bop
-	            StringBuilder expression = new StringBuilder(stack.pop());
+	            String superSuffix = pop();
+	            pop();    // super keyword
+	            pop();    // . bop
+	            StringBuilder expression = new StringBuilder(pop());
 	            expression.append('.');
 	            expression.append("super ");
 	            expression.append(superSuffix);
-	            stack.push(expression.toString());
+	            push(expression);
 	            return;
 	        }
 	        if (ctx.explicitGenericInvocation() != null) {
-	            String invocation = stack.pop();
-	            stack.pop();    // . bop
-	            StringBuilder expression = new StringBuilder(stack.pop());
+	            String invocation = pop();
+	            pop();    // . bop
+	            StringBuilder expression = new StringBuilder(pop());
 	            expression.append('.');
                 expression.append(invocation);
-	            stack.push(expression.toString());
+	            push(expression);
 	            return;
 	        }
 	        if (ctx.typeType() != null) {
 	            // '(' annotation* typeType ('&' typeType)* ')' expression
-	            String expression = stack.pop();
-	            stack.pop();    // )
+	            String expression = pop();
+	            pop();    // )
 	            String typeTypes = "";
 	            if (ctx.typeType().size() > 1) {
 	                List<String> parts = new ArrayList<String>();
 	                for (int i = 0; i < ctx.typeType().size() - 1; i++) {
-	                    parts.add(stack.pop());    // typeType
-	                    parts.add(stack.pop());    // &
+	                    parts.add(pop());    // typeType
+	                    parts.add(pop());    // &
 	                }
 	                Collections.reverse(parts);
 	                StringBuilder sb = new StringBuilder();
@@ -738,7 +1074,7 @@ Parser methods follow.
 	                }
 	                typeTypes = sb.toString();
 	            }
-	            String typeType = stack.pop();
+	            String typeType = pop();
 	            String annotations = "";
 	            if (ctx.annotation() != null) {
 	                int size = ctx.annotation().size();
@@ -749,7 +1085,7 @@ Parser methods follow.
 	                }
 	                annotations = sb.toString();
 	            }
-	            stack.pop();    // (
+	            pop();    // (
 	            StringBuilder sb = new StringBuilder();
 	            sb.append('(');
 	            sb.append(annotations);
@@ -759,16 +1095,16 @@ Parser methods follow.
 	            }
 	            sb.append(')');
 	            sb.append(expression);
-	            stack.push(sb.toString());
+	            push(sb);
 	            return;
 	        }
 	        if (ctx.INSTANCEOF() != null) {
 	            // expression bop=INSTANCEOF (typeType | pattern)
-	            String typeOrPattern = stack.pop();
-	            String instanceOf = stack.pop();
-	            StringBuilder expression = new StringBuilder(stack.pop());
+	            String typeOrPattern = pop();
+	            String instanceOf = pop();
+	            StringBuilder expression = new StringBuilder(pop());
 	            expression.append(' ').append(instanceOf).append(' ').append(typeOrPattern);
-	            stack.push(expression.toString());
+	            push(expression);
 	            return;
 	        }
 	        
@@ -779,17 +1115,17 @@ Parser methods follow.
             String post = stack.peek();
             if (post.indexOf('+') > -1 || post.indexOf('-') > -1) {
                 // it's the first case, the postfix expression
-                post = stack.pop();     // ++ or --
-                StringBuilder expression = new StringBuilder(stack.pop());
+                post = pop();     // ++ or --
+                StringBuilder expression = new StringBuilder(pop());
                 expression.append(padOperator(post));
-                stack.push(expression.toString());
+                push(expression);
                 return;
             }
             else {
                 // it's one of the prefix expressions, and they are all the same
-                StringBuilder expression = new StringBuilder(stack.pop());
-                expression.append(padOperator(stack.pop()));    // one of + - ++ -- ~ !
-                stack.push(expression.toString());
+                StringBuilder expression = new StringBuilder(pop());
+                expression.append(padOperator(pop()));    // one of + - ++ -- ~ !
+                push(expression);
                 return;
             }
             
@@ -798,12 +1134,12 @@ Parser methods follow.
 	    else if (expressionCount == 2) {
 	        if (ctx.RBRACK() != null) {
 	            // expression '[' expression ']'
-	            stack.pop();    // ]
-	            String expression = stack.pop();
-	            stack.pop();    // [
-	            StringBuilder sb = new StringBuilder(stack.pop());
+	            pop();    // ]
+	            String expression = pop();
+	            pop();    // [
+	            StringBuilder sb = new StringBuilder(pop());
 	            sb.append('[').append(expression).append(']');
-	            stack.push(sb.toString());
+	            push(sb);
 	            return;
 	        }
 	        // the rest of the cases with 2 expressions can be handled the same
@@ -822,24 +1158,24 @@ Parser methods follow.
             // bop=('=' | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '^=' | '>>=' | '>>>=' | '<<=' | '%=')
             // expression
             
-            String expression = stack.pop();
-            String bop = stack.pop();
-            StringBuilder sb = new StringBuilder(stack.pop());
+            String expression = pop();
+            String bop = pop();
+            StringBuilder sb = new StringBuilder(pop());
             sb.append(padOperator(bop));
             sb.append(expression);
-            stack.push(sb.toString());
+            push(sb);
             return;
 	    }
 	    else if (expressionCount == 3) {
 	        // only have one case with 3 expressions
 	        //<assoc=right> expression bop='?' expression ':' expression
-	        String exp2 = stack.pop();
-	        stack.pop();    // :
-	        String exp1 = stack.pop();
-	        stack.pop();    // ?
-	        StringBuilder expression = new StringBuilder(stack.pop());
+	        String exp2 = pop();
+	        pop();    // :
+	        String exp1 = pop();
+	        pop();    // ?
+	        StringBuilder expression = new StringBuilder(pop());
 	        expression.append(padOperator("?")).append(exp1).append(padOperator(":")).append(exp2);
-	        stack.push(expression.toString());
+	        push(expression);
 	        return;
 	    }
 	}
@@ -850,7 +1186,9 @@ Parser methods follow.
  	*     ;
  	*/
 	@Override public void exitExpressionList(ExpressionListContext ctx) { 
-	    
+	    int size = ctx.expression().size();
+	    String expression = reverse(size * 2 - 1, " ", 2);
+	    push(expression);
 	}
 	
 	
@@ -860,22 +1198,153 @@ Parser methods follow.
  	*     ;
  	*/
     @Override public void exitFieldDeclaration(FieldDeclarationContext ctx) { 
-        stack.pop();    // semicolon
-        String variableDeclarators = stack.pop();
-        StringBuilder fieldDecl = new StringBuilder(stack.pop());   // typeType
+        pop();    // semicolon
+        String variableDeclarators = pop();
+        StringBuilder fieldDecl = new StringBuilder(pop());   // typeType
         fieldDecl.append(' ').append(variableDeclarators).append(';');
-        stack.push(fieldDecl.toString());
+        push(fieldDecl);
     }
     
-	@Override public void exitFinallyBlock(FinallyBlockContext ctx) { }
-	@Override public void exitFloatLiteral(FloatLiteralContext ctx) { }
-	@Override public void exitForControl(ForControlContext ctx) { }
-	@Override public void exitForInit(ForInitContext ctx) { }
-	@Override public void exitFormalParameter(FormalParameterContext ctx) { }
-	@Override public void exitFormalParameterList(FormalParameterListContext ctx) { }
-	@Override public void exitFormalParameters(FormalParametersContext ctx) { }
-	@Override public void exitGenericConstructorDeclaration(GenericConstructorDeclarationContext ctx) { }
-	@Override public void exitGenericInterfaceMethodDeclaration(GenericInterfaceMethodDeclarationContext ctx) { }
+    /**
+     * finallyBlock
+     *     : FINALLY block
+     *     ;
+     */
+	@Override public void exitFinallyBlock(FinallyBlockContext ctx) {
+	    String block = pop();
+	    pop();    // finally keyword
+	    push("finally " + block);
+	}
+	
+	
+	/**
+ 	* floatLiteral
+ 	*     : FLOAT_LITERAL
+ 	*     | HEX_FLOAT_LITERAL
+ 	*     ;
+ 	*/
+	@Override public void exitFloatLiteral(FloatLiteralContext ctx) { 
+	    // Nothing to do here, one of the choices should already be on the stack.
+	}
+	
+	/**
+ 	* forControl
+ 	*     : enhancedForControl
+ 	*     | forInit? ';' expression? ';' forUpdate=expressionList?
+ 	*     ;
+ 	*/
+	@Override public void exitForControl(ForControlContext ctx) { 
+	    if (ctx.enhancedForControl() != null) {
+	        return;    // it's already on the stack   
+	    }
+	    String expressionList = ctx.expressionList() == null ? "" : pop();
+	    pop();    // ;
+	    String expression = ctx.expression() == null ? "" : pop();
+	    pop();    // ;
+	    String forInit = ctx.forInit() == null ? "" : pop();
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(forInit).append("; ").append(expression).append("; ").append(expressionList);
+	    push(sb);
+	}
+	
+	/**
+ 	* forInit
+ 	*     : localVariableDeclaration
+ 	*     | expressionList
+ 	*     ;
+ 	*/
+	@Override public void exitForInit(ForInitContext ctx) { 
+	    // Nothing to do here, one of the choices should already be on the stack.
+	}
+	
+	/**
+ 	* formalParameter
+ 	*     : variableModifier* typeType variableDeclaratorId
+ 	*     ;
+ 	*/
+	@Override public void exitFormalParameter(FormalParameterContext ctx) { 
+	    String id = pop();
+	    String typeType = pop();
+	    String modifiers = "";
+	    if (ctx.variableModifier() != null) {
+	        int size = ctx.variableModifier().size();
+	        modifiers = reverse(size, " ");
+	    }
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(modifiers).append(typeType).append(' ').append(id);
+	    push(sb);
+	}
+	
+	/**
+ 	* formalParameterList
+ 	*     : formalParameter (',' formalParameter)* (',' lastFormalParameter)?
+ 	*     | lastFormalParameter
+ 	*     ;
+ 	*/
+	@Override public void exitFormalParameterList(FormalParameterListContext ctx) {
+	    // only care about the first choice here, the second choice is already on the stack
+	    if (ctx.formalParameter() != null) {
+	        String lastFormalParameter = "";
+	        if (ctx.lastFormalParameter() != null) {
+	            lastFormalParameter = ", " + pop();
+	            pop();    // ,
+	        }
+	        int size = ctx.formalParameter().size();
+	        String formalParameter = reverse(size * 2 - 1, " ", 2);
+	        StringBuilder sb = new StringBuilder();
+	        sb.append(formalParameter).append(lastFormalParameter);
+	        push(sb);
+	    }
+	}
+	
+	/**
+ 	* formalParameters
+ 	*     : '(' ( receiverParameter?
+ 	*           | receiverParameter (',' formalParameterList)?
+ 	*           | formalParameterList?
+ 	*           ) ')'
+ 	*     ;
+ 	*/
+	@Override public void exitFormalParameters(FormalParametersContext ctx) { 
+	    pop();    // )
+	    String formalParameterList = ctx.formalParameterList() == null ? "" : pop();
+	    String comma = ctx.COMMA() == null ? "" : ", ";
+	    String receiverParameter = ctx.receiverParameter() == null ? "" : pop();
+	    pop();    // (
+	    StringBuilder sb = new StringBuilder();
+	    sb.append('(').append(receiverParameter).append(comma).append(formalParameterList).append(')');
+	    push(sb);
+	}
+	
+	
+	/**
+ 	* genericConstructorDeclaration
+ 	*     : typeParameters constructorDeclaration
+ 	*     ;
+ 	*/
+	@Override public void exitGenericConstructorDeclaration(GenericConstructorDeclarationContext ctx) { 
+	    String decl = pop();
+	    String typeParameters = pop();
+	    push(typeParameters + " " + decl);
+	}
+	
+	/**
+ 	* genericInterfaceMethodDeclaration
+ 	*     : interfaceMethodModifier* typeParameters interfaceCommonBodyDeclaration
+ 	*     ;
+ 	*/
+	@Override public void exitGenericInterfaceMethodDeclaration(GenericInterfaceMethodDeclarationContext ctx) { 
+	    String decl = pop();
+	    String typeParameters = pop();
+	    String modifiers = "";
+	    if (ctx.interfaceMethodModifier() != null) {
+	        int size = ctx.interfaceMethodModifier().size();
+	        modifiers = reverse(size, " ");
+	    }
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(modifiers).append(typeParameters).append(' ').append(decl);
+	    push(sb);
+	}
 	
 	
 	/**
@@ -884,14 +1353,72 @@ Parser methods follow.
  	*     ;
  	*/
 	@Override public void exitGenericMethodDeclaration(GenericMethodDeclarationContext ctx) { 
-	    String method = stack.pop();
-	    String typeParameters = stack.pop();
+	    String method = pop();
+	    String typeParameters = pop();
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(typeParameters).append(' ').append(method);
-	    stack.push(sb.toString());
+	    push(sb);
 	}
 	
-	@Override public void exitGuardedPattern(GuardedPatternContext ctx) { }
+	/**
+ 	* Java17
+ 	* guardedPattern
+ 	*     : '(' guardedPattern ')'
+ 	*     | variableModifier* typeType annotation* identifier ('&&' expression)*
+ 	*     | guardedPattern '&&' expression
+ 	*     ;
+ 	*/
+	@Override public void exitGuardedPattern(GuardedPatternContext ctx) { 
+	    if (ctx.RPAREN() != null) {
+	        // first choice
+	        pop();    // )
+	        String guardedPattern = pop();
+	        pop();    // (
+	        StringBuilder sb = new StringBuilder();
+	        sb.append('(').append(guardedPattern).append(')');
+	        push(sb);
+	    }
+	    else if (ctx.typeType() != null) {
+	        // second choice 
+	        StringBuilder expression = new StringBuilder();
+	        if (ctx.expression() != null) {
+	            int size = ctx.expression().size();
+	            List<String> parts = new ArrayList<String>();
+	            for (int i = 0; i < size; i++) {
+	                parts.add(pop());    // expression
+	                parts.add(padOperator(pop()));    // &&
+	            }
+	            Collections.reverse(parts);
+	            for (String part : parts) {
+	                expression.append(part);
+	            }
+	        }
+	        String identifier = pop();
+            String annotations = "";
+            if (ctx.annotation() != null) {
+                int size = ctx.annotation().size();
+                annotations = reverse(size, " ");
+            }
+            String typeType = pop();
+            String modifiers = "";
+            if (ctx.variableModifier() != null) {
+                int size = ctx.variableModifier().size();
+                modifiers = reverse(size, " ");
+            }
+            StringBuilder sb = new StringBuilder();
+            sb.append(modifiers).append(typeType).append(' ').append(annotations).append(identifier).append(expression);
+            push(sb);
+	    }
+	    else {
+	        // third choice
+	        String expression = pop();
+	        pop();    // &&
+	        String guardedPattern = pop();
+	        StringBuilder sb = new StringBuilder();
+	        sb.append(guardedPattern).append(padOperator("&&")).append(expression);
+	        push(sb);
+	    }
+	}
 	
 	
 	/**
@@ -925,31 +1452,144 @@ Parser methods follow.
  	*     ;
  	*/
 	@Override public void exitImportDeclaration(ImportDeclarationContext ctx) { 
-	    String semi = stack.pop();
+	    String semi = pop();
 	    String dotstar = "";
 	    if (ctx.DOT() != null) {
-	        stack.pop();    // *
-	        stack.pop();    // .
+	        pop();    // *
+	        pop();    // .
 	        dotstar = ".*";
 	    }
-	    String qualifiedName = stack.pop();
+	    String qualifiedName = pop();
 	    String static_ = "";
 	    if (ctx.STATIC() != null) {
-	        stack.pop();    // static keyword
+	        pop();    // static keyword
 	        static_ = "static ";
 	    }
-	    stack.pop();    // import keyword
+	    pop();    // import keyword
 	    StringBuilder importDecl = new StringBuilder();
 	    importDecl.append("import ").append(static_).append(qualifiedName).append(dotstar).append(semi);
-	    stack.push(importDecl.toString());
+	    push(importDecl);
 	}
 	
-	@Override public void exitInnerCreator(InnerCreatorContext ctx) { }
-	@Override public void exitIntegerLiteral(IntegerLiteralContext ctx) { }
-	@Override public void exitInterfaceBody(InterfaceBodyContext ctx) { }
-	@Override public void exitInterfaceBodyDeclaration(InterfaceBodyDeclarationContext ctx) { }
-	@Override public void exitInterfaceCommonBodyDeclaration(InterfaceCommonBodyDeclarationContext ctx) { }
-	@Override public void exitInterfaceDeclaration(InterfaceDeclarationContext ctx) { }
+	/**
+ 	* innerCreator
+ 	*     : identifier nonWildcardTypeArgumentsOrDiamond? classCreatorRest
+ 	*     ;
+ 	*/
+	@Override public void exitInnerCreator(InnerCreatorContext ctx) { 
+	    String classCreatorRest = pop();
+	    String args = ctx.nonWildcardTypeArgumentsOrDiamond() == null ? " " : pop();
+	    String identifier = pop();
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(identifier).append(args).append(classCreatorRest);
+	    push(sb);
+	}
+	
+	/**
+ 	* integerLiteral
+ 	*     : DECIMAL_LITERAL
+ 	*     | HEX_LITERAL
+ 	*     | OCT_LITERAL
+ 	*     | BINARY_LITERAL
+ 	*     ;
+ 	*/
+	@Override public void exitIntegerLiteral(IntegerLiteralContext ctx) { 
+	    // Nothing to do here, one of the choices should already be on the stack.
+	}
+
+	
+	/**
+ 	* interfaceBody
+ 	*     : '{' interfaceBodyDeclaration* '}'
+ 	*     ;
+ 	*/
+	@Override public void exitInterfaceBody(InterfaceBodyContext ctx) { 
+	    pop();     // }
+	    String decl = pop();
+	    pop();     // {
+	    StringBuilder sb = new StringBuilder();
+	    sb.append("{\n").append(indent(decl)).append("\n}");
+	    push(sb);
+	}
+	
+	/**
+ 	* interfaceBodyDeclaration
+ 	*     : modifier* interfaceMemberDeclaration
+ 	*     | ';'
+ 	*     ;
+ 	*/
+	@Override public void exitInterfaceBodyDeclaration(InterfaceBodyDeclarationContext ctx) {
+	    if (ctx.interfaceMemberDeclaration() != null) {
+	        String decl = pop();
+	        String modifiers = "";
+            if (ctx.modifier() != null) {
+                int size = ctx.modifier().size();
+                modifiers = reverse(size, " ");
+            }
+            StringBuilder sb = new StringBuilder();
+            sb.append(modifiers).append(decl);
+            push(sb);
+	    }
+	    // the semicolon choice is already on the stack
+	}
+	
+	
+	/**
+ 	* interfaceCommonBodyDeclaration
+ 	*     : annotation* typeTypeOrVoid identifier formalParameters ('[' ']')* (THROWS qualifiedNameList)? methodBody
+ 	*     ;
+ 	*/
+	@Override public void exitInterfaceCommonBodyDeclaration(InterfaceCommonBodyDeclarationContext ctx) { 
+	    String methodBody = pop();
+	    StringBuilder qualifiedNameList = new StringBuilder();
+	    if (ctx.qualifiedNameList() != null) {
+	        String list = pop();
+	        pop();    // throws keyword
+	        qualifiedNameList.append("throws ").append(list);
+	    }
+	    String brackets = "";
+	    if (ctx.RBRACK() != null) {
+	        int size = ctx.RBRACK().size();
+	        brackets = reverse(size * 2, "");
+	    }
+	    String formalParameters = pop();
+	    String identifier = pop();
+	    String typeTypeOrVoid = pop();
+        String annotations = "";
+	    if (ctx.annotation() != null) {
+	        int size = ctx.annotation().size();
+	        annotations = reverse(size, " ");
+	    }
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(annotations).append(typeTypeOrVoid).append(' ').append(identifier).append(' ').append(formalParameters).append(brackets).append(qualifiedNameList).append(methodBody);
+	    push(sb);
+	}
+	
+	
+	/**
+ 	* interfaceDeclaration
+ 	*     : INTERFACE identifier typeParameters? (EXTENDS typeList)? (PERMITS typeList)? interfaceBody
+ 	*     ;
+ 	*/
+	@Override public void exitInterfaceDeclaration(InterfaceDeclarationContext ctx) { 
+	    String interfaceBody = pop();
+	    String permits_ = "";
+	    if (ctx.PERMITS() != null) {
+	        permits_ = " permits " + pop();
+	        pop();    // permits keyword
+	    }
+	    String extends_ = "";
+	    if (ctx.EXTENDS() != null) {
+	        extends_ = " extends " + pop();
+	        pop();    // extends keyword
+	    }
+	    String typeParameters = ctx.typeParameters() == null ? "" : pop();
+	    String identifier = pop();
+	    pop();    // interface keyword
+	    StringBuilder sb = new StringBuilder();
+	    sb.append("interface ").append(identifier).append(' ').append(typeParameters).append(extends_).append(permits_).append(interfaceBody);
+	    push(sb);
+	}
 	
 	/**
  	* 	interfaceMemberDeclaration
@@ -967,15 +1607,168 @@ Parser methods follow.
         // Nothing to do here, one of the choices should already be on the stack.
     }
     
-	@Override public void exitInterfaceMethodDeclaration(InterfaceMethodDeclarationContext ctx) { }
-	@Override public void exitInterfaceMethodModifier(InterfaceMethodModifierContext ctx) { }
-	@Override public void exitLambdaBody(LambdaBodyContext ctx) { }
-	@Override public void exitLambdaExpression(LambdaExpressionContext ctx) { }
-	@Override public void exitLambdaLVTIList(LambdaLVTIListContext ctx) { }
-	@Override public void exitLambdaLVTIParameter(LambdaLVTIParameterContext ctx) { }
-	@Override public void exitLambdaParameters(LambdaParametersContext ctx) { }
-	@Override public void exitLastFormalParameter(LastFormalParameterContext ctx) { }
-	@Override public void exitLiteral(LiteralContext ctx) { }
+    /**
+     * interfaceMethodDeclaration
+     *     : interfaceMethodModifier* interfaceCommonBodyDeclaration
+     *     ;
+     */
+	@Override public void exitInterfaceMethodDeclaration(InterfaceMethodDeclarationContext ctx) { 
+	    String decl = pop();
+        String modifiers = "";
+	    if (ctx.interfaceMethodModifier() != null) {
+	        int size = ctx.interfaceMethodModifier().size();
+	        modifiers = reverse(size, " ");
+	    }
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(modifiers).append(decl);
+	    push(sb);
+	}
+	
+	/**
+ 	* // Java8
+ 	* interfaceMethodModifier
+ 	*     : annotation
+ 	*     | PUBLIC
+ 	*     | ABSTRACT
+ 	*     | DEFAULT
+ 	*     | STATIC
+ 	*     | STRICTFP
+ 	*     ;
+ 	*/
+	@Override public void exitInterfaceMethodModifier(InterfaceMethodModifierContext ctx) { 
+        // Nothing to do here, one of the choices should already be on the stack.
+	}
+	
+	/**
+ 	* // Java8
+ 	* lambdaBody
+ 	*     : expression
+ 	*     | block
+ 	*     ;
+ 	*/
+	@Override public void exitLambdaBody(LambdaBodyContext ctx) { 
+        // Nothing to do here, one of the choices should already be on the stack.
+	}
+	
+	/**
+ 	* // Java8
+ 	* lambdaExpression
+ 	*     : lambdaParameters '->' lambdaBody
+ 	*     ;
+ 	*/
+	@Override public void exitLambdaExpression(LambdaExpressionContext ctx) { 
+	    String body = pop();
+	    pop();    // ->
+	    String params = pop();
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(params).append(padOperator("->")).append(body);
+	    push(sb);
+	}
+	
+	
+	/**
+ 	* // local variable type inference
+ 	* lambdaLVTIList
+ 	*     : lambdaLVTIParameter (',' lambdaLVTIParameter)*
+ 	*     ;
+ 	*/
+	@Override public void exitLambdaLVTIList(LambdaLVTIListContext ctx) { 
+	    int size = ctx.lambdaLVTIParameter().size();
+	    String list = reverse(size * 2 - 1, " ", 2);
+	    push(list);
+	}
+	
+	
+	/**
+ 	* lambdaLVTIParameter
+ 	*     : variableModifier* VAR identifier
+ 	*     ;
+ 	*/
+	@Override public void exitLambdaLVTIParameter(LambdaLVTIParameterContext ctx) { 
+	    String identifier = pop();
+	    pop();    // var keyword
+        String modifiers = "";
+	    if (ctx.variableModifier() != null) {
+	        int size = ctx.variableModifier().size();
+	        modifiers = reverse(size, " ");
+	    }
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(modifiers).append("var ").append(identifier);
+	    push(sb);
+	}
+	
+	
+	
+	/**
+ 	* // Java8
+ 	* lambdaParameters
+ 	*     : identifier
+ 	*     | '(' formalParameterList? ')'
+ 	*     | '(' identifier (',' identifier)* ')'
+ 	*     | '(' lambdaLVTIList? ')'
+ 	*     ;
+ 	*/
+	@Override public void exitLambdaParameters(LambdaParametersContext ctx) { 
+	    if (ctx.RPAREN() != null) {
+	        pop();     // )
+	        if (ctx.formalParameterList() != null || ctx.lambdaLVTIList() != null) {
+	            String part = pop();
+	            pop();    // (
+	            StringBuilder sb = new StringBuilder();
+	            sb.append(padParen("(")).append(part).append(padParen(")"));
+	            push(sb);
+	        }
+	        else {
+	            int size = ctx.identifier().size();
+	            String identifiers = reverse(size * 2 - 1, " ", 2);
+	            pop();    // (
+	            StringBuilder sb = new StringBuilder();
+	            sb.append(padParen("(")).append(identifiers).append(padParen(")"));
+	            push(sb);
+	        }
+	    }
+	    // otherwise, 'identifier' is already on the stack
+	}
+	
+	/**
+ 	* lastFormalParameter
+ 	*     : variableModifier* typeType annotation* '...' variableDeclaratorId
+ 	*     ;
+ 	*/
+	@Override public void exitLastFormalParameter(LastFormalParameterContext ctx) { 
+	    String id = pop();
+	    pop();    // ...
+        String annotations = "";
+	    if (ctx.annotation() != null) {
+	        int size = ctx.annotation().size();
+	        annotations = reverse(size, " ");
+	    }
+	    String typeType = pop();
+	    String modifiers = "";
+	    if (ctx.variableModifier() != null) {
+	        int size = ctx.variableModifier().size();
+	        modifiers = reverse(size, " ");
+	    }
+        StringBuilder sb = new StringBuilder();
+	    sb.append(modifiers).append(typeType).append(' ').append(annotations).append("...").append(id);
+	    push(sb);
+	}
+	
+	
+	/**
+ 	* literal
+ 	*     : integerLiteral
+ 	*     | floatLiteral
+ 	*     | CHAR_LITERAL
+ 	*     | STRING_LITERAL
+ 	*     | BOOL_LITERAL
+ 	*     | NULL_LITERAL
+ 	*     | TEXT_BLOCK // Java17
+ 	*     ;
+ 	*/
+	@Override public void exitLiteral(LiteralContext ctx) { 
+        // Nothing to do here, one of the choices should already be on the stack.
+	}
 	
 	
 	/**
@@ -990,7 +1783,7 @@ Parser methods follow.
 	    if (ctx.SEMI() != null) {
 	        return;    // Just a semicolon in the type declaration
 	    }
-	    String declaration = stack.pop();
+	    String declaration = pop();
 	    StringBuilder typeDeclaration = new StringBuilder();
 	    if (ctx.classOrInterfaceModifier() != null) {
 	        int size = ctx.classOrInterfaceModifier().size();
@@ -1000,11 +1793,40 @@ Parser methods follow.
 	        }
 	    }
 	    typeDeclaration.append(declaration);
-	    stack.push(typeDeclaration.toString());
+	    push(typeDeclaration);
 	}
 	
 	
-	@Override public void exitLocalVariableDeclaration(LocalVariableDeclarationContext ctx) { }
+	/**
+ 	* localVariableDeclaration
+ 	*     : variableModifier* (typeType variableDeclarators | VAR identifier '=' expression)
+ 	*     ;
+ 	*/
+    @Override public void exitLocalVariableDeclaration(LocalVariableDeclarationContext ctx) { 
+        StringBuilder type = new StringBuilder();
+        if (ctx.VAR() != null) {
+            String expression = pop();
+            String equals = padOperator(pop());
+            String identifier = pop();
+            pop();    // var keyword
+            type.append("var ").append(identifier).append(equals).append(expression);
+        }
+        else {
+            String variableDecls = pop();
+            String typeType = pop();
+            type.append(typeType).append(' ').append(variableDecls);
+        }
+        StringBuilder variableModifiers = new StringBuilder();
+        if (ctx.variableModifier() != null) {
+            int size = ctx.variableModifier().size();
+            List<String> parts = reverse(size);
+            for (String part : parts) {
+                variableModifiers.append(part).append(' ');    
+            }
+        }
+        variableModifiers.append(type);
+        push(variableModifiers);
+    }
 	
 	
 	/**
@@ -1035,7 +1857,23 @@ Parser methods follow.
 	    // Nothing to do here, one of the choices should already be on the stack.
 	}
 	
-	@Override public void exitMethodCall(MethodCallContext ctx) { }
+	/**
+ 	* methodCall
+ 	*     : identifier '(' expressionList? ')'
+ 	*     | THIS '(' expressionList? ')'
+ 	*     | SUPER '(' expressionList? ')'
+ 	*     ;
+ 	*/
+	@Override public void exitMethodCall(MethodCallContext ctx) { 
+	    printStack();
+	    pop();    // )
+	    String expressionList = ctx.expressionList() == null ? "" : pop();
+	    pop();    // (
+	    String start = pop();    // one of 'identifier', 'this', or 'super'
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(start).append(' ').append(padParen("(")).append(expressionList).append(padParen(")"));
+	    push(sb);
+	}
 	
 	
 	/**
@@ -1046,29 +1884,29 @@ Parser methods follow.
  	*     ;
  	*/
 	@Override public void exitMethodDeclaration(MethodDeclarationContext ctx) { 
-	    String methodBody = stack.pop();
+	    String methodBody = pop();
 	    String throwsList = "";
 	    if (ctx.THROWS() != null) {
-	        String qualifiedNameList = stack.pop();
-	        stack.pop();    // throws keyword
+	        String qualifiedNameList = pop();
+	        pop();    // throws keyword
 	        throwsList = "throws " + qualifiedNameList;
 	    }
 	    StringBuilder brackets = new StringBuilder();
 	    if (ctx.RBRACK() != null) {
 	        int size = ctx.RBRACK().size() * 2;     // * 2 for LBRACK
 	        for (int i = 0; i < size; i++) {
-	            stack.pop();    
+	            pop();    
 	            if (i % 2 == 0) {
 	                brackets.append("[]");    
 	            }
 	        }
 	    }
-	    String formalParameters = stack.pop();
-	    String identifier = stack.pop();
-	    String typeOrVoid = stack.pop();
+	    String formalParameters = pop();
+	    String identifier = pop();
+	    String typeOrVoid = pop();
 	    StringBuilder method = new StringBuilder();
 	    method.append(typeOrVoid).append(' ').append(identifier).append(' ').append(formalParameters).append(' ').append(brackets).append(throwsList).append(methodBody);
-	    stack.push(method.toString());
+	    push(method);
 	}
 	
 	/**
@@ -1092,7 +1930,7 @@ Parser methods follow.
  	*     ;
  	*/
 	@Override public void exitModuleBody(ModuleBodyContext ctx) { 
-	    String rbrace = stack.pop();
+	    String rbrace = pop();
 	    StringBuilder moduleDirectives = new StringBuilder();
 	    if (ctx.moduleDirective() != null) {
 	        int size = ctx.moduleDirective().size();
@@ -1101,12 +1939,12 @@ Parser methods follow.
 	            moduleDirectives.append(directives.get(i)).append('\n');   
 	        }
 	    }
-	    String lbrace = stack.pop() + '\n';
+	    String lbrace = pop() + '\n';
 	    StringBuilder moduleBody = new StringBuilder();
 	    moduleBody.append(lbrace);
 	    moduleBody.append(indent(moduleDirectives.toString()));
 	    moduleBody.append(rbrace);
-	    stack.push(moduleBody.toString());
+	    push(moduleBody);
 	}
 
 	
@@ -1116,9 +1954,9 @@ Parser methods follow.
  	*     ;
  	*/
     @Override public void exitModuleDeclaration(ModuleDeclarationContext ctx) { 
-        String moduleBody = stack.pop();
-        String qualifiedName = stack.pop();
-        stack.pop();    // module keyword
+        String moduleBody = pop();
+        String qualifiedName = pop();
+        pop();    // module keyword
         StringBuilder moduleDeclaration = new StringBuilder("module ");
         moduleDeclaration.append(qualifiedName);
         moduleDeclaration.append(brokenBracket ? '\n' : ' ');
@@ -1126,7 +1964,7 @@ Parser methods follow.
         if (ctx.OPEN() != null) {
             moduleDeclaration.insert(0, "open ");    
         }
-        stack.push(moduleDeclaration.toString());
+        push(moduleDeclaration);
     }
     
     /**
@@ -1139,12 +1977,12 @@ Parser methods follow.
      * 	;
      */
 	@Override public void exitModuleDirective(ModuleDirectiveContext ctx) {
-	    String semi = stack.pop();
+	    String semi = pop();
 	    StringBuilder moduleDirective = new StringBuilder();
 	    if (ctx.REQUIRES() != null) {
 	        // REQUIRES requiresModifier* qualifiedName ';'
 	        moduleDirective.append("requires ");
-	        String qualifiedName = stack.pop();
+	        String qualifiedName = pop();
 	        if (ctx.requiresModifier() != null) {
 	            int size = ctx.requiresModifier().size();
 	            List<String> parts = reverse(size);
@@ -1153,60 +1991,88 @@ Parser methods follow.
 	            }
 	        }
 	        moduleDirective.append(qualifiedName);
-	        stack.pop();    // requires keyword
+	        pop();    // requires keyword
 	    }
 	    else if (ctx.EXPORTS() != null) {
 	        // EXPORTS qualifiedName (TO qualifiedName)? ';'
 	        moduleDirective.append("exports ");
 	        if (ctx.TO() != null) {
-	            String qualifiedName2 = stack.pop();
-	            stack.pop();    // to keyword
-	            String qualifiedName = stack.pop();
+	            String qualifiedName2 = pop();
+	            pop();    // to keyword
+	            String qualifiedName = pop();
 	            moduleDirective.append(qualifiedName).append(" to ").append(qualifiedName2);   
 	        }
 	        else {
-	            String qualifiedName = stack.pop();
+	            String qualifiedName = pop();
 	            moduleDirective.append(qualifiedName);
 	        }
-	        stack.pop();    // exports keyword
+	        pop();    // exports keyword
 	    }
 	    else if (ctx.OPENS() != null) {
 	        // OPENS qualifiedName (TO qualifiedName)? ';'
 	        moduleDirective.append("opens ");
 	        if (ctx.TO() != null) {
-	            String qualifiedName2 = stack.pop();
-	            stack.pop();    // to keyword
-	            String qualifiedName = stack.pop();
+	            String qualifiedName2 = pop();
+	            pop();    // to keyword
+	            String qualifiedName = pop();
 	            moduleDirective.append(qualifiedName).append(" to ").append(qualifiedName2);   
 	        }
 	        else {
-	            String qualifiedName = stack.pop();
+	            String qualifiedName = pop();
 	            moduleDirective.append(qualifiedName);
 	        }
-	        stack.pop();    // opens keyword
+	        pop();    // opens keyword
 	    }
 	    else if (ctx.USES() != null) {
 	        // USES qualifiedName ';'
 	        moduleDirective.append("uses ");
-            String qualifiedName = stack.pop();
+            String qualifiedName = pop();
             moduleDirective.append(qualifiedName);
-            stack.pop();    // uses keyword
+            pop();    // uses keyword
 	    }
 	    else if (ctx.PROVIDES() != null) {
 	        // PROVIDES qualifiedName WITH qualifiedName ';'
 	        moduleDirective.append("provides ");
-            String qualifiedName2 = stack.pop();
-            stack.pop();    // with keyword
-            String qualifiedName = stack.pop();
+            String qualifiedName2 = pop();
+            pop();    // with keyword
+            String qualifiedName = pop();
             moduleDirective.append(qualifiedName).append(" with ").append(qualifiedName2); 
-            stack.pop();    // provides keyword
+            pop();    // provides keyword
 	    }
 	    moduleDirective.append(semi);
-        stack.push(moduleDirective.toString());
+        push(moduleDirective);
 	}
 	
-	@Override public void exitNonWildcardTypeArguments(NonWildcardTypeArgumentsContext ctx) { }
-	@Override public void exitNonWildcardTypeArgumentsOrDiamond(NonWildcardTypeArgumentsOrDiamondContext ctx) { }
+	/**
+ 	* nonWildcardTypeArguments
+ 	*     : '<' typeList '>'
+ 	*     ;
+ 	*/
+	@Override public void exitNonWildcardTypeArguments(NonWildcardTypeArgumentsContext ctx) { 
+	    pop();    // >
+	    String typeList = pop();
+	    pop();    // <
+	    StringBuilder sb = new StringBuilder();
+	    sb.append('<').append(typeList).append('>');
+	    push(sb);
+	}
+	
+	
+	/**
+ 	* nonWildcardTypeArgumentsOrDiamond
+ 	*     : '<' '>'
+ 	*     | nonWildcardTypeArguments
+ 	*     ;
+ 	*/
+	@Override public void exitNonWildcardTypeArgumentsOrDiamond(NonWildcardTypeArgumentsOrDiamondContext ctx) { 
+	    if (ctx.nonWildcardTypeArguments() == null) {
+	        // first choice, diamonds 
+	        pop();    // >
+	        pop();    // <
+	        push("<>");
+	    }
+	    // otherwise, nonWildcardTypeArguments is already on the stack
+	}
 	
 	/**
  	*  packageDeclaration
@@ -1214,9 +2080,9 @@ Parser methods follow.
  	*      ;
  	*/
 	@Override public void exitPackageDeclaration(PackageDeclarationContext ctx) { 
-        String semi = stack.pop();
-        String qualifiedName = stack.pop();
-        stack.pop();    // package keyword
+        String semi = pop();
+        String qualifiedName = pop();
+        pop();    // package keyword
         StringBuilder packageDecl = new StringBuilder();
         if (ctx.annotation() != null) {
             int size = ctx.annotation().size();
@@ -1229,12 +2095,94 @@ Parser methods follow.
         packageDecl.append("package ");
         packageDecl.append(qualifiedName);
         packageDecl.append(semi);
-        stack.push(packageDecl.toString());
+        push(packageDecl);
 	}
 	
-	@Override public void exitParExpression(ParExpressionContext ctx) { }
-	@Override public void exitPattern(PatternContext ctx) { }
-	@Override public void exitPrimary(PrimaryContext ctx) { }
+	/**
+ 	* parExpression
+ 	*     : '(' expression ')'
+ 	*     ;
+ 	*/
+	@Override public void exitParExpression(ParExpressionContext ctx) { 
+	    pop();    // )
+	    String expression = pop();
+	    pop();    // (
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(padParen("(")).append(expression).append(padParen(")"));
+	    push(sb);
+	}
+	
+	/**
+ 	* // Java17
+ 	* pattern
+ 	*     : variableModifier* typeType annotation* identifier
+ 	*     ;
+ 	*/
+	@Override public void exitPattern(PatternContext ctx) { 
+	    String identifier = pop();
+        String annotations = " ";
+	    if (ctx.annotation() != null) {
+	        int size = ctx.annotation().size();
+	        annotations = reverse(size, " ");
+	    }
+	    String typeType = pop();
+        String modifiers = "";
+	    if (ctx.variableModifier() != null) {
+	        int size = ctx.variableModifier().size();
+	        modifiers = reverse(size, " ");
+	    }
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(modifiers).append(typeType).append(annotations).append(identifier);
+	    push(sb);
+	}
+	
+	/**
+ 	* primary
+ 	*     : '(' expression ')'
+ 	*     | THIS
+ 	*     | SUPER
+ 	*     | literal
+ 	*     | identifier
+ 	*     | typeTypeOrVoid '.' CLASS
+ 	*     | nonWildcardTypeArguments (explicitGenericInvocationSuffix | THIS arguments)
+ 	*     ;
+ 	*/
+	@Override public void exitPrimary(PrimaryContext ctx) { 
+	    if (ctx.RPAREN() != null) {
+	        // first choice
+	        pop();    // )
+	        String expression = pop();
+	        pop();    // (
+	        StringBuilder sb = new StringBuilder();
+	        sb.append(padParen("(")).append(expression).append(padParen(")"));
+	        push(sb);
+	    }
+	    else if (ctx.CLASS() != null) {
+	        // sixth choice
+	        pop();    // class keyword
+	        pop();    // .
+	        String typeTypeOrVoid = pop();
+	        StringBuilder sb = new StringBuilder();
+	        sb.append(typeTypeOrVoid).append(".class");
+	        push(sb);
+	    }
+	    else if (ctx.nonWildcardTypeArguments() != null) {
+	        // last choice
+	        String end = "";
+	        if (ctx.THIS() != null) {
+	            String arguments = pop();
+	            pop();    // this keyword
+	            end = "this " + arguments;
+	        }
+	        else if (ctx.explicitGenericInvocationSuffix() != null) {
+	            end = pop();
+	        }
+	        String args = pop();
+	        StringBuilder sb = new StringBuilder();
+	        sb.append(args).append(' ').append(end);
+	    }
+	    // remaining choices are already on the stack    
+	}
 	
 	/**
  	* primitiveType
@@ -1267,32 +2215,77 @@ Parser methods follow.
 	    for (int i = 0; i < size; i++) {
 	        qualifiedName.append(parts.get(i));
 	    }
-	    stack.push(qualifiedName.toString());
+	    push(qualifiedName);
 	}
 	
-	@Override public void exitQualifiedNameList(QualifiedNameListContext ctx) { }
-	@Override public void exitReceiverParameter(ReceiverParameterContext ctx) { }
+	/**
+ 	* qualifiedNameList
+ 	*     : qualifiedName (',' qualifiedName)*
+ 	*     ;
+ 	*/
+	@Override public void exitQualifiedNameList(QualifiedNameListContext ctx) { 
+	    int size = ctx.qualifiedName().size();
+	    push(reverse(size * 2 - 1, " ", 2));
+	}
+	
+	/**
+ 	* receiverParameter
+ 	*     : typeType (identifier '.')* THIS
+ 	*     ;
+ 	*/
+	@Override public void exitReceiverParameter(ReceiverParameterContext ctx) { 
+	    pop();    // this keyword
+	    String identifiers = "";
+	    if (ctx.identifier() != null) {
+	        int size = ctx.identifier().size();
+	        identifiers = reverse(size * 2, "");
+	    }
+	    String typeType = pop();
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(typeType).append(identifiers).append("this");
+	    push(sb);
+	}
 	
 	/**
  	* recordBody
  	*     : '{' classBodyDeclaration* '}'
  	*     ;
  	*/
-	@Override public void exitRecordBody(RecordBodyContext ctx) { }
+	@Override public void exitRecordBody(RecordBodyContext ctx) { 
+	    pop();    // }
+        String classBodyDeclaration = "";
+	    if (ctx.classBodyDeclaration() != null) {
+	        int size = ctx.classBodyDeclaration().size();
+	        classBodyDeclaration = reverse(size, " ");
+	    }
+	    pop();    // {
+	    StringBuilder sb = new StringBuilder();
+	    sb.append("{\n").append(indent(classBodyDeclaration)).append("\n}");
+	    push(sb);
+	}
 	
 	/**
  	* recordComponent
  	*     : typeType identifier
  	*     ;
  	*/
-	@Override public void exitRecordComponent(RecordComponentContext ctx) { }
+	@Override public void exitRecordComponent(RecordComponentContext ctx) { 
+	    String identifier = pop();
+	    String typeType = pop();
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(typeType).append(' ').append(identifier);
+	    push(sb);
+	}
 	
 	/**
  	* recordComponentList
  	*     : recordComponent (',' recordComponent)*
  	*     ;
  	*/
-	@Override public void exitRecordComponentList(RecordComponentListContext ctx) { }
+	@Override public void exitRecordComponentList(RecordComponentListContext ctx) {
+	    int size = ctx.recordComponent().size();
+	    push(reverse(size * 2 - 1, " ", 2));
+	}
 	
 	/**
  	* recordDeclaration
@@ -1301,14 +2294,36 @@ Parser methods follow.
  	*       recordBody
  	*     ;
  	*/
-	@Override public void exitRecordDeclaration(RecordDeclarationContext ctx) { }
+	@Override public void exitRecordDeclaration(RecordDeclarationContext ctx) { 
+	    String recordBody = pop();
+	    String impl = "";
+	    if (ctx.IMPLEMENTS() != null) {
+	         String typeList = pop();
+	         pop();    // implements keyword
+	         impl = "implements " + typeList;
+	    }
+	    String recordHeader = pop();
+	    String typeParameters = ctx.typeParameters() == null ? " " : pop();
+	    String identifier = pop();
+	    pop();    // record keyword
+	    StringBuilder sb = new StringBuilder();
+	    sb.append("record ").append(identifier).append(typeParameters).append(recordHeader).append(impl).append(recordBody);
+	    push(sb);
+	}
 	
 	/**
  	* recordHeader
  	*     : '(' recordComponentList? ')'
  	*     ;
  	*/
-	@Override public void exitRecordHeader(RecordHeaderContext ctx) { }
+	@Override public void exitRecordHeader(RecordHeaderContext ctx) {
+	    pop();    // )
+	    String list = ctx.recordComponentList() == null ? "" : pop();
+	    pop();    // (
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(padParen("(")).append(list).append(padParen(")"));
+	    push(sb);
+	}
 	
 	/**
  	* requiresModifier
@@ -1320,20 +2335,459 @@ Parser methods follow.
 	    // Nothing to do here, one or more of the choices should already be on the stack
 	}
 	
-	@Override public void exitResource(ResourceContext ctx) { }
-	@Override public void exitResourceSpecification(ResourceSpecificationContext ctx) { }
-	@Override public void exitResources(ResourcesContext ctx) { }
-	@Override public void exitStatement(StatementContext ctx) { }
-	@Override public void exitSuperSuffix(SuperSuffixContext ctx) { }
-	@Override public void exitSwitchBlockStatementGroup(SwitchBlockStatementGroupContext ctx) { }
-	@Override public void exitSwitchExpression(SwitchExpressionContext ctx) { }
-	@Override public void exitSwitchLabel(SwitchLabelContext ctx) { }
-	@Override public void exitSwitchLabeledRule(SwitchLabeledRuleContext ctx) { }
-	@Override public void exitSwitchRuleOutcome(SwitchRuleOutcomeContext ctx) { }
-	@Override public void exitTypeArgument(TypeArgumentContext ctx) { }
-	@Override public void exitTypeArguments(TypeArgumentsContext ctx) { }
-	@Override public void exitTypeArgumentsOrDiamond(TypeArgumentsOrDiamondContext ctx) { }
-	@Override public void exitTypeBound(TypeBoundContext ctx) { }
+	/**
+ 	* resource
+ 	*     : variableModifier* ( classOrInterfaceType variableDeclaratorId | VAR identifier ) '=' expression
+ 	*     | identifier
+ 	*     ;
+ 	*/
+	@Override public void exitResource(ResourceContext ctx) { 
+	    if (ctx.expression() != null) {
+	        // first choice   
+	        String expression = pop();
+	        pop();    // =
+	        String middle = "";
+	        if (ctx.VAR() != null) {
+	            String identifier = pop();
+	            pop();    // var keyword
+	            middle = "var " + identifier;
+	        }
+	        else {
+	            String id = pop();
+	            String type = pop();
+	            middle = type + ' ' + type;
+	        }
+            String modifiers = "";
+            if (ctx.variableModifier() != null) {
+                int size = ctx.variableModifier().size();
+                modifiers = reverse(size, " ");
+            }
+            StringBuilder sb = new StringBuilder();
+            sb.append(modifiers).append(middle).append(padOperator("=")).append(expression);
+            push(sb);
+	    }
+	    // otherwise, 'identifier' is already on the stack
+	}
+	
+	/**
+ 	* resourceSpecification
+ 	*     : '(' resources ';'? ')'
+ 	*     ;
+ 	*/
+	@Override public void exitResourceSpecification(ResourceSpecificationContext ctx) { 
+	    pop();    // )
+	    String semi = ctx.SEMI() == null ? "" : ";";
+	    String resources = pop();
+	    pop();    // (
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(padParen("(")).append(resources).append(semi).append(padParen(")"));
+	    push(sb);
+	}
+	
+	/**
+ 	* resources
+ 	*     : resource (';' resource)*
+ 	*     ;
+ 	*/
+	@Override public void exitResources(ResourcesContext ctx) {
+	    int size = ctx.resource().size();
+	    push(reverse(size * 2 - 1, " ", 2));
+	}
+	
+	
+	/**
+ 	* 	statement
+ 	*     : blockLabel=block
+ 	*     | ASSERT expression (':' expression)? ';'
+ 	*     | IF parExpression statement (ELSE statement)?
+ 	*     | FOR '(' forControl ')' statement
+ 	*     | WHILE parExpression statement
+ 	*     | DO statement WHILE parExpression ';'
+ 	*     | TRY block (catchClause+ finallyBlock? | finallyBlock)
+ 	*     | TRY resourceSpecification block catchClause* finallyBlock?
+ 	*     | SWITCH parExpression '{' switchBlockStatementGroup* switchLabel* '}'
+ 	*     | SYNCHRONIZED parExpression block
+ 	*     | RETURN expression? ';'
+ 	*     | THROW expression ';'
+ 	*     | BREAK identifier? ';'
+ 	*     | CONTINUE identifier? ';'  
+ 	*     | YIELD expression ';' // Java17
+ 	*     | SEMI
+ 	*     | statementExpression=expression ';'
+ 	*     | switchExpression ';'? // Java17   
+ 	*     | identifierLabel=identifier ':' statement
+ 	*     ;
+ 	*/
+    @Override public void exitStatement(StatementContext ctx) { 
+        if (ctx.ASSERT() != null) {
+            // ASSERT expression (':' expression)? ';'
+            pop();  // ;
+            String expression = "";
+            String expression2 = "";
+            if (ctx.expression().size() > 1) {
+                expression2 = pop();
+                pop();  // :
+            }
+            expression = pop();
+            pop();  // assert keyword
+            StringBuilder sb = new StringBuilder();
+            sb.append("assert ").append(expression).append(expression2).append(';');
+            push(sb);
+        }
+        else if (ctx.IF() != null) {
+            // IF parExpression statement (ELSE statement)?
+            String elseStatement = "";
+            if (ctx.ELSE() != null) {
+                elseStatement = pop();
+                pop();  // else keyword
+                elseStatement = "else " + elseStatement;
+            }
+            String statement = pop();
+            String parExpression = pop();
+            pop();  // if keyword
+            StringBuilder sb = new StringBuilder();
+            sb.append("if ").append(parExpression).append(statement).append(elseStatement);
+            push(sb);
+        }
+        else if (ctx.FOR() != null) {
+            // FOR '(' forControl ')' statement 
+            String statement = pop();
+            pop();  // )
+            String forControl = pop();
+            pop();  // (
+            pop();  // for keyword
+            StringBuilder sb = new StringBuilder();
+            sb.append("for ").append(padParen("(")).append(forControl).append(padParen(")")).append(statement);
+            push(sb);
+        }
+        else if (ctx.WHILE() != null) {
+            // WHILE parExpression statement
+            String statement = pop();
+            String parExpression = pop();
+            pop();  // while keyword
+            StringBuilder sb = new StringBuilder();
+            sb.append("while ").append(parExpression).append(statement);
+            push(sb);
+        }
+        else if (ctx.DO() != null) {
+            // DO statement WHILE parExpression ';'
+            pop();  // ;
+            String parExpression = pop();
+            pop();  // while keyword
+            String statement = pop();
+            pop();  // do keyword
+            StringBuilder sb = new StringBuilder();
+            sb.append("do ").append(statement).append(" while ").append(parExpression).append(';');
+            push(sb);
+        }
+        else if (ctx.TRY() != null) {
+            // TRY block (catchClause+ finallyBlock? | finallyBlock)
+            // TRY resourceSpecification block catchClause* finallyBlock?
+            if (ctx.resourceSpecification() != null) {
+                // second choice
+                String finallyBlock = ctx.finallyBlock() == null ? "" : pop();
+                String catchClause = "";
+                if (ctx.catchClause() != null) {
+                    int size = ctx.catchClause().size();
+                    catchClause = reverse(size, "");
+                }
+                String block = pop();
+                String spec = pop();
+                pop();  // try keyword
+                StringBuilder sb = new StringBuilder();
+                sb.append("try ").append(spec).append(block).append(catchClause).append(finallyBlock);
+                push(sb);
+            }
+            else {
+                String catchClause = "";
+                String finallyBlock = "";
+                if (ctx.catchClause() != null) {
+                    finallyBlock = ctx.finallyBlock() == null ? "" : pop();
+                    int size = ctx.catchClause().size();
+                    catchClause = reverse(size, "");
+                }
+                else {
+                    finallyBlock = pop();   
+                }
+                String block = pop();
+                pop();  // try keyword
+                StringBuilder sb = new StringBuilder();
+                sb.append("try ").append(block).append(catchClause).append(finallyBlock);
+                push(sb);
+            }
+        }
+        else if (ctx.SWITCH() != null) {
+            // SWITCH parExpression '{' switchBlockStatementGroup* switchLabel* '}'
+            pop();  // }
+            String switchLabel = "";
+            if (ctx.switchLabel() != null) {
+                int size = ctx.switchLabel().size();
+                switchLabel = reverse(size, " ");
+            }
+            String switchBlockStatementGroup = "";
+            if (ctx.switchBlockStatementGroup() != null) {
+                int size = ctx.switchBlockStatementGroup().size();
+                switchBlockStatementGroup = reverse(size, " ");
+            }
+            pop();  // {
+            String parExpression = pop();
+            pop();  // switch keyword
+            StringBuilder sb = new StringBuilder();
+            sb.append("switch ").append(parExpression).append("{\n").append(switchBlockStatementGroup).append(switchLabel).append("\n}");
+            push(sb);
+        }
+        else if (ctx.SYNCHRONIZED() != null) {
+            // SYNCHRONIZED parExpression block
+            String block = pop();
+            String parExpression = pop();
+            pop();  // synchronized keyword
+            StringBuilder sb = new StringBuilder();
+            sb.append("synchronized ").append(parExpression).append(block);
+            push(sb);
+        }
+        else if (ctx.RETURN() != null || ctx.THROW() != null || ctx.YIELD() != null) {
+            // these 3 are pretty much the same
+            // RETURN expression? ';'
+            // THROW expression ';'
+            // YIELD expression ';'            
+            pop();  //;
+            String expression = ctx.expression() == null ? "" : pop();
+            String keyword = pop();
+            StringBuilder sb = new StringBuilder();
+            sb.append(keyword).append(' ').append(expression).append(';');
+            push(sb);
+        }
+        else if (ctx.BREAK() != null || ctx.CONTINUE() != null) {
+            // BREAK identifier? ';'
+            // CONTINUE identifier? ';' 
+            pop();  //;
+            String identifier = ctx.identifier() == null ? "" : pop();
+            String keyword = pop();
+            StringBuilder sb = new StringBuilder();
+            sb.append(keyword).append(' ').append(identifier);
+            push(sb);
+        }
+        else if (ctx.SEMI() != null) {
+            // only these 2 choices are remaining with a semicolon
+            // statementExpression=expression ';'
+            // switchExpression ';'? // Java17      
+            pop();  // ;
+            String expression = pop();
+            StringBuilder sb = new StringBuilder();
+            sb.append(expression).append(';');
+            push(sb);
+        }
+        else if (ctx.COLON() != null) {
+            // this is the only one left with a colon
+            // identifierLabel=identifier ':' statement
+            String statement = pop();
+            pop();  // :
+            String identifier = pop();
+            StringBuilder sb = new StringBuilder();
+            sb.append(identifier).append(padOperator(";")).append(statement);
+            push(sb);
+        }
+        // block is already on the stack
+    }
+	
+	
+    /**
+     * superSuffix
+     *     : arguments
+     *     | '.' typeArguments? identifier arguments?
+     *     ;
+     */
+	@Override public void exitSuperSuffix(SuperSuffixContext ctx) { 
+	    if (ctx.identifier() != null) {
+	        // second choice
+	        String arguments = ctx.arguments() == null ? "" : " " + pop();
+	        String identifier = pop();
+	        String typeArguments = ctx.typeArguments() != null ? " " : pop();
+	        pop();    // .
+	        StringBuilder sb = new StringBuilder();
+	        sb.append('.').append(typeArguments).append(identifier).append(arguments);
+	    }
+	    // otherwise, arguments is already on the stack
+	}
+	
+	/**
+ 	* switchBlockStatementGroup
+ 	*     : switchLabel+ blockStatement+
+ 	*     ;
+ 	*/
+	@Override public void exitSwitchBlockStatementGroup(SwitchBlockStatementGroupContext ctx) {
+	    int size = ctx.blockStatement().size();
+	    String blockStatements = reverse(size, "");
+	    size = ctx.switchLabel().size();
+	    String switchLabels = reverse(size, "");
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(switchLabels).append(blockStatements);
+	    push(sb);
+	}
+	
+	/**
+ 	* // Java17
+ 	* switchExpression
+ 	*     : SWITCH parExpression '{' switchLabeledRule* '}'
+ 	*     ;
+ 	*/
+	@Override public void exitSwitchExpression(SwitchExpressionContext ctx) { 
+	    pop();    // }
+	    String switchLabeledRule = "";
+	    if (ctx.switchLabeledRule() != null) {
+	        int size = ctx.switchLabeledRule().size();
+	        switchLabeledRule = reverse(size, " ");
+	    }
+	    pop();    // {
+	    String parExpression = pop();
+	    pop();    // switch keyword
+	    StringBuilder sb = new StringBuilder();
+	    sb.append("switch ").append(parExpression).append("{\n").append(switchLabeledRule).append("\n}");
+	    push(sb);
+	}
+	
+	/**
+ 	* switchLabel
+ 	*     : CASE (constantExpression=expression | enumConstantName=IDENTIFIER | typeType varName=identifier) ':'
+ 	*     | DEFAULT ':'
+ 	*     ;
+ 	*/
+	@Override public void exitSwitchLabel(SwitchLabelContext ctx) { 
+	    if (ctx.DEFAULT() != null) {
+	        pop();    // :
+	        pop();    // default keyword
+	        push("default:");
+	    }
+	    else {
+	        pop();    // :
+	        String label = "";
+	        if (ctx.typeType() != null) {
+	            String identifier = pop();
+	            String typeType = pop();
+	            label = typeType + " " + identifier;
+	        }
+	        else {
+	            label = pop();   
+	        }
+	        push("case " + label);
+	    }
+	}
+	
+	
+	
+	/**
+ 	* // Java17
+ 	* switchLabeledRule
+ 	*     : CASE (expressionList | NULL_LITERAL | guardedPattern) (ARROW | COLON) switchRuleOutcome
+ 	*     | DEFAULT (ARROW | COLON) switchRuleOutcome
+ 	*     ;
+ 	*/
+	@Override public void exitSwitchLabeledRule(SwitchLabeledRuleContext ctx) { 
+	    if (ctx.CASE() != null) {
+	        String switchRuleOutcome = pop();
+	        String operator = pop();
+	        String choice = pop();
+	        pop();    // case keyword
+	        StringBuilder sb = new StringBuilder();
+	        sb.append("case ").append(choice).append(padOperator(operator)).append(switchRuleOutcome);
+	        push(sb);
+	    }
+	    else {
+	        String switchRuleOutcome = pop();
+	        String operator = pop();
+	        pop();    // default keyword
+	        StringBuilder sb = new StringBuilder();
+	        sb.append("default").append(padOperator(operator)).append(switchRuleOutcome);
+	        push(sb);
+	    }
+	}
+	
+	
+	/**
+ 	* // Java17
+ 	* switchRuleOutcome
+ 	*     : block
+ 	*     | blockStatement*
+ 	*     ;
+ 	*/
+	@Override public void exitSwitchRuleOutcome(SwitchRuleOutcomeContext ctx) { 
+	    if (ctx.blockStatement() != null) {
+            String blockStatement = "";
+            if (ctx.blockStatement() != null) {
+                int size = ctx.blockStatement().size();
+                blockStatement = reverse(size, " ");
+            }
+            push(blockStatement);
+	    }
+	    // otherwise, 'block' is already on the stack
+	}
+	
+	
+	/**
+ 	* typeArgument
+ 	*     : typeType
+ 	*     | annotation* '?' ((EXTENDS | SUPER) typeType)?
+ 	*     ;
+ 	*/
+	@Override public void exitTypeArgument(TypeArgumentContext ctx) { 
+	    if (ctx.QUESTION() != null) {
+	         String typeType = "";
+	         if (ctx.typeType() != null) {
+	              typeType = pop();
+	              typeType = pop() + " " + typeType;
+	         }
+	         pop();    // ?
+            String annotation = "";
+            if (ctx.annotation() != null) {
+                int size = ctx.annotation().size();
+                annotation = reverse(size, " ");
+            }
+            StringBuilder sb = new StringBuilder();
+            sb.append(annotation).append(padOperator("?")).append(typeType);
+            push(sb);
+	    }
+	}
+	
+	
+	/**
+ 	* typeArguments
+ 	*     : '<' typeArgument (',' typeArgument)* '>'
+ 	*     ;
+ 	*/
+	@Override public void exitTypeArguments(TypeArgumentsContext ctx) { 
+	    pop();    // >
+	    int size = ctx.typeArgument().size();
+	    String typeArguments = reverse(size * 2 - 1, " ", 2);
+	    pop();    // <
+	    StringBuilder sb = new StringBuilder();
+	    sb.append('<').append(typeArguments).append('>');
+	    push(sb);
+	}
+	
+	
+	/**
+ 	* typeArgumentsOrDiamond
+ 	*     : '<' '>'
+ 	*     | typeArguments
+ 	*     ;
+ 	*/
+	@Override public void exitTypeArgumentsOrDiamond(TypeArgumentsOrDiamondContext ctx) { 
+	    if (ctx.GT() != null) {
+	        push("<>");   
+	    }
+	    // otherwise, 'typeArguments' is already on the stack
+	}
+	
+	/**
+ 	* typeBound
+ 	*     : typeType ('&' typeType)*
+ 	*     ;
+ 	*/
+	@Override public void exitTypeBound(TypeBoundContext ctx) { 
+	    int size = ctx.typeType().size();
+	    String typeBound = reverse(size * 2 - 1, " ");
+	    push(typeBound);
+	}
 	
 	/**
  	* typeDeclaration
@@ -1346,7 +2800,7 @@ Parser methods follow.
 	    if (ctx.SEMI() != null) {
 	        return;    // Just a semicolon in the type declaration
 	    }
-	    String declaration = stack.pop();
+	    String declaration = pop();
 	    StringBuilder typeDeclaration = new StringBuilder();
 	    if (ctx.classOrInterfaceModifier() != null) {
 	        int size = ctx.classOrInterfaceModifier().size();
@@ -1356,12 +2810,63 @@ Parser methods follow.
 	        }
 	    }
 	    typeDeclaration.append(declaration);
-	    stack.push(typeDeclaration.toString());
+	    push(typeDeclaration);
 	}
 	
-	@Override public void exitTypeList(TypeListContext ctx) { }
-	@Override public void exitTypeParameter(TypeParameterContext ctx) { }
-	@Override public void exitTypeParameters(TypeParametersContext ctx) { }
+	/**
+ 	* typeList
+ 	*     : typeType (',' typeType)*
+ 	*     ;
+ 	*/
+	@Override public void exitTypeList(TypeListContext ctx) { 
+	    int size = ctx.typeType().size();
+	    String typeType = reverse(size * 2 - 1, " ", 2);
+	    push(typeType);
+	}
+	
+	
+	/**
+ 	* typeParameter
+ 	*     : annotation* identifier (EXTENDS annotation* typeBound)?
+ 	*     ;
+ 	*/
+	@Override public void exitTypeParameter(TypeParameterContext ctx) {
+	    String extends_ = "";
+	    if (ctx.EXTENDS() != null) {
+	        String typeBound = pop();
+            StringBuilder annotations = new StringBuilder();
+            while(stack.peek().startsWith("@")) {
+                annotations.append(pop()).append(' ');
+            }
+	        pop();    // extends keyword
+	        annotations.append(typeBound);
+	        annotations.insert(0, " extends ");
+	        extends_ = annotations.toString();
+	    }
+	    String identifier = pop();
+        StringBuilder annotations = new StringBuilder();
+        while(stack.peek().startsWith("@")) {
+            annotations.append(pop()).append(' ');
+        }
+        annotations.append(identifier).append(extends_);
+        push(annotations);
+	}
+	
+	
+	/**
+ 	* typeParameters
+ 	*     : '<' typeParameter (',' typeParameter)* '>'
+ 	*     ;
+ 	*/
+	@Override public void exitTypeParameters(TypeParametersContext ctx) { 
+	    pop();    // >
+	    int size = ctx.typeParameter().size();
+	    String typeParameter = reverse(size * 2 - 1, " ", 2);
+	    pop();    // <
+	    StringBuilder sb = new StringBuilder();
+	    sb.append('<').append(typeParameter).append('>');
+	    push(sb);
+	}
 	
 	/**
  	* typeType
@@ -1377,8 +2882,8 @@ Parser methods follow.
 	    if (ctx.RBRACK() != null) {
 	        for (int i = 0; i < ctx.RBRACK().size(); i++) {
 	            // get the brackets
-	            endPart.append(stack.pop());    // ]
-	            endPart.append(stack.pop());    // [
+	            endPart.insert(0, pop());    // ]
+	            endPart.insert(0, pop());    // [
 	            
                 // any annotations?
                 if (ctx.annotation() != null) {
@@ -1387,7 +2892,7 @@ Parser methods follow.
                         if (ann.indexOf('@') > -1) {    
                             // using indexOf to be able to check for altAnnotationQualifiedName
                             // as well as regular annotation
-                            endPart.append(stack.pop());    // annotation
+                            endPart.append(pop());    // annotation
                             ++ annotationCount;
                         }
                         else {
@@ -1398,7 +2903,7 @@ Parser methods follow.
 	        }
 	    }
 	    
-	    String type = stack.pop();    // one of (classOrInterfaceType | primitiveType)
+	    String type = pop();    // one of (classOrInterfaceType | primitiveType)
 	    
 	    // handle the rest of the annotations, if any
 	    StringBuilder typeType = new StringBuilder();
@@ -1412,9 +2917,9 @@ Parser methods follow.
 	    // put it all together
 	    typeType.append(type);
 	    if (endPart.length() > 0) {
-	        typeType.append(' ').append(endPart);
+	        typeType.append(endPart);
 	    }
-	    stack.push(typeType.toString());
+	    push(typeType);
 	}
 	
 	
@@ -1434,18 +2939,17 @@ Parser methods follow.
  	*     ;
  	*/
 	@Override public void exitVariableDeclarator(VariableDeclaratorContext ctx) {
-	    printStack("variable declarator");
 	    String variableInitializer = "";
 	    String equals = "";
 	    if (ctx.variableInitializer() != null) {
-	        variableInitializer = stack.pop();
-	        equals = padOperator(stack.pop());
+	        variableInitializer = pop();
+	        equals = padOperator(pop());
 	    }
 	    StringBuilder variableDecl = new StringBuilder();
-	    variableDecl.append(stack.pop());    // variableDeclaratorId
+	    variableDecl.append(pop());    // variableDeclaratorId
 	    variableDecl.append(equals);
 	    variableDecl.append(variableInitializer);
-	    stack.push(variableDecl.toString());
+	    push(variableDecl);
 	}
 	
 	/**
@@ -1463,8 +2967,8 @@ Parser methods follow.
 	            variableDeclId.append(part);   
 	        }
 	    }
-	    variableDeclId.insert(0, stack.pop());    // identifier
-	    stack.push(variableDeclId.toString());
+	    variableDeclId.insert(0, pop());    // identifier
+	    push(variableDeclId);
 	}
 	
 	
@@ -1482,7 +2986,7 @@ Parser methods follow.
 	        size += ctx.COMMA().size();
 	    }
 	    String variableDecls = reverse(size, " ", 2);    // TODO: check this, space or comma?
-	    stack.push(variableDecls);
+	    push(variableDecls);
 	}
 	
 	/**
@@ -1508,7 +3012,7 @@ Parser methods follow.
 	@Override public void visitErrorNode(ErrorNode node) { }
 	@Override public void visitTerminal(TerminalNode node) { 
         String terminalText = node.getText();
-        stack.push(terminalText);
+        push(terminalText);
         processComments(node);
         processWhitespace(node);
 	}
@@ -1699,9 +3203,9 @@ Formatting methods.
                 sb.append('\n');    
             }
             String ending = sb.toString();
-            String last = stack.pop();
+            String last = pop();
             last = new StringBuilder(removeBlankLines(last, END)).append(ending).toString();
-            stack.push(last);
+            push(last);
             return true;
         }
         return false;
@@ -1858,12 +3362,27 @@ Formatting methods.
     }
     
     /**
+     * Pops the first item off the top of the stack.    
+     */
+    public String pop() {
+        return stack.pop();
+    }
+    
+    /**
      * Pops <code>howMany</code> items off of the stack.    
      */
     public void pop(int howMany) {
         for (int i = 0; i < howMany; i++) {
             stack.pop();   
         }
+    }
+    
+    public void push(String s) {
+        stack.push(s);   
+    }
+    
+    public void push(StringBuilder sb) {
+        stack.push(sb.toString());   
     }
     
     /**
@@ -1918,7 +3437,7 @@ Formatting methods.
     private List<String> reverse(int howMany) {
         List<String> list = new ArrayList<String>();
         for (int i = 0; i < howMany && !stack.isEmpty(); i++) {
-            list.add(stack.pop());    
+            list.add(pop());    
         }
         Collections.reverse(list);
         return list;
@@ -1978,11 +3497,11 @@ Formatting methods.
                     if (hasLineEnder) {
                         // have "token comment \n", append this comment to the end
                         // of the previous item.
-                        StringBuilder item = new StringBuilder(stack.pop());
+                        StringBuilder item = new StringBuilder(pop());
                         String comment = nextCommentToken.getText();
                         if (item.indexOf(comment) == -1) {
                             item.append(tab).append(comment);
-                            stack.push(item.toString());
+                            push(item);
                             tokens.seek(commentIndex + 1);
                             return;
                         }
@@ -2003,9 +3522,9 @@ Formatting methods.
             for (Token commentToken : commentTokens) {
                 if ( commentToken != null) {
                     String comment = commentToken.getText();
-                    String current = stack.pop();
+                    String current = pop();
                     String previous = stack.peek();
-                    stack.push(current);
+                    push(current);
                     if (previous != null && previous.indexOf(comment) > -1 && previous.indexOf(comment.trim()) > -1) {
                         // already have this comment added as an end of line comment
                         // for the previous token
@@ -2017,14 +3536,14 @@ Formatting methods.
                             break;
                         case JavaLexer.JEDIT_FOLD_MARKER:
                             comment = formatJEditFoldMarkerComment(comment);
-                            current = stack.pop();
+                            current = pop();
                             previous = stack.peek();
                             if (previous != null && previous.indexOf(comment) == -1) {
-                                previous = stack.pop();
+                                previous = pop();
                                 previous = new StringBuilder(trimEnd(previous)).append(comment).toString();
-                                stack.push(previous);
+                                push(previous);
                             }
-                            stack.push(current);
+                            push(current);
                             continue;
                         case JavaLexer.COMMENT:
                             // check if this is an in-line  or trailing comment, e.g.
@@ -2065,14 +3584,14 @@ Formatting methods.
                             break;
                     }
                     if (stack.size() == 0) {
-                        stack.push(comment);
+                        push(comment);
                     }
                     else {
                         String last = stack.peek();
                         if (last != null && last.indexOf(comment) == -1) {
-                            last = stack.pop();
+                            last = pop();
                             last = new StringBuilder(comment).append(last).toString();
-                            stack.push(last);
+                            push(last);
                         }
                     }
                 }
@@ -2216,9 +3735,9 @@ Formatting methods.
                 String blankLines = getBlankLines(nlCount);
                 String last = stack.peek();
                 if (last != null) {
-                    last = stack.pop();
+                    last = pop();
                     last = blankLines + removeBlankLines(last, START);
-                    stack.push(last);
+                    push(last);
                 }
             }
         }
