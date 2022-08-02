@@ -10,7 +10,17 @@ import java.util.*;
 import java.util.regex.*;
 
 /**
- * Beautifier for Java 18 and below.
+ * Beautifier for Java 17 and below.
+ 
+ Notes about indenting:
+ 
+ Parent sets the indent level on entry
+ Child applies the indent level to itself
+ Parent adds the child
+ 
+ Standard parent/child tree hierarchy. The leaf child will be a one liner.
+ 
+ 
  */
 public class JavaParserBeautyListener extends JavaParserBaseListener {
     
@@ -53,7 +63,7 @@ public class JavaParserBeautyListener extends JavaParserBaseListener {
     private int blankLinesBetweenImportGroups = 1;      
     private int blankLinesAfterClassDeclaration = 1; 
     private int blankLinesAfterClassBody = 2;
-    private int blankLinesBeforeMethods = 1;  
+    private int blankLinesBeforeMethods = 2;  
     private int blankLinesAfterMethods = 1;
     private boolean sortModifiers = true;               
     private int collapseMultipleBlankLinesTo = 2; 
@@ -112,7 +122,7 @@ public class JavaParserBeautyListener extends JavaParserBaseListener {
             JavaLexer lexer = new JavaLexer( antlrInput );
             CommonTokenStream tokens = new CommonTokenStream( lexer );
             JavaParser javaParser = new JavaParser( tokens );
-            //javaParser.setTrace(true);
+            javaParser.setTrace(true);
             
             // parse and beautify the buffer contents
             JavaParserBeautyListener listener = new JavaParserBeautyListener(16 * 1024, tokens);
@@ -367,35 +377,35 @@ Parser methods follow.
 	}
 	
 	@Override public void enterBlock(BlockContext ctx) {
-	    ++tabCount;   
+	    ++tabCount;
 	}
 	
 	/**
- 	* block
- 	*     : '{' blockStatement* '}'
- 	*     ;
- 	*/
+ 	 * block
+ 	 *     : '{' blockStatement* '}'
+ 	 *     ;
+ 	 */
 	@Override public void exitBlock(BlockContext ctx) {
-	    String rb = trimFront(pop());
-	    StringBuilder blockStatements = new StringBuilder();
-	    if (ctx.blockStatement() != null) {
-	        int size = ctx.blockStatement().size();
-	        List<String> parts = reverse(size);
-	        for (String part : parts) {
-	            blockStatements.append(indent(part));
-	        }
-	        //trimEnd(blockStatements);
-	    }
-	    
-	    String lb = pop();
 	    --tabCount;
 	    
-	    rb = indentRBrace(rb);
-	    StringBuilder sb = new StringBuilder();
-	    if (brokenBracket) {
-            sb.append('\n');	        
+	    String rb = pop();
+	    
+	    String blockStatements = "";
+	    if (ctx.blockStatement() != null) {
+	        int size = ctx.blockStatement().size();
+	        blockStatements = reverse(size, "");
 	    }
-	    sb.append(lb).append(blockStatements).append('\n').append(rb);
+	    String lb = pop().trim();
+	    
+	    // assemble the parts
+	    StringBuilder sb = new StringBuilder();
+	    // TODO: broken brackets
+	    sb.append(lb);
+	    if (!blockStatements.isEmpty()) {
+	        sb.append('\n');  
+	        rb = indent(rb);
+	    }
+	    sb.append(blockStatements).append('\n').append(rb);
 	    push(sb);
 	}
 	
@@ -406,16 +416,17 @@ Parser methods follow.
  	*     | localTypeDeclaration
  	*     ;
  	*/
-	@Override public void exitBlockStatement(BlockStatementContext ctx) { 
+	@Override public void exitBlockStatement(BlockStatementContext ctx) {
 	    if (ctx.SEMI() != null) {
 	        String semi = pop();    
-	        String localVariableDeclaration = pop() + semi;
-	        localVariableDeclaration = indent(localVariableDeclaration);
-	        push(localVariableDeclaration);
+	        String localVariableDeclaration = pop();
+	        StringBuilder sb = new StringBuilder();
+            sb.append(localVariableDeclaration).append(semi);	        
+	        push(indent(sb.toString()));
 	    }
 	    else { 
             String stmtOrDecl = pop();
-            push(indent(stmtOrDecl) + '\n');
+            push(stmtOrDecl);
 	    }
 	}
 	
@@ -454,44 +465,34 @@ Parser methods follow.
 	}
 	
 	@Override public void enterClassBody(ClassBodyContext ctx) {
-	    ++tabCount;    
+	    ++tabCount;
 	}
-	
-	
+
 	/**
  	* classBody
  	*     : '{' classBodyDeclaration* '}'
  	*     ;
  	*/
-	@Override public void exitClassBody(ClassBodyContext ctx) { 
+	@Override public void exitClassBody(ClassBodyContext ctx) {
+	    --tabCount;
 	    String rbrace = pop();
-	    StringBuilder classBodyDecl = new StringBuilder();
+	    rbrace = indent(rbrace);
+	    String classBodyDecl = "";
 	    if (ctx.classBodyDeclaration() != null) {
 	        int size = ctx.classBodyDeclaration().size();
-	        List<String> parts = reverse(size);
-	        for (String part : parts) {
-	            classBodyDecl.append(indent(part)).append('\n');   
-	        }
-	        trimEnd(classBodyDecl);
+	        classBodyDecl = reverse(size, "\n\n");
 	    }
-	    String lbrace = pop();
-	    
-	    --tabCount;
-	    
+	    String lbrace = pop().trim();
+
 	    StringBuilder sb = new StringBuilder();
-	    
-	    if (isWhitespace(classBodyDecl) || classBodyDecl.length() == 0) {
-	        sb.append(lbrace.trim()).append(rbrace.trim()).append('\n');   
-	    }
-	    else {
-	    sb.append(lbrace);
-            if (brokenBracket) {
-                sb.append('\n');    
-            }
-            sb.append(classBodyDecl).append('\n');   
-            rbrace = indentRBrace(rbrace);   
-            sb.append(rbrace).append('\n');
-	    }
+	    // TODO: fix this
+        //if (brokenBracket) {  
+        //    sb.append('\n');    
+        //}
+        sb.append(lbrace).append('\n');
+        sb.append(classBodyDecl);
+        sb.append('\n');
+        sb.append(rbrace);
 	    push(sb);
 	}
 	
@@ -505,27 +506,44 @@ Parser methods follow.
  	*/
 	@Override public void exitClassBodyDeclaration(ClassBodyDeclarationContext ctx) { 
 	    if (ctx.SEMI() != null) {
-	        return;     // only thing in the class body is a semicolon, and it's already on the stack   
+	        String semi = pop();
+	        semi = indent(semi);
+	        push(semi);
+	        return;        
 	    }
 	    
 	    if (ctx.block() != null) {
-	         StringBuilder block = new StringBuilder(pop());
-	         if (ctx.STATIC() != null) {
-	             String static_ = pop();    // static keyword
-	             block.insert(0, static_ + ' ');
-	         }
-	         push(block);
-	         return;
+	        String block = pop();
+	        StringBuilder sb = new StringBuilder();
+	        addBlankLines(sb, blankLinesBeforeMethods, START);
+            if (ctx.STATIC() != null) {
+                String static_ = pop();    // static keyword
+                static_ = indent(static_);
+                sb.append(static_).append(' ');
+            }
+            block = addBlankLines(block, blankLinesAfterMethods, END);
+            sb.append(block);
+            push(sb);
+            return;
 	    }
 	    else {
-            String memberDeclaration = pop();
+            String memberDeclaration = pop().trim();
+            
             StringBuilder sb = new StringBuilder();
-            if (ctx.modifier() != null) {
+            addBlankLines(sb, blankLinesBeforeMethods, START);
+            String modifiers = "";
+            if (ctx.modifier() != null && ctx.modifier().size() > 0) {
                 int size = ctx.modifier().size();
-                String mods = formatModifiers(size);
-                sb.append(mods.trim()).append(' ');
+                modifiers = formatModifiers(size);
             }
-            sb.append(memberDeclaration);
+            if (!modifiers.isEmpty()) {
+                modifiers = indent(modifiers);
+                sb.append(modifiers).append(' ').append(memberDeclaration);
+            }
+            else {
+                String indent = getIndent();
+                sb.append(indent).append(memberDeclaration);
+            }
             push(sb);
 	    }
 	}
@@ -542,6 +560,7 @@ Parser methods follow.
 	        classBody = pop();
 	    }
 	    String arguments = pop();
+	    arguments = indent(arguments);
 	    StringBuilder sb = new StringBuilder(arguments);
 	    if (classBody.length() > 0) {
 	        sb.append(' ').append(classBody);   
@@ -560,33 +579,35 @@ Parser methods follow.
  	*/
 	@Override public void exitClassDeclaration(ClassDeclarationContext ctx) { 
 	    String classBody = pop();
-	    String permitsList = "";
+	    StringBuilder permitsList = new StringBuilder();
 	    if (ctx.PERMITS() != null && ctx.typeList() != null) {
 	        String typeList = pop();
 	        String permits_ = pop();
-	        permitsList = permits_ + ' ' + typeList;
+	        permitsList.append(' ').append(permits_).append(' ').append(typeList);
 	    }
-	    String implementsList = "";
+	    StringBuilder implementsList = new StringBuilder();
 	    if (ctx.IMPLEMENTS() != null && ctx.typeList() != null) {
 	         String typeList = pop();
 	         String implements_ = pop();
-	         implementsList = implements_ + ' ' + typeList;
+	         implementsList.append(' ').append(implements_).append(' ').append(typeList);
 	    }
-	    String extendsType = "";
+	    StringBuilder extendsType = new StringBuilder();
 	    if (ctx.EXTENDS() != null && ctx.typeList() != null) {
 	         String typeType = pop();
 	         String extends_ = pop();
-	         extendsType = extends_ + ' ' + typeType;
+	         extendsType.append(' ').append(extends_).append(' ').append(typeType);
 	    }
-	    String typeParameters = "";
+	    StringBuilder typeParameters = new StringBuilder();
 	    if (ctx.typeParameters() != null) {
-	         typeParameters = pop();   
+	        String params = pop();
+	        typeParameters.append(' ').append(params);
 	    }
 	    String identifier = pop();
 	    String class_ = pop();    // class keyword
+	    class_ = indent(class_);
 	    
 	    StringBuilder classDecl = new StringBuilder();
-	    classDecl.append(class_).append(' ').append(identifier).append(' ').append(typeParameters).append(' ').append(extendsType).append(implementsList).append(permitsList).append(classBody);
+	    classDecl.append(class_).append(' ').append(identifier).append(typeParameters).append(extendsType).append(implementsList).append(permitsList).append(' ').append(classBody);
 	    push(classDecl);
 	}
 	
@@ -670,6 +691,15 @@ Parser methods follow.
 	        String dot = pop();    // .
 	        classOrInterfaceType = pop() + dot;
 	    }
+	    if (!classOrInterfaceType.isEmpty()) {
+	        classOrInterfaceType = indent(classOrInterfaceType);    
+	    }
+	    else if (!annotations.isEmpty()) {
+	        annotations = indent(annotations);    
+	    }
+	    else {
+	        identifier = indent(identifier);    
+	    }
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(classOrInterfaceType).append(annotations).append(' ').append(identifier).append(typeArguments);
 	    push(sb);
@@ -724,6 +754,7 @@ Parser methods follow.
 	    int size = ctx.constantDeclarator().size();
 	    String constantDeclarator = reverse(size * 2 - 1, " ", 2);
 	    String typeType = pop();
+	    typeType = indent(typeType);
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(typeType).append(' ').append(constantDeclarator).append(semi);
 	    push(sb);
@@ -743,6 +774,7 @@ Parser methods follow.
 	        brackets = reverse(size, "");
 	    }
 	    String identifier = stack.pop();
+	    identifier = indent(identifier);
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(identifier).append(brackets).append(padOperator(equals)).append(variableInitializer);
 	    push(sb);
@@ -754,17 +786,18 @@ Parser methods follow.
  	*     ;
  	*/
 	@Override public void exitConstructorDeclaration(ConstructorDeclarationContext ctx) {
-	    String block = pop();
-	    StringBuilder throwsList = new StringBuilder();;
+	    String block = pop();  
+	    StringBuilder throwsList = new StringBuilder();
 	    if (ctx.THROWS() != null) {
-	        String qualifiedNameList = pop();
+	        String qualifiedNameList = pop().trim();
 	        String throws_ = pop();    // throws keyword
 	        throwsList.append(throws_).append(' ').append(qualifiedNameList);
 	    }
-	    String formalParameters = pop();
-	    String identifier = pop();
+	    String formalParameters = pop().trim();
+	    String identifier = pop().trim();
+	    identifier = indent(identifier);
 	    StringBuilder sb = new StringBuilder();
-	    sb.append(identifier).append(' ').append(formalParameters).append(' ').append(throwsList).append(block);
+	    sb.append(identifier).append(formalParameters).append(' ').append(throwsList).append(block);
 	    push(sb);
 	}
 	
@@ -801,11 +834,13 @@ Parser methods follow.
 	             maybeType = "";   
 	        }
 	        String identifier = pop();
+	        identifier = indent(identifier);
 	        StringBuilder sb = new StringBuilder();
 	        sb.append(identifier).append(maybeType).append(backHalf);
 	        push(sb);
 	    }
 	    // otherwise, nothing to do as primitiveType should already be on the stack
+	    // TODO: but is it indented?
 	}
 	
 	/**
@@ -820,6 +855,7 @@ Parser methods follow.
 	        String classCreatorRest = pop();
 	        String createdName = pop();
 	        String nonWildcardTypeArguments = pop();
+	        nonWildcardTypeArguments = indent(nonWildcardTypeArguments);
 	        StringBuilder sb = new StringBuilder();
 	        sb.append(nonWildcardTypeArguments).append(' ').append(createdName).append(classCreatorRest);
 	        push(sb);
@@ -828,6 +864,7 @@ Parser methods follow.
 	        // second choice
 	        String end = pop();    // either arrayCreatorRest or classCreatorRest
 	        String createdName = pop();
+	        createdName = indent(createdName);
 	        StringBuilder sb = new StringBuilder();
 	        sb.append(createdName).append(end);
 	        push(sb);
@@ -842,6 +879,7 @@ Parser methods follow.
 	@Override public void exitDefaultValue(DefaultValueContext ctx) { 
 	    String elementValue = pop();
 	    String default_ = pop();
+	    default_ = indent(default_);
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(default_).append(' ').append(elementValue);
 	    push(sb);
@@ -862,6 +900,7 @@ Parser methods follow.
  	* elementValueArrayInitializer
  	*     : '{' (elementValue (',' elementValue)*)? (',')? '}'
  	*     ;
+ 	* TODO: wrap long lines?
  	*/
 	@Override public void exitElementValueArrayInitializer(ElementValueArrayInitializerContext ctx) { 
 	    String rbrace = pop();
@@ -941,13 +980,13 @@ Parser methods follow.
 	    String classBodyDeclaration = "";
 	    if (ctx.classBodyDeclaration() != null) {
 	        int size = ctx.classBodyDeclaration().size();
-	        classBodyDeclaration = reverse(size, "\n");    
+            classBodyDeclaration = reverse(size, "");
 	    }
-	    String semi = pop();    // ;
+	    String semi = pop().trim();    // ;
 	    StringBuilder sb = new StringBuilder();
-	    sb.append(semi);
+	    sb.append(semi).append('\n');
 	    if (!isWhitespace(classBodyDeclaration)) {
-	        sb.append('\n');
+	        sb.append("\n");
 	        sb.append(classBodyDeclaration);
 	    }
 	    push(sb);
@@ -974,6 +1013,12 @@ Parser methods follow.
 	        int size = ctx.annotation().size();
 	        annotations = reverse(size, " ");
 	    }
+	    if (!annotations.isEmpty()) {
+	        annotations = indent(annotations);
+	    }
+	    else {
+	        identifier = indent(identifier);   
+	    }
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(annotations).append(identifier).append(' ');
 	    if (arguments.length() > 0) {
@@ -990,10 +1035,27 @@ Parser methods follow.
  	*/
 	@Override public void exitEnumConstants(EnumConstantsContext ctx) {
 	    int size = ctx.enumConstant().size();
-	    String enumConstants = reverse(size * 2 - 1, " ", 2);
+	    if (ctx.COMMA() != null) {
+	        size += ctx.COMMA().size();   
+	    }
+	    StringBuilder sb = new StringBuilder();
+	    List<String> constants = reverse(size);
+	    for (int i = 0; i < size; i++) {
+	        String constant = constants.get(i).trim();
+	        sb.append(constant);
+	        if (constant.equals(",")) {
+	            sb.append(' ');   
+	        }
+	    }
+	    String enumConstants = sb.toString();
+	    enumConstants = trimEnd(enumConstants);
+	    enumConstants = indent(enumConstants);
 	    push(enumConstants);
 	}
 	
+	@Override public void enterEnumDeclaration(EnumDeclarationContext ctx) {
+	    ++tabCount;
+	}
 	
 	/**
  	* enumDeclaration
@@ -1001,10 +1063,11 @@ Parser methods follow.
  	*     ;
  	*/
 	@Override public void exitEnumDeclaration(EnumDeclarationContext ctx) {
+	    --tabCount;
 	    String rb = pop();    // }
 	    String enumBodyDeclarations = ctx.enumBodyDeclarations() == null ? "" : pop();
-	    String comma = ctx.COMMA() == null ? "" : ", ";
-	    String enumConstants = ctx.enumConstants() == null ? "" : pop().trim();
+	    String comma = ctx.COMMA() == null ? "" : pop();
+	    String enumConstants = ctx.enumConstants() == null ? "" : pop();
 	    String lb = pop();    // {
 	    String implements_ = "";
 	    if (ctx.IMPLEMENTS() != null && ctx.typeList() != null) {
@@ -1014,17 +1077,22 @@ Parser methods follow.
 	    }
 	    String identifier = pop();
 	    String enum_ = pop();    // enum keyword
+	    enum_ = indent(enum_);
+	    
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(enum_).append(' ').append(identifier).append(' ').append(implements_).append(lb).append('\n');
 	    if (!enumConstants.isEmpty() || !comma.isEmpty() || !enumBodyDeclarations.isEmpty()) {
-            sb.append(trimEnd(indent(enumConstants))).append(comma);
+            sb.append(enumConstants);
+            if (!comma.isEmpty()) {
+                sb.append(comma).append(' ');
+            }
             if (enumBodyDeclarations.trim().length() > 1) {
-                enumBodyDeclarations = indent(enumBodyDeclarations);
                 enumBodyDeclarations = trimFront(enumBodyDeclarations);
             }
-            sb.append(enumBodyDeclarations);
+            sb.append(enumBodyDeclarations).append('\n');
 	    }
-	    sb.append(rb);
+	    rb = indent(rb);
+	    sb.append(rb).append('\n');
 	    push(sb);
 	}
 	
@@ -1041,6 +1109,7 @@ Parser methods follow.
 	@Override public void exitExplicitGenericInvocation(ExplicitGenericInvocationContext ctx) { 
 	    String suffix = pop();
 	    String args = pop();
+	    args = indent(args);
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(args).append(' ').append(suffix);
 	    push(sb);
@@ -1068,6 +1137,7 @@ Parser methods follow.
 	
 	/*
 	* Yes, this is ugly.
+	* These should all be one-liners.
 	*
   	* expression
   	*     : primary
@@ -1390,10 +1460,11 @@ Parser methods follow.
  	*/
     @Override public void exitFieldDeclaration(FieldDeclarationContext ctx) { 
         String semi = pop();    // semicolon
-        String variableDeclarators = pop();
+        String variableDeclarators = pop().trim();
         String typeType = stack.pop();
+        typeType = indent(typeType);
         StringBuilder sb = new StringBuilder();
-        sb.append(typeType).append(' ').append(variableDeclarators).append(semi);
+        sb.append(typeType).append(' ').append(variableDeclarators).append(semi).append('\n');
         push(sb);
     }
     
@@ -1405,6 +1476,7 @@ Parser methods follow.
 	@Override public void exitFinallyBlock(FinallyBlockContext ctx) {
 	    String block = pop();
 	    String finally_ = pop();    // finally keyword
+	    finally_ = indent(finally_);
 	    push(finally_ + ' ' + block);
 	}
 	
@@ -1528,9 +1600,12 @@ Parser methods follow.
  	*     ;
  	*/
 	@Override public void exitGenericConstructorDeclaration(GenericConstructorDeclarationContext ctx) { 
-	    String decl = pop();
-	    String typeParameters = pop();
-	    push(typeParameters + " " + decl);
+	    String decl = pop().trim();
+	    String typeParameters = pop().trim();
+	    typeParameters = indent(typeParameters);
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(typeParameters).append(' ').append(decl);
+	    push(sb);
 	}
 	
 	/**
@@ -1546,6 +1621,7 @@ Parser methods follow.
 	        int size = ctx.interfaceMethodModifier().size();
 	        modifiers = formatModifiers(size).trim();
 	    }
+	    modifiers = indent(modifiers);
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(modifiers).append(' ').append(typeParameters).append(' ').append(decl);
 	    push(sb);
@@ -1560,6 +1636,7 @@ Parser methods follow.
 	@Override public void exitGenericMethodDeclaration(GenericMethodDeclarationContext ctx) { 
 	    String method = pop();
 	    String typeParameters = pop();
+	    typeParameters = indent(typeParameters);
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(typeParameters).append(' ').append(method);
 	    push(sb);
@@ -1670,6 +1747,7 @@ Parser methods follow.
 	        static_ = pop() + ' ';    // static keyword
 	    }
 	    String import_ = pop();    // import keyword
+	    import_ = indent(import_);
 	    StringBuilder importDecl = new StringBuilder();
 	    importDecl.append(import_).append(' ').append(static_).append(qualifiedName).append(dotstar).append(semi);
 	    push(importDecl);
@@ -1684,6 +1762,7 @@ Parser methods follow.
 	    String classCreatorRest = pop();
 	    String args = ctx.nonWildcardTypeArgumentsOrDiamond() == null ? " " : pop();
 	    String identifier = pop();
+	    // TODO: indent?
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(identifier).append(args).append(classCreatorRest);
 	    push(sb);
@@ -1701,27 +1780,25 @@ Parser methods follow.
 	    // Nothing to do here, one of the choices should already be on the stack.
 	}
 
-	
 	@Override public void enterInterfaceBody(InterfaceBodyContext ctx) {
-	    ++tabCount;    
-	}
-	
+	    ++tabCount;
+	}	
 	/**
  	* interfaceBody
  	*     : '{' interfaceBodyDeclaration* '}'
  	*     ;
  	*/
 	@Override public void exitInterfaceBody(InterfaceBodyContext ctx) { 
+	    --tabCount;
 	    String rb = pop();     // }
-	    rb = removeBlankLines(rb, START);
 	    
 	    String body = "";
 	    if (ctx.interfaceBodyDeclaration() != null && ctx.interfaceBodyDeclaration().size() > 0) {
 	        body = reverse(ctx.interfaceBodyDeclaration().size(), "");
-	        body = indent(body);
 	        body = removeBlankLines(body, BOTH);
 	    }
 	    
+	    // TODO: what? why add blank lines after the left bracket? should be the right?
 	    addBlankLines(blankLinesAfterClassDeclaration);    // added to left bracket
 	    String lb = pop();    // {
 	    
@@ -1732,10 +1809,8 @@ Parser methods follow.
         sb.append(lb);
 	    sb.append(body);
 	    
-	    --tabCount;
-        
         trimEnd(sb);
-        rb = indentRBrace(rb);  
+        rb = indent(rb);  
         if (!body.isEmpty()) {
             sb.append('\n');
         }
@@ -1761,7 +1836,11 @@ Parser methods follow.
             sb.append(modifiers).append(' ').append(decl);
             push(sb);
 	    }
-	    // the semicolon choice is already on the stack
+	    else {
+	        String semi = pop();
+	        semi = indent(semi);
+	        push(semi);
+	    }
 	}
 	
 	
@@ -1852,6 +1931,7 @@ Parser methods follow.
 	        int size = ctx.interfaceMethodModifier().size();
 	        modifiers = formatModifiers(size).trim();
 	    }
+	    modifiers = indent(modifiers);
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(modifiers).append(' ').append(decl);
 	    push(sb);
@@ -2014,7 +2094,10 @@ Parser methods follow.
  	*/
 	@Override public void exitLocalTypeDeclaration(LocalTypeDeclarationContext ctx) { 
 	    if (ctx.SEMI() != null) {
-	        return;    // Just a semicolon in the type declaration
+	        String semi = pop();
+	        semi = indent(semi);
+	        push(semi);
+	        return;    
 	    }
 	    String declaration = pop();
 	    String modifiers = "";
@@ -2022,6 +2105,7 @@ Parser methods follow.
 	        int size = ctx.classOrInterfaceModifier().size();
 	        modifiers = formatModifiers(size).trim();
 	    }
+	    modifiers = indent(modifiers);
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(modifiers).append(' ').append(declaration);
 	    push(sb);
@@ -2043,17 +2127,26 @@ Parser methods follow.
             type.append(var_).append(' ').append(identifier).append(equals).append(expression);
         }
         else {
-            String variableDecls = pop();
+            String variableDecls = pop().trim();
             String typeType = pop();
             type.append(typeType).append(' ').append(variableDecls);
         }
+        
+        String modifiers = "";
         StringBuilder variableModifiers = new StringBuilder();
         if (ctx.variableModifier() != null) {
             int size = ctx.variableModifier().size();
-            variableModifiers.append(formatModifiers(size).trim()).append(' ');
+            modifiers = formatModifiers(size);
         }
-        variableModifiers.append(type);
-        push(variableModifiers);
+        modifiers = indent(modifiers);
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append(modifiers);
+        if (!modifiers.isEmpty()) {
+            sb.append(' ');    
+        }
+        sb.append(type);
+        push(sb);
     }
 	
 	
@@ -2082,7 +2175,12 @@ Parser methods follow.
  	*     ;
  	*/
 	@Override public void exitMethodBody(MethodBodyContext ctx) {
-	    // Nothing to do here, one of the choices should already be on the stack.
+	    if (ctx.SEMI() != null) {
+	        String semi = pop();
+	        semi = indent(semi);
+	        push(semi);
+	    }
+	    // otherwise, block is already on the stack
 	}
 	
 	/**
@@ -2094,9 +2192,10 @@ Parser methods follow.
  	*/
 	@Override public void exitMethodCall(MethodCallContext ctx) { 
 	    String rp = pop();    // )
-	    String expressionList = ctx.expressionList() == null ? "" : pop();
+	    String expressionList = ctx.expressionList() == null ? "" : pop().trim();
 	    String lp = pop();    // (
 	    String start = pop();    // one of 'identifier', 'this', or 'super'
+	    //start = removeBlankLines(start, BOTH);
 	    StringBuilder sb = new StringBuilder();
 	    if (!expressionList.isEmpty()) {
 	        rp = padParen(rp);
@@ -2127,11 +2226,12 @@ Parser methods follow.
 	        int size = ctx.RBRACK().size() * 2;     // * 2 for LBRACK
 	        brackets = reverse(size, "");
 	    }
-	    String formalParameters = pop();
-	    String identifier = pop();
-	    String typeOrVoid = pop();
+	    String formalParameters = pop().trim();
+	    String identifier = pop().trim();
+	    String typeOrVoid = pop().trim();
+	    typeOrVoid = indent(typeOrVoid);
 	    StringBuilder method = new StringBuilder();
-	    method.append(typeOrVoid).append(' ').append(identifier).append(' ').append(formalParameters).append(' ').append(brackets).append(throwsList).append(methodBody);
+	    method.append(typeOrVoid).append(' ').append(identifier).append(formalParameters).append(' ').append(brackets).append(throwsList).append(methodBody);
 	    push(method);
 	}
 	
@@ -2148,6 +2248,9 @@ Parser methods follow.
 	    // Nothing to do here, one of the choices should aready be on the stack.
 	}
 
+	@Override public void enterModuleBody(ModuleBodyContext ctx) {
+	    ++tabCount;
+	}
 	
 	
 	/**
@@ -2155,8 +2258,10 @@ Parser methods follow.
  	*     : '{' moduleDirective* '}'
  	*     ;
  	*/
-	@Override public void exitModuleBody(ModuleBodyContext ctx) { 
+	@Override public void exitModuleBody(ModuleBodyContext ctx) {
+	    --tabCount;
 	    String rbrace = pop();
+	    rbrace = indent(rbrace);
 	    StringBuilder moduleDirectives = new StringBuilder();
 	    if (ctx.moduleDirective() != null) {
 	        int size = ctx.moduleDirective().size();
@@ -2168,7 +2273,7 @@ Parser methods follow.
 	    String lbrace = pop() + '\n';
 	    StringBuilder moduleBody = new StringBuilder();
 	    moduleBody.append(lbrace);
-	    moduleBody.append(indent(moduleDirectives.toString()));
+	    moduleBody.append(moduleDirectives);
 	    moduleBody.append(rbrace);
 	    push(moduleBody);
 	}
@@ -2265,7 +2370,7 @@ Parser methods follow.
             moduleDirective.append(provides_).append(' ').append(qualifiedName).append(' ').append(with_).append(' ').append(qualifiedName2);
 	    }
 	    moduleDirective.append(semi);
-        push(moduleDirective);
+        push(indent(moduleDirective.toString()));
 	}
 	
 	/**
@@ -2469,13 +2574,20 @@ Parser methods follow.
 	    push(sb);
 	}
 	
+	@Override public void enterRecordBody(RecordBodyContext ctx) {
+	    ++tabCount;    
+	}
+	
+	
 	/**
  	* recordBody
  	*     : '{' classBodyDeclaration* '}'
  	*     ;
  	*/
-	@Override public void exitRecordBody(RecordBodyContext ctx) { 
+	@Override public void exitRecordBody(RecordBodyContext ctx) {
+	    --tabCount;
 	    String rb = pop();    // }
+	    rb = indent(rb);
         String classBodyDeclaration = "";
 	    if (ctx.classBodyDeclaration() != null) {
 	        int size = ctx.classBodyDeclaration().size();
@@ -2483,8 +2595,7 @@ Parser methods follow.
 	    }
 	    String lb = pop();    // {
 	    StringBuilder sb = new StringBuilder();
-	    // TODO: adjust brackets
-	    sb.append(lb).append('\n').append(indent(classBodyDeclaration)).append(rb).append('\n');
+	    sb.append(lb).append('\n').append(classBodyDeclaration).append(rb).append('\n');
 	    push(sb);
 	}
 	
@@ -2618,6 +2729,11 @@ Parser methods follow.
 	    push(reverse(size * 2 - 1, " ", 2));
 	}
 	
+    @Override public void enterStatement(StatementContext ctx) {
+        if (ctx.SWITCH() != null) {
+            ++tabCount;
+        }
+    }
 	
 	/**
  	* 	statement
@@ -2643,6 +2759,9 @@ Parser methods follow.
  	*     ;
  	*/
     @Override public void exitStatement(StatementContext ctx) { 
+        if (ctx.block() != null) {
+            return;     // already on the stack
+        }
         if (ctx.ASSERT() != null) {
             formatAssert(ctx);
         }
@@ -2662,6 +2781,7 @@ Parser methods follow.
             formatTry(ctx);
         }
         else if (ctx.SWITCH() != null) {
+            --tabCount;
             formatSwitch(ctx);
         }
         else if (ctx.SYNCHRONIZED() != null) {
@@ -2695,7 +2815,7 @@ Parser methods follow.
         String assert_ = pop();  // assert keyword
         StringBuilder sb = new StringBuilder();
         sb.append(assert_).append(' ').append(expression).append(padOperator(colon)).append(expression2).append(semi);   
-        push(sb);
+        push(indent(sb.toString()));
     }
     
     private void formatIf(StatementContext ctx) {
@@ -2703,54 +2823,40 @@ Parser methods follow.
         StringBuilder elseStatement = new StringBuilder();
         if (ctx.ELSE() != null) {
             String es = pop();
-            if (!es.trim().startsWith("{")) {
-                ++tabCount;
-                elseStatement.append(" {\n").append(indent(es));
-                --tabCount;
-                elseStatement.append("\n}\n");
-            }
-            else {
-                elseStatement.append(es); 
-                if (!es.endsWith("\n")) {
-                    elseStatement.append('\n');    
-                }
-            }
-            String else_ = pop();  // else keyword
-            elseStatement.insert(0, ' ');
-            elseStatement.insert(0, else_);
-        }
-        String ifStatement = pop();
-        if (!ifStatement.trim().startsWith("{")) {
-            ++tabCount;
-            ifStatement = " {\n" + indent(ifStatement);
-            --tabCount;
-            ifStatement += "\n}";
+            String else_ = indent(pop());  // else keyword
+            elseStatement.append('\n');
+            elseStatement.append(else_);
+            elseStatement.append(es);
         }
         
+        String ifStatement = pop();
         String parExpression = pop();
         String if_ = pop();  // if keyword
+        
         StringBuilder sb = new StringBuilder();
-        sb.append(if_).append(' ').append(parExpression).append(' ').append(ifStatement).append(elseStatement);
+        sb.append(indent(if_)).append(' ').append(parExpression).append(' ');
+        sb.append(ifStatement).append(elseStatement);
         push(sb);
     }
     
     private void formatFor(StatementContext ctx) {
         // FOR '(' forControl ')' statement 
         String statement = pop();
-        // always require brackets
-        // TODO: what's the check for the statement starting with 'if'? 
-        if (!statement.startsWith("{") && !statement.startsWith("if")) {
-            ++tabCount;
-            statement = " {\n" + indent(statement);
-            --tabCount;
+        // TODO: always require brackets
+        /*
+        if (!statement.startsWith("{")) {
+            statement = " {\n" + tab + statement.trim();
             statement += "\n}\n";
         }
+        */
+        
         String rp = pop();  // )
         String forControl = pop();
         String lp = pop();  // (
-        String for_ = pop();  // for keyword
+        String for_ = indent(pop());  // for keyword
+        
         StringBuilder sb = new StringBuilder();
-        sb.append(for_).append(' ').append(padParen(lp)).append(forControl).append(' ').append(padParen(rp)).append(statement);
+        sb.append(for_).append(' ').append(padParen(lp)).append(forControl).append(' ').append(padParen(rp)).append(' ').append(statement);
         push(sb);
     }
     
@@ -2759,6 +2865,7 @@ Parser methods follow.
         String statement = pop();
         String parExpression = pop().trim();
         String while_ = pop();  // while keyword
+        while_ = indent(while_);
         StringBuilder sb = new StringBuilder();
         sb.append(while_).append(' ').append(parExpression).append(' ').append(statement);
         push(sb);
@@ -2770,13 +2877,17 @@ Parser methods follow.
         String parExpression = pop();
         String while_ = pop();  // while keyword
         String statement = pop();
+        // TODO: always require brackets
+        /*
         if (!statement.startsWith("{")) {
             ++tabCount;
             statement = " {\n" + indent(statement);
             --tabCount;
             statement += "\n}";
         }
+        */
         String do_ = pop();  // do keyword
+        do_ = indent(do_);
         StringBuilder sb = new StringBuilder();
         sb.append(do_).append(' ').append(statement).append(' ').append(while_).append(' ').append(parExpression).append(semi);
         push(sb);
@@ -2796,6 +2907,7 @@ Parser methods follow.
             String block = pop();
             String spec = pop();
             String try_ = pop();  // try keyword
+            try_ = indent(try_);
             StringBuilder sb = new StringBuilder();
             sb.append(try_).append(' ').append(spec).append(block).append(catchClause).append(finallyBlock);
             push(sb);
@@ -2813,6 +2925,7 @@ Parser methods follow.
             }
             String block = pop();
             String try_ = pop();  // try keyword
+            try_ = indent(try_);
             StringBuilder sb = new StringBuilder();
             sb.append(try_).append(' ').append(block).append(catchClause).append(finallyBlock);
             push(sb);
@@ -2822,21 +2935,23 @@ Parser methods follow.
     private void formatSwitch(StatementContext ctx) {
         // SWITCH parExpression '{' switchBlockStatementGroup* switchLabel* '}'
         String rp = pop();  // }
+        rp = indent(rp);
         String switchLabel = "";
-        if (ctx.switchLabel() != null) {
+        if (ctx.switchLabel() != null && ctx.switchLabel().size() > 0) {
             int size = ctx.switchLabel().size();
-            switchLabel = reverse(size, " ");
+            switchLabel = reverse(size, "");
         }
         String switchBlockStatementGroup = "";
-        if (ctx.switchBlockStatementGroup() != null) {
+        if (ctx.switchBlockStatementGroup() != null && ctx.switchBlockStatementGroup().size() > 0) {
             int size = ctx.switchBlockStatementGroup().size();
-            switchBlockStatementGroup = reverse(size, " ");
+            switchBlockStatementGroup = reverse(size, "");                                           
         }
         String lp = pop();  // {
         String parExpression = pop();
         String switch_ = pop();  // switch keyword
+        switch_ = indent(switch_);
         StringBuilder sb = new StringBuilder();
-        sb.append(switch_).append(' ').append(parExpression).append(lp).append('\n').append(switchBlockStatementGroup).append(switchLabel).append('\n').append(rp);
+        sb.append('\n').append(switch_).append(' ').append(parExpression).append(' ').append(lp).append('\n').append(switchBlockStatementGroup).append(switchLabel).append(rp).append('\n');
         push(sb);
     }
     
@@ -2845,44 +2960,53 @@ Parser methods follow.
         String block = pop();
         String parExpression = pop();
         String synchronized_ = pop();  // synchronized keyword
+        synchronized_ = indent(synchronized_);
         StringBuilder sb = new StringBuilder();
         sb.append(synchronized_).append(' ').append(parExpression).append(block);
         push(sb);
     }
     
     private void formatReturnThrowYield(StatementContext ctx) {
-            // these 3 are pretty much the same
-            // RETURN expression? ';'
-            // THROW expression ';'
-            // YIELD expression ';'            
-            String semi = pop();  //;
-            String expression = ctx.expression() == null ? "" : pop();
-            String keyword = pop();
-            StringBuilder sb = new StringBuilder();
-            sb.append(keyword).append(' ').append(expression).append(semi);
-            push(sb);
+        // these 3 are pretty much the same
+        // RETURN expression? ';'
+        // THROW expression ';'
+        // YIELD expression ';'            
+        String semi = pop();  //;
+        String expression = ctx.expression() == null ? "" : pop().trim();
+        String keyword = pop();
+        keyword = indent(keyword);
+        StringBuilder sb = new StringBuilder();
+        sb.append(keyword).append(' ').append(expression).append(semi);
+        push(sb);
     }
     
     private void formatBreakOrContinue(StatementContext ctx) {
         // BREAK identifier? ';'
         // CONTINUE identifier? ';' 
-        String semi = pop();  //;
-        String identifier = ctx.identifier() == null ? "" : pop();
+        String semi = pop().trim(); 
+        String identifier = ctx.identifier() == null ? "" : " " + pop().trim();
         String keyword = pop();
+        keyword = indent(keyword);
         StringBuilder sb = new StringBuilder();
-        sb.append(keyword).append(' ').append(identifier).append(semi);
+        sb.append(keyword).append(identifier).append(semi);
         push(sb);
     }
     
     private void formatSemi(StatementContext ctx) {
-        // only these 2 statement choices are remaining with a semicolon
+        // only these 3 statement choices are remaining with a semicolon
+        // SEMI
         // statementExpression=expression ';'
-        // switchExpression ';'? // Java17      
-        String semi = pop();  // ;
-        String expression = pop();
+        // switchExpression ';'? // Java17  
+        String semi = pop().trim();  // ;
+        String expression = "";
+        if (ctx.expression() != null || ctx.switchExpression() != null) {
+            expression = pop().trim();  
+            expression = indent(expression);
+        }
         StringBuilder sb = new StringBuilder();
-        sb.append(expression).append(semi);
+        sb.append(expression).append(semi).append('\n');
         push(sb);
+        
     }
     
     private void formatColon(StatementContext ctx) {
@@ -2891,6 +3015,7 @@ Parser methods follow.
         String statement = pop();
         String colon = pop();  // :
         String identifier = pop();
+        identifier = indent(identifier);
         StringBuilder sb = new StringBuilder();
         sb.append(identifier).append(padOperator(colon)).append(statement);
         push(sb);
@@ -2924,11 +3049,16 @@ Parser methods follow.
 	@Override public void exitSwitchBlockStatementGroup(SwitchBlockStatementGroupContext ctx) {
 	    int size = ctx.blockStatement().size();
 	    String blockStatements = reverse(size, "");
+	    blockStatements = indentAgain(blockStatements);
 	    size = ctx.switchLabel().size();
 	    String switchLabels = reverse(size, "");
 	    StringBuilder sb = new StringBuilder();
-	    sb.append(switchLabels).append(blockStatements);
+	    sb.append(switchLabels).append(blockStatements).append('\n');
 	    push(sb);
+	}
+	
+	@Override public void enterSwitchExpression(SwitchExpressionContext ctx) {
+	    ++tabCount;
 	}
 	
 	/**
@@ -2937,47 +3067,57 @@ Parser methods follow.
  	*     : SWITCH parExpression '{' switchLabeledRule* '}'
  	*     ;
  	*/
-	@Override public void exitSwitchExpression(SwitchExpressionContext ctx) { 
+	@Override public void exitSwitchExpression(SwitchExpressionContext ctx) {
+	    --tabCount;
 	    String rb = pop();    // }
+	    rb = indent(rb);
 	    String switchLabeledRule = "";
 	    if (ctx.switchLabeledRule() != null) {
 	        int size = ctx.switchLabeledRule().size();
-	        switchLabeledRule = reverse(size, " ");
+	        switchLabeledRule = reverse(size, "");
 	    }
 	    String lb = pop();    // {
 	    String parExpression = pop();
 	    String switch_ = pop();    // switch keyword
+	    switch_ = indent(switch_);
 	    StringBuilder sb = new StringBuilder();
-	    sb.append(switch_).append(' ').append(parExpression).append(lb).append('\n').append(switchLabeledRule).append('\n').append(rb);
-	    push(sb);
+	    sb.append(switch_).append(' ').append(parExpression).append(' ').append(lb).append('\n').append(switchLabeledRule).append(rb).append('\n');
+	    String expression = indentAgain(sb.toString());
+	    push(expression);
 	}
 	
+	@Override public void enterSwitchLabel(SwitchLabelContext ctx) {
+	}
 	/**
  	* switchLabel
  	*     : CASE (constantExpression=expression | enumConstantName=IDENTIFIER | typeType varName=identifier) ':'
  	*     | DEFAULT ':'
  	*     ;
  	*/
-	@Override public void exitSwitchLabel(SwitchLabelContext ctx) { 
+	@Override public void exitSwitchLabel(SwitchLabelContext ctx) {
 	    if (ctx.DEFAULT() != null) {
-	        String colon = pop();    // :
+	        String colon = pop();
 	        String default_ = pop();    // default keyword
-	        push(default_ + colon);
+	        default_ = indent(default_);
+	        StringBuilder sb = new StringBuilder();
+	        sb.append(default_).append(colon).append('\n');
+	        push(sb);
 	    }
 	    else {
-	        String colon = pop();    // :
+	        String colon = pop();    
 	        String label = "";
 	        if (ctx.typeType() != null) {
 	            String identifier = pop();
 	            String typeType = pop();
-	            label = typeType + " " + identifier;
+	            label = new StringBuilder(typeType).append(' ').append(identifier).toString();
 	        }
 	        else {
 	            label = pop();   
 	        }
 	        String case_ = pop();
+	        case_ = indent(case_);
 	        StringBuilder sb = new StringBuilder();
-	        sb.append(case_).append(' ').append(label).append(colon);
+	        sb.append(case_).append(' ').append(label).append(colon).append('\n');
 	        push(sb);
 	    }
 	}
@@ -2996,17 +3136,19 @@ Parser methods follow.
 	        String switchRuleOutcome = pop();
 	        String operator = pop();
 	        String choice = pop();
-	        String case_ = pop();    // case keyword
+	        String case_ = pop(); 
+	        case_ = indent(case_);
 	        StringBuilder sb = new StringBuilder();
-	        sb.append(case_).append(' ').append(choice).append(padOperator(operator)).append(switchRuleOutcome);
+	        sb.append(case_).append(' ').append(choice).append(padOperator(operator)).append(switchRuleOutcome).append('\n');
 	        push(sb);
 	    }
 	    else {
 	        String switchRuleOutcome = pop();
 	        String operator = pop();
-	        String default_ = pop();    // default keyword
+	        String default_ = pop();
+	        default_ = indent(default_);
 	        StringBuilder sb = new StringBuilder();
-	        sb.append(default_).append(padOperator(operator)).append(switchRuleOutcome);
+	        sb.append(default_).append(padOperator(operator)).append(switchRuleOutcome).append('\n');
 	        push(sb);
 	    }
 	}
@@ -3026,7 +3168,7 @@ Parser methods follow.
                 int size = ctx.blockStatement().size();
                 blockStatement = reverse(size, " ");
             }
-            push(blockStatement);
+            push(blockStatement.trim());
 	    }
 	    // otherwise, 'block' is already on the stack
 	}
@@ -3052,6 +3194,7 @@ Parser methods follow.
                 int size = ctx.annotation().size();
                 annotation = reverse(size, " ");
             }
+            annotation = indent(annotation);
             StringBuilder sb = new StringBuilder();
             sb.append(annotation).append(padOperator(q)).append(typeType);
             push(sb);
@@ -3254,11 +3397,11 @@ Parser methods follow.
 	    String variableInitializer = "";
 	    String equals = "";
 	    if (ctx.variableInitializer() != null && ctx.ASSIGN() != null) {
-	        variableInitializer = pop();
-	        equals = padOperator(pop());
+	        variableInitializer = pop().trim();
+	        equals = padOperator(pop().trim());
 	    }
 	    StringBuilder variableDecl = new StringBuilder();
-	    variableDecl.append(pop());    // variableDeclaratorId
+	    variableDecl.append(pop().trim());    // variableDeclaratorId
 	    variableDecl.append(padOperator(equals));
 	    variableDecl.append(variableInitializer.trim());
 	    push(variableDecl);
@@ -3279,7 +3422,7 @@ Parser methods follow.
 	            variableDeclId.append(part);   
 	        }
 	    }
-	    variableDeclId.insert(0, pop());    // identifier
+	    variableDeclId.insert(0, pop().trim());    // identifier
 	    push(variableDeclId);
 	}
 	
@@ -3426,26 +3569,21 @@ Formatting methods.
     private String getIndent() {
         StringBuilder sb = new StringBuilder();    
         for ( int i = 0; i < tabCount; i++ ) {
-            sb.insert(0, tab );
+            sb.append( tab );
         }
         return sb.toString();
     }
     
     /**
-     * Removes one indent from each line in the given string.
+     * @return The indent in front of the given string.    
      */
-    private String outdent(String s) {
+    private String getIndent(String s) {
+        
+        String t = new String(s);
         StringBuilder sb = new StringBuilder();
-        String[] lines = s.split("\n");
-        String indent = getIndent();
-        for (String line : lines) {
-            if (line.startsWith(indent)) {
-                line = line.substring(indent.length());
-            }
-            sb.append(line);
-            if (!line.endsWith("\n")) {
-                sb.append('\n');    
-            }
+        while (t.length() > tab.length() && t.startsWith(tab)) {
+            sb.append(tab);
+            t = t.substring(tab.length());
         }
         return sb.toString();
     }
@@ -3463,32 +3601,19 @@ Formatting methods.
     }
     
     /**
-     * Split the given string into lines and indent each line to
-     * the current tab count.
+     * Trim the given string of leading and trailing whitespece, split it into
+     * lines, then add tabCount * tab whitespace to the start of each line,
+     * then return the combined lines. Note that there will NOT be a trailing new line.
      */
     private String indent(String s) {
+        s = s.trim();
         StringBuilder sb = new StringBuilder();
         String[] lines = s.split("\n");
         String indent = getIndent();
         for (String line : lines) {
-            if (indent.isEmpty() || !line.startsWith(indent)) {
-                line = line.trim();
-                if (line.startsWith("*")) {
-                    // assume it's a comment line
-                    // TODO: verify this is always true
-                    line = new StringBuilder(indent).append(' ').append(line).toString();
-                }
-                else if (!"".equals(line)) {
-                    line = new StringBuilder(indent).append(line).toString();
-                }
-            }
-            sb.append(line);
-            if (!line.endsWith("\n")) {
-                sb.append('\n');    
-            }
+            sb.append(indent).append(line).append('\n');
         }
-        sb.deleteCharAt(sb.length() - 1);   // delete the last \n
-        return sb.toString();
+        return trimEnd(sb);
     }
     
     /**
@@ -3507,7 +3632,21 @@ Formatting methods.
     }
     
     private String indentRBrace(String s) {
-        s = s.trim();
+        if (s.indexOf('}') > -1) {
+            StringBuilder sb = new StringBuilder();    
+            for ( int i = 0; i < tabCount - 1; i++ ) {
+                sb.append( tab );
+            }
+            s = s.trim();
+            sb.append(s);                                 
+            return sb.toString();
+        }
+        return s;   // shouldn't happen
+    }
+    
+    /*
+    private String indentRBrace(String s) {
+        //s = s.trim();
         String start = s.substring(0, s.indexOf('}'));
         String rbrace = s.substring(s.indexOf('}'));
         if (!start.isEmpty()) {
@@ -3516,6 +3655,7 @@ Formatting methods.
         rbrace = indent(rbrace);
         return start + rbrace;
     }
+    */
     
     /**
      * Add blank lines to the end of the last item on the stack.  Note that all
@@ -3538,6 +3678,43 @@ Formatting methods.
         return false;
     }
     
+    private String addBlankLines(StringBuilder sb, int howMany, int whichEnd) {
+        return addBlankLines(sb.toString(), howMany, whichEnd);   
+    }
+    
+    private String addBlankLines(String s, int howMany, int whichEnd) {
+        if (s == null || s.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < howMany; i++) {
+                sb.append('\n');    
+            }
+            return sb.toString();
+        }
+
+        StringBuilder lines = new StringBuilder();
+        for (int i = 0; i < howMany; i++) {
+            lines.append('\n');    
+        }
+        
+        StringBuilder sb = new StringBuilder();
+        switch(whichEnd) {
+            case START:
+                sb.append(lines);
+                sb.append(s);
+                break;
+            case END:
+                sb.append(s);
+                sb.append(lines);
+                break;
+            case BOTH:
+                sb.append(lines);
+                sb.append(s);
+                sb.append(lines);
+                break;
+        }
+        return sb.toString();
+    }
+    
     /**
      * Remove blank lines from the ends of the given string.
      * @param s The string to remove blank lines from.
@@ -3549,25 +3726,31 @@ Formatting methods.
             return s;    
         }
         StringBuilder sb = new StringBuilder(s);
+        int index;
         switch(whichEnd) {
             case START:
-                while(sb.length() > 0 && sb.charAt(0) == '\n') {
-                    sb.deleteCharAt(0);
+                index = sb.indexOf("\n");
+                if (index > -1) {
+                    String blank = sb.substring(0, index);
+                    if (isWhitespace(blank)) {
+                        sb.delete(0, index + 1);
+                    }
                 }
                 break;
             case END:
-                while(sb.length() > 0 && sb.charAt(sb.length() - 1) == '\n') {
-                    sb.deleteCharAt(sb.length() - 1);
+                index = sb.lastIndexOf("\n");
+                if (index > -1) {
+                    String blank = sb.substring(index, sb.length());
+                    if (isWhitespace(blank)) {
+                        sb.delete(index, sb.length());   
+                    }
                 }
                 break;
             case BOTH:
             default:
-                while(sb.length() > 0 && sb.charAt(0) == '\n') {
-                    sb.deleteCharAt(0);
-                }
-                while(sb.length() > 0 && sb.charAt(sb.length() - 1) == '\n') {
-                    sb.deleteCharAt(sb.length() - 1);
-                }
+                s = removeBlankLines(s, START);
+                s = removeBlankLines(s, END);
+                sb = new StringBuilder(s);
                 break;
         }
         return sb.toString();
@@ -3729,7 +3912,7 @@ Formatting methods.
         StringBuilder sb = new StringBuilder();
 	    List<String> list = reverse(howMany);
         for (int i = 0; i < list.size(); i++) {
-            String item = list.get(i).trim();   // TODO: trim? really?
+            String item = list.get(i);
             sb.append(item);
             if (i < list.size() - 1) {
                 if ((howOften == 1 || i % howOften == 1) && !item.endsWith(separator)) {    // NOPMD
@@ -3876,6 +4059,8 @@ Formatting methods.
                             // check if this is an in-line  or trailing comment, e.g.
                             // something /star comment star/ more things or
                             // something /star comment star/\n
+                            // In the first case, there is no way to tell if the comment goes with
+                            // the preceding token or the trailing token.
                             int commentTokenIndex = commentToken.getTokenIndex();
                             boolean tokenOnLeft = true;
                             boolean tokenOnRight = true;
@@ -3904,6 +4089,12 @@ Formatting methods.
                             }
                             else {
                                 comment = formatComment(comment);   
+                            }
+                            String last = stack.peek();
+                            if (last != null && last.indexOf(comment) == -1) {
+                                last = pop();
+                                last = new StringBuilder(comment).append(last).toString();
+                                push(last);
                             }
                             break;
                         case JavaLexer.DOC_COMMENT: 
@@ -4086,51 +4277,49 @@ Formatting methods.
 	        return "";   
 	    }
 	    
+	    // TODO: the modifier might have a comment, need to deal with those
+	    
 	    // gather the modifiers into a list, then reverse the list so they are
 	    // in the right order
 	    List<String> modifiers = reverse(howMany);
+	    
+	    // check for comments, if there is one or more single line comments (//...)
+	    // pull them out and save them for later. These comments should be in front
+	    // of the modifier.
+	    // Keep inline comments (e.g. private /* words */ ) attached to the modifier
+	    // and let the sorter deal with them
+	    String lineComment = "";
+	    for (int i = 0; i < modifiers.size(); i++) {
+	        String mod = modifiers.get(i);
+	        if (mod.indexOf('\n') > -1 && mod.indexOf("//") > -1) {
+	            String[] lines = mod.split("\n");
+	            for (String line : lines) {
+	                 if (line.indexOf("//") > -1) {
+	                     lineComment += line + "\n";   
+	                 }
+	                 else {
+	                      modifiers.set(i, lines[lines.length - 1]);   
+	                 }
+	            }
+	        }
+	    }
+	    
 	    if (sortModifiers) {
 	        Collections.sort(modifiers, modifierComparator);    
 	    }
-        
+	    
         // modifiers shouldn't be on multiple lines, but comments preceding the
         // modifier may already be attached and can have multiple lines.
         // Handle the multiple lines here.
         StringBuilder sb = new StringBuilder();
+        if (!lineComment.isEmpty()) {
+            sb.append(lineComment);   
+        }
         for (String modifier : modifiers) {
             modifier = modifier.trim();
-            String[] lines = modifier.split("\n");
-            if (lines.length == 1) {
-                // something like "public "
-                sb.append(modifier).append(' ');    
-                if (modifier.startsWith("@")) {
-                    sb.append('\n');   
-                }
-            }
-            else {
-                // multiple lines are likely comment lines
-                for (int i = 0; i < lines.length; i++) {
-                    String line = lines[i].trim();
-                    sb.append(line);
-                    // annotations should be on a separate line also, but they
-                    // should have already been handled above
-                    if (i < lines.length - 1 || line.startsWith("@")) {
-                        sb.append('\n');
-                    }
-                }
-                sb.append(' ');
-            }
+            sb.append(modifier);
+            sb.append(modifier.startsWith("@") ? '\n' : ' ');
         }
-        
-        // next indent each line of the modifier
-        String indented = indent(sb.toString());
-        sb = new StringBuilder(indented);
-        if (sb.length() > 0) {
-            sb.append(' ');    
-        }
-	    if (sb.length() == 0) {
-	        indent(sb);   
-	    }
 	    return sb.toString();
 	}
 	
@@ -4145,6 +4334,7 @@ Formatting methods.
 	    // This list contains all possible modifiers in the correct order. Not all
 	    // modifiers are allowed for all constructs, but this method does not check
 	    // for illegal modifiers. The parser should flag an error in those cases.
+	    // Annotations count as modifiers, annotations go before public.
         private String modifiers = "public protected private abstract static final synchronized native sealed non-sealed strictfp transient volatile";
         
 	    public int compare(String a, String b) {
