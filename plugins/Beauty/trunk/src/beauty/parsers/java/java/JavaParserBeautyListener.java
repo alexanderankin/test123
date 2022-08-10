@@ -201,10 +201,13 @@ Parser methods follow.
 	    String name = pop().trim();
 	    String at = "";
 	    if (ctx.AT() != null) {
-	        at = pop();   
+	        at = pop().trim();   
 	    }
 	    StringBuilder annotation = new StringBuilder();
-	    annotation.append(at).append(name).append(elements).append('\n');
+	    annotation.append(at).append(name).append(elements);
+	    if (!endsWith(elements, "\n")) {
+	        annotation.append('\n');    
+	    }
 	    push(annotation);
 	}
 	
@@ -293,8 +296,12 @@ Parser methods follow.
 	    String interface_ = pop();    // interface keyword
 	    String at = pop();    // @
 	    StringBuilder sb = new StringBuilder();
-	    sb.append(at).append(interface_).append(' ').append(identifier).append(' ').append(body).append('\n');
-	    push(sb);
+	    sb.append(at).append(interface_).append(' ').append(identifier).append(' ').append(body);
+	    if (!body.endsWith("\n")) {
+	        sb.append('\n');
+	    }
+	    String anno = removeBlankLines(sb.toString(), BOTH);
+	    push(anno);
 	}
 	
 	
@@ -591,14 +598,14 @@ Parser methods follow.
 	    if (ctx.block() != null) {
 	        String block = pop();
 	        StringBuilder sb = new StringBuilder();
-	        addBlankLines(sb, blankLinesBeforeMethods, START);
+	        //addBlankLines(sb, blankLinesBeforeMethods, START);
             if (ctx.STATIC() != null) {
                 String static_ = pop();    // static keyword
                 static_ = indent(static_);
                 sb.append(static_).append(' ');
                 block = block.trim();
             }
-            block = addBlankLines(block, blankLinesAfterMethods, END);
+            //block = addBlankLines(block, blankLinesAfterMethods, END);
             sb.append(block);
             push(sb);
             return;
@@ -606,7 +613,7 @@ Parser methods follow.
 	    else {
             String memberDeclaration = pop().trim();
             StringBuilder sb = new StringBuilder();
-            addBlankLines(sb, blankLinesBeforeMethods, START);
+            //addBlankLines(sb, blankLinesBeforeMethods, START);
             String modifiers = "";
             if (ctx.modifier() != null && ctx.modifier().size() > 0) {
                 int size = ctx.modifier().size();
@@ -723,7 +730,7 @@ Parser methods follow.
 	    StringBuilder sb = new StringBuilder();
 	    int size = ctx.identifier().size();
 	    if (size == 1) {
-	        // only 1 identifier
+	        // only 1 identifier and maybe 1 typeArgument
 	        String typeArguments = "";
 	        if (ctx.typeArguments() != null && ctx.typeArguments().size() > 0) {
 	            typeArguments = pop();
@@ -733,20 +740,9 @@ Parser methods follow.
 	    }
 	    else {
             // there are at least 2 identifiers
-            List<String> parts = new ArrayList<String>();
-            for (int i = 0; i < size - 1; i++) {
-                String maybeType = stack.peek();
-                if (maybeType.startsWith("<")) {
-                    parts.add(pop());    // typeArguments
-                }
-                parts.add(pop());    // identifier
-                parts.add(pop());    // dot
-            }
-            parts.add(pop());    // first identifier
-            Collections.reverse(parts);
-            for (String part : parts) {
-                sb.append(part);
-            }
+	        size += ctx.typeArguments().size() + ctx.DOT().size();
+	        String type = reverse(size, "");
+	        sb.append(type);
 	    }
 	    push(sb);
 	}
@@ -1463,7 +1459,12 @@ Parser methods follow.
 	        }
 	        if (ctx.INSTANCEOF() != null) {
 	            // expression bop=INSTANCEOF (typeType | pattern)
+	            // 'typeType' may have annotations preceding it, and formatModifiers will
+	            // put a new line following the annotation. The next few lines bring
+	            // the 'instanceof" back to a single line expression.
 	            String typeOrPattern = pop();
+	            typeOrPattern = typeOrPattern.replace("\n", " ");
+	            typeOrPattern = typeOrPattern.replace("  ", " ");
 	            String instanceOf = pop();
 	            StringBuilder expression = new StringBuilder(pop());
 	            expression.append(' ').append(instanceOf).append(' ').append(typeOrPattern);
@@ -1961,7 +1962,7 @@ Parser methods follow.
 	    }
 	    
 	    // TODO: what? why add blank lines after the left bracket? should be the right?
-	    addBlankLines(blankLinesAfterClassDeclaration);    // added to left bracket
+	    //addBlankLines(blankLinesAfterClassDeclaration);    // added to left bracket
 	    String lb = pop();    // {
 	    
 	    StringBuilder sb = new StringBuilder();
@@ -3081,7 +3082,6 @@ Parser methods follow.
         }
         
         String ifStatement = pop().trim();
-        System.out.println("+++++ ifStatement: " + ifStatement);
         String parExpression = pop();
         String if_ = pop();  // if keyword
         
@@ -3604,8 +3604,11 @@ Parser methods follow.
             StringBuilder typeDeclaration = new StringBuilder();
             if (ctx.classOrInterfaceModifier() != null && ctx.classOrInterfaceModifier().size() > 0) {
                 int size = ctx.classOrInterfaceModifier().size();
-                String mods = formatModifiers(size).trim();
-                typeDeclaration.append(mods).append(' ');
+                String mods = formatModifiers(size);    // don't trim the modifies, it may be only an annotation, which should have a new line after it
+                typeDeclaration.append(mods);
+                if (!mods.endsWith("\n")) {
+                    typeDeclaration.append(' ');
+                }
             }
             typeDeclaration.append(declaration);
             push(typeDeclaration);
@@ -3679,7 +3682,7 @@ Parser methods follow.
 	    
 	    // handle the end part, (annotation* '[' ']')*
 	    StringBuilder endPart = new StringBuilder();
-	    if (ctx.RBRACK() != null && ctx.LBRACK() != null) {
+	    if (ctx.RBRACK() != null && ctx.LBRACK() != null && ctx.RBRACK().size() > 0 && ctx.LBRACK().size() > 0) {
 	        for (int i = 0; i < ctx.RBRACK().size(); i++) {
 	            // get the brackets
 	            endPart.insert(0, pop());    // ]
@@ -4084,19 +4087,27 @@ Formatting methods.
         switch(whichEnd) {
             case START:
                 index = sb.indexOf("\n");
-                if (index > -1) {
+                while (index > -1) {
                     String blank = sb.substring(0, index);
                     if (isWhitespace(blank)) {
                         sb.delete(0, index + 1);
+                        index = sb.indexOf("\n");
+                    }
+                    else {
+                        break;
                     }
                 }
                 break;
             case END:
                 index = sb.lastIndexOf("\n");
-                if (index > -1) {
+                while (index > -1) {
                     String blank = sb.substring(index, sb.length());
                     if (isWhitespace(blank)) {
                         sb.delete(index, sb.length());   
+                        index = sb.lastIndexOf("\n");
+                    }
+                    else {
+                        break;
                     }
                 }
                 break;
@@ -4826,7 +4837,7 @@ Formatting methods.
 	}
 	
 	/**
- 	 * Removes all excess whitespace from the end each of the lines in <code>s</code>.	
+ 	 * Removes all excess whitespace from the end of each of the lines in <code>s</code>.	
  	 */
 	private String removeExcessWhitespace(String s) {
 	    String[] lines = s.split("\n");
