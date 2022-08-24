@@ -64,7 +64,7 @@ public class JavaParserBeautyListener extends JavaParserBaseListener {
     private boolean groupImports = true;                
     private int blankLinesBetweenImportGroups = 1;      
     private int blankLinesAfterClassDeclaration = 1; 
-    private int blankLinesAfterClassBody = 2;
+    private int blankLinesAfterClassBody = 1;
     private int blankLinesBeforeMethods = 2;  
     private int blankLinesAfterMethods = 1;
     private boolean sortModifiers = true;               
@@ -136,11 +136,11 @@ public class JavaParserBeautyListener extends JavaParserBaseListener {
             ParseTree tree = javaParser.compilationUnit();
             walker.walk( listener, tree );
 
-            System.out.println("----- final output -----");
+            //System.out.println("----- final output -----");
             System.out.println(listener.getText());
-            System.out.println("------------------------");
-            long elapsed = System.currentTimeMillis() - startTime;
-            System.out.println("elapsed time: " + elapsed + " ms");
+            //System.out.println("------------------------");
+            //long elapsed = System.currentTimeMillis() - startTime;
+            //System.out.println("elapsed time: " + elapsed + " ms");
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -295,6 +295,7 @@ Parser methods follow.
 	    String identifier = pop();
 	    String interface_ = pop();    // interface keyword
 	    String at = pop();    // @
+	    at = indent(at);
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(at).append(interface_).append(' ').append(identifier).append(' ').append(body);
 	    if (!body.endsWith("\n")) {
@@ -365,7 +366,7 @@ Parser methods follow.
  	    String rp = pop();    // )
  	    String expressionList = "";
  	    if (ctx.expressionList() != null) {
- 	        expressionList = pop();
+ 	        expressionList = pop().trim();
  	    }
  	    String lp = pop();    // (
  	    StringBuilder sb = new StringBuilder();
@@ -409,8 +410,13 @@ Parser methods follow.
 	    if (ctx.expression() != null && ctx.expression().size() > 0) {
 	        size += ctx.expression().size();       
 	    }
-	    String rest = reverse(size, "");
-	    push(rest);
+	    
+	    List<String>parts = reverse(size);
+	    StringBuilder sb = new StringBuilder();
+	    for (String part : parts) {
+	        sb.append(part.trim());    
+	    }
+	    push(sb);
 	}
 	
 	
@@ -429,17 +435,55 @@ Parser methods follow.
 	    String variableInitializer = reverse(size, " ", 2);
 	    String lb = pop().trim();    // {
 	    
-	    String[] lines = variableInitializer.toString().split("\n");
+	    String[] lines = variableInitializer.split("\n");
 	    if (lines.length > 1) {
+	        // if it's multiple lines, just indent them, don't wrap because the lines
+	        // are probably already arranged 
 	        StringBuilder indented = new StringBuilder();
 	        ++tabCount;
 	        for (String line : lines) {
-	            indented.append(indent(line));
+	            indented.append(indent(line)).append('\n');
 	        }
 	        --tabCount;
 	        indented.insert(0, '\n');
 	        variableInitializer = indented.toString();
+	        rb = indent(rb);
 	    }
+	    else {
+	        // check line length, if over 120, split the line
+	        // TODO: make wrap length a setting
+	        if (variableInitializer.length() > 120) {
+	            StringBuilder sb = new StringBuilder();
+	            String[] parts = variableInitializer.split("[,]");
+	            StringBuilder line = new StringBuilder("\n");
+	            int lineCount = 0;
+	            for (int i = 0; i < parts.length; i++) {
+	                String part = parts[i].trim();
+	                if (!part.isEmpty()) {
+	                    line.append(part);
+                        line.append(", ");
+	                }
+	                if (line.length() >= 120) {
+	                    String l = line.toString();
+                        l = indent(l); 
+                        l = indentAgain(l);
+                        sb.append(l);    
+                        ++lineCount;
+                        line.delete(0, line.length());
+	                }
+	            }
+	            // last line
+	            String l = line.toString();
+	            if (l.endsWith(", ")) {
+	                l = l.substring(0, l.length() - 2);    
+	            }
+	            l = indent(l);
+	            l = indentAgain(l);
+	            sb.append(l);
+	            variableInitializer = sb.toString();
+	            rb = indent(rb);
+	        }
+ 	    }
 	    
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(lb).append(variableInitializer).append(rb);
@@ -464,6 +508,7 @@ Parser methods follow.
 	    if (ctx.blockStatement() != null && ctx.blockStatement().size() > 0) {
 	        int size = ctx.blockStatement().size();
 	        blockStatements = reverse(size, "");
+	        blockStatements = removeBlankLines(blockStatements, BOTH);
 	    }
 	    String lb = pop().trim();
 	    lb = indent(lb);    // need to indent in the case of a stand-alone block
@@ -473,7 +518,9 @@ Parser methods follow.
 	    // TODO: broken brackets
 	    sb.append(lb);
 	    if (!blockStatements.isEmpty()) {
-	        sb.append('\n'); 
+	        if (!lb.endsWith("\n") && !blockStatements.startsWith("\n")) {
+	            sb.append('\n'); 
+	        }
 	        sb.append(blockStatements);
 	        if (!blockStatements.endsWith("\n")) {
 	            sb.append('\n');    
@@ -598,20 +645,18 @@ Parser methods follow.
 	    if (ctx.block() != null) {
 	        String block = pop();
 	        StringBuilder sb = new StringBuilder();
-	        //addBlankLines(sb, blankLinesBeforeMethods, START);
             if (ctx.STATIC() != null) {
                 String static_ = pop();    // static keyword
                 static_ = indent(static_);
                 sb.append(static_).append(' ');
                 block = block.trim();
             }
-            //block = addBlankLines(block, blankLinesAfterMethods, END);
             sb.append(block);
             push(sb);
             return;
 	    }
 	    else {
-            String memberDeclaration = pop().trim();
+            String memberDeclaration = pop();
             StringBuilder sb = new StringBuilder();
             //addBlankLines(sb, blankLinesBeforeMethods, START);
             String modifiers = "";
@@ -622,16 +667,12 @@ Parser methods follow.
             if (!modifiers.isEmpty()) {
                 boolean hasNewLine = modifiers.endsWith("\n");
                 modifiers = indent(modifiers);
-                if (hasNewLine) {
-                    sb.append(modifiers).append('\n').append(indent(memberDeclaration));    
-                }
-                else {
-                    sb.append(modifiers).append(' ').append(memberDeclaration);
-                }
+                sb.append(modifiers);
+                sb.append(hasNewLine ? '\n' : ' ');
+                sb.append(memberDeclaration.trim());
             }
             else {
-                String indent = getIndent();
-                sb.append(indent).append(memberDeclaration);
+                sb.append(memberDeclaration);
             }
             push(sb);
 	    }
@@ -797,8 +838,8 @@ Parser methods follow.
         else {	    
             String typeDeclarations = "";
             if (ctx.typeDeclaration() != null) {
-                typeDeclarations = reverse(ctx.typeDeclaration().size(), "\n\n");
-                typeDeclarations = removeBlankLines(typeDeclarations, BOTH) + '\n';
+                typeDeclarations = reverse(ctx.typeDeclaration().size(), "\n");
+                typeDeclarations = removeBlankLines(typeDeclarations, BOTH);
                 typeDeclarations = removeExcessWhitespace(typeDeclarations);
             }
             
@@ -876,8 +917,9 @@ Parser methods follow.
 	    String identifier = pop().trim();
 	    identifier = indent(identifier);
 	    StringBuilder sb = new StringBuilder();
-	    sb.append(identifier).append(formalParameters).append(' ').append(throwsList).append(block).append('\n');
-	    push(sb);
+	    sb.append(identifier).append(formalParameters).append(' ').append(throwsList).append(block);
+	    String constructor = addBlankLines(sb, blankLinesAfterMethods, END);
+	    push(constructor);
 	}
 	
 	/**
@@ -1045,7 +1087,7 @@ Parser methods follow.
      *     ;
      */
 	@Override public void exitEnhancedForControl(EnhancedForControlContext ctx) { 
-	    String expression = pop();
+	    String expression = pop().trim();
 	    String colon = pop();    // :
 	    String variableDeclaratorId = pop();
 	    String typeOrVar = pop();
@@ -1069,7 +1111,12 @@ Parser methods follow.
 	    String classBodyDeclaration = "";
 	    if (ctx.classBodyDeclaration() != null) {
 	        int size = ctx.classBodyDeclaration().size();
-            classBodyDeclaration = reverse(size, "\n");
+	        StringBuilder sb = new StringBuilder();
+	        List<String> parts = reverse(size);
+	        for (String part : parts) {
+	            sb.append(part).append('\n');    
+	        }
+	        classBodyDeclaration = sb.toString();
 	    }
 	    String semi = pop().trim();    // ;
 	    StringBuilder sb = new StringBuilder();
@@ -1179,19 +1226,28 @@ Parser methods follow.
 	    enum_ = indent(enum_);
 	    
 	    StringBuilder sb = new StringBuilder();
-	    sb.append(enum_).append(' ').append(identifier).append(' ').append(implements_).append(lb).append('\n');
+	    sb.append(enum_).append(' ').append(identifier).append(' ').append(implements_).append(lb);
+	    if (!lb.endsWith("\n")) {
+	        sb.append('\n');
+	    }
 	    if (!enumConstants.isEmpty() || !comma.isEmpty() || !enumBodyDeclarations.isEmpty()) {
+	        enumConstants = removeBlankLines(enumConstants, START);
             sb.append(enumConstants);
             if (!comma.isEmpty()) {
-                sb.append(comma).append(' ');
+                sb.append(comma);
             }
             if (enumBodyDeclarations.trim().length() > 1) {
                 enumBodyDeclarations = trimFront(enumBodyDeclarations);
             }
             sb.append(enumBodyDeclarations);
 	    }
+	    rb = removeBlankLines(rb, START);
 	    rb = indent(rb);
-	    sb.append(rb).append('\n');
+	    
+	    sb.append(rb);
+	    if (!rb.endsWith("\n")) {
+	        sb.append('\n');
+	    }
 	    push(sb);
 	}
 	
@@ -1417,7 +1473,7 @@ Parser methods follow.
 	        }
 	        if (ctx.typeType() != null && ctx.RPAREN() != null && ctx.LPAREN() != null) {
 	            // '(' annotation* typeType ('&' typeType)* ')' expression
-	            String expression = pop();
+	            String expression = pop().trim();
 	            String rp = pop();    // )
 	            String typeTypes = "";
 	            if (ctx.typeType().size() > 1) {
@@ -1452,8 +1508,7 @@ Parser methods follow.
 	            if (typeTypes.length() > 0) {
 	                sb.append(' ').append(typeTypes);   
 	            }
-	            sb.append(rp);
-	            sb.append(expression);
+	            sb.append(rp).append(' ').append(expression);
 	            push(sb);
 	            return;
 	        }
@@ -1504,7 +1559,7 @@ Parser methods follow.
 	        if (ctx.RBRACK() != null) {
 	            // expression '[' expression ']'
 	            String rb = pop();    // ]
-	            String expression = pop();
+	            String expression = pop().trim();
 	            String lb = pop();    // [
 	            StringBuilder sb = new StringBuilder(pop());
 	            sb.append(lb).append(expression).append(rb);
@@ -1797,8 +1852,8 @@ Parser methods follow.
  	*     ;
  	*/
 	@Override public void exitGenericMethodDeclaration(GenericMethodDeclarationContext ctx) { 
-	    String method = pop();
-	    String typeParameters = pop();
+	    String method = pop().trim();
+	    String typeParameters = pop().trim();
 	    typeParameters = indent(typeParameters);
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(typeParameters).append(' ').append(method);
@@ -1953,7 +2008,7 @@ Parser methods follow.
  	*/
 	@Override public void exitInterfaceBody(InterfaceBodyContext ctx) { 
 	    --tabCount;
-	    String rb = pop();     // }
+	    String rb = pop().trim();     // }
 	    
 	    String body = "";
 	    if (ctx.interfaceBodyDeclaration() != null && ctx.interfaceBodyDeclaration().size() > 0) {
@@ -1961,14 +2016,10 @@ Parser methods follow.
 	        body = removeBlankLines(body, BOTH);
 	    }
 	    
-	    // TODO: what? why add blank lines after the left bracket? should be the right?
-	    //addBlankLines(blankLinesAfterClassDeclaration);    // added to left bracket
-	    String lb = pop();    // {
-	    
+	    String lb = pop().trim();    // {
+	    lb += '\n';
+        	    
 	    StringBuilder sb = new StringBuilder();
-	    if (brokenBracket) {
-	        sb.append('\n');    
-	    }
         sb.append(lb);
 	    sb.append(body);
 	    
@@ -2036,7 +2087,7 @@ Parser methods follow.
 	        annotations = reverse(size, " ");
 	    }
 	    StringBuilder sb = new StringBuilder();
-	    sb.append(annotations).append(typeTypeOrVoid).append(' ').append(identifier).append(' ').append(formalParameters).append(brackets).append(qualifiedNameList).append(methodBody);
+	    sb.append(annotations).append(typeTypeOrVoid).append(' ').append(identifier).append(formalParameters).append(brackets).append(qualifiedNameList).append(methodBody);
 	    push(sb);
 	}
 	
@@ -2850,6 +2901,7 @@ Parser methods follow.
 	    String typeParameters = ctx.typeParameters() == null ? " " : pop();
 	    String identifier = pop();
 	    String record_ = pop();    // record keyword
+	    record_ = indent(record_);
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(record_).append(' ').append(identifier).append(typeParameters).append(recordHeader).append(impl).append(recordBody);
 	    push(sb);
@@ -3193,10 +3245,17 @@ Parser methods follow.
                 finallyBlock = pop();   
             }
             String block = pop().trim();
-            String try_ = pop();  // try keyword
+            String try_ = pop().trim();  // try keyword
             try_ = indent(try_);
             StringBuilder sb = new StringBuilder();
-            sb.append(try_).append(' ').append(block).append('\n').append(catchClause).append('\n').append(finallyBlock);
+            sb.append(try_).append(' ').append(block);
+            if (!catchClause.isEmpty()) {
+                sb.append('\n').append(catchClause);
+            }
+            if (!finallyBlock.isEmpty()) {
+                finallyBlock = removeBlankLines(finallyBlock, BOTH);
+                sb.append('\n').append(finallyBlock);
+            }
             push(sb);
         }
     }
@@ -3815,8 +3874,11 @@ Parser methods follow.
 	}
 	
 	@Override public void visitErrorNode(ErrorNode node) { }
+	
+	// TODO: should I trim every single terminalText? I do a lot of trimming, so
+	// I'm giving it a shot.
 	@Override public void visitTerminal(TerminalNode node) { 
-        String terminalText = node.getText();
+        String terminalText = node.getText().trim();
         push(terminalText);
         processComments(node);
         processWhitespace(node);
@@ -4406,9 +4468,10 @@ Formatting methods.
                     String current = pop();
                     String previous = stack.peek();
                     push(current);
-                    if (previous != null && previous.indexOf(comment) > -1 && previous.indexOf(comment.trim()) > -1) {
-                        // already have this comment added as an end of line comment
-                        // for the previous token
+                    if (previous != null && previous.indexOf(comment) > -1 && previous.trim().endsWith(comment.trim())) { 
+                        // already have this comment added as an end of line comment to the right of the previous token.
+                        // It's unlikely there would be two comments in a row with the exact same comment. If that were
+                        // to actually happen, the second one will be dropped.
                         continue;        
                     }
                     switch(commentToken.getType()) {
