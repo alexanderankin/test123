@@ -248,7 +248,7 @@ Parser methods follow.
 	}
 	
  	@Override public void enterAnnotationTypeBody(AnnotationTypeBodyContext ctx) {
- 	    ++tabCount;    
+ 	    ++tabCount;  
  	}
  	
  	
@@ -542,13 +542,12 @@ Parser methods follow.
  	*     ;
  	*/
 	@Override public void exitBlockStatement(BlockStatementContext ctx) {
-	    if (ctx.SEMI() != null) {
+	    if (ctx.SEMI() != null && ctx.localVariableDeclaration() != null) {
 	        String semi = pop().trim();    
 	        String localVariableDeclaration = pop();
 	        StringBuilder sb = new StringBuilder();
             sb.append(localVariableDeclaration).append(semi).append('\n');
-            String decl = indent(sb.toString()) + '\n';
-	        push(decl);
+	        push(sb);
 	    }
 	    else {
 	        String stmt = pop();
@@ -669,7 +668,7 @@ Parser methods follow.
                 modifiers = indent(modifiers);
                 sb.append(modifiers);
                 sb.append(hasNewLine ? '\n' : ' ');
-                sb.append(memberDeclaration.trim());
+                sb.append(trimFront(memberDeclaration));
             }
             else {
                 sb.append(memberDeclaration);
@@ -1605,9 +1604,8 @@ Parser methods follow.
                 }
             }
 
-            String expression1 = pop();
+            String expression1 = pop().trim();
             expression1 = removeBlankLines(expression1, BOTH);
-            expression1 = indent(expression1);
             StringBuilder sb = new StringBuilder();
             sb.append(expression1);
             sb.append(padOperator(bop));
@@ -1871,22 +1869,23 @@ Parser methods follow.
 	@Override public void exitGuardedPattern(GuardedPatternContext ctx) { 
 	    if (ctx.RPAREN() != null) {
 	        // first choice
-	        String rp = pop();    // )
-	        String guardedPattern = pop();
-	        String lp = pop();    // (
+	        String rp = pop().trim();    // )
+	        String guardedPattern = pop().trim();
+	        String lp = pop().trim();    // (
 	        StringBuilder sb = new StringBuilder();
-	        sb.append(lp).append(guardedPattern).append(rp);
+	        sb.append(padParen(lp)).append(guardedPattern).append(padParen(rp));
 	        push(sb);
 	    }
 	    else if (ctx.typeType() != null) {
 	        // second choice 
 	        StringBuilder expression = new StringBuilder();
 	        if (ctx.expression() != null) {
+	            // TODO: why aren't I using reverse here?
 	            int size = ctx.expression().size();
 	            List<String> parts = new ArrayList<String>();
 	            for (int i = 0; i < size; i++) {
-	                parts.add(pop());    // expression
-	                parts.add(padOperator(pop()));    // &&
+	                parts.add(pop().trim());    // expression
+	                parts.add(padOperator(pop().trim()));    // &&
 	            }
 	            Collections.reverse(parts);
 	            for (String part : parts) {
@@ -1911,9 +1910,9 @@ Parser methods follow.
 	    }
 	    else {
 	        // third choice
-	        String expression = pop();
-	        String amps = pop();    // &&
-	        String guardedPattern = pop();
+	        String expression = pop().trim();
+	        String amps = pop().trim();    // &&
+	        String guardedPattern = pop().trim();
 	        StringBuilder sb = new StringBuilder();
 	        sb.append(guardedPattern).append(padOperator(amps)).append(expression);
 	        push(sb);
@@ -2307,7 +2306,7 @@ Parser methods follow.
  	*       (classDeclaration | interfaceDeclaration | recordDeclaration)
  	*     | ';'
  	*     ;
- 	* This is idential to typeDeclaration
+ 	* This is identical to typeDeclaration
  	*/
 	@Override public void exitLocalTypeDeclaration(LocalTypeDeclarationContext ctx) { 
 	    if (ctx.SEMI() != null) {
@@ -2318,9 +2317,10 @@ Parser methods follow.
 	    }
 	    String declaration = pop();
 	    String modifiers = "";
-	    if (ctx.classOrInterfaceModifier() != null) {
+	    if (ctx.classOrInterfaceModifier() != null && ctx.classOrInterfaceModifier().size() > 0) {
 	        int size = ctx.classOrInterfaceModifier().size();
 	        modifiers = formatModifiers(size).trim();
+	        declaration = declaration.trim();
 	    }
 	    modifiers = indent(modifiers);
 	    StringBuilder sb = new StringBuilder();
@@ -2341,27 +2341,31 @@ Parser methods follow.
             String equals = padOperator(pop());
             String identifier = pop();
             String var_ = pop();    // var keyword
+            var_ = indent(var_);
             type.append(var_).append(' ').append(identifier).append(equals).append(expression);
         }
         else {
             String variableDecls = pop().trim();
             String typeType = pop();
+            typeType = indent(typeType);
             type.append(typeType).append(' ').append(variableDecls);
         }
         
         String modifiers = "";
-        if (ctx.variableModifier() != null) {
+        String decl = type.toString();
+        if (ctx.variableModifier() != null && ctx.variableModifier().size() > 0) {
             int size = ctx.variableModifier().size();
             modifiers = formatModifiers(size);
+            modifiers = indent(modifiers);
+            decl = trimFront(decl);
         }
-        modifiers = indent(modifiers);
         
         StringBuilder sb = new StringBuilder();
         sb.append(modifiers);
         if (!modifiers.isEmpty()) {
             sb.append(' ');    
         }
-        sb.append(type);
+        sb.append(decl);
         push(sb);
     }
 	
@@ -2851,7 +2855,7 @@ Parser methods follow.
         String classBodyDeclaration = "";
 	    if (ctx.classBodyDeclaration() != null) {
 	        int size = ctx.classBodyDeclaration().size();
-	        classBodyDeclaration = reverse(size, " ");
+	        classBodyDeclaration = reverse(size, "");
 	    }
 	    String lb = pop();    // {
 	    StringBuilder sb = new StringBuilder();
@@ -3026,8 +3030,13 @@ Parser methods follow.
 	}
 	
     @Override public void enterStatement(StatementContext ctx) {
-        if (ctx.SWITCH() != null || ctx.switchExpression() != null) {
-            ++tabCount;
+        if (ctx.switchExpression() != null) {
+            // do not increment the tabCount here. Note that ctx.SWITCH will not
+            // be null in this case
+            return;
+        }
+        else if (ctx.SWITCH() != null) {
+            ++tabCount;   
         }
     }
 	
@@ -3078,7 +3087,6 @@ Parser methods follow.
             formatSwitch(ctx);
         }
         else if (ctx.switchExpression() != null) {
-            --tabCount;
             formatSwitchExpression(ctx);
         }
         else if (ctx.SYNCHRONIZED() != null) {
@@ -3123,14 +3131,23 @@ Parser methods follow.
     
     private void formatIf(StatementContext ctx) {
         // IF parExpression statement (ELSE statement)?
-        // TODO: require brackets
         StringBuilder elseStatement = new StringBuilder();
         if (ctx.ELSE() != null) {
             String es = pop().trim();
-            String else_ = indent(pop());  // else keyword
-            elseStatement.append('\n');
+            String else_ = indent(pop().trim());  // else keyword
+            //elseStatement.append('\n');
             elseStatement.append(else_).append(' ');
-            elseStatement.append(es);
+            
+            // require brackets unless it's an "else if" statement
+            if (!es.startsWith("{") && !es.startsWith("if")) {
+                ++tabCount;
+                elseStatement.append("{\n").append(indent(es)).append('\n');
+                --tabCount;
+                elseStatement.append(indent("}")).append('\n');
+            }
+            else {
+                elseStatement.append(es);
+            }
         }
         
         String ifStatement = pop().trim();
@@ -3139,7 +3156,19 @@ Parser methods follow.
         
         StringBuilder sb = new StringBuilder();
         sb.append(indent(if_)).append(' ').append(parExpression).append(' ');
-        sb.append(ifStatement).append(elseStatement);
+        
+        // require brackets on ifStatement unless the statement is just ";"
+        if (!ifStatement.startsWith("{") && !ifStatement.equals(";")) {
+            ++tabCount;
+            sb.append("{\n").append(indent(ifStatement)).append('\n');
+            --tabCount;
+            sb.append(indent("}")).append('\n');
+        }
+        else {
+            sb.append(ifStatement).append('\n');
+        }
+        
+        sb.append(elseStatement);
         if (!endsWith(sb, "\n")) {
             sb.append('\n');   
         }
@@ -3434,15 +3463,20 @@ Parser methods follow.
 	@Override public void exitSwitchBlockStatementGroup(SwitchBlockStatementGroupContext ctx) {
 	    int size = ctx.blockStatement().size();
 	    String blockStatements = reverse(size, "");
-	    blockStatements = indentAgain(blockStatements);
 	    size = ctx.switchLabel().size();
 	    String switchLabels = reverse(size, "");
 	    
+	    if (blockStatements.trim().startsWith("{")) {
+	        // it's a block
+	        blockStatements = blockStatements.trim();
+	        switchLabels = trimEnd(switchLabels) + ' ';
+	    }
+	    else if (!switchLabels.endsWith("\n")) {
+	        switchLabels = switchLabels + '\n';      
+	    }
+
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(switchLabels);
-	    if (!switchLabels.endsWith("\n")) {
-	        sb.append('\n');       
-	    }
 	    sb.append(blockStatements);
 	    if (!blockStatements.endsWith("\n")) {
 	        sb.append('\n');       
@@ -3530,9 +3564,12 @@ Parser methods follow.
  	*/
 	@Override public void exitSwitchLabeledRule(SwitchLabeledRuleContext ctx) { 
 	    if (ctx.CASE() != null) {
-	        String switchRuleOutcome = pop().trim();
-	        String operator = pop().trim();
-	        String choice = pop().trim();
+	        String switchRuleOutcome = "";
+	        if (ctx.switchRuleOutcome() != null) {
+	            switchRuleOutcome = pop().trim();
+	        }
+	        String operator = pop().trim();    // arrow or colon
+	        String choice = pop().trim();    // expressionList, null, or guardedPattern
 	        String case_ = pop().trim();
 	        case_ = indent(case_);
 	        StringBuilder sb = new StringBuilder();
@@ -3566,6 +3603,15 @@ Parser methods follow.
                 blockStatement = reverse(size, " ");
             }
             push(blockStatement.trim());
+	    }
+	    else if (ctx.block() == null) {
+	        // no block and no blockStatements, need a placeholder on the stack,
+	        // this could happen like this:
+	        // case 1, 2:
+	        // case 3, 4:
+	        //    blah...
+	        // then case 1, 2: doesn't actually have a statement following it
+	        push("");   
 	    }
 	}
 	
