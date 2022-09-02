@@ -3,7 +3,8 @@
 <SERVICES>
     <SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="java:beauty">
         <!-- new beauty.beautifiers.JavaBeautifier(); -->
-        new beauty.beautifiers.Java8Beautifier();
+        <!-- new beauty.beautifiers.Java8Beautifier(); -->
+        new beauty.beautifiers.Java17Beautifier();
     </SERVICE>
     <SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="javacc:beauty">
         new beauty.beautifiers.JavaCCBeautifier();
@@ -22,5 +23,8 @@
     </SERVICE>
     <SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="beanshell:beauty">
         new beauty.beautifiers.BSHBeautifier();
+    </SERVICE>
+    <SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="csv:beauty">
+        new beauty.beautifiers.CSVBeautifier();
     </SERVICE>
 </SERVICES>

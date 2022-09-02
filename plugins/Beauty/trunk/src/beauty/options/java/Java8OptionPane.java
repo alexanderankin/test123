@@ -23,6 +23,7 @@ public class Java8OptionPane extends JPanel {
     private NumberTextField blankLinesAfterMethods;
     private JCheckBox sortModifiers;
     private NumberTextField collapseMultipleBlankLinesTo;
+    private NumberTextField wrapLongLinesLength;
 
     public Java8OptionPane() {
         super( new KappaLayout() );
@@ -76,6 +77,10 @@ public class Java8OptionPane extends JPanel {
         collapseMultipleBlankLinesTo = new NumberTextField( 0, 100 );
         collapseMultipleBlankLinesTo.setValue( jEdit.getIntegerProperty( "beauty.java8.collapseMultipleBlankLinesTo", 2 ) );
 
+        JLabel wrapLongLinesLengthLabel = new JLabel( jEdit.getProperty( "beauty.java8.Wrap_Long_Line_Length", "Wrap Long Line Length" ) );
+        wrapLongLinesLength = new NumberTextField( 0, 240 );
+        wrapLongLinesLength.setValue( jEdit.getIntegerProperty( "beauty.java8.wrapLongLineLength", 120 ) );
+
         add( "0, 0, 1, 1, W, w, 3", description );
         add( "0, 1, 1, 1, W, w, 3", blankLinesBeforePackageLabel );
         add( "1, 1, 1, 1, W, w, 3", blankLinesBeforePackage );
@@ -98,6 +103,8 @@ public class Java8OptionPane extends JPanel {
         add( "0, 11,1, 1, W, w, 3", sortModifiers );
         add( "0, 12,1, 1, W, w, 3", collapseMultipleBlankLinesToLabel );
         add( "1, 12,1, 1, W, w, 3", collapseMultipleBlankLinesTo );
+        add( "0, 13,1, 1, W, w, 3", wrapLongLinesLengthLabel );
+        add( "1, 13,1, 1, W, w, 3", wrapLongLinesLength );
     }
 
     public void _save() {
@@ -113,5 +120,6 @@ public class Java8OptionPane extends JPanel {
         jEdit.setIntegerProperty( "beauty.java8.blankLinesAfterMethods", blankLinesAfterMethods.getValue() );
         jEdit.setBooleanProperty( "beauty.java8.sortModifiers", sortModifiers.isSelected() );
         jEdit.setIntegerProperty( "beauty.java8.collapseMultipleBlankLinesTo", collapseMultipleBlankLinesTo.getValue() );
+        jEdit.setIntegerProperty( "beauty.java8.wrapLongLinesLength", wrapLongLinesLength.getValue());
     }
 }
