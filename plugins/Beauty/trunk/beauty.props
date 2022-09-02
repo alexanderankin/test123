@@ -6,12 +6,12 @@
 plugin.beauty.BeautyPlugin.activate=defer
 plugin.beauty.BeautyPlugin.name=Beauty
 plugin.beauty.BeautyPlugin.author=Dale Anson
-plugin.beauty.BeautyPlugin.version=1.0
+plugin.beauty.BeautyPlugin.version=1.0.01
 plugin.beauty.BeautyPlugin.docs=docs/index.html
-plugin.beauty.BeautyPlugin.depend.0=jdk 1.7
+plugin.beauty.BeautyPlugin.depend.0=jdk 1.8
 plugin.beauty.BeautyPlugin.depend.1=jedit 05.04.00.00
 plugin.beauty.BeautyPlugin.depend.2=plugin CommonControlsPlugin 1.7.4
-plugin.beauty.BeautyPlugin.depend.3=plugin antlr.AntlrPlugin 4.5.1
+plugin.beauty.BeautyPlugin.depend.3=plugin antlr.AntlrPlugin 4.10
 plugin.beauty.BeautyPlugin.usePluginHome=true
 
 plugin.beauty.BeautyPlugin.description=The Beauty plugin is a general framework for code beautifiers and provides several built-in beautifiers.
@@ -68,7 +68,8 @@ mode.jsp.beauty.beautifier=jsp
 mode.java.beauty.beautifier=java
 mode.java.beauty.beautifier=java8
 mode.javacc.beauty.beautifier=javacc
-
+mode.csv.beauty.beautifier=csv
+mode.json.beauty.beautifier=json
 
 # Menus
 plugin.beauty.BeautyPlugin.menu=make_it_pretty

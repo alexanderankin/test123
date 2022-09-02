@@ -80,6 +80,7 @@ public class JavaParserBeautyListener extends JavaParserBaseListener {
 	private final int CLASS = 6;
 	private final int ENUM = 7;
 	private final int RECORD = 8;
+	private final int CONST = 9;
     
     /**
      * @param initialSize Initial size of the output buffer.
@@ -523,8 +524,13 @@ Parser methods follow.
 	    
 	    // assemble the parts
 	    StringBuilder sb = new StringBuilder();
-	    // TODO: broken brackets
-	    sb.append(lb);
+	    if (brokenBracket) {
+	        sb.append('\n');
+	        sb.append(indent(lb));
+	    }
+	    else {
+	        sb.append(lb);
+	    }
 	    if (!blockStatements.isEmpty()) {
 	        if (!lb.endsWith("\n") && !blockStatements.startsWith("\n")) {
 	            sb.append('\n'); 
@@ -623,11 +629,14 @@ Parser methods follow.
 	    String lbrace = pop().trim();
 
 	    StringBuilder sb = new StringBuilder();
-	    // TODO: fix this
-        //if (brokenBracket) {  
-        //    sb.append('\n');    
-        //}
-        sb.append(lbrace).append('\n');
+        if (brokenBracket) {  
+            sb.append('\n');
+            sb.append(indent(lbrace));
+        }
+        else {
+            sb.append(lbrace);    
+        }
+        sb.append('\n');
         if (!classBodyDecl.isEmpty()) {  
             sb.append(classBodyDecl);
             if (!classBodyDecl.endsWith("\n")) {
@@ -687,8 +696,7 @@ Parser methods follow.
             }
             
             // handle blank lines here, check the memberDeclaration for what it is (field, method, etc)
-            // and apply the blank line rules accordingly. Remove adding blank lines in the individual member
-            // exit methods.
+            // and apply the blank line rules accordingly. 
             String decl = sb.toString();
             decl = removeBlankLines(decl, BOTH);
             MemberDeclarationContext mdc = ctx.memberDeclaration();
@@ -1811,7 +1819,7 @@ Parser methods follow.
 	                sb.append(' ');    
 	            }
 	        }
-	        sb.append(lastFormalParameter);
+	        sb.append(comma).append(' ').append(lastFormalParameter);
 	        push(sb);
 	    }
 	}
@@ -1920,7 +1928,6 @@ Parser methods follow.
 	        // second choice 
 	        StringBuilder expression = new StringBuilder();
 	        if (ctx.expression() != null) {
-	            // TODO: why aren't I using reverse here?
 	            int size = ctx.expression().size();
 	            List<String> parts = new ArrayList<String>();
 	            for (int i = 0; i < size; i++) {
@@ -2083,7 +2090,6 @@ Parser methods follow.
 	        push(sb);
 	    }
 	    else {
-	        // TODO: handle blank lines here like in exitClassBody
 	        String decl = pop().trim();
 	        String modifiers = "";
             if (ctx.modifier() != null) {
@@ -2092,7 +2098,28 @@ Parser methods follow.
             }
             modifiers = modifiers.isEmpty() ? getIndent() : indent(modifiers) + ' ';
             sb.append(modifiers).append(decl).append('\n');
-            push(sb);
+            
+            // handle blank lines here, check the interfaceMemberDeclaration for what it is (field, method, etc)
+            // and apply the blank line rules accordingly. 
+            decl = sb.toString();
+            decl = removeBlankLines(decl, BOTH);
+            InterfaceMemberDeclarationContext mdc = ctx.interfaceMemberDeclaration();
+            int type = getInterfaceMemberType(mdc);
+            switch(type) {
+                case CONST:
+                    decl = addBlankLines(decl, 1, END);
+                    break;
+                case METHOD:
+                case INTERFACE:
+                case ANNOTATION:
+                case CLASS:
+                case ENUM:
+                case RECORD:
+                default:
+                    decl = addBlankLines(decl, 1, BOTH);
+                    break;        
+            }
+            push(decl);
 	    }
 	}
 	
@@ -3233,13 +3260,14 @@ Parser methods follow.
     private void formatFor(StatementContext ctx) {
         // FOR '(' forControl ')' statement 
         String statement = pop().trim();
-        // TODO: always require brackets
-        /*
+        
+        // always require brackets
         if (!statement.startsWith("{")) {
-            statement = " {\n" + tab + statement.trim();
-            statement += "\n}\n";
+            ++tabCount;
+            statement = " {\n" + indent(statement);
+            --tabCount;
+            statement += "\n}";
         }
-        */
         
         String rp = pop();  // )
         String forControl = pop();
@@ -3272,15 +3300,14 @@ Parser methods follow.
         String parExpression = pop();
         String while_ = pop();  // while keyword
         String statement = pop().trim();
-        // TODO: always require brackets
-        /*
+        
+        // always require brackets
         if (!statement.startsWith("{")) {
             ++tabCount;
             statement = " {\n" + indent(statement);
             --tabCount;
-            statement += "\n}";
+            statement =new StringBuilder(statement).append("\n}").toString();
         }
-        */
         String do_ = pop();  // do keyword
         do_ = indent(do_);
         StringBuilder sb = new StringBuilder();
@@ -3448,10 +3475,10 @@ Parser methods follow.
         }
         else {
             if (!expression.startsWith(indent)) {
-                expression = indent + expression;   
+                expression = new StringBuilder(indent).append(expression).toString();   
             }
             if (!expression.startsWith("\n")) {
-                expression = '\n' + expression;   
+                expression = new StringBuilder('\n').append(expression).toString();   
             }
         }
         StringBuilder sb = new StringBuilder();
@@ -3467,8 +3494,6 @@ Parser methods follow.
         //     statement
         // where label is outdented one tab and statement is indented with the current
         // tab count indenting
-        // TODO: if there is a comment attached to the label, should the comment also be outdented?
-        // At the moment, that is the how I'm handling it.
         
         String statement = pop();
         statement = removeBlankLines(statement, BOTH);
@@ -3980,8 +4005,6 @@ Parser methods follow.
 	
 	@Override public void visitErrorNode(ErrorNode node) { }
 	
-	// TODO: should I trim every single terminalText? I do a lot of trimming, so
-	// I'm giving it a shot.
 	@Override public void visitTerminal(TerminalNode node) { 
         String terminalText = node.getText().trim();
         push(terminalText);
@@ -4155,19 +4178,6 @@ Formatting methods.
             sb.append(tab).append(line).append('\n');
         }
         return sb.toString();
-    }
-    
-    private String indentRBrace(String s) {
-        if (s.indexOf('}') > -1) {
-            StringBuilder sb = new StringBuilder();    
-            for ( int i = 0; i < tabCount - 1; i++ ) {
-                sb.append( tab );
-            }
-            s = s.trim();
-            sb.append(s);                                 
-            return sb.toString();
-        }
-        return s;   // shouldn't happen
     }
     
     /**
@@ -4853,9 +4863,6 @@ Formatting methods.
 	        return "";   
 	    }
 	    
-	    // TODO: the modifier might have a comment, need to deal with those.
-	    // Actually, the comments appear to be handled correctly already.
-	    
 	    // gather the modifiers into a list, then reverse the list so they are
 	    // in the right order
 	    List<String> modifiers = reverse(howMany);
@@ -4951,7 +4958,7 @@ Formatting methods.
  	* removed.
  	*/
 	private static String removeComments(String s) {
-	    String nc = new String(s);
+	    String nc = new String(s);    // NOPMD
         nc = nc.replaceAll("//.*?\\n", "");
         nc = nc.replaceAll("/[*].*?[*]/", "");
         return nc.trim();
@@ -5118,9 +5125,50 @@ Formatting methods.
 	}
 	
 	/**
+ 	* interfaceMemberDeclaration
+ 	*     : constDeclaration
+ 	*     | interfaceMethodDeclaration
+ 	*     | genericInterfaceMethodDeclaration
+ 	*     | interfaceDeclaration
+ 	*     | annotationTypeDeclaration
+ 	*     | classDeclaration
+ 	*     | enumDeclaration
+ 	*     | recordDeclaration // Java17
+ 	*     ;
+ 	*/
+	private int getInterfaceMemberType(InterfaceMemberDeclarationContext ctx) {
+	    // just a bunch of 'if's here
+	    if (ctx.constDeclaration() != null) {
+	        return CONST;   
+	    }
+	    if (ctx.interfaceMethodDeclaration() != null || ctx.interfaceMethodDeclaration() != null) {
+	        return METHOD;   
+	    }
+	    if (ctx.interfaceDeclaration() != null) {
+	        return INTERFACE;    
+	    }
+	    if (ctx.annotationTypeDeclaration() != null) {
+	        return ANNOTATION;   
+	    }
+	    if (ctx.classDeclaration() != null) {
+	        return CLASS;   
+	    }
+	    if (ctx.enumDeclaration() != null) {
+	        return ENUM;    
+	    }
+	    if (ctx.recordDeclaration() != null) {
+	        return RECORD;    
+	    }
+	    return 0;
+	}
+	
+	/**
  	* Takes a long line as input, splits it into line of no more than <code>wrapLineLength</code>.	
  	*/
     private String wrapLongLine(String s) {
+        if (wrapLineLength == 0) {
+            return s;   // 0 means don't wrap    
+        }
         StringTokenizer st = new StringTokenizer(s, " ");
         StringBuilder sb = new StringBuilder(s.length());
         sb.append('\n');    // it's a long line so start it on a new line

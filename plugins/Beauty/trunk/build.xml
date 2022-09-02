@@ -1,4 +1,4 @@
-<project name="Beauty" default="dist" basedir=".">
+<project name="Beauty" default="dist" basedir="." xmlns:if="ant:if" xmlns:unless="ant:unless">
     <echo>${java.home}</echo>
     <!-- read build.props to override properties set below -->
 
@@ -40,7 +40,7 @@
       included in the finished jar file. -->
     <property name="classes.dir" location="${temp}/classes" />
 
-    <property name="target.version" value="1.7"/>
+    <property name="target.version" value="11"/>
 
 
     <condition property="can.reload.plugins">
@@ -64,7 +64,7 @@
 
          <!-- dependencies -->
          <pathelement location="${jedit.plugins.dir}/kappalayout.jar"/>
-		 <pathelement location="${jedit.plugins.dir}/antlr4-4.5-opt.jar"/>
+		 <pathelement location="${jedit.plugins.dir}/antlr-4.10.1-complete.jar"/>
         </path>
     </target>
 
@@ -261,16 +261,33 @@
 
     <target name="run"
             description="Run the application."
-            depends="setClasspath, compile">
-        <java classname="beauty.parsers.java.antlr.Java8BeautyListener" fork="true">
+            depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
             <classpath refid="classpathref"/>
             <!--
             <arg file="/home/danson/src/svnkit-1.8.5/src/src/svnkit-1.8.5/svnkit-test/src/main/java/org/tmatesoft/svn/core/test/PythonTests.java"/>
             -->
-            <arg file="/home/danson/tmp/test/ArraysAndDimsTest.java"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test files/BasicClass2.java"/>
         </java>
     </target>
 
     <target name="all" depends="javacc,dist"/>
+    
+    <target name="test" depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test files/java/before/IF_PERMITS.java"/>
+          <redirector 
+             input="/home/danson/src/jedit/plugins/Beauty/test/test files/java/before/IF_PERMITS.java" 
+             output="/home/danson/src/jedit/plugins/Beauty/test/test files/java/after/IF_PERMITS.java" />
+        </java>
+        <condition property="test01passed" value="true">
+           <filesmatch file1="/home/danson/src/jedit/plugins/Beauty/test/test files/java/after/IF_PERMITS.java" 
+                       file2="/home/danson/src/jedit/plugins/Beauty/test/test files/java/expected/IF_PERMITS.java" />
+        </condition>
+       <echo if:set="test01passed">test01 passed</echo>
+       <echo unless:set="test01passed">test01 failed - did you remember to turn off tracing?</echo>
+    
+    </target>
 
 </project>
