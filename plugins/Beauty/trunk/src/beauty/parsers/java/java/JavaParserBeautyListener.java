@@ -68,7 +68,8 @@ public class JavaParserBeautyListener extends JavaParserBaseListener {
     private int blankLinesBeforeMethods = 2;  
     private int blankLinesAfterMethods = 1;
     private boolean sortModifiers = true;               
-    private int collapseMultipleBlankLinesTo = 2; 
+    private int collapseMultipleBlankLinesTo = 1; 
+    private int wrapLineLength = 120;
     
     // declarations
 	private final int METHOD = 1;
@@ -459,8 +460,7 @@ Parser methods follow.
 	    }
 	    else {
 	        // check line length, if over 120, split the line
-	        // TODO: make wrap length a setting
-	        if (variableInitializer.length() > 120) {
+	        if (variableInitializer.length() > wrapLineLength) {
 	            StringBuilder sb = new StringBuilder();
 	            String[] parts = variableInitializer.split("[,]");
 	            StringBuilder line = new StringBuilder("\n");
@@ -673,7 +673,7 @@ Parser methods follow.
             String modifiers = "";
             if (ctx.modifier() != null && ctx.modifier().size() > 0) {
                 int size = ctx.modifier().size();
-                modifiers = formatModifiers(size, true);
+                modifiers = formatModifiers(size, false);
             }
             if (!modifiers.isEmpty()) {
                 boolean hasNewLine = modifiers.endsWith("\n");
@@ -686,30 +686,34 @@ Parser methods follow.
                 sb.append(memberDeclaration);
             }
             
-            // TODO: handle blank lines here, check the memberDeclaration for what it is (field, method, etc)
+            // handle blank lines here, check the memberDeclaration for what it is (field, method, etc)
             // and apply the blank line rules accordingly. Remove adding blank lines in the individual member
             // exit methods.
             String decl = sb.toString();
+            decl = removeBlankLines(decl, BOTH);
             MemberDeclarationContext mdc = ctx.memberDeclaration();
             int type = getMemberType(mdc);
             switch(type) {
-                case METHOD:
-                //case FIELD:
+                case FIELD:
+                    decl = addBlankLines(decl, 1, END);
+                    break;
                 case CONSTRUCTOR:
+                    decl = addBlankLines(decl, 1, START);
+                    decl = addBlankLines(decl, 1, END);
+                    break;
+                case METHOD:
                 case INTERFACE:
                 case ANNOTATION:
                 case CLASS:
                 case ENUM:
                 case RECORD:
                 default:
-                    decl = removeBlankLines(decl, BOTH);
                     decl = addBlankLines(decl, 1, BOTH);
                     break;        
             }
             push(decl);
 	    }
 	}
-	
 	
 	/**
  	* classCreatorRest
@@ -876,7 +880,7 @@ Parser methods follow.
             }
             
             String importDeclarations = "";
-            if (ctx.importDeclaration() != null) {
+            if (ctx.importDeclaration() != null && ctx.importDeclaration().size() > 0) {
                 importDeclarations = sortAndGroupImports(reverse(ctx.importDeclaration().size()));
                 importDeclarations = removeBlankLines(importDeclarations, BOTH);
                 importDeclarations = removeExcessWhitespace(importDeclarations) + getBlankLines(blankLinesAfterImports);
@@ -993,7 +997,6 @@ Parser methods follow.
 	        push(sb);
 	    }
 	    // otherwise, nothing to do as primitiveType should already be on the stack
-	    // TODO: but is it indented?
 	}
 	
 	/**
@@ -1044,14 +1047,18 @@ Parser methods follow.
  	*     ;
  	*/
 	@Override public void exitElementValue(ElementValueContext ctx) {
-	    // nothing to do here, one of the choices should already be on the stack
+	    // check for long lines, wrap if needed
+	    String element = stack.pop();
+	    if (element.length() > wrapLineLength) {
+	        element = wrapLongLine(element);            
+	    }
+	    push(element);
 	}
 	
 	/**
  	* elementValueArrayInitializer
  	*     : '{' (elementValue (',' elementValue)*)? (',')? '}'
  	*     ;
- 	* TODO: wrap long lines?
  	*/
 	@Override public void exitElementValueArrayInitializer(ElementValueArrayInitializerContext ctx) { 
 	    String rbrace = pop();
@@ -1082,6 +1089,7 @@ Parser methods follow.
  	*/
 	@Override public void exitElementValuePair(ElementValuePairContext ctx) {
 	    String value = pop();
+	    System.out.println("+++++ value>" + value + "<");
 	    String equals = pop();    // equals
 	    String identifier = pop();
 	    StringBuilder pair = new StringBuilder();
@@ -1103,7 +1111,7 @@ Parser methods follow.
         StringBuilder sb = new StringBuilder();
         for (String part : parts) {
             part = part.trim();
-            part = part.replace('\n', ' ');
+            //part = part.replace('\n', ' ');
             sb.append(part);
             if (part.equals(",")) {
                 sb.append(' ');   
@@ -1149,6 +1157,7 @@ Parser methods follow.
 	            sb.append(part).append('\n');    
 	        }
 	        classBodyDeclaration = sb.toString();
+	        classBodyDeclaration = removeBlankLines(classBodyDeclaration, BOTH);
 	    }
 	    String semi = pop().trim();    // ;
 	    StringBuilder sb = new StringBuilder();
@@ -1263,7 +1272,7 @@ Parser methods follow.
 	        sb.append('\n');
 	    }
 	    if (!enumConstants.isEmpty() || !comma.isEmpty() || !enumBodyDeclarations.isEmpty()) {
-	        enumConstants = removeBlankLines(enumConstants, START);
+	        enumConstants = removeBlankLines(enumConstants, BOTH);
             sb.append(enumConstants);
             if (!comma.isEmpty()) {
                 sb.append(comma);
@@ -1275,8 +1284,7 @@ Parser methods follow.
 	    }
 	    rb = removeBlankLines(rb, START);
 	    rb = indent(rb);
-	    
-	    sb.append(rb);
+	    sb.append('\n').append(rb);
 	    if (!rb.endsWith("\n")) {
 	        sb.append('\n');
 	    }
@@ -1679,7 +1687,6 @@ Parser methods follow.
             push(sb);
 	    }
 	    // otherwise, the first expression is already on the stack
-	    // TODO: does it need trimmed?
 	}
 	
 	
@@ -2012,7 +2019,6 @@ Parser methods follow.
 	    String classCreatorRest = pop().trim();
 	    String args = ctx.nonWildcardTypeArgumentsOrDiamond() == null ? "" : pop();
 	    String identifier = pop();
-	    // TODO: indent?
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(identifier).append(args).append(classCreatorRest);
 	    push(sb);
@@ -2077,7 +2083,7 @@ Parser methods follow.
 	        push(sb);
 	    }
 	    else {
-	        // TODO: handle blank lines here like in exitclassBody
+	        // TODO: handle blank lines here like in exitClassBody
 	        String decl = pop().trim();
 	        String modifiers = "";
             if (ctx.modifier() != null) {
@@ -2452,7 +2458,7 @@ Parser methods follow.
 	    
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(start);
-	    if (lines > 1) {
+	    if (lines > 1 && !expressionList.startsWith("\"\"\"")) {    // don't worry about text blocks
 	        sb.append(lp).append('\n');  
 	        expressionList = removeBlankLines(expressionList, BOTH);
 	        sb.append(indentAgain(expressionList));
@@ -3899,6 +3905,10 @@ Parser methods follow.
 	    String equals = "";
 	    if (ctx.variableInitializer() != null && ctx.ASSIGN() != null) {
 	        variableInitializer = pop().trim();
+	        if (variableInitializer.length() > wrapLineLength) {
+	            variableInitializer = wrapLongLine(variableInitializer);  
+	            variableInitializer = indent(variableInitializer);
+	        }
 	        equals = pop().trim();
 	    }
 	    String variableDeclId = stack.pop();
@@ -4057,6 +4067,10 @@ Formatting settings
     
     public void setCollapseMultipleBlankLinesTo(int lines) {
         collapseMultipleBlankLinesTo = lines;        
+    }
+    
+    public void setWrapLongLineLength(int length) {
+        wrapLineLength = length;
     }
     
 //}}}    
@@ -5103,7 +5117,25 @@ Formatting methods.
 	    return 0;
 	}
 	
-	
+	/**
+ 	* Takes a long line as input, splits it into line of no more than <code>wrapLineLength</code>.	
+ 	*/
+    private String wrapLongLine(String s) {
+        StringTokenizer st = new StringTokenizer(s, " ");
+        StringBuilder sb = new StringBuilder(s.length());
+        sb.append('\n');    // it's a long line so start it on a new line
+        int lineLength = 0;
+        while (st.hasMoreTokens()) {
+            String token = st.nextToken();
+            if (lineLength + token.length() > wrapLineLength) {
+                sb.append("\n");
+                lineLength = 0;
+            }
+            sb.append(token);
+            lineLength += token.length();
+        }
+        return sb.toString();
+    }	
 //}}}    
 
 }
