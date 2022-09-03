@@ -24,6 +24,7 @@ import java.util.regex.*;
  
  
  */
+
 public class JavaParserBeautyListener extends JavaParserBaseListener {
     
     // token stream, need this to capture comments
@@ -63,9 +64,8 @@ public class JavaParserBeautyListener extends JavaParserBaseListener {
     private boolean sortImports = true;                 
     private boolean groupImports = true;                
     private int blankLinesBetweenImportGroups = 1;      
-    private int blankLinesAfterClassDeclaration = 1; 
     private int blankLinesAfterClassBody = 1;
-    private int blankLinesBeforeMethods = 2;  
+    private int blankLinesBeforeMethods = 1;  
     private int blankLinesAfterMethods = 1;
     private boolean sortModifiers = true;               
     private int collapseMultipleBlankLinesTo = 1; 
@@ -123,12 +123,13 @@ public class JavaParserBeautyListener extends JavaParserBaseListener {
         System.out.println("+++++ end stack " + name + " +++++");
     }
     
+    // for testing
     public static void main (String[] args) {
         if (args == null)
             return;
         try {
             // set up the parser
-            long startTime = System.currentTimeMillis();
+            //long startTime = System.currentTimeMillis();
             java.io.FileReader input = new java.io.FileReader(args[0]);
             CharStream antlrInput = CharStreams.fromReader(input);
             JavaLexer lexer = new JavaLexer( antlrInput );
@@ -141,7 +142,7 @@ public class JavaParserBeautyListener extends JavaParserBaseListener {
             listener.setUseSoftTabs(true);
             listener.setIndentWidth(4);
             listener.setPadParens(true);
-            //listener.setBracketStyle(BROKEN);
+            listener.setBracketStyle(BROKEN);
             ParseTreeWalker walker = new ParseTreeWalker();
             ParseTree tree = javaParser.compilationUnit();
             walker.walk( listener, tree );
@@ -279,6 +280,10 @@ Parser methods follow.
  	        }
  	    }
  	    String lb = pop();
+ 	    if (bracketStyle == BROKEN) {
+ 	        StringBuilder sb = new StringBuilder().append('\n').append(indent(lb));
+ 	        lb = sb.toString();    
+ 	    }
  	    StringBuilder sb = new StringBuilder();
  	    if (!isWhitespace(body)) {
  	        sb.append(lb);
@@ -301,7 +306,10 @@ Parser methods follow.
   	*     ;
   	*/
 	@Override public void exitAnnotationTypeDeclaration(AnnotationTypeDeclarationContext ctx) { 
-	    String body = pop().trim();
+	    String body = pop();
+	    if (bracketStyle == ATTACHED) {
+	        body = body.trim();    
+	    }
 	    String identifier = pop();
 	    String interface_ = pop();    // interface keyword
 	    String at = pop();    // @
@@ -544,7 +552,7 @@ Parser methods follow.
         if (!endsWith(sb, "\n")) {
             sb.append('\n');
         }
-        sb.append(rb);
+        sb.append(rb).append('\n');
 	    push(sb);
 	}
 	
@@ -578,7 +586,13 @@ Parser methods follow.
  	*     ;
  	*/
 	@Override public void exitCatchClause(CatchClauseContext ctx) { 
-	    String block = pop().trim();
+	    String block = pop();
+	    if (bracketStyle == BROKEN) {
+	        block = new StringBuilder().append('\n').append(block).toString();    
+	    }
+	    else {
+	        block = block.trim();
+	    }
 	    String rb = pop();    // )
 	    String identifier = pop();
 	    String catchType = pop();
@@ -627,6 +641,12 @@ Parser methods follow.
 	        classBodyDecl = removeBlankLines(classBodyDecl, START);
 	    }
 	    String lbrace = pop().trim();
+	    if (bracketStyle == BROKEN) {
+	        lbrace = new StringBuilder().append('\n').append(indent(lbrace)).toString();    
+	    }
+	    else {
+	        lbrace = lbrace.trim();    
+	    }
 
 	    StringBuilder sb = new StringBuilder();
         if (brokenBracket) {  
@@ -702,19 +722,19 @@ Parser methods follow.
             MemberDeclarationContext mdc = ctx.memberDeclaration();
             int type = getMemberType(mdc);
             switch(type) {
-                case FIELD:
-                    decl = addBlankLines(decl, 1, END);
-                    break;
                 case CONSTRUCTOR:
-                    decl = addBlankLines(decl, 1, START);
-                    decl = addBlankLines(decl, 1, END);
-                    break;
                 case METHOD:
-                case INTERFACE:
+                    decl = addBlankLines(decl, blankLinesBeforeMethods, START);
+                    decl = addBlankLines(decl, blankLinesAfterMethods, END);
+                    break;
                 case ANNOTATION:
                 case CLASS:
                 case ENUM:
+                case INTERFACE:
                 case RECORD:
+                    decl = addBlankLines(decl, blankLinesAfterClassBody, END);
+                    break;
+                case FIELD:
                 default:
                     decl = addBlankLines(decl, 1, BOTH);
                     break;        
@@ -950,7 +970,13 @@ Parser methods follow.
  	*     ;
  	*/
 	@Override public void exitConstructorDeclaration(ConstructorDeclarationContext ctx) {
-	    String block = pop().trim();  
+	    String block = pop();
+	    if (bracketStyle == BROKEN) {
+	        block = new StringBuilder().append('\n').append(block).toString();    
+	    }
+	    else {
+	        block = block.trim();   
+	    }
 	    StringBuilder throwsList = new StringBuilder();
 	    if (ctx.THROWS() != null) {
 	        String qualifiedNameList = pop().trim();
@@ -1171,7 +1197,7 @@ Parser methods follow.
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(semi).append('\n');
 	    if (!isWhitespace(classBodyDeclaration)) {
-	        sb.append("\n");
+	        sb.append('\n');
 	        sb.append(classBodyDeclaration);
 	    }
 	    push(sb);
@@ -1264,6 +1290,12 @@ Parser methods follow.
 	    String comma = ctx.COMMA() == null ? "" : pop();
 	    String enumConstants = ctx.enumConstants() == null ? "" : pop();
 	    String lb = pop();    // {
+	    if (bracketStyle == BROKEN) {
+	        lb = new StringBuilder().append('\n').append(indent(lb)).toString();    
+	    }
+	    else {
+	        lb = lb.trim();    
+	    }
 	    String implements_ = "";
 	    if (ctx.IMPLEMENTS() != null && ctx.typeList() != null) {
 	        String typeList = pop(); 
@@ -1593,11 +1625,11 @@ Parser methods follow.
             else {
                 // it's one of the prefix expressions, and they are all the same
                 String expression = pop().trim();
-                String pre = pop();
-                pre = removeBlankLines(pre, BOTH);
+                String pre = pop().trim();
                 StringBuilder sb = new StringBuilder();
                 sb.append(pre).append(expression);
-                push(sb);
+                pre = indent(sb.toString());
+                push(pre);
                 return;
             }
             
@@ -1719,7 +1751,13 @@ Parser methods follow.
      *     ;
      */
 	@Override public void exitFinallyBlock(FinallyBlockContext ctx) {
-	    String block = pop().trim();
+	    String block = pop();
+	    if (bracketStyle == BROKEN) {
+	        block = new StringBuilder().append('\n').append(block).toString();    
+	    }
+	    else {
+	        block = block.trim();    
+	    }
 	    String finally_ = pop();    // finally keyword
 	    finally_ = indent(finally_);
 	    push(finally_ + ' ' + block);
@@ -2063,10 +2101,15 @@ Parser methods follow.
 	    }
 	    
 	    String lb = pop().trim();    // {
-	    lb += '\n';
+	    if (bracketStyle == BROKEN) {
+	        lb = new StringBuilder().append('\n').append(lb).append('\n').toString();    
+	    }
+	    else {
+	        lb = lb.trim();    
+	    }
         	    
 	    StringBuilder sb = new StringBuilder();
-        sb.append(lb);
+        sb.append(lb).append('\n');
 	    sb.append(body);
 	    
         trimEnd(sb);
@@ -2107,14 +2150,18 @@ Parser methods follow.
             int type = getInterfaceMemberType(mdc);
             switch(type) {
                 case CONST:
-                    decl = addBlankLines(decl, 1, END);
                     break;
                 case METHOD:
+                    decl = addBlankLines(decl, blankLinesBeforeMethods, START);
+                    decl = addBlankLines(decl, blankLinesAfterMethods, END);
+                    break;
                 case INTERFACE:
                 case ANNOTATION:
                 case CLASS:
                 case ENUM:
                 case RECORD:
+                    decl = addBlankLines(decl, blankLinesAfterClassBody, END);
+                    break;
                 default:
                     decl = addBlankLines(decl, 1, BOTH);
                     break;        
@@ -2572,9 +2619,9 @@ Parser methods follow.
 	            moduleDirectives.append(directives.get(i)).append('\n');   
 	        }
 	    }
-	    String lbrace = pop() + '\n';
+	    String lbrace = indent(pop());
 	    StringBuilder moduleBody = new StringBuilder();
-	    moduleBody.append(lbrace);
+	    moduleBody.append(lbrace).append('\n');
 	    moduleBody.append(moduleDirectives);
 	    moduleBody.append(rbrace);
 	    push(moduleBody);
@@ -2919,6 +2966,12 @@ Parser methods follow.
 	        classBodyDeclaration = removeBlankLines(classBodyDeclaration, START);
 	    }
 	    String lb = pop().trim();    // {
+	    if (bracketStyle == BROKEN) {
+	        lb = new StringBuilder().append('\n').append(indent(lb)).toString();    
+	    }
+	    else {
+	        lb = lb.trim();    
+	    }
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(lb).append('\n');
 	    if (!classBodyDeclaration.isEmpty()) {
@@ -3037,7 +3090,7 @@ Parser methods follow.
 	        else {
 	            String id = pop().trim();
 	            String type = pop().trim();
-	            middle = type + ' ' + type;
+	            middle = type + ' ' + id;
 	        }
             String modifiers = "";
             if (ctx.variableModifier() != null) {
@@ -3153,13 +3206,13 @@ Parser methods follow.
             formatIf(ctx);
         }
         else if (ctx.FOR() != null) {
-            formatFor(ctx);
+            formatFor();
         }
         else if (ctx.DO() != null && ctx.WHILE() != null) {
-            formatDo(ctx);
+            formatDo();
         }
         else if (ctx.WHILE() != null) {
-            formatWhile(ctx);
+            formatWhile();
         }
         else if (ctx.TRY() != null) {
             formatTry(ctx);
@@ -3184,7 +3237,7 @@ Parser methods follow.
             formatSemi(ctx);
         }
         else if (ctx.COLON() != null) {
-            formatColon(ctx);
+            formatColon();
         }
         // block is the only remaining choice, and it should already be on the stack
     }
@@ -3217,13 +3270,18 @@ Parser methods follow.
         if (ctx.ELSE() != null) {
             String es = pop().trim();
             String else_ = indent(pop().trim());  // else keyword
-            //elseStatement.append('\n');
             elseStatement.append(else_).append(' ');
             
             // require brackets unless it's an "else if" statement
             if (!es.startsWith("{") && !es.startsWith("if")) {
+                if (bracketStyle == BROKEN) {
+                    elseStatement.append('\n').append(indent("{")).append('\n');
+                }
+                else {
+                    elseStatement.append("{\n");
+                }
                 ++tabCount;
-                elseStatement.append("{\n").append(indent(es)).append('\n');
+                elseStatement.append(indent(es)).append('\n');
                 --tabCount;
                 elseStatement.append(indent("}")).append('\n');
             }
@@ -3241,8 +3299,14 @@ Parser methods follow.
         
         // require brackets on ifStatement unless the statement is just ";"
         if (!ifStatement.startsWith("{") && !ifStatement.equals(";")) {
+            if (bracketStyle == BROKEN) {
+                sb.append('\n').append(indent("{")).append('\n');    
+            }
+            else {
+                sb.append("{\n");
+            }
             ++tabCount;
-            sb.append("{\n").append(indent(ifStatement)).append('\n');
+            sb.append(indent(ifStatement)).append('\n');
             --tabCount;
             sb.append(indent("}")).append('\n');
         }
@@ -3251,22 +3315,30 @@ Parser methods follow.
         }
         
         sb.append(elseStatement);
-        if (!endsWith(sb, "\n")) {
+        if (!endsWith(sb, "\n") && breakElse) {
             sb.append('\n');   
         }
         push(sb);
     }
     
-    private void formatFor(StatementContext ctx) {
+    private void formatFor() {
         // FOR '(' forControl ')' statement 
         String statement = pop().trim();
         
         // always require brackets
         if (!statement.startsWith("{")) {
+            StringBuilder sb = new StringBuilder();
+            if (bracketStyle == BROKEN) {
+                sb.append('\n').append(indent("{")).append('\n');    
+            }
+            else {
+                sb.append(" {\n");
+            }
             ++tabCount;
-            statement = " {\n" + indent(statement);
+            sb.append(indent(statement)).append('\n');
             --tabCount;
-            statement += "\n}";
+            sb.append(indent("}"));
+            statement = sb.toString();     
         }
         
         String rp = pop();  // )
@@ -3283,9 +3355,30 @@ Parser methods follow.
         push(sb);
     }
     
-    private void formatWhile(StatementContext ctx) {
+    private void formatWhile() {
         // WHILE parExpression statement
         String statement = pop().trim();
+        
+        // always require brackets
+        if (!statement.startsWith("{")) {
+            StringBuilder sb = new StringBuilder();
+            if (bracketStyle == BROKEN) {
+                sb.append('\n').append(indent("{")).append('\n');
+                ++tabCount;
+                sb.append(indent(statement)).append('\n');
+                --tabCount;
+                statement = sb.toString();
+            }
+            else {
+                sb.append(" {\n");    
+                ++tabCount;
+                sb.append(indent(statement)).append('\n');
+                --tabCount;
+            }
+            sb.append(indent("}"));
+            statement = sb.toString();
+        }
+        
         String parExpression = pop();
         String while_ = pop().trim();  // while keyword
         while_ = indent(while_);
@@ -3294,19 +3387,31 @@ Parser methods follow.
         push(sb);
     }
     
-    private void formatDo(StatementContext ctx) {
+    private void formatDo() {
         // DO statement WHILE parExpression ';'
         String semi = pop();  // ;
         String parExpression = pop();
-        String while_ = pop();  // while keyword
+        String while_ = indent(pop());  // while keyword
         String statement = pop().trim();
         
         // always require brackets
         if (!statement.startsWith("{")) {
-            ++tabCount;
-            statement = " {\n" + indent(statement);
-            --tabCount;
-            statement =new StringBuilder(statement).append("\n}").toString();
+            StringBuilder sb = new StringBuilder();
+            if (bracketStyle == BROKEN) {
+                sb.append('\n').append(indent("{")).append('\n');
+                ++tabCount;
+                sb.append(indent(statement)).append('\n');
+                --tabCount;
+                statement = sb.toString();
+            }
+            else {
+                sb.append(" {\n");    
+                ++tabCount;
+                sb.append(indent(statement)).append('\n');
+                --tabCount;
+            }
+            sb.append(indent("}"));
+            statement = sb.toString();
         }
         String do_ = pop();  // do keyword
         do_ = indent(do_);
@@ -3355,7 +3460,14 @@ Parser methods follow.
             else {
                 finallyBlock = pop();   
             }
-            String block = pop().trim();
+            String block = pop();
+            if (bracketStyle == BROKEN) {
+                block = new StringBuilder().append('\n').append(block).toString();    
+            }
+            else {
+                block = block.trim();    
+            }
+            
             String try_ = pop().trim();  // try keyword
             try_ = indent(try_);
             StringBuilder sb = new StringBuilder();
@@ -3386,6 +3498,12 @@ Parser methods follow.
             switchBlockStatementGroup = reverse(size, "");  
         }
         String lp = pop();  // {
+	    if (bracketStyle == BROKEN) {
+	        lp = new StringBuilder().append('\n').append(lp).toString();    
+	    }
+	    else {
+	        lp = lp.trim();    
+	    }
         String parExpression = pop();
         String switch_ = pop().trim();  // switch keyword
         switch_ = indent(switch_);
@@ -3407,9 +3525,15 @@ Parser methods follow.
         push(sb);
     }
     
-    private void formatSynchronized(StatementContext ctx) {
+    private void formatSynchronized(StatementContext ctx) {     // NOPMD
         // SYNCHRONIZED parExpression block
-        String block = pop().trim();
+        String block = pop();
+	    if (bracketStyle == BROKEN) {
+	        block = new StringBuilder().append('\n').append(block).toString();    
+	    }
+	    else {
+	        block = block.trim();    
+	    }
         String parExpression = pop().trim();
         String synchronized_ = pop().trim();  // synchronized keyword
         synchronized_ = indent(synchronized_);
@@ -3478,7 +3602,7 @@ Parser methods follow.
                 expression = new StringBuilder(indent).append(expression).toString();   
             }
             if (!expression.startsWith("\n")) {
-                expression = new StringBuilder('\n').append(expression).toString();   
+                expression = new StringBuilder("\n").append(expression).toString();   
             }
         }
         StringBuilder sb = new StringBuilder();
@@ -3486,7 +3610,7 @@ Parser methods follow.
         push(sb);
     }
     
-    private void formatColon(StatementContext ctx) {
+    private void formatColon() {
         // This is the only statement left with a colon
         // identifierLabel=identifier ':' statement
         // This is a labeled statement, section 14.7 of JLS 17 and should be formatted like:
@@ -3552,7 +3676,7 @@ Parser methods follow.
 	        switchLabels = trimEnd(switchLabels) + ' ';
 	    }
 	    else if (!switchLabels.endsWith("\n")) {
-	        switchLabels = switchLabels + '\n';      
+	        switchLabels = switchLabels + '\n';      // NOPMD
 	    }
 
 	    StringBuilder sb = new StringBuilder();
@@ -3584,10 +3708,16 @@ Parser methods follow.
 	        int size = ctx.switchLabeledRule().size();
 	        switchLabeledRule = reverse(size, "");
 	        if (!switchLabeledRule.endsWith("\n")) {
-	            switchLabeledRule += '\n';    
+	            switchLabeledRule += '\n';    // NOPMD
 	        } 
 	    }
 	    String lb = pop();    // {
+	    if (bracketStyle == BROKEN) {
+	        lb = new StringBuilder().append('\n').append(lb).toString();    
+	    }
+	    else {
+	        lb = lb.trim();    
+	    }
 	    String parExpression = pop();
 	    String switch_ = pop();    // switch keyword
 	    switch_ = indent(switch_);
@@ -3707,7 +3837,7 @@ Parser methods follow.
 	        String typeType = "";
 	        if (ctx.typeType() != null) {
 	             typeType = pop();
-	             typeType = pop() + " " + typeType;    // extends or super
+	             typeType = pop() + " " + typeType;    // NOPMD extends or super
 	        }
 	        
 	        String q = pop().trim();    // ?
@@ -4068,10 +4198,6 @@ Formatting settings
         blankLinesBetweenImportGroups = lines;
     }
     
-    public void setBlankLinesAfterClassDeclaration(int lines) {
-        blankLinesAfterClassDeclaration = lines;
-    }
-    
     public void setBlankLinesAfterClassBody(int lines) {
         blankLinesAfterClassBody = lines;
     }
@@ -4117,20 +4243,6 @@ Formatting methods.
         StringBuilder sb = new StringBuilder();    
         for ( int i = 0; i < tabCount; i++ ) {
             sb.append( tab );
-        }
-        return sb.toString();
-    }
-    
-    /**
-     * @return The indent in front of the given string.    
-     */
-    private String getIndent(String s) {
-        
-        String t = new String(s);
-        StringBuilder sb = new StringBuilder();
-        while (t.length() > tab.length() && t.startsWith(tab)) {
-            sb.append(tab);
-            t = t.substring(tab.length());
         }
         return sb.toString();
     }
@@ -4199,27 +4311,6 @@ Formatting methods.
             sb.deleteCharAt(sb.length() - 1);   
         }
         return sb.toString();
-    }
-    
-    /**
-     * Add blank lines to the end of the last item on the stack.  Note that all
-     * blank lines are first removed then exactly <code>howMany</code> are added.
-     * @return true if blank lines were added to the last item on the stack, false
-     * if there were no items on the stack.
-     */
-    private boolean addBlankLines(int howMany) {
-        if (!stack.isEmpty()) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < howMany + 1; i++) {
-                sb.append('\n');    
-            }
-            String ending = sb.toString();
-            String last = pop();
-            last = new StringBuilder(removeBlankLines(last, END)).append(ending).toString();
-            push(last);
-            return true;
-        }
-        return false;
     }
     
     private String addBlankLines(StringBuilder sb, int howMany, int whichEnd) {
@@ -4681,7 +4772,7 @@ Formatting methods.
                         if (last != null && last.indexOf(comment) == -1) {
                             last = pop();
                             if (!comment.endsWith("\n")) {
-                                comment += '\n';
+                                comment += '\n';    // NOPMD
                             }
                             last = new StringBuilder(comment).append(last).toString();
                             push(last);
@@ -4879,7 +4970,7 @@ Formatting methods.
 	            String[] lines = mod.split("\n");
 	            for (String line : lines) {
 	                 if (line.indexOf("//") > -1) {
-	                     lineComment += line + "\n";   
+	                     lineComment = new StringBuilder(lineComment).append(line).append('\n').toString();
 	                 }
 	                 else {
 	                      modifiers.set(i, lines[lines.length - 1]);   
@@ -4903,7 +4994,7 @@ Formatting methods.
             String modifier = modifiers.get(i);
             modifier = modifier.trim();
             if (modifier.startsWith("@") && !singleLine) {
-                modifier += '\n';
+                modifier += '\n';   // NOPMD
             }
             sb.append(modifier);
             if (i < modifiers.size() - 1) {
@@ -5137,11 +5228,14 @@ Formatting methods.
  	*     ;
  	*/
 	private int getInterfaceMemberType(InterfaceMemberDeclarationContext ctx) {
+	    if (ctx == null) {
+	        return 0;    
+	    }
 	    // just a bunch of 'if's here
 	    if (ctx.constDeclaration() != null) {
 	        return CONST;   
 	    }
-	    if (ctx.interfaceMethodDeclaration() != null || ctx.interfaceMethodDeclaration() != null) {
+	    if (ctx.interfaceMethodDeclaration() != null || ctx.genericInterfaceMethodDeclaration() != null) {
 	        return METHOD;   
 	    }
 	    if (ctx.interfaceDeclaration() != null) {
@@ -5176,7 +5270,7 @@ Formatting methods.
         while (st.hasMoreTokens()) {
             String token = st.nextToken();
             if (lineLength + token.length() > wrapLineLength) {
-                sb.append("\n");
+                sb.append('\n');
                 lineLength = 0;
             }
             sb.append(token);
