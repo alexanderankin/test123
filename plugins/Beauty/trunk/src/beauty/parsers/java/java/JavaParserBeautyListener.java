@@ -14,6 +14,9 @@ import java.util.regex.*;
  
  Reference Java Language Specification 17 Edition, https://docs.oracle.com/javase/specs/jls/se17/html/index.html
  
+ This should work for Java 18 also, since the only change is confirming a preview feature in Java 17, 
+ pattern matching for switch expressions and statements.
+ 
  Notes about indenting:
  
  Parent sets the indent level on entry
@@ -21,7 +24,6 @@ import java.util.regex.*;
  Parent adds the child
  
  Standard parent/child tree hierarchy. The leaf child will be a one liner.
- 
  
  */
 
@@ -296,7 +298,7 @@ Parser methods follow.
  	        sb.append(rb).append('\n');
  	    }
  	    else {
- 	        sb.append(lb.trim()).append('\n').append(indent(rb.trim())).append('\n');        
+ 	        sb.append(lb).append('\n').append(indent(rb)).append('\n');        
  	    }
  	    push(sb);
  	}
@@ -309,8 +311,13 @@ Parser methods follow.
 	@Override public void exitAnnotationTypeDeclaration(AnnotationTypeDeclarationContext ctx) { 
 	    String body = pop();
 	    if (bracketStyle == ATTACHED) {
-	        body = body.trim();    
+	        body = body.trim();   
 	    }
+	    body = removeBlankLines(body, BOTH);
+	    if (bracketStyle == BROKEN) {
+	        body = "\n" + body;   
+	    }
+	    
 	    String identifier = pop();
 	    String interface_ = pop();    // interface keyword
 	    String at = pop();    // @
@@ -707,8 +714,12 @@ Parser methods follow.
                 boolean hasNewLine = modifiers.endsWith("\n");
                 modifiers = indent(modifiers);
                 sb.append(modifiers);
-                sb.append(hasNewLine ? '\n' : ' ');
-                sb.append(trimFront(memberDeclaration));
+                if (hasNewLine) {
+                    sb.append('\n').append(memberDeclaration);    
+                }
+                else {
+                    sb.append(' ').append(trimFront(memberDeclaration));    
+                }
             }
             else {
                 sb.append(memberDeclaration);
@@ -776,7 +787,13 @@ Parser methods follow.
  	*/
 	@Override public void exitClassDeclaration(ClassDeclarationContext ctx) { 
 	    String classBody = pop();
+	    if (bracketStyle == ATTACHED) {
+	        classBody = classBody.trim();   
+	    }
 	    classBody = removeBlankLines(classBody, BOTH);
+	    if (bracketStyle == BROKEN) {
+	        classBody = "\n" + classBody;   
+	    }
 	    StringBuilder permitsList = new StringBuilder();
 	    if (ctx.PERMITS() != null && ctx.typeList() != null) {
 	        String typeList = pop();
@@ -977,10 +994,7 @@ Parser methods follow.
  	*/
 	@Override public void exitConstructorDeclaration(ConstructorDeclarationContext ctx) {
 	    String block = pop();
-	    if (bracketStyle == BROKEN) {
-	        block = new StringBuilder().append('\n').append(block).toString();    
-	    }
-	    else {
+	    if (bracketStyle == ATTACHED) {
 	        block = block.trim();   
 	    }
 	    StringBuilder throwsList = new StringBuilder();
@@ -2574,7 +2588,15 @@ Parser methods follow.
  	*     ;
  	*/
 	@Override public void exitMethodDeclaration(MethodDeclarationContext ctx) { 
-	    String methodBody = pop().trim();
+	    String methodBody = pop();
+	    if (bracketStyle == ATTACHED) {
+	        methodBody = methodBody.trim();   
+	    }
+	    methodBody = removeBlankLines(methodBody, BOTH);
+	    if (bracketStyle == BROKEN) {
+	        methodBody = "\n" + methodBody;   
+	    }
+	    
 	    String throwsList = "";
 	    if (ctx.THROWS() != null) {
 	        String qualifiedNameList = pop();
