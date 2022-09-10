@@ -532,7 +532,7 @@ Parser methods follow.
 	    String blockStatements = "";
 	    if (ctx.blockStatement() != null && ctx.blockStatement().size() > 0) {
 	        int size = ctx.blockStatement().size();
-	        blockStatements = reverse(size, "");
+	        blockStatements = reverse(size, "\n");
 	        blockStatements = removeBlankLines(blockStatements, BOTH);
 	    }
 	    String lb = pop().trim();
@@ -698,7 +698,7 @@ Parser methods follow.
                 sb.append(static_).append(' ');
                 block = block.trim();
             }
-            sb.append(block);
+            sb.append(block).append('\n');
             push(sb);
             return;
 	    }
@@ -1573,41 +1573,41 @@ Parser methods follow.
 	        if (ctx.typeType() != null && ctx.RPAREN() != null && ctx.LPAREN() != null) {
 	            // '(' annotation* typeType ('&' typeType)* ')' expression
 	            String expression = pop().trim();
-	            String rp = pop();    // )
+	            String rp = pop().trim();    // )
+
+	            // there will be at least one typeType
 	            String typeTypes = "";
-	            if (ctx.typeType().size() > 1) {
-	                List<String> parts = new ArrayList<String>();
-	                for (int i = 0; i < ctx.typeType().size() - 1; i++) {
-	                    parts.add(pop());    // typeType
-	                    parts.add(pop());    // &
-	                }
-	                Collections.reverse(parts);
-	                StringBuilder sb = new StringBuilder();
-	                for (String part : parts) {
-	                    sb.append(part).append(' ');   
-	                }
-	                typeTypes = sb.toString();
-	            }
-	            String typeType = pop();
+                int size = ctx.typeType().size() + ctx.BITAND().size();
+                List<String> parts = reverse(size);
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < parts.size(); i++) {
+                    String part = parts.get(i).trim();
+                    sb.append(part);
+                    if (i < parts.size() - 1) {
+                        sb.append(' ');    
+                    }
+                }
+                typeTypes = sb.toString();
+	            
 	            String annotations = "";
 	            if (ctx.annotation() != null) {
-	                int size = ctx.annotation().size();
-	                List<String> parts = reverse(size);
-	                StringBuilder sb = new StringBuilder();
+	                size = ctx.annotation().size();
+	                parts = reverse(size);
+	                sb = new StringBuilder();
 	                for (String part : parts) {
-	                    sb.append(part).append(' ');   
+	                    sb.append(part.trim()).append(' ');   
 	                }
 	                annotations = sb.toString();
 	            }
-	            String lp = pop();    // (
-	            StringBuilder sb = new StringBuilder();
-	            sb.append(lp);
-	            sb.append(annotations);
-	            sb.append(typeType);
-	            if (typeTypes.length() > 0) {
-	                sb.append(' ').append(typeTypes);   
+	            String lp = pop().trim();    // (
+	            
+	            // put it all together
+	            sb = new StringBuilder();
+	            sb.append(padParen(lp));
+	            if (!annotations.isEmpty()) {
+	                sb.append(annotations);
 	            }
-	            sb.append(rp).append(' ').append(expression);
+                sb.append(typeTypes).append(padParen(rp)).append(' ').append(expression);
 	            push(sb);
 	            return;
 	        }
@@ -1705,7 +1705,7 @@ Parser methods follow.
             }
 
             String expression1 = pop().trim();
-            expression1 = removeBlankLines(expression1, BOTH);
+            expression1 = indent(expression1);
             StringBuilder sb = new StringBuilder();
             sb.append(expression1);
             sb.append(padOperator(bop));
@@ -1938,7 +1938,7 @@ Parser methods follow.
 	    String decl = pop();
 	    String typeParameters = pop();
 	    String modifiers = "";
-	    if (ctx.interfaceMethodModifier() != null) {
+	    if (ctx.interfaceMethodModifier() != null && ctx.interfaceMethodModifier().size() > 0) {
 	        int size = ctx.interfaceMethodModifier().size();
 	        modifiers = formatModifiers(size).trim();
 	    }
@@ -2196,28 +2196,44 @@ Parser methods follow.
  	*     ;
  	*/
 	@Override public void exitInterfaceCommonBodyDeclaration(InterfaceCommonBodyDeclarationContext ctx) { 
-	    String methodBody = pop().trim();
+	    String methodBody = pop().trim();    // block or ;
 	    StringBuilder qualifiedNameList = new StringBuilder();
 	    if (ctx.qualifiedNameList() != null) {
-	        String list = pop();
-	        String throws_ = pop();    // throws keyword
+	        String list = pop().trim();
+	        String throws_ = pop().trim();    // throws keyword
 	        qualifiedNameList.append(throws_).append(' ').append(list);
 	    }
 	    String brackets = "";
 	    if (ctx.RBRACK() != null) {
-	        int size = ctx.RBRACK().size();
-	        brackets = reverse(size * 2, "");
+	        int size = ctx.RBRACK().size() + ctx.LBRACK().size();
+	        brackets = reverse(size, "");
 	    }
-	    String formalParameters = pop();
-	    String identifier = pop();
-	    String typeTypeOrVoid = pop();
-        String annotations = "";
-	    if (ctx.annotation() != null) {
+	    String formalParameters = pop().trim();
+	    String identifier = pop().trim();
+	    String typeTypeOrVoid = pop().trim();
+        StringBuilder annotations = new StringBuilder();
+	    if (ctx.annotation() != null && ctx.annotation().size() > 0) {
 	        int size = ctx.annotation().size();
-	        annotations = reverse(size, " ");
+	        List<String> annos = reverse(size);
+	        for (String anno : annos) {
+	            annotations.append(anno.trim()).append(' ');    
+	        }
 	    }
 	    StringBuilder sb = new StringBuilder();
-	    sb.append(annotations).append(typeTypeOrVoid).append(' ').append(identifier).append(formalParameters).append(brackets).append(qualifiedNameList).append(methodBody);
+	    if (!annotations.isEmpty()) {
+	        sb.append(annotations);
+	    }
+	    sb.append(typeTypeOrVoid).append(' ').append(identifier).append(' ').append(formalParameters);
+	    if (!brackets.isEmpty()) {
+	        sb.append(brackets).append(' ');
+	    }
+	    if (!qualifiedNameList.isEmpty()) {
+	        sb.append(qualifiedNameList);
+	        if (methodBody.length() > 1) {
+	            sb.append(' ');    
+	        }
+	    }
+	    sb.append(methodBody);
 	    push(sb);
 	}
 	
@@ -2402,12 +2418,18 @@ Parser methods follow.
 	    String id = pop();
 	    String ellipsis = pop();    // ...
 	    
-        String annotations = "";
-	    if (ctx.annotation() != null) {
+        StringBuilder annotations = new StringBuilder();
+	    if (ctx.annotation() != null && ctx.annotation().size() > 0) {
 	        int size = ctx.annotation().size();
-	        annotations = reverse(size, " ");
+	        List<String> annos = reverse(size);
+	        for (int i = 0; i < annos.size(); i++) {
+	            annotations.append(annos.get(i).trim());
+	            if (i < annos.size() - 1) {
+	                annotations.append(' ');    
+	            }
+	        }
 	    }
-	    String typeType = pop();
+	    String typeType = pop().trim();
 	    String modifiers = "";
 	    if (ctx.variableModifier() != null) {
 	        int size = ctx.variableModifier().size();
@@ -2415,7 +2437,10 @@ Parser methods follow.
 	    }
         
         StringBuilder sb = new StringBuilder();
-	    sb.append(modifiers).append(' ').append(typeType);
+        if (!modifiers.isEmpty()) {
+            sb.append(modifiers).append(' ');
+	    }
+	    sb.append(typeType);
 	    if (!annotations.isEmpty()) {
 	        sb.append(' ').append(annotations);
 	    }
@@ -3079,7 +3104,7 @@ Parser methods follow.
 	    if (!impl.isEmpty()) {
 	        sb.append(impl).append(' ');
 	    }
-	    sb.append(recordBody);
+	    sb.append(recordBody).append('\n');
 	    push(sb);
 	}
 	
@@ -3155,7 +3180,7 @@ Parser methods follow.
 	@Override public void exitResourceSpecification(ResourceSpecificationContext ctx) { 
 	    String rp = pop();    // )
 	    String semi = ctx.SEMI() == null ? "" : pop();
-	    String resources = pop();
+	    String resources = pop().trim();
 	    String lp = pop();    // (
 
 	    StringBuilder sb = new StringBuilder();
@@ -3167,9 +3192,6 @@ Parser methods follow.
             resources = indent(resources);
             --tabCount;
             sb.append(resources).append(semi);
-            if (!semi.endsWith("\n")) {
-                sb.append('\n');   
-            }
             rp = indent(rp);
             sb.append(rp);
 	    }
@@ -3303,7 +3325,7 @@ Parser methods follow.
         if (!colon.isEmpty() && !expression2.isEmpty()) {
             sb.append(padOperator(colon)).append(expression2);
         }
-        sb.append(semi);   
+        sb.append(semi).append('\n');   
         push(sb);
     }
     
@@ -3329,7 +3351,7 @@ Parser methods follow.
                 elseStatement.append(indent("}")).append('\n');
             }
             else {
-                elseStatement.append(es);
+                elseStatement.append(es).append('\n');
             }
         }
         
@@ -3480,29 +3502,42 @@ Parser methods follow.
             // second choice
             String finallyBlock = ctx.finallyBlock() == null ? "" : pop();
             String catchClause = "";
-            if (ctx.catchClause() != null) {
+            if (ctx.catchClause() != null && ctx.catchClause().size() > 0) {
                 int size = ctx.catchClause().size();
                 catchClause = reverse(size, "");
+                catchClause = removeBlankLines(catchClause, BOTH);
             }
-            String block = pop().trim();
-            String spec = pop();
-            String try_ = pop();  // try keyword
+            String block = pop();
+            if (bracketStyle == ATTACHED) {
+                block = block.trim();    
+            }
+            String spec = pop().trim();
+            String try_ = pop().trim();  // try keyword
             try_ = indent(try_);
             StringBuilder sb = new StringBuilder();
-            sb.append(try_).append(' ').append(spec).append(block);
-            if (!block.endsWith("\n") && breakElse) {
-                sb.append('\n');
+            sb.append(try_).append(' ').append(spec).append(' ').append(block);
+            if (!catchClause.isEmpty()) {
+                if (breakElse && !block.endsWith("\n")) {
+                    sb.append('\n');
+                }
+                sb.append(catchClause);
+                if (!catchClause.endsWith("\n")) {
+                    sb.append('\n');
+                }
             }
-            sb.append(catchClause);
-            if (!catchClause.endsWith("\n") && breakElse) {
-                sb.append('\n');
+            if (!finallyBlock.isEmpty()) {
+                finallyBlock = removeBlankLines(finallyBlock, BOTH);
+                if (breakElse && !endsWith(sb, "\n")) {
+                    sb.append('\n');
+                }
+                sb.append(finallyBlock).append('\n');
             }
-            sb.append(finallyBlock);
             String tryStatement = sb.toString();
             tryStatement = removeBlankLines(tryStatement, BOTH);
             push(tryStatement);
         }
         else {
+            // first choice
             String catchClause = "";
             String finallyBlock = "";
             if (ctx.catchClause() != null) {
@@ -3527,14 +3562,17 @@ Parser methods follow.
                 if (breakElse && !block.endsWith("\n")) {
                     sb.append('\n');
                 }
-                sb.append(catchClause).append('\n');
+                sb.append(catchClause);
+                if (!catchClause.endsWith("\n")) {
+                    sb.append('\n');
+                }
             }
             if (!finallyBlock.isEmpty()) {
                 finallyBlock = removeBlankLines(finallyBlock, BOTH);
-                if (breakElse) {
+                if (breakElse && !endsWith(sb, "\n")) {
                     sb.append('\n');
                 }
-                sb.append(finallyBlock);
+                sb.append(finallyBlock).append('\n');
             }
             push(sb);
         }
@@ -3586,7 +3624,7 @@ Parser methods follow.
         // SYNCHRONIZED parExpression block
         String block = pop();
 	    if (bracketStyle == BROKEN) {
-	        block = new StringBuilder().append('\n').append(block).toString();    
+	        block = new StringBuilder().append(block).toString();    
 	    }
 	    else {
 	        block = block.trim();    
@@ -3619,7 +3657,7 @@ Parser methods follow.
         if (!expression.isEmpty()) {
             sb.append(' ');
         }
-        sb.append(expression).append(semi);
+        sb.append(expression).append(semi).append('\n');
         push(sb);
     }
     
@@ -3729,10 +3767,16 @@ Parser methods follow.
 	    
 	    if (blockStatements.trim().startsWith("{")) {
 	        // it's a block
-	        blockStatements = blockStatements.trim();
+	        //blockStatements = blockStatements.trim();
 	        switchLabels = trimEnd(switchLabels) + ' ';
 	    }
-	    else if (!switchLabels.endsWith("\n")) {
+	    else {
+	        // it's several statements
+	        ++tabCount;
+	        blockStatements = indent(blockStatements);
+	        --tabCount;
+	    }
+	    if (!switchLabels.endsWith("\n")) {
 	        switchLabels = switchLabels + '\n';      // NOPMD
 	    }
 
@@ -3836,11 +3880,13 @@ Parser methods follow.
 	        String switchRuleOutcome = "";
 	        if (ctx.switchRuleOutcome() != null) {
 	            switchRuleOutcome = pop();
-	            if (switchRuleOutcome.lines().count() > 1) {
-	                switchRuleOutcome = '\n' + switchRuleOutcome;        
+	            if (switchRuleOutcome.lines().count() == 1) {
+	                switchRuleOutcome = switchRuleOutcome.trim();    
 	            }
 	            else {
-	                switchRuleOutcome = switchRuleOutcome.trim();    
+	                ++tabCount;
+	                switchRuleOutcome = '\n' + indent(switchRuleOutcome);
+	                --tabCount;
 	            }
 	        }
 	        String operator = pop().trim();    // arrow or colon
@@ -3851,7 +3897,10 @@ Parser methods follow.
 	        push(sb);
 	    }
 	    else {
-	        String switchRuleOutcome = pop().trim();
+	        String switchRuleOutcome = pop();
+            if (switchRuleOutcome.lines().count() == 1) {
+                switchRuleOutcome = switchRuleOutcome.trim();    
+            }
 	        String operator = pop().trim();
 	        String default_ = pop().trim();
 	        default_ = indent(default_);
@@ -3886,6 +3935,7 @@ Parser methods follow.
 	        // then case 1, 2: doesn't actually have a statement following it
 	        push("");   
 	    }
+	    // otherwise, block is already on the stack
 	}
 	
 	
@@ -4026,25 +4076,30 @@ Parser methods follow.
 	@Override public void exitTypeParameter(TypeParameterContext ctx) {
 	    String extends_ = "";
 	    if (ctx.EXTENDS() != null) {
-	        String typeBound = pop();
-            StringBuilder annotations = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
+	        String typeBound = pop().trim();
+	        sb.append(typeBound);
             while(stack.peek().startsWith("@")) {
-                annotations.insert(0, pop()).append(' ');
+                sb.insert(0, ' ');
+                sb.insert(0, pop().trim());
             }
-	        extends_ = pop();    // extends keyword
-	        annotations.append(typeBound);
-	        annotations.insert(0, ' ');
-	        annotations.insert(0, extends_);
-	        annotations.insert(0, ' ');
-	        extends_ = annotations.toString();
+	        sb.insert(0, ' ');
+	        extends_ = pop().trim();    // extends keyword
+	        sb.insert(0, extends_);
+	        sb.insert(0, ' ');
+	        extends_ = sb.toString();
 	    }
 	    String identifier = pop().trim();
-        StringBuilder annotations = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         while(stack.peek().startsWith("@")) {
-            annotations.insert(0, pop().trim()).append(' ');
+            sb.insert(0, ' ');
+            sb.insert(0, pop().trim());
         }
-        annotations.append(identifier).append(extends_);
-        push(annotations);
+        sb.append(identifier);
+        if (!extends_.isEmpty()) {
+            sb.append(extends_);
+        }
+        push(sb);
 	}
 	
 	
@@ -4078,6 +4133,7 @@ Parser methods follow.
 	            // get the brackets
 	            endPart.insert(0, pop());    // ]
 	            endPart.insert(0, pop());    // [
+                endPart.insert(0, ' ');
 	            
                 // any annotations?
                 if (ctx.annotation() != null) {
@@ -4086,8 +4142,9 @@ Parser methods follow.
                         if (ann.indexOf('@') > -1) {    
                             // using indexOf to be able to check for altAnnotationQualifiedName
                             // as well as regular annotation
-                            endPart.append(pop().trim()).append(' ');    // annotation
-                            ++ annotationCount;
+                            endPart.insert(0, pop().trim());    // annotation
+                            endPart.insert(0, ' ');
+                            ++annotationCount;
                         }
                         else {
                             break;   
@@ -4096,7 +4153,9 @@ Parser methods follow.
                 }
 	        }
 	    }
-	    String type = pop();    // one of (classOrInterfaceType | primitiveType)
+	    
+	    String type = pop().trim();    // one of (classOrInterfaceType | primitiveType)
+	    
 	    // handle the rest of the annotations, if any
 	    StringBuilder annotations = new StringBuilder();
 	    if (ctx.annotation() != null) {
@@ -4108,8 +4167,11 @@ Parser methods follow.
 	    
 	    // put it all together
 	    StringBuilder sb = new StringBuilder();
-	    sb.append(annotations).append(type);
-	    if (endPart.length() > 0) {
+	    if (!annotations.isEmpty()) {
+	        sb.append(annotations);
+	    }
+	    sb.append(type);
+	    if (!endPart.isEmpty()) {
 	        sb.append(endPart);
 	    }
 	    push(sb);
@@ -4511,20 +4573,24 @@ Formatting methods.
      * Pads parenthesis so "(" becomes "( " and ")" becomes " )".
      * @param paren The paren to pad
      * @param item The item immediately following or preceding the paren.
+     * @return a padded paren or a trimmed paren depending on the padParens setting
      */
     private String padParen(String paren, String item) {
         if (paren == null || paren.isEmpty() || !padParens || item == null || item.isEmpty()) {
             return paren;    
         }
+        paren = paren.trim();
         StringBuilder sb = new StringBuilder(paren);
-        int index = sb.indexOf("(");
-        if (index > -1) {
-            sb.insert(index + 1, " ");
-        }
-        else {
-            index = sb.indexOf(")");
+        if (padParens) {
+            int index = sb.indexOf("(");
             if (index > -1) {
-                sb.insert(index == 0 ? 0 : index - 1, " ");
+                sb.insert(index + 1, " ");
+            }
+            else {
+                index = sb.indexOf(")");
+                if (index > -1) {
+                    sb.insert(index == 0 ? 0 : index - 1, " ");
+                }
             }
         }
         return sb.toString();
@@ -5251,7 +5317,8 @@ Formatting methods.
 	    return sb.toString();
 	}
 
-	// puts a space before and after the given operator
+	// puts a space before and after the given operator, but only if padOperators is true,
+	// otherwise, trims the given string and returns it.
 	private String padOperator(String operator) {
 	    operator = operator.trim();
 	    if (padOperators) {
@@ -5263,6 +5330,9 @@ Formatting methods.
 	}
 	
 	private int getMemberType(MemberDeclarationContext ctx) {
+	    if (ctx == null) {
+	        return 0;    
+	    }
 	    // just a bunch of 'if's here
 	    if (ctx.methodDeclaration() != null || ctx.genericMethodDeclaration() != null) {
 	        return METHOD;   
