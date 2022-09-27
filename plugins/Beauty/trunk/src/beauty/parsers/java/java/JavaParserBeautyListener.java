@@ -1,6 +1,7 @@
 
 package beauty.parsers.java.java;
 
+import beauty.parsers.ParserException;
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
@@ -25,7 +26,7 @@ import java.util.regex.*;
  
  Standard parent/child tree hierarchy. The leaf child will be a one liner.
  
- */
+*/
 
 public class JavaParserBeautyListener extends JavaParserBaseListener {
     
@@ -67,7 +68,7 @@ public class JavaParserBeautyListener extends JavaParserBaseListener {
     private boolean groupImports = true;                
     private int blankLinesBetweenImportGroups = 1;      
     private int blankLinesAfterClassBody = 1;
-    private int blankLinesBeforeMethods = 1;  
+    private int blankLinesBeforeMethods = 0;  
     private int blankLinesAfterMethods = 1;
     private boolean sortModifiers = true;               
     private int collapseMultipleBlankLinesTo = 1; 
@@ -129,6 +130,7 @@ public class JavaParserBeautyListener extends JavaParserBaseListener {
     public static void main (String[] args) {
         if (args == null)
             return;
+        ErrorListener errorListener = null;
         try {
             // set up the parser
             //long startTime = System.currentTimeMillis();
@@ -137,27 +139,35 @@ public class JavaParserBeautyListener extends JavaParserBaseListener {
             JavaLexer lexer = new JavaLexer( antlrInput );
             CommonTokenStream tokens = new CommonTokenStream( lexer );
             JavaParser javaParser = new JavaParser( tokens );
-            javaParser.setTrace(true);
+            //javaParser.setTrace(true);
+            javaParser.removeErrorListeners();
+            errorListener = new ErrorListener();
+            javaParser.addErrorListener( errorListener );
+            javaParser.setErrorHandler( new DefaultErrorStrategy() );
             
             // parse and beautify the buffer contents
             JavaParserBeautyListener listener = new JavaParserBeautyListener(16 * 1024, tokens);
-            listener.setUseSoftTabs(true);
-            listener.setIndentWidth(4);
-            listener.setPadParens(true);
-            listener.setBracketStyle(BROKEN);
-            listener.setBreakElse(true);
             ParseTreeWalker walker = new ParseTreeWalker();
             ParseTree tree = javaParser.compilationUnit();
             walker.walk( listener, tree );
 
             //System.out.println("----- final output -----");
-            System.out.println(listener.getText());
+            System.out.print(listener.getText());
             //System.out.println("------------------------");
             //long elapsed = System.currentTimeMillis() - startTime;
             //System.out.println("elapsed time: " + elapsed + " ms");
             
         } catch (Exception e) {
             e.printStackTrace();
+            if (errorListener != null) {
+                java.util.List<ParserException> errors = errorListener.getErrors();
+    
+                if ( errors != null && errors.size() > 0 ) {
+                    for (ParserException error : errors) {
+                        System.out.println("+++++ error: " + error);
+                    }   
+                }
+            }
         }
     }
     
@@ -715,7 +725,7 @@ Parser methods follow.
                 modifiers = indent(modifiers);
                 sb.append(modifiers);
                 if (hasNewLine) {
-                    sb.append('\n').append(memberDeclaration);    
+                    sb.append('\n').append(memberDeclaration); 
                 }
                 else {
                     sb.append(' ').append(trimFront(memberDeclaration));    
@@ -823,7 +833,11 @@ Parser methods follow.
 	    
 	    StringBuilder classDecl = new StringBuilder();
 	    classDecl.append(class_).append(' ').append(identifier).append(typeParameters).append(extendsType).append(implementsList).append(permitsList).append(' ').append(classBody);
-	    push(classDecl);
+	    String decl = classDecl.toString();
+        decl = removeBlankLines(decl, BOTH);
+        decl = addBlankLines(decl, blankLinesAfterClassBody, END);
+        
+	    push(decl);
 	}
 	
 	/**
@@ -920,6 +934,8 @@ Parser methods follow.
         if (ctx.moduleDeclaration() != null) {
             pop();      // EOF
             String moduleDeclaration = pop();
+            moduleDeclaration = removeBlankLines(moduleDeclaration, BOTH);
+            moduleDeclaration = removeExcessWhitespace(moduleDeclaration);
             output.append(moduleDeclaration);
 	    }
         else {	    
@@ -947,6 +963,7 @@ Parser methods follow.
             output.append(packageDeclaration);
             output.append(importDeclarations);
             output.append(typeDeclarations);
+            
         }
 	    // all done!
 	}
@@ -2220,14 +2237,14 @@ Parser methods follow.
 	        }
 	    }
 	    StringBuilder sb = new StringBuilder();
-	    if (!annotations.isEmpty()) {
+	    if (!isEmpty(annotations)) {
 	        sb.append(annotations);
 	    }
 	    sb.append(typeTypeOrVoid).append(' ').append(identifier).append(' ').append(formalParameters);
 	    if (!brackets.isEmpty()) {
 	        sb.append(brackets).append(' ');
 	    }
-	    if (!qualifiedNameList.isEmpty()) {
+	    if (!isEmpty(qualifiedNameList)) {
 	        sb.append(qualifiedNameList);
 	        if (methodBody.length() > 1) {
 	            sb.append(' ');    
@@ -2263,7 +2280,10 @@ Parser methods follow.
 	    interface_ = indent(interface_);
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(interface_).append(' ').append(identifier).append(typeParameters).append(extends_).append(permits_).append(' ').append(interfaceBody);
-	    push(sb);
+	    String decl = sb.toString();
+        decl = removeBlankLines(decl, BOTH);
+        decl = addBlankLines(decl, blankLinesAfterClassBody, END);
+	    push(decl);
 	}
 	
 	/**
@@ -2441,7 +2461,7 @@ Parser methods follow.
             sb.append(modifiers).append(' ');
 	    }
 	    sb.append(typeType);
-	    if (!annotations.isEmpty()) {
+	    if (!isEmpty(annotations)) {
 	        sb.append(' ').append(annotations);
 	    }
 	    sb.append(ellipsis).append(' ').append(id);
@@ -2772,7 +2792,6 @@ Parser methods follow.
 	    }
 	    else if (ctx.PROVIDES() != null) {
 	        // PROVIDES qualifiedName WITH qualifiedName ';'
-	        moduleDirective.append("provides ");
             String qualifiedName2 = pop();
             String with_ = pop();    // with keyword
             String qualifiedName = pop();
@@ -3175,7 +3194,7 @@ Parser methods follow.
  	* resourceSpecification
  	*     : '(' resources ';'? ')'
  	*     ;
- 	* Multiple resources are already on separate lines;
+ 	* Multiple resources are already on separate lines.
  	*/
 	@Override public void exitResourceSpecification(ResourceSpecificationContext ctx) { 
 	    String rp = pop();    // )
@@ -3193,7 +3212,7 @@ Parser methods follow.
             --tabCount;
             sb.append(resources).append(semi);
             rp = indent(rp);
-            sb.append(rp);
+            sb.append(rp).append('\n');
 	    }
 	    else {
 	         sb.append(resources.trim());
@@ -3362,8 +3381,8 @@ Parser methods follow.
         StringBuilder sb = new StringBuilder();
         sb.append(indent(if_)).append(' ').append(parExpression).append(' ');
         
-        // require brackets on ifStatement unless the statement is just ";"
-        if (!ifStatement.startsWith("{") && !ifStatement.equals(";")) {
+        // require brackets on ifStatement even if the statement is just ";"
+        if (!ifStatement.startsWith("{")) {
             if (bracketStyle == BROKEN) {
                 sb.append('\n').append(indent("{")).append('\n');    
             }
@@ -3498,6 +3517,7 @@ Parser methods follow.
     private void formatTry(StatementContext ctx) {
         // TRY block (catchClause+ finallyBlock? | finallyBlock)
         // TRY resourceSpecification block catchClause* finallyBlock?
+        // TODO: check try with resources, parens seem to be off
         if (ctx.resourceSpecification() != null) {
             // second choice
             String finallyBlock = ctx.finallyBlock() == null ? "" : pop();
@@ -3815,7 +3835,6 @@ Parser methods follow.
 	    String lb = pop();    // {
 	    if (bracketStyle == BROKEN) {
 	        lb = new StringBuilder().append('\n').append(indent(lb)).toString();  
-	        //switchLabeledRule = indentAgain(switchLabeledRule);
 	    }
 	    else {
 	        lb = lb.trim();    
@@ -3955,7 +3974,6 @@ Parser methods follow.
 	        
             StringBuilder sb = new StringBuilder();
 	        String q = pop().trim();    // ?
-            String annotation = "";
             if (ctx.annotation() != null) {
                 int size = ctx.annotation().size();
                 List<String> annos = reverse(size);
@@ -4167,11 +4185,11 @@ Parser methods follow.
 	    
 	    // put it all together
 	    StringBuilder sb = new StringBuilder();
-	    if (!annotations.isEmpty()) {
+	    if (!isEmpty(annotations)) {
 	        sb.append(annotations);
 	    }
 	    sb.append(type);
-	    if (!endPart.isEmpty()) {
+	    if (!isEmpty(endPart)) {
 	        sb.append(endPart);
 	    }
 	    push(sb);
@@ -5108,7 +5126,7 @@ Formatting methods.
 	    String lineComment = "";
 	    for (int i = 0; i < modifiers.size(); i++) {
 	        String mod = modifiers.get(i);
-	        if (mod.indexOf('\n') > -1 && mod.indexOf("//") > -1 && !mod.startsWith("@")) {
+	        if (mod.indexOf('\n') > -1 && mod.trim().indexOf("//") == 0 && !mod.startsWith("@")) {
 	            String[] lines = mod.split("\n");
 	            for (String line : lines) {
 	                 if (line.indexOf("//") > -1) {
@@ -5124,7 +5142,7 @@ Formatting methods.
 	    if (sortModifiers) {
 	        Collections.sort(modifiers, modifierComparator);    
 	    }
-	    
+
         // modifiers shouldn't be on multiple lines, but comments preceding the
         // modifier may already be attached and can have multiple lines.
         // Handle the multiple lines here.
@@ -5137,6 +5155,8 @@ Formatting methods.
             modifier = modifier.trim();
             if (modifier.startsWith("@") && !singleLine) {
                 modifier += '\n';   // NOPMD
+                sb.append(modifier);
+                continue;
             }
             sb.append(modifier);
             if (i < modifiers.size() - 1) {
@@ -5161,12 +5181,17 @@ Formatting methods.
         private String modifiers = "public protected private abstract static final synchronized native sealed non-sealed strictfp transient volatile";
         
 	    public int compare(String a, String b) {
-	        // the modifier may have comments attaches, remove them before comparing
+	        // the modifier may have comments attached, remove them before comparing
 	        String a_ = removeComments(a);
 	        String b_ = removeComments(b);
 	        
 	        
-	        // annotations may be included in the choices
+	        // annotations may be included in the choices. Note that the order of annotations
+	        // is not specified by the JLS, so I'm defaulting to assuming two annotatations are
+	        // equal, which should leave them in the original order.
+	        if (a_.startsWith("@") && b_.startsWith("@")) {
+	            return 0;         
+	        }
 	        if (a_.startsWith("@")) {
 	            return -1;   
 	        }
@@ -5316,6 +5341,12 @@ Formatting methods.
 	    }
 	    return sb.toString();
 	}
+	
+	// Because StringBuilder doesn't get it's own isEmpty until Java 15
+    private boolean isEmpty(StringBuilder sb) {
+        return sb == null ? true : sb.length() == 0;
+    }
+	
 
 	// puts a space before and after the given operator, but only if padOperators is true,
 	// otherwise, trims the given string and returns it.
