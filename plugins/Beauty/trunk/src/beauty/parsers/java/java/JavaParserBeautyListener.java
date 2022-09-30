@@ -325,7 +325,7 @@ Parser methods follow.
 	    }
 	    body = removeBlankLines(body, BOTH);
 	    if (bracketStyle == BROKEN) {
-	        body = "\n" + body;   
+	        body = '\n' + body;   
 	    }
 	    
 	    String identifier = pop();
@@ -1697,7 +1697,10 @@ Parser methods follow.
             // <assoc=right> expression
             // bop=('=' | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '^=' | '>>=' | '>>>=' | '<<=' | '%=')
             // expression
-            String expression2 = pop().trim();
+            String expression2 = pop();
+            if (!isTextBlock(expression2)) {
+                expression2 = expression2.trim();
+            }   
             String bop = pop().trim();
             if (bop.equals("<") ) {
                 String peek = stack.peek();
@@ -1721,8 +1724,11 @@ Parser methods follow.
                 }
             }
 
-            String expression1 = pop().trim();
-            expression1 = indent(expression1);
+            String expression1 = pop();
+            if (!isTextBlock(expression1)) {
+                expression1 = expression1.trim();
+                expression1 = indent(expression1);
+            }
             StringBuilder sb = new StringBuilder();
             sb.append(expression1);
             sb.append(padOperator(bop));
@@ -2606,7 +2612,7 @@ Parser methods follow.
 	    
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(start);
-	    if (lines > 1 && !expressionList.startsWith("\"\"\"")) {    // don't worry about text blocks
+	    if (lines > 1 && !isTextBlock(expressionList)) {    // don't worry about text blocks
 	        sb.append(lp).append('\n');  
 	        expressionList = removeBlankLines(expressionList, BOTH);
 	        sb.append(indentAgain(expressionList));
@@ -2618,7 +2624,12 @@ Parser methods follow.
 	            rp = padParen(rp);
 	        }
 	        sb.append(lp);
-	        sb.append(expressionList.trim());
+	        if (isTextBlock(expressionList)) {
+	            sb.append(expressionList);
+	        }
+	        else {
+	            sb.append(expressionList.trim());
+	        }
 	        sb.append(rp);
 	    }
 	    push(sb);
@@ -3517,7 +3528,6 @@ Parser methods follow.
     private void formatTry(StatementContext ctx) {
         // TRY block (catchClause+ finallyBlock? | finallyBlock)
         // TRY resourceSpecification block catchClause* finallyBlock?
-        // TODO: check try with resources, parens seem to be off
         if (ctx.resourceSpecification() != null) {
             // second choice
             String finallyBlock = ctx.finallyBlock() == null ? "" : pop();
@@ -5345,6 +5355,10 @@ Formatting methods.
 	// Because StringBuilder doesn't get it's own isEmpty until Java 15
     private boolean isEmpty(StringBuilder sb) {
         return sb == null ? true : sb.length() == 0;
+    }
+    
+    private boolean isTextBlock(String s) {
+        return s.startsWith("\"\"\"");   
     }
 	
 
