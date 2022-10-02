@@ -1,0 +1,509 @@
+<project name="java_test" default="test" basedir="." xmlns:if="ant:if" xmlns:unless="ant:unless">
+   <!-- ========================================================================
+      Target: set classpath
+   ========================================================================= -->
+    <target name="setClasspath">
+        <path id="classpathref">
+         <!-- required locations/jars -->
+            <pathelement location="${classes.dir}" />
+            <pathelement path="${java.class.path}"/>
+
+         <!-- required for jEdit plugin -->
+            <pathelement location="${jedit.install.dir}/jedit.jar" />
+
+         <!-- dependencies -->
+         <pathelement location="${jedit.plugins.dir}/kappalayout.jar"/>
+		 <pathelement location="${jedit.plugins.dir}/antlr-4.10.1-complete.jar"/>
+        </path>
+    </target>
+
+    <!-- =======================================================================
+        The tests use the default settings of JavaParserBeautyListener, that is,
+            softTabs = true
+            tabWidth = 4
+            bracketStyle = ATTACHED        
+            brokenBracket = false
+            breakElse = true
+            padParens = false
+            padOperators = true
+            blankLinesBeforePackage = 0            
+            blankLinesAfterPackage = 1             
+            blankLinesAfterImports = 2             
+            sortImports = true                 
+            groupImports = true                
+            blankLinesBetweenImportGroups = 1      
+            blankLinesAfterClassBody = 1
+            blankLinesBeforeMethods = 0  
+            blankLinesAfterMethods = 1
+            sortModifiers = true               
+            collapseMultipleBlankLinesTo = 1 
+            wrapLineLength = 120
+            
+            NOTE: THESE TESTS EXEC THE SYSTEM DIFF!!! THEY WILL FAIL IF DIFF IS
+            NOT INSTALLED OR NOT ON THE PATH!!!
+            
+            TODO: change out the echos with a fail.
+    ======================================================================== -->
+    <target name="test" depends="IF_PERMITS,AllInOne11,AllInOne17,AllInOne8,BasicClass,BasicClass3,BlockTest,Comments,
+        Comments2,Element1,EnumTest,Ids,ImportsAndAnnos,ManyStringsConcat,module-info,outer,PatternMatching4instanceof,
+        PatternMatching4switchExp,Pizza,Records,SealedClasses,SwitchExpressions,TextBlocks,Yield">
+    </target>
+
+    <target name="Yield" depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/Yield.java"/>
+          <redirector 
+             input="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/Yield.java" 
+             output="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/Yield.java" />
+        </java>
+        <exec executable="diff" outputproperty="Yielddiff">
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/Yield.java"/>
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/expected/Yield.java"/>
+        </exec>
+        <condition property="Yield" value="true">
+            <equals arg1="${Yielddiff}" arg2=""/> 
+        </condition>
+       <echo if:set="Yield">Yield passed</echo>
+       <echo unless:set="Yield">Yield failed: ${Yielddiff}</echo>
+    </target>
+
+    <target name="TextBlocks" depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/TextBlocks.java"/>
+          <redirector 
+             input="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/TextBlocks.java" 
+             output="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/TextBlocks.java" />
+        </java>
+        <exec executable="diff" outputproperty="TextBlocksdiff">
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/TextBlocks.java"/>
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/expected/TextBlocks.java"/>
+        </exec>
+        <condition property="TextBlocks" value="true">
+            <equals arg1="${TextBlocksdiff}" arg2=""/> 
+        </condition>
+       <echo if:set="TextBlocks">TextBlocks passed</echo>
+       <echo unless:set="TextBlocks">TextBlocks failed: ${TextBlocksdiff}</echo>
+    </target>
+
+    <target name="SwitchExpressions" depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/SwitchExpressions.java"/>
+          <redirector 
+             input="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/SwitchExpressions.java" 
+             output="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/SwitchExpressions.java" />
+        </java>
+        <exec executable="diff" outputproperty="SwitchExpressionsdiff">
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/SwitchExpressions.java"/>
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/expected/SwitchExpressions.java"/>
+        </exec>
+        <condition property="SwitchExpressions" value="true">
+            <equals arg1="${SwitchExpressionsdiff}" arg2=""/> 
+        </condition>
+       <echo if:set="SwitchExpressions">SwitchExpressions passed</echo>
+       <echo unless:set="SwitchExpressions">SwitchExpressions failed: ${SwitchExpressionsdiff}</echo>
+    </target>
+
+    <target name="SealedClasses" depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/SealedClasses.java"/>
+          <redirector 
+             input="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/SealedClasses.java" 
+             output="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/SealedClasses.java" />
+        </java>
+        <exec executable="diff" outputproperty="SealedClassesdiff">
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/SealedClasses.java"/>
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/expected/SealedClasses.java"/>
+        </exec>
+        <condition property="SealedClasses" value="true">
+            <equals arg1="${SealedClassesdiff}" arg2=""/> 
+        </condition>
+       <echo if:set="SealedClasses">SealedClasses passed</echo>
+       <echo unless:set="SealedClasses">SealedClasses failed: ${SealedClassesdiff}</echo>
+    </target>
+
+    <target name="Records" depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/Records.java"/>
+          <redirector 
+             input="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/Records.java" 
+             output="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/Records.java" />
+        </java>
+        <exec executable="diff" outputproperty="Recordsdiff">
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/Records.java"/>
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/expected/Records.java"/>
+        </exec>
+        <condition property="Records" value="true">
+            <equals arg1="${Recordsdiff}" arg2=""/> 
+        </condition>
+       <echo if:set="Records">Records passed</echo>
+       <echo unless:set="Records">Records failed: ${Recordsdiff}</echo>
+    </target>
+
+    <target name="Pizza" depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/Pizza.java"/>
+          <redirector 
+             input="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/Pizza.java" 
+             output="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/Pizza.java" />
+        </java>
+        <exec executable="diff" outputproperty="Pizzadiff">
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/Pizza.java"/>
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/expected/Pizza.java"/>
+        </exec>
+        <condition property="Pizza" value="true">
+            <equals arg1="${Pizzadiff}" arg2=""/> 
+        </condition>
+       <echo if:set="Pizza">Pizza passed</echo>
+       <echo unless:set="Pizza">Pizza failed: ${Pizzadiff}</echo>
+    </target>
+
+    <target name="PatternMatching4switchExp" depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/PatternMatching4switchExp.java"/>
+          <redirector 
+             input="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/PatternMatching4switchExp.java" 
+             output="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/PatternMatching4switchExp.java" />
+        </java>
+        <exec executable="diff" outputproperty="PatternMatching4switchExpdiff">
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/PatternMatching4switchExp.java"/>
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/expected/PatternMatching4switchExp.java"/>
+        </exec>
+        <condition property="PatternMatching4switchExp" value="true">
+            <equals arg1="${PatternMatching4switchExpdiff}" arg2=""/> 
+        </condition>
+       <echo if:set="PatternMatching4switchExp">PatternMatching4switchExp passed</echo>
+       <echo unless:set="PatternMatching4switchExp">PatternMatching4switchExp failed: ${PatternMatching4switchExpdiff}</echo>
+    </target>
+
+    <target name="PatternMatching4instanceof" depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/PatternMatching4instanceof.java"/>
+          <redirector 
+             input="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/PatternMatching4instanceof.java" 
+             output="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/PatternMatching4instanceof.java" />
+        </java>
+        <exec executable="diff" outputproperty="PatternMatching4instanceofdiff">
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/PatternMatching4instanceof.java"/>
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/expected/PatternMatching4instanceof.java"/>
+        </exec>
+        <condition property="PatternMatching4instanceof" value="true">
+            <equals arg1="${PatternMatching4instanceofdiff}" arg2=""/> 
+        </condition>
+       <echo if:set="PatternMatching4instanceof">PatternMatching4instanceof passed</echo>
+       <echo unless:set="PatternMatching4instanceof">PatternMatching4instanceof failed: ${PatternMatching4instanceofdiff}</echo>
+    </target>
+
+    <target name="outer" depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/outer.java"/>
+          <redirector 
+             input="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/outer.java" 
+             output="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/outer.java" />
+        </java>
+        <exec executable="diff" outputproperty="outerdiff">
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/outer.java"/>
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/expected/outer.java"/>
+        </exec>
+        <condition property="outer" value="true">
+            <equals arg1="${outerdiff}" arg2=""/> 
+        </condition>
+       <echo if:set="outer">outer passed</echo>
+       <echo unless:set="outer">outer failed: ${outerdiff}</echo>
+    </target>
+
+    <target name="module-info" depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/module-info.java"/>
+          <redirector 
+             input="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/module-info.java" 
+             output="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/module-info.java" />
+        </java>
+        <exec executable="diff" outputproperty="module-infodiff">
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/module-info.java"/>
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/expected/module-info.java"/>
+        </exec>
+        <condition property="module-info" value="true">
+            <equals arg1="${module-infodiff}" arg2=""/> 
+        </condition>
+       <echo if:set="module-info">module-info passed</echo>
+       <echo unless:set="module-info">module-info failed: ${module-infodiff}</echo>
+    </target>
+
+    <target name="ManyStringsConcat" depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/ManyStringsConcat.java"/>
+          <redirector 
+             input="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/ManyStringsConcat.java" 
+             output="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/ManyStringsConcat.java" />
+        </java>
+        <exec executable="diff" outputproperty="ManyStringsConcatdiff">
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/ManyStringsConcat.java"/>
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/expected/ManyStringsConcat.java"/>
+        </exec>
+        <condition property="ManyStringsConcat" value="true">
+            <equals arg1="${ManyStringsConcatdiff}" arg2=""/> 
+        </condition>
+       <echo if:set="ManyStringsConcat">ManyStringsConcat passed</echo>
+       <echo unless:set="ManyStringsConcat">ManyStringsConcat failed: ${ManyStringsConcatdiff}</echo>
+    </target>
+
+    <target name="ImportsAndAnnos" depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/ImportsAndAnnos.java"/>
+          <redirector 
+             input="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/ImportsAndAnnos.java" 
+             output="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/ImportsAndAnnos.java" />
+        </java>
+        <exec executable="diff" outputproperty="ImportsAndAnnosdiff">
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/ImportsAndAnnos.java"/>
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/expected/ImportsAndAnnos.java"/>
+        </exec>
+        <condition property="ImportsAndAnnos" value="true">
+            <equals arg1="${ImportsAndAnnosdiff}" arg2=""/> 
+        </condition>
+       <echo if:set="ImportsAndAnnos">ImportsAndAnnos passed</echo>
+       <echo unless:set="ImportsAndAnnos">ImportsAndAnnos failed: ${ImportsAndAnnosdiff}</echo>
+    </target>
+
+    <target name="Ids" depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/Ids.java"/>
+          <redirector 
+             input="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/Ids.java" 
+             output="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/Ids.java" />
+        </java>
+        <exec executable="diff" outputproperty="Idsdiff">
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/Ids.java"/>
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/expected/Ids.java"/>
+        </exec>
+        <condition property="Ids" value="true">
+            <equals arg1="${Idsdiff}" arg2=""/> 
+        </condition>
+       <echo if:set="Ids">Ids passed</echo>
+       <echo unless:set="Ids">Ids failed: ${Idsdiff}</echo>
+    </target>
+
+    <target name="EnumTest" depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/EnumTest.java"/>
+          <redirector 
+             input="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/EnumTest.java" 
+             output="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/EnumTest.java" />
+        </java>
+        <exec executable="diff" outputproperty="EnumTestdiff">
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/EnumTest.java"/>
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/expected/EnumTest.java"/>
+        </exec>
+        <condition property="EnumTest" value="true">
+            <equals arg1="${EnumTestdiff}" arg2=""/> 
+        </condition>
+       <echo if:set="EnumTest">EnumTest passed</echo>
+       <echo unless:set="EnumTest">EnumTest failed: ${EnumTestdiff}</echo>
+    </target>
+
+    <target name="Element1" depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/Element1.java"/>
+          <redirector 
+             input="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/Element1.java" 
+             output="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/Element1.java" />
+        </java>
+        <exec executable="diff" outputproperty="Element1diff">
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/Element1.java"/>
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/expected/Element1.java"/>
+        </exec>
+        <condition property="Element1" value="true">
+            <equals arg1="${Element1diff}" arg2=""/> 
+        </condition>
+       <echo if:set="Element1">Element1 passed</echo>
+       <echo unless:set="Element1">Element1 failed: ${Element1diff}</echo>
+    </target>
+
+    <target name="Comments2" depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/Comments2.java"/>
+          <redirector 
+             input="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/Comments2.java" 
+             output="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/Comments2.java" />
+        </java>
+        <exec executable="diff" outputproperty="Comments2diff">
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/Comments2.java"/>
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/expected/Comments2.java"/>
+        </exec>
+        <condition property="Comments2" value="true">
+            <equals arg1="${Comments2diff}" arg2=""/> 
+        </condition>
+       <echo if:set="Comments2">Comments2 passed</echo>
+       <echo unless:set="Comments2">Comments2 failed: ${Comments2diff}</echo>
+    </target>
+
+    <target name="Comments" depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/Comments.java"/>
+          <redirector 
+             input="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/Comments.java" 
+             output="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/Comments.java" />
+        </java>
+        <exec executable="diff" outputproperty="Commentsdiff">
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/Comments.java"/>
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/expected/Comments.java"/>
+        </exec>
+        <condition property="Comments" value="true">
+            <equals arg1="${Commentsdiff}" arg2=""/> 
+        </condition>
+       <echo if:set="Comments">Comments passed</echo>
+       <echo unless:set="Comments">Comments failed: ${Commentsdiff}</echo>
+    </target>
+
+    <target name="BlockTest" depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/BlockTest.java"/>
+          <redirector 
+             input="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/BlockTest.java" 
+             output="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/BlockTest.java" />
+        </java>
+        <exec executable="diff" outputproperty="BlockTestdiff">
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/BlockTest.java"/>
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/expected/BlockTest.java"/>
+        </exec>
+        <condition property="BlockTest" value="true">
+            <equals arg1="${BlockTestdiff}" arg2=""/> 
+        </condition>
+       <echo if:set="BlockTest">BlockTest passed</echo>
+       <echo unless:set="BlockTest">BlockTest failed: ${BlockTestdiff}</echo>
+    </target>
+
+    <target name="IF_PERMITS" depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/IF_PERMITS.java"/>
+          <redirector 
+             input="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/IF_PERMITS.java" 
+             output="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/IF_PERMITS.java" />
+        </java>
+        <exec executable="diff" outputproperty="diff">
+            <arg value="-a"/>
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/IF_PERMITS.java"/>
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/expected/IF_PERMITS.java"/>
+        </exec>
+        <condition property="IF_PERMITS" value="true">
+            <equals arg1="${diff}" arg2=""/> 
+        </condition>
+       <echo if:set="IF_PERMITS">IF_PERMITS passed</echo>
+       <echo unless:set="IF_PERMITS">IF_PERMITS failed: ${diff}</echo>
+    </target>
+
+    <target name="AllInOne11" depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/AllInOne11.java"/>
+          <redirector 
+             input="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/AllInOne11.java" 
+             output="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/AllInOne11.java" />
+        </java>
+        <exec executable="diff" outputproperty="AllInOne11diff">
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/AllInOne11.java"/>
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/expected/AllInOne11.java"/>
+        </exec>
+        <condition property="AllInOne11" value="true">
+            <equals arg1="${AllInOne11diff}" arg2=""/> 
+        </condition>
+       <echo if:set="AllInOne11">AllInOne11 passed</echo>
+       <echo unless:set="AllInOne11">AllInOne11 failed: ${AllInOne11diff}</echo>
+    </target>
+
+    <target name="AllInOne17" depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/AllInOne17.java"/>
+          <redirector 
+             input="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/AllInOne17.java" 
+             output="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/AllInOne17.java" />
+        </java>
+        <exec executable="diff" outputproperty="AllInOne17diff">
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/AllInOne17.java"/>
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/expected/AllInOne17.java"/>
+        </exec>
+        <condition property="AllInOne17" value="true">
+            <equals arg1="${AllInOne17diff}" arg2=""/> 
+        </condition>
+       <echo if:set="AllInOne17">AllInOne17 passed</echo>
+       <echo unless:set="AllInOne17">AllInOne17 failed: ${AllInOne17diff}</echo>
+    </target>
+
+    <target name="AllInOne8" depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/AllInOne8.java"/>
+          <redirector 
+             input="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/AllInOne8.java" 
+             output="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/AllInOne8.java" />
+        </java>
+        <exec executable="diff" outputproperty="AllInOne8diff">
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/AllInOne8.java"/>
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/expected/AllInOne8.java"/>
+        </exec>
+        <condition property="AllInOne8" value="true">
+            <equals arg1="${AllInOne8diff}" arg2=""/> 
+        </condition>
+       <echo if:set="AllInOne8">AllInOne8 passed</echo>
+       <echo unless:set="AllInOne8">AllInOne8 failed: ${AllInOne8diff}</echo>
+    </target>
+
+    <target name="BasicClass" depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/BasicClass.java"/>
+          <redirector 
+             input="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/BasicClass.java" 
+             output="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/BasicClass.java" />
+        </java>
+        <exec executable="diff" outputproperty="BasicClassdiff">
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/BasicClass.java"/>
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/expected/BasicClass.java"/>
+        </exec>
+        <condition property="BasicClass" value="true">
+            <equals arg1="${BasicClassdiff}" arg2=""/> 
+        </condition>
+       <echo if:set="BasicClass">BasicClass passed</echo>
+       <echo unless:set="BasicClass">BasicClass failed: ${BasicClassdiff}</echo>
+    </target>
+
+    <target name="BasicClass3" depends="setClasspath">
+        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/BasicClass3.java"/>
+          <redirector 
+             input="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/BasicClass3.java" 
+             output="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/BasicClass3.java" />
+        </java>
+        <exec executable="diff" outputproperty="BasicClass3diff">
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/after/BasicClass3.java"/>
+            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/expected/BasicClass3.java"/>
+        </exec>
+        <condition property="BasicClass3" value="true">
+            <equals arg1="${BasicClass3diff}" arg2=""/> 
+        </condition>
+       <echo if:set="BasicClass3">BasicClass3 passed</echo>
+       <echo unless:set="BasicClass3">BasicClass3 failed: ${BasicClass3diff}</echo>
+    </target>
+
+</project>
