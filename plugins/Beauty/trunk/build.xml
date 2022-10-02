@@ -1,4 +1,4 @@
-<project name="Beauty" default="dist" basedir="." xmlns:if="ant:if" xmlns:unless="ant:unless">
+<project name="Beauty" default="dist" basedir=".">
     <echo>${java.home}</echo>
     <!-- read build.props to override properties set below -->
 
@@ -264,30 +264,16 @@
             depends="setClasspath">
         <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
             <classpath refid="classpathref"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/BasicClass2.java"/>
             <!--
-            <arg file="/home/danson/src/svnkit-1.8.5/src/src/svnkit-1.8.5/svnkit-test/src/main/java/org/tmatesoft/svn/core/test/PythonTests.java"/>
+            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/java/before/AllInOne7.java"/>
             -->
-            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test files/BasicClass2.java"/>
         </java>
     </target>
 
     <target name="all" depends="javacc,dist"/>
     
-    <target name="test" depends="setClasspath">
-        <java classname="beauty.parsers.java.java.JavaParserBeautyListener" fork="true">
-            <classpath refid="classpathref"/>
-            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test files/java/before/IF_PERMITS.java"/>
-          <redirector 
-             input="/home/danson/src/jedit/plugins/Beauty/test/test files/java/before/IF_PERMITS.java" 
-             output="/home/danson/src/jedit/plugins/Beauty/test/test files/java/after/IF_PERMITS.java" />
-        </java>
-        <condition property="test01passed" value="true">
-           <filesmatch file1="/home/danson/src/jedit/plugins/Beauty/test/test files/java/after/IF_PERMITS.java" 
-                       file2="/home/danson/src/jedit/plugins/Beauty/test/test files/java/expected/IF_PERMITS.java" />
-        </condition>
-       <echo if:set="test01passed">test01 passed</echo>
-       <echo unless:set="test01passed">test01 failed - did you remember to turn off tracing?</echo>
-    
+    <target name="test">
+        <ant antfile="ant_java_test.xml" />
     </target>
-
 </project>
