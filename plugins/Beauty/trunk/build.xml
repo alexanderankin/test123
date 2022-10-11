@@ -274,6 +274,9 @@
     <target name="all" depends="javacc,dist"/>
     
     <target name="test">
+        <!--
         <ant antfile="ant_java_test.xml" />
+        -->
+        <ant antfile="ant_json_test.xml" />
     </target>
 </project>

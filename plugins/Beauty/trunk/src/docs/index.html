@@ -13,7 +13,7 @@
                </strong>                                              
             </td>
             <td valign="TOP" align="RIGHT">
-               <font size="-1"><p><strong>Version 0.8 (@@tstamp@@)</strong> <p>Dale Anson</font>
+               <font size="-1"><p><strong>Version 1.1 (@@tstamp@@)</strong> <p>Dale Anson</font>
             </td>
          </tr>
       </table>
@@ -34,7 +34,7 @@
          <li>HTML: works very well, even when presented with poorly formatted html.  Delegates to the CSS beautifier to format style blocks within an HTML file.  Delegates to the included custom javascript beautifier to format script blocks within an HTML file. Delegates to the included custom java beautifier to format java scriptlet blocks within an HTML file.  This does a pretty good job on JSP files, although it will choke on a few things, like EL code within style or script blocks.</li>
          <li>JSP: this is new for Beauty 0.5 and takes care of the shortcomings of the HTML beautifier for JSP files.  This beautifier handles cleaning up jsp files, including script and style blocks and will even beautify java code within scriptlet blocks.
          <li>CSS: works very well.  The JSP beautifier delegates to this beautifier to clean up style blocks within JSP files.</li>
-         <li>Java: works very well, supports all Java versions through 1.8. Formats closely to Sun's formatting standard, with some formatting options available in the plugin settings.</li>
+         <li>Java: works very well, supports all Java versions through 17. Formats closely to Sun's formatting standard, with some formatting options available in the plugin settings.</li>
          <li>JavaCC: needs work, formats to a combination of Sun's Java formatting standard and my own style for javacc files.</li>
          <li>JSON: works very well.  JSON files are usually machine-generated in a single long line, so it is nice to be able to format them quickly to a more human-readable format.</li>
          <li>Beanshell: Works very well.  It generally follows Sun's formatting standard for java files, although beanshell code is slightly different from java code, so there are some minor differences.</li>
@@ -184,7 +184,6 @@
          <li>Whether or not to sort imports. This will also remove duplicate import statements.</li>
          <li>Whether or not to group imports. Grouping import statements also means they will be sorted.</li>
          <li>Number of blank lines between import groups.</li>
-         <li>Number of blank lines after a class declaration.</li>
          <li>Number of blank lines after a class body.</li>
          <li>Number of blank lines before constructors, methods, and inner classes.</li>
          <li>Number of blank lines after constructors, methods, and inner classes.</li>
@@ -196,6 +195,8 @@
                <li>final</li>
                <li>synchronized</li>
                <li>native</li>
+               <li>sealed</li>
+               <li>non-sealed</li>
                <li>strictfp</li>
                <li>transient</li>
                <li>volatile</li>

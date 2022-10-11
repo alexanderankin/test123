@@ -17,7 +17,6 @@ public class Java8OptionPane extends JPanel {
     private JCheckBox sortImports;
     private JCheckBox groupImports;
     private NumberTextField blankLinesBetweenImportGroups;
-    private NumberTextField blankLinesAfterClassDeclaration;
     private NumberTextField blankLinesAfterClassBody;
     private NumberTextField blankLinesBeforeMethods;
     private NumberTextField blankLinesAfterMethods;
@@ -54,10 +53,6 @@ public class Java8OptionPane extends JPanel {
         blankLinesBetweenImportGroups = new NumberTextField( 0, 100 );
         blankLinesBetweenImportGroups.setValue( jEdit.getIntegerProperty( "beauty.java8.blankLinesBetweenImportGroups", 1 ) );
 
-        JLabel blankLinesAfterClassDeclarationLabel = new JLabel( jEdit.getProperty( "beauty.java8.Blank_Lines_After_Class_Declaration", "Blank Lines After Class Declaration" ) );
-        blankLinesAfterClassDeclaration = new NumberTextField( 0, 100 );
-        blankLinesAfterClassDeclaration.setValue( jEdit.getIntegerProperty( "beauty.java8.blankLinesAfterClassDeclaration", 1 ) );
-
         JLabel blankLinesAfterClassBodyLabel = new JLabel( jEdit.getProperty( "beauty.java8.Blank_Lines_After_Class_Body", "Blank Lines After Class Body" ) );
         blankLinesAfterClassBody = new NumberTextField( 0, 100 );
         blankLinesAfterClassBody.setValue( jEdit.getIntegerProperty( "beauty.java8.blankLinesAfterClassBody", 1 ) );
@@ -92,19 +87,17 @@ public class Java8OptionPane extends JPanel {
         add( "0, 5, 1, 1, W, w, 3", groupImports );
         add( "0, 6, 1, 1, W, w, 3", blankLinesBetweenImportGroupsLabel );
         add( "1, 6, 1, 1, W, w, 3", blankLinesBetweenImportGroups );
-        add( "0, 7, 1, 1, W, w, 3", blankLinesAfterClassDeclarationLabel );
-        add( "1, 7, 1, 1, W, w, 3", blankLinesAfterClassDeclaration );
-        add( "0, 8, 1, 1, W, w, 3", blankLinesAfterClassBodyLabel );
-        add( "1, 8, 1, 1, W, w, 3", blankLinesAfterClassBody );
-        add( "0, 9, 1, 1, W, w, 3", blankLinesBeforeMethodsLabel );
-        add( "1, 9, 1, 1, W, w, 3", blankLinesBeforeMethods );
-        add( "0, 10,1, 1, W, w, 3", blankLinesAfterMethodsLabel );
-        add( "1, 10,1, 1, W, w, 3", blankLinesAfterMethods );
-        add( "0, 11,1, 1, W, w, 3", sortModifiers );
-        add( "0, 12,1, 1, W, w, 3", collapseMultipleBlankLinesToLabel );
-        add( "1, 12,1, 1, W, w, 3", collapseMultipleBlankLinesTo );
-        add( "0, 13,1, 1, W, w, 3", wrapLongLinesLengthLabel );
-        add( "1, 13,1, 1, W, w, 3", wrapLongLinesLength );
+        add( "0, 7, 1, 1, W, w, 3", blankLinesAfterClassBodyLabel );
+        add( "1, 7, 1, 1, W, w, 3", blankLinesAfterClassBody );
+        add( "0, 8, 1, 1, W, w, 3", blankLinesBeforeMethodsLabel );
+        add( "1, 8, 1, 1, W, w, 3", blankLinesBeforeMethods );
+        add( "0, 9 ,1, 1, W, w, 3", blankLinesAfterMethodsLabel );
+        add( "1, 9 ,1, 1, W, w, 3", blankLinesAfterMethods );
+        add( "0, 10,1, 1, W, w, 3", sortModifiers );
+        add( "0, 11,1, 1, W, w, 3", collapseMultipleBlankLinesToLabel );
+        add( "1, 11,1, 1, W, w, 3", collapseMultipleBlankLinesTo );
+        add( "0, 12,1, 1, W, w, 3", wrapLongLinesLengthLabel );
+        add( "1, 12,1, 1, W, w, 3", wrapLongLinesLength );
     }
 
     public void _save() {
@@ -114,7 +107,6 @@ public class Java8OptionPane extends JPanel {
         jEdit.setBooleanProperty( "beauty.java8.sortImports", sortImports.isSelected() );
         jEdit.setBooleanProperty( "beauty.java8.groupImports", groupImports.isSelected() );
         jEdit.setIntegerProperty( "beauty.java8.blankLinesBetweenImportGroups", blankLinesBetweenImportGroups.getValue() );
-        jEdit.setIntegerProperty( "beauty.java8.blankLinesAfterClassDeclaration", blankLinesAfterClassDeclaration.getValue() );
         jEdit.setIntegerProperty( "beauty.java8.blankLinesAfterClassBody", blankLinesAfterClassBody.getValue() );
         jEdit.setIntegerProperty( "beauty.java8.blankLinesBeforeMethods", blankLinesBeforeMethods.getValue() );
         jEdit.setIntegerProperty( "beauty.java8.blankLinesAfterMethods", blankLinesAfterMethods.getValue() );

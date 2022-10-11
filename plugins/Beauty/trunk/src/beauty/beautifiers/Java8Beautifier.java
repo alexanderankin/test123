@@ -16,7 +16,7 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.*;
 import org.gjt.sp.jedit.jEdit;
 
-
+// This is a newer parser based on Antlr and supports java 8 language. 
 public class Java8Beautifier extends Beautifier {
 
     private int bracketStyle = 1;    // JavaParser.ATTACHED;
@@ -63,7 +63,7 @@ public class Java8Beautifier extends Beautifier {
 
             // set up the parser
             StringReader input = new StringReader( text );
-            ANTLRInputStream antlrInput = new ANTLRInputStream( input );
+            CharStream antlrInput = CharStreams.fromReader(input);
             Java8Lexer lexer = new Java8Lexer( antlrInput );
             CommonTokenStream tokens = new CommonTokenStream( lexer );
             Java8Parser javaParser = new Java8Parser( tokens );
@@ -100,7 +100,7 @@ public class Java8Beautifier extends Beautifier {
 
                 // first try the faster SSL(*) parsing strategy
                 javaParser.getInterpreter().setPredictionMode( PredictionMode.SLL );
-                javaParser.getInterpreter().tail_call_preserves_sll = false;
+                //javaParser.getInterpreter().tail_call_preserves_sll = false;
                 javaParser.removeErrorListeners();
                 javaParser.setErrorHandler( new BailErrorStrategy() );
                 tree = javaParser.compilationUnit();
@@ -111,7 +111,9 @@ public class Java8Beautifier extends Beautifier {
                 // if first parse fails, try again with slower LL(*) parse
                 // Actually, the slowness happens in the first parse, since the
                 // input was tokenized there and is reused here.
-                tokens.reset();    // rewind input stream
+                // deprecated:
+                //tokens.reset();    // rewind input stream
+                tokens.seek(0);      // rewind input stream
                 javaParser.reset();
 
                 // add an error listener to the parser to capture any real errors
@@ -119,8 +121,8 @@ public class Java8Beautifier extends Beautifier {
                 errorListener = new ErrorListener();
                 javaParser.addErrorListener( errorListener );
                 javaParser.setErrorHandler( new DefaultErrorStrategy() );
-                javaParser.getInterpreter().tail_call_preserves_sll = false;
-                javaParser.getInterpreter().enable_global_context_dfa = true;
+                //javaParser.getInterpreter().tail_call_preserves_sll = false;
+                //javaParser.getInterpreter().enable_global_context_dfa = true;
 
                 // reparse with full LL(*)
                 javaParser.getInterpreter().setPredictionMode( PredictionMode.LL );

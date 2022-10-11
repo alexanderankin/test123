@@ -1,6 +1,7 @@
 
 package beauty.beautifiers;
 
+import beauty.parsers.ErrorListener;
 import beauty.parsers.ParserException;
 import beauty.parsers.java.java.*;
 

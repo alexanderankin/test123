@@ -1,7 +1,7 @@
 
 package beauty.options.java;
 
-import beauty.parsers.java.JavaParser;
+import beauty.parsers.java.java.JavaParserBeautyListener;
 
 import ise.java.awt.*;
 
@@ -32,7 +32,7 @@ public class JavaOptionPane extends JPanel {
 
     public JavaOptionPane() {
         super();
-        bracketStyle = jEdit.getIntegerProperty( "beauty.java.bracketStyle", JavaParser.ATTACHED );
+        bracketStyle = jEdit.getIntegerProperty( "beauty.java.bracketStyle", JavaParserBeautyListener.ATTACHED );
     }
 
     // called when this class is first accessed
@@ -55,14 +55,14 @@ public class JavaOptionPane extends JPanel {
         bg.add( brokenBrackets );
         breakElse = new JCheckBox( "<html>" + jEdit.getProperty( "beauty.msg.Break", "Break" ) + " 'else', 'catch', 'while', e.g.<br>}<br>else" );
         breakElse.setSelected( jEdit.getBooleanProperty( "beauty.java.breakElse", false ) );
-        breakElse.setEnabled( bracketStyle == JavaParser.ATTACHED );
+        breakElse.setEnabled( bracketStyle == JavaParserBeautyListener.ATTACHED );
 
         switch ( bracketStyle ) {
-            case JavaParser.ATTACHED:
+            case JavaParserBeautyListener.ATTACHED:
                 attachedBrackets.setSelected( true );
                 brokenBrackets.setSelected( false );
                 break;
-            case JavaParser.BROKEN:
+            case JavaParserBeautyListener.BROKEN:
                 attachedBrackets.setSelected( false );
                 brokenBrackets.setSelected( true );
                 breakElse.setSelected( true );
@@ -80,15 +80,15 @@ public class JavaOptionPane extends JPanel {
 
             public void actionPerformed( ActionEvent ae ) {
                 if ( attachedBrackets.equals( ae.getSource() ) ) {
-                    bracketStyle = JavaParser.ATTACHED;
+                    bracketStyle = JavaParserBeautyListener.ATTACHED;
                 }
                 else if ( brokenBrackets.equals( ae.getSource() ) ) {
-                    bracketStyle = JavaParser.BROKEN;
+                    bracketStyle = JavaParserBeautyListener.BROKEN;
                     breakElse.setSelected( true );
                 }
 
 
-                breakElse.setEnabled( bracketStyle == JavaParser.ATTACHED );
+                breakElse.setEnabled( bracketStyle == JavaParserBeautyListener.ATTACHED );
             }
         };
         attachedBrackets.addActionListener( al );
