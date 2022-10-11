@@ -1,6 +1,5 @@
-package beauty.parsers.java.java;
+package beauty.parsers;
 
-import beauty.parsers.ParserException;
 
 import java.util.*;
 
@@ -27,9 +26,10 @@ public class ErrorListener extends BaseErrorListener {
         errors.add(pe);
     }
 
-	/**
- 	* Takes a long line as input, splits it into line of no more than <code>wrapLineLength</code>.	
- 	*/
+    /**
+     * The antlr output is sometimes very verbose, so this method
+     * takes a long line as input, splits it into lines of no more than80 characters.
+     */
     private String wrapLongLine(String s) {
         StringTokenizer st = new StringTokenizer(s, " ");
         StringBuilder sb = new StringBuilder(s.length());
@@ -37,6 +37,7 @@ public class ErrorListener extends BaseErrorListener {
         int lineLength = 0;
         while (st.hasMoreTokens()) {
             String token = st.nextToken();
+
             if (lineLength + token.length() > 80) {
                 sb.append('\n');
                 lineLength = 0;
@@ -45,6 +46,7 @@ public class ErrorListener extends BaseErrorListener {
             lineLength += token.length();
         }
         return sb.toString();
-    }	
+    }
+
     
 }

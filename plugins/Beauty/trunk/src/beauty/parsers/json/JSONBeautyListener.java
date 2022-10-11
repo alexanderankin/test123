@@ -1,143 +1,293 @@
 package beauty.parsers.json;
 
+import beauty.parsers.ErrorListener;
+import beauty.parsers.ParserException;
+import static beauty.parsers.json.JSONParser.*;
 
+import java.io.*;
+import java.util.*;
+
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.tree.*;
+
+
+/**
+ * There is NO support for comments.
+ */
 public class JSONBeautyListener extends JSONBaseListener {
+    private String output = "";    
 
-    private StringBuilder output;
     private int tabCount = 0;
-    private String tab;
 
-    public JSONBeautyListener(int initialSize, boolean softTabs, int tabWidth) {
-        output = new StringBuilder(initialSize);
+    private String tab;
+    
+    // bracket styles
+    public static final int ATTACHED = 1;
+    public static final int BROKEN = 2;
+    private boolean brokenBracket = true;
+    
+
+    // stack for holding intermediate formatted parts
+    private Deque<String> stack = new ArrayDeque<String>();
+
+    public JSONBeautyListener(boolean softTabs, int tabWidth) {
+
         if (softTabs) {
             StringBuilder sb = new StringBuilder();
+
             for (int i = 0; i < tabWidth; i++) {
-                sb.append(' ');   
+                sb.append(' ');
             }
             tab = sb.toString();
         }
         else {
-            tab = "\t";   
+            tab = "\t";
         }
     }
+
+    // for testing
+    public static void main(String [] args) {
+        if (args == null) {
+            return;
+        }
+        ErrorListener errorListener = null;
+        try {
+            // set up the parser
+            java.io.FileReader input = new java.io.FileReader(args[0]);
+            CharStream antlrInput = CharStreams.fromReader(input);
+            JSONLexer lexer = new JSONLexer(antlrInput);
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            JSONParser jsonParser = new JSONParser(tokens);
+            // add an error handler that stops beautifying on any parsing error
+            jsonParser.removeErrorListeners();
+            errorListener = new ErrorListener();
+            jsonParser.addErrorListener(errorListener);
+            jsonParser.setErrorHandler(new DefaultErrorStrategy());
+            // parse and beautify the buffer contents
+            ParseTree tree = jsonParser.json();
+            ParseTreeWalker walker = new ParseTreeWalker();
+            JSONBeautyListener listener = new JSONBeautyListener(true, 4);
+            walker.walk(listener, tree);
+            System.out.println(listener.getText());
+        }
+        catch ( Exception e) {
+            java.util.List<ParserException> errors = errorListener.getErrors();
+
+            if (errors != null && errors.size() > 0) {
+                System.out.println("+++++ json error: " + errors.get(0));
+            }
+        }
+    }
+
+    public void setBracketStyle(int style) {
+        brokenBracket = BROKEN == style;
+    }
     
+    // the final product
     public String getText() {
-        return output.toString();
-    } 
+        return output;
+    }
+
+    // ==============================================================================
+    // parser methods
+    // ==============================================================================
     
-    @Override public void enterObject( JSONParser.ObjectContext ctx ) {
-        outdent();
-        if ( output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
-            output.append( '\n' );
-        }
-        indent();
-        output.append( "{\n" );
-        ++tabCount;
-        indent();
-    } 
-    
-    @Override public void exitObject( JSONParser.ObjectContext ctx ) {
-        // if there is a trailing comma and whitespace from adding the children
-        // of this object, remove the comma and whitespace from the output.
-        chopToComma();
-        
-        output.append('\n');
-        --tabCount;
-        indent();
-        output.append( '}' );
-    } 
-    
-    @Override public void enterArray( JSONParser.ArrayContext ctx ) {
-        // if the array has more than one value, format like this:
-        // [
-        //     values
-        // ]
-        if (ctx.value() != null && ctx.value().size() > 1) {
-            output.append('\n');
-            indent();
-            output.append( "[\n" );
-            ++tabCount;
-            indent();
-        }
-        else {
-            // the array only has one value so format like this:
-            // [ value ]
-            output.append( '[' );   
-        }
-    } 
-    
-    @Override public void exitArray( JSONParser.ArrayContext ctx ) {
-        // if there is a trailing comma and whitespace from adding the children
-        // of this array, remove the comma and whitespace from the output.
-        chopToComma();
-        
-        // if there were multiple children, need to add a new line and outdent
-        // before adding the closing ]
-        if (ctx.value() != null && ctx.value().size() > 1) {
-            output.append('\n');
-            --tabCount;
-            indent();
-        }
-        else {
-            outdent();   
-        }
-        output.append( ']' );
-    } 
-    
-    @Override public void enterPair( JSONParser.PairContext ctx ) {
-        output.append( ctx.STRING().getText() ).append( ": " );
-    } 
-    
-    @Override public void exitPair( JSONParser.PairContext ctx ) {
-        if ( ctx.getParent() instanceof JSONParser.ArrayContext || ctx.getParent() instanceof JSONParser.ObjectContext ) {
-            outdent();
-            output.append( ",\n" );
-            indent();
-        }
-    } 
-    
-    @Override public void enterValue( JSONParser.ValueContext ctx ) {
-        if ( ctx.STRING() != null ) {
-            output.append( ctx.STRING().getText() );
-        } else if ( ctx.NUMBER() != null ) {
-            output.append( ctx.NUMBER().getText() );
-        }
-    } 
-    
-    @Override public void exitValue( JSONParser.ValueContext ctx ) {
-        if ( ctx.getParent() instanceof JSONParser.ArrayContext || ctx.getParent() instanceof JSONParser.ObjectContext ) {
-            outdent();
-            output.append( ",\n" );
-            indent();
+    /**
+     * json:   object
+     *     |   array
+     *     ;
+     */
+    @Override
+    public void exitJson(JSONParser.JsonContext ctx) {
+        if (ctx.object() != null || ctx.array() != null) {
+            output = stack.pop().trim();
         }
     }
 
-    private void indent() {
-        for ( int i = 0; i < tabCount; i++ ) {
-            output.append( tab );
-        }
-    }
-    
-    private void outdent() {
-        if (output.length() < tab.length()) {
-            return;   
-        }
-        while(output.charAt(output.length() - 1) == '\t' || output.charAt(output.length() - 1) == ' ') {
-            output.deleteCharAt(output.length() - 1);   
-        }
-    }
-
-    // remove the last comma and trailing whitespace, only chops if there is
-    // only whitespace following the last comma.
-    private void chopToComma() {
-        int commaPosition = output.lastIndexOf( "," );
-        if ( commaPosition > -1 ) {
-            for ( int i = commaPosition + 1; i < output.length(); i++ ) {
-                if ( !Character.isWhitespace( output.charAt( i ) ) ) {
-                    return;
+    /**
+     * object
+     *     :   LBRACE pair (',' pair)* RBRACE
+     *     |   LBRACE RBRACE // empty object
+     *     ;
+     */
+    @Override public void exitObject(JSONParser.ObjectContext ctx) {
+        String rb = stack.pop();    // }
+        String pairs = "";
+        
+        if (ctx.pair() != null && ctx.pair().size() > 0) {
+            List<String> parts = new ArrayList<String>();
+            for (int i = 0; i < ctx.pair().size() * 2 - 1; i++) {     // pairs and commas
+                parts.add(0, stack.pop());
+            }
+            StringBuilder sb = new StringBuilder();
+            for (String p : parts) {
+                sb.append(p);
+                if (p.equals(",")) {
+                    sb.append('\n');    
                 }
             }
-            output.delete( commaPosition, output.length() - 1 );
+            pairs = sb.toString();
         }
+        String lb = stack.pop();    // {
+        StringBuilder sb = new StringBuilder();
+        if (brokenBracket) {
+            sb.append('\n');
+            sb.append(indent(lb));
+        }
+        else {
+            sb.append(lb);
+        }
+        ++tabCount;
+        if (!pairs.isEmpty()) {
+            sb.append('\n');
+            sb.append(indent(pairs));
+            sb.append('\n');
+        }
+        --tabCount;
+        if (brokenBracket) {
+            sb.append(indent(rb));
+        }
+        else {
+            sb.append(rb);
+        }
+        stack.push(sb.toString());
     }
+
+    /**
+     * pair:   STRING ':' value ;
+     */
+    @Override public void exitPair(JSONParser.PairContext ctx) {
+        String value = stack.pop();
+        String colon = stack.pop();
+        String name = stack.pop();
+        StringBuilder sb = new StringBuilder();
+        sb.append(name).append(colon).append(' ').append(value);
+        stack.push(sb.toString());
+    }
+
+    /**
+     * array
+     *     :   LSQUARE value (',' value)* RSQUARE
+     *     |   LSQUARE RSQUARE // empty array
+     *     ;
+     */
+    @Override public void exitArray(JSONParser.ArrayContext ctx) {
+        String rs = stack.pop();    // }
+        String values = "";
+        
+        if (ctx.value() != null && ctx.value().size() > 0) {
+            List<String> parts = new ArrayList<String>();
+            for (int i = 0; i < ctx.value().size() * 2 - 1; i++) {     // values and commas
+                parts.add(0, stack.pop());
+            }
+            StringBuilder sb = new StringBuilder();
+            for (String p : parts) {
+                sb.append(p.trim());
+                if (p.equals(",")) {
+                    sb.append('\n');    
+                }
+            }
+            values = sb.toString();
+        }
+        String ls = stack.pop();    // {
+        StringBuilder sb = new StringBuilder();
+        if (brokenBracket) {
+            sb.append('\n');
+            sb.append(indent(ls));
+            sb.append('\n');
+        }
+        else {
+            sb.append(ls);
+        }
+        ++tabCount;
+        if (!values.isEmpty()) {
+            sb.append(indent(values));
+        }
+        --tabCount;
+        if (brokenBracket) {
+            sb.append('\n');
+            sb.append(indent(rs));
+        }
+        else {
+            sb.append(rs);
+        }
+        stack.push(sb.toString());
+    }
+
+    /**
+     * value
+     *     :   STRING
+     *     |   NUMBER
+     *     |   object  // recursion
+     *     |   array   // recursion
+     *     ;
+     */
+    @Override public void exitValue(JSONParser.ValueContext ctx) {
+        // nothing to do here, one of the choices should already be on the stack
+    }
+
+    @Override
+    public void visitTerminal(TerminalNode node) {
+        String terminalText = node.getText().trim();
+        stack.push(terminalText);
+    }
+
+    // ==============================================================================
+    // formatting methods
+    // ==============================================================================
+    private String getIndent() {
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < tabCount; i++) {
+            sb.append(tab);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Split the given string into lines, trim each line, then add tabcount * tab
+     * whitespace to the start of each line and a new line at the end of each line.
+     * All trailing new lines are removed.
+     */
+    private String indent(String s) {
+        StringBuilder sb = new StringBuilder();
+        String [] lines = s.split("\n");
+        String indent = getIndent();
+
+        for ( String line : lines) {
+            sb.append(indent);
+            //line = line.trim();
+            sb.append(line).append('\n');
+        }
+        return trimEnd(sb);
+    }
+
+    /**
+     * StringBuilder doesn't have a "trim" method. This trims whitespace from
+     * the end of the string builder. Whitespace on the front is not touched.
+     * There are two ways to use this, pass in a StringBuilder then use the same
+     * StringBuilder, it's end will have been trimmed, or pass in a StringBuilder
+     * and use the returned String.
+     * @param sb The StringBuilder to trim.
+     * @return The trimmed string.
+     */
+    public String trimEnd(StringBuilder sb) {
+        if (sb == null || sb.length() == 0) {
+            return "";
+        }
+        while(sb.length() > 0 && Character.isWhitespace(sb.charAt(sb.length() - 1))) {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        return sb.toString();
+    }
+    
+    /**
+     * Removes whitespace from the end of a string.
+     * @param s The string to trim.
+     * @return The trimmed string.
+     */
+    public String trimEnd(String s) {
+        return trimEnd(new StringBuilder(s));   
+    }
+    
 }
