@@ -1,7 +1,6 @@
 // :folding=explicit:
 package beauty.parsers.java.antlr;
 
-import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
@@ -1037,7 +1036,7 @@ Testing and debugging methods.
             // set up the parser
             long startTime = System.currentTimeMillis();
             java.io.FileReader input = new java.io.FileReader(args[0]);
-            ANTLRInputStream antlrInput = new ANTLRInputStream( input );
+            CharStream antlrInput = CharStreams.fromReader(input);
             Java8Lexer lexer = new Java8Lexer( antlrInput );
             CommonTokenStream tokens = new CommonTokenStream( lexer );
             Java8Parser javaParser = new Java8Parser( tokens );
@@ -1053,16 +1052,16 @@ Testing and debugging methods.
             ParseTree tree = null;
             try {
                 javaParser.getInterpreter().setPredictionMode(org.antlr.v4.runtime.atn.PredictionMode.SLL);
-                javaParser.getInterpreter().tail_call_preserves_sll = false;
+                //javaParser.getInterpreter().tail_call_preserves_sll = false;
                 javaParser.removeErrorListeners();
                 javaParser.setErrorHandler(new BailErrorStrategy());
                 tree = javaParser.compilationUnit();
             }
             catch(org.antlr.v4.runtime.misc.ParseCancellationException ex) {
                 //ex.printStackTrace();
-                System.out.println("+++++ first pass: " + (System.currentTimeMillis() - startTime) + " ms");
-                System.out.println("+++++ Encountered possible syntax error, reparsing...");
-                tokens.reset(); // rewind input stream
+                //System.out.println("+++++ first pass: " + (System.currentTimeMillis() - startTime) + " ms");
+                //System.out.println("+++++ Encountered possible syntax error, reparsing...");
+                tokens.seek(0); // rewinde input stream
                 javaParser.reset();
                 javaParser.setTrace(args.length > 1 && "trace".equals(args[1]));
                 // back to standard listeners/handlers
@@ -1070,12 +1069,12 @@ Testing and debugging methods.
                 javaParser.setErrorHandler(new DefaultErrorStrategy());
                 // full now with full LL(*)
                 javaParser.getInterpreter().setPredictionMode(org.antlr.v4.runtime.atn.PredictionMode.LL);
-                javaParser.getInterpreter().tail_call_preserves_sll = false;
-                javaParser.getInterpreter().enable_global_context_dfa = true;
+                //javaParser.getInterpreter().tail_call_preserves_sll = false;
+                //javaParser.getInterpreter().enable_global_context_dfa = true;
                 
                 long parseTime = System.currentTimeMillis();
                 tree = javaParser.compilationUnit();        
-                System.out.println("+++++ second pass: " + (System.currentTimeMillis() - parseTime) + " ms");
+                //System.out.println("+++++ second pass: " + (System.currentTimeMillis() - parseTime) + " ms");
             }
             walker.walk( listener, tree );
 
@@ -1096,35 +1095,35 @@ Parser methods follow.
 --------------------------------------------------------------------------------
 */
 //{{{    
-	@Override public void enterClassMemberDeclaration(@NotNull Java8Parser.ClassMemberDeclarationContext ctx) { 
+	@Override public void enterClassMemberDeclaration(Java8Parser.ClassMemberDeclarationContext ctx) { 
 	    // FieldDeclaration
 	    // MethodDeclaration
 	    // ClassDeclaration
 	    // InterfaceDeclaration
 	    // ;
 	}
-	@Override public void exitClassMemberDeclaration(@NotNull Java8Parser.ClassMemberDeclarationContext ctx) { 
+	@Override public void exitClassMemberDeclaration(Java8Parser.ClassMemberDeclarationContext ctx) { 
 	    if (";".equals(stack.peek())) {
 	        String semi = stack.pop() + '\n';
 	        stack.push(semi);
 	    }
 	}
 
-	@Override public void enterStatementNoShortIf(@NotNull Java8Parser.StatementNoShortIfContext ctx) { 
+	@Override public void enterStatementNoShortIf(Java8Parser.StatementNoShortIfContext ctx) { 
 	    // StatementWithoutTrailingSubstatement
 	    // LabeledStatementNoShortIf
 	    // IfThenElseStatementNoShortIf
 	    // WhileStatementNoShortIf
 	    // ForStatementNoShortIf
 	}
-	@Override public void exitStatementNoShortIf(@NotNull Java8Parser.StatementNoShortIfContext ctx) {
+	@Override public void exitStatementNoShortIf(Java8Parser.StatementNoShortIfContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterAnnotationTypeElementDeclaration(@NotNull Java8Parser.AnnotationTypeElementDeclarationContext ctx) {
+	@Override public void enterAnnotationTypeElementDeclaration(Java8Parser.AnnotationTypeElementDeclarationContext ctx) {
 	    // annotationTypeElementModifier* unannType Identifier '(' ')' dims? defaultValue? ';'
 	}
-	@Override public void exitAnnotationTypeElementDeclaration(@NotNull Java8Parser.AnnotationTypeElementDeclarationContext ctx) {
+	@Override public void exitAnnotationTypeElementDeclaration(Java8Parser.AnnotationTypeElementDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String semi = stack.pop();
 	    String defaultValue = ctx.defaultValue() == null ? "" : stack.pop();
@@ -1147,10 +1146,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterMethodInvocation_lf_primary(@NotNull Java8Parser.MethodInvocation_lf_primaryContext ctx) {
+	@Override public void enterMethodInvocation_lf_primary(Java8Parser.MethodInvocation_lf_primaryContext ctx) {
 	    // 	'.' typeArguments? Identifier '(' argumentList? ')'
 	}
-	@Override public void exitMethodInvocation_lf_primary(@NotNull Java8Parser.MethodInvocation_lf_primaryContext ctx) {
+	@Override public void exitMethodInvocation_lf_primary(Java8Parser.MethodInvocation_lf_primaryContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String rparen = stack.pop();
 	    String argumentList = ctx.argumentList() == null ? "" : stack.pop();
@@ -1166,17 +1165,17 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterPrimaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primary(@NotNull Java8Parser.PrimaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primaryContext ctx) { 
+	@Override public void enterPrimaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primary(Java8Parser.PrimaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primaryContext ctx) { 
 	    // do nothing here
 	}
-	@Override public void exitPrimaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primary(@NotNull Java8Parser.PrimaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primaryContext ctx) { 
+	@Override public void exitPrimaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primary(Java8Parser.PrimaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primaryContext ctx) { 
 	    // do nothing here
 	}
 
-	@Override public void enterAnnotationTypeBody(@NotNull Java8Parser.AnnotationTypeBodyContext ctx) { 
+	@Override public void enterAnnotationTypeBody(Java8Parser.AnnotationTypeBodyContext ctx) { 
 	    // '{' annotationTypeMemberDeclaration* '}'	
 	}
-	@Override public void exitAnnotationTypeBody(@NotNull Java8Parser.AnnotationTypeBodyContext ctx) { 
+	@Override public void exitAnnotationTypeBody(Java8Parser.AnnotationTypeBodyContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String rbrace = stack.pop().trim();
 	    String body = "";
@@ -1192,7 +1191,7 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterRelationalOperator(@NotNull Java8Parser.RelationalOperatorContext ctx) { }
+	@Override public void enterRelationalOperator(Java8Parser.RelationalOperatorContext ctx) { }
 	
 	/**
  	 * relationalOperator
@@ -1203,62 +1202,62 @@ Parser methods follow.
  	 *     |   'instanceof'
  	 *     ;
  	 */
-	@Override public void exitRelationalOperator(@NotNull Java8Parser.RelationalOperatorContext ctx) {
+	@Override public void exitRelationalOperator(Java8Parser.RelationalOperatorContext ctx) {
 	    // now doing the padding in exitRelationalExpression
 	    //stack.pop();
 	    //stack.push(padOperator(ctx.getText()));
 	}
 	
-	@Override public void enterConstantModifier(@NotNull Java8Parser.ConstantModifierContext ctx) {
+	@Override public void enterConstantModifier(Java8Parser.ConstantModifierContext ctx) {
 	    // (one of) Annotation public 
 	    // static final	
 	}
-	@Override public void exitConstantModifier(@NotNull Java8Parser.ConstantModifierContext ctx) {
+	@Override public void exitConstantModifier(Java8Parser.ConstantModifierContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterLambdaBody(@NotNull Java8Parser.LambdaBodyContext ctx) { 
+	@Override public void enterLambdaBody(Java8Parser.LambdaBodyContext ctx) { 
 	    // Expression 
 	    // Block
 	}
-	@Override public void exitLambdaBody(@NotNull Java8Parser.LambdaBodyContext ctx) {
+	@Override public void exitLambdaBody(Java8Parser.LambdaBodyContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterArgumentList(@NotNull Java8Parser.ArgumentListContext ctx) {
+	@Override public void enterArgumentList(Java8Parser.ArgumentListContext ctx) {
 	    // expression (',' expression)*
 	}
-	@Override public void exitArgumentList(@NotNull Java8Parser.ArgumentListContext ctx) {
+	@Override public void exitArgumentList(Java8Parser.ArgumentListContext ctx) {
 	    StringBuilder sb = new StringBuilder();
         sb.append(reverse(ctx.expression().size() * 2 - 1, " ", 2));
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterShiftOperator(@NotNull Java8Parser.ShiftOperatorContext ctx) {
+	@Override public void enterShiftOperator(Java8Parser.ShiftOperatorContext ctx) {
         // :   '<<'
         // |   '>>>'
         // |   '>>'  
  	}
-	@Override public void exitShiftOperator(@NotNull Java8Parser.ShiftOperatorContext ctx) {
+	@Override public void exitShiftOperator(Java8Parser.ShiftOperatorContext ctx) {
 	    //stack.pop();
 	    //stack.push(padOperator(ctx.getText()));
 	}
 	
-	@Override public void enterClassBodyDeclaration(@NotNull Java8Parser.ClassBodyDeclarationContext ctx) {
+	@Override public void enterClassBodyDeclaration(Java8Parser.ClassBodyDeclarationContext ctx) {
 	    // ClassMemberDeclaration
 	    // InstanceInitializer
 	    // StaticInitializer
 	    // ConstructorDeclaration
 	}
-	@Override public void exitClassBodyDeclaration(@NotNull Java8Parser.ClassBodyDeclarationContext ctx) {
+	@Override public void exitClassBodyDeclaration(Java8Parser.ClassBodyDeclarationContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterClassInstanceCreationExpression_lfno_primary(@NotNull Java8Parser.ClassInstanceCreationExpression_lfno_primaryContext ctx) { 
+	@Override public void enterClassInstanceCreationExpression_lfno_primary(Java8Parser.ClassInstanceCreationExpression_lfno_primaryContext ctx) { 
 	    // :	'new' typeArguments? annotationIdentifier ('.' annotationIdentifier)* typeArgumentsOrDiamond? '(' argumentList? ')' classBody?
 	    // |	expressionName '.' 'new' typeArguments? annotationIdentifier          typeArgumentsOrDiamond? '(' argumentList? ')' classBody?
 	}
-	@Override public void exitClassInstanceCreationExpression_lfno_primary(@NotNull Java8Parser.ClassInstanceCreationExpression_lfno_primaryContext ctx) { 
+	@Override public void exitClassInstanceCreationExpression_lfno_primary(Java8Parser.ClassInstanceCreationExpression_lfno_primaryContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    // common ending
 	    String classBody = ctx.classBody() == null ? "" : stack.pop().trim();
@@ -1295,25 +1294,25 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterPrimaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primary(@NotNull Java8Parser.PrimaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primaryContext ctx) {
+	@Override public void enterPrimaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primary(Java8Parser.PrimaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primaryContext ctx) {
         // :	classInstanceCreationExpression_lf_primary
         // |	fieldAccess_lf_primary
         // |	methodInvocation_lf_primary
         // |	methodReference_lf_primary
 	
 	}
-	@Override public void exitPrimaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primary(@NotNull Java8Parser.PrimaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primaryContext ctx) { 
+	@Override public void exitPrimaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primary(Java8Parser.PrimaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primaryContext ctx) { 
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterUnaryExpression(@NotNull Java8Parser.UnaryExpressionContext ctx) { 
+	@Override public void enterUnaryExpression(Java8Parser.UnaryExpressionContext ctx) { 
 	    // PreIncrementExpression 
 	    // PreDecrementExpression 
 	    // + UnaryExpression -- changed to AdditiveOperator UnaryExpression 
 	    // - UnaryExpression -- changed to AdditiveOperator UnaryExpression
 	    // UnaryExpressionNotPlusMinus	
 	}
-	@Override public void exitUnaryExpression(@NotNull Java8Parser.UnaryExpressionContext ctx) {
+	@Override public void exitUnaryExpression(Java8Parser.UnaryExpressionContext ctx) {
 	    
 	    StringBuilder sb = new StringBuilder();
 	    String expression = stack.pop();
@@ -1325,22 +1324,22 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterClassType_lfno_classOrInterfaceType(@NotNull Java8Parser.ClassType_lfno_classOrInterfaceTypeContext ctx) {
+	@Override public void enterClassType_lfno_classOrInterfaceType(Java8Parser.ClassType_lfno_classOrInterfaceTypeContext ctx) {
 	    // annotationIdentifier typeArguments?
 	}
-	@Override public void exitClassType_lfno_classOrInterfaceType(@NotNull Java8Parser.ClassType_lfno_classOrInterfaceTypeContext ctx) { 
+	@Override public void exitClassType_lfno_classOrInterfaceType(Java8Parser.ClassType_lfno_classOrInterfaceTypeContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String typeArgs = ctx.typeArguments() == null ? "" : " " + stack.pop();
 	    sb.append(stack.pop()).append(typeArgs);
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterArrayType(@NotNull Java8Parser.ArrayTypeContext ctx) { 
+	@Override public void enterArrayType(Java8Parser.ArrayTypeContext ctx) { 
 	    // :	primitiveType dims
 	    // |	classOrInterfaceType dims
 	    // |	typeVariable dims        
 	}
-	@Override public void exitArrayType(@NotNull Java8Parser.ArrayTypeContext ctx) { 
+	@Override public void exitArrayType(Java8Parser.ArrayTypeContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String dims = stack.pop();
 	    String type = stack.pop();
@@ -1352,18 +1351,18 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterSimpleTypeName(@NotNull Java8Parser.SimpleTypeNameContext ctx) {
+	@Override public void enterSimpleTypeName(Java8Parser.SimpleTypeNameContext ctx) {
 	    // Identifier
 	}
-	@Override public void exitSimpleTypeName(@NotNull Java8Parser.SimpleTypeNameContext ctx) {
+	@Override public void exitSimpleTypeName(Java8Parser.SimpleTypeNameContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterExpressionName(@NotNull Java8Parser.ExpressionNameContext ctx) { 
+	@Override public void enterExpressionName(Java8Parser.ExpressionNameContext ctx) { 
 	    // Identifier
 	    // AmbiguousName . Identifier
 	}
-	@Override public void exitExpressionName(@NotNull Java8Parser.ExpressionNameContext ctx) { 
+	@Override public void exitExpressionName(Java8Parser.ExpressionNameContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String identifier = stack.pop();
 	    if (ctx.ambiguousName() != null) {
@@ -1376,7 +1375,7 @@ Parser methods follow.
 	    
 	}
 
-	@Override public void enterStatementWithoutTrailingSubstatement(@NotNull Java8Parser.StatementWithoutTrailingSubstatementContext ctx) {
+	@Override public void enterStatementWithoutTrailingSubstatement(Java8Parser.StatementWithoutTrailingSubstatementContext ctx) {
 	    // Block
 	    // EmptyStatement
 	    // ExpressionStatement 
@@ -1391,14 +1390,14 @@ Parser methods follow.
         // TryStatement
 
 	}
-	@Override public void exitStatementWithoutTrailingSubstatement(@NotNull Java8Parser.StatementWithoutTrailingSubstatementContext ctx) {
+	@Override public void exitStatementWithoutTrailingSubstatement(Java8Parser.StatementWithoutTrailingSubstatementContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterConstructorDeclarator(@NotNull Java8Parser.ConstructorDeclaratorContext ctx) {
+	@Override public void enterConstructorDeclarator(Java8Parser.ConstructorDeclaratorContext ctx) {
 	    // [TypeParameters] SimpleTypeName ( [FormalParameterList] )
 	}
-	@Override public void exitConstructorDeclarator(@NotNull Java8Parser.ConstructorDeclaratorContext ctx) { 
+	@Override public void exitConstructorDeclarator(Java8Parser.ConstructorDeclaratorContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String rparen = stack.pop();
 	    String formalParameters = "";
@@ -1420,11 +1419,11 @@ Parser methods follow.
         stack.push(sb.toString());
 	}
 
-	@Override public void enterAssertStatement(@NotNull Java8Parser.AssertStatementContext ctx) {
+	@Override public void enterAssertStatement(Java8Parser.AssertStatementContext ctx) {
         // :	'assert' expression ';'
         // |	'assert' expression ':' expression ';'	
 	}
-	@Override public void exitAssertStatement(@NotNull Java8Parser.AssertStatementContext ctx) { 
+	@Override public void exitAssertStatement(Java8Parser.AssertStatementContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String semi = stack.pop();
 	    if (ctx.expression() != null) {
@@ -1442,13 +1441,13 @@ Parser methods follow.
 	    }
 	    stack.push(sb.toString());
 	}
-	@Override public void enterArrayCreationExpression(@NotNull Java8Parser.ArrayCreationExpressionContext ctx) {
+	@Override public void enterArrayCreationExpression(Java8Parser.ArrayCreationExpressionContext ctx) {
 	    // :	'new' primitiveType dimExprs dims?
 	    // |	'new' classOrInterfaceType dimExprs dims?
 	    // |	'new' primitiveType dims arrayInitializer
 	    // |	'new' classOrInterfaceType dims arrayInitializer	
 	}
-	@Override public void exitArrayCreationExpression(@NotNull Java8Parser.ArrayCreationExpressionContext ctx) {
+	@Override public void exitArrayCreationExpression(Java8Parser.ArrayCreationExpressionContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.arrayInitializer() != null) {
 	        // last two choices 
@@ -1475,12 +1474,12 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterUnannArrayType(@NotNull Java8Parser.UnannArrayTypeContext ctx) {
+	@Override public void enterUnannArrayType(Java8Parser.UnannArrayTypeContext ctx) {
 	    // UnannPrimitiveType Dims
 	    // UnannClassOrInterfaceType Dims
 	    // UnannTypeVariable Dims
 	}
-	@Override public void exitUnannArrayType(@NotNull Java8Parser.UnannArrayTypeContext ctx) { 
+	@Override public void exitUnannArrayType(Java8Parser.UnannArrayTypeContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String dims = stack.pop();
 	    String type = stack.pop();
@@ -1492,10 +1491,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterVariableDeclaratorId(@NotNull Java8Parser.VariableDeclaratorIdContext ctx) { 
+	@Override public void enterVariableDeclaratorId(Java8Parser.VariableDeclaratorIdContext ctx) { 
 	    // Identifier [Dims]
 	}
-	@Override public void exitVariableDeclaratorId(@NotNull Java8Parser.VariableDeclaratorIdContext ctx) { 
+	@Override public void exitVariableDeclaratorId(Java8Parser.VariableDeclaratorIdContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String dims = ctx.dims() == null ? "" : stack.pop();
 	    String identifier = stack.pop();
@@ -1503,10 +1502,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterTryWithResourcesStatement(@NotNull Java8Parser.TryWithResourcesStatementContext ctx) { 
+	@Override public void enterTryWithResourcesStatement(Java8Parser.TryWithResourcesStatementContext ctx) { 
 	    // 'try' resourceSpecification block catches? finally_?	
 	}
-	@Override public void exitTryWithResourcesStatement(@NotNull Java8Parser.TryWithResourcesStatementContext ctx) { 
+	@Override public void exitTryWithResourcesStatement(Java8Parser.TryWithResourcesStatementContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String finally_ = "";
 	    if (ctx.finally_() != null) {
@@ -1526,10 +1525,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterTypeArguments(@NotNull Java8Parser.TypeArgumentsContext ctx) {
+	@Override public void enterTypeArguments(Java8Parser.TypeArgumentsContext ctx) {
 	    // < TypeArgumentList >
 	}
-	@Override public void exitTypeArguments(@NotNull Java8Parser.TypeArgumentsContext ctx) {
+	@Override public void exitTypeArguments(Java8Parser.TypeArgumentsContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String rangle = stack.pop();
 	    String list = stack.pop();
@@ -1538,18 +1537,18 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	    
 	}
-	@Override public void enterExceptionType(@NotNull Java8Parser.ExceptionTypeContext ctx) { 
+	@Override public void enterExceptionType(Java8Parser.ExceptionTypeContext ctx) { 
 	    // ClassType
 	    // TypeVariable
 	}
-	@Override public void exitExceptionType(@NotNull Java8Parser.ExceptionTypeContext ctx) { 
+	@Override public void exitExceptionType(Java8Parser.ExceptionTypeContext ctx) { 
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterExceptionTypeList(@NotNull Java8Parser.ExceptionTypeListContext ctx) { 
+	@Override public void enterExceptionTypeList(Java8Parser.ExceptionTypeListContext ctx) { 
 	    // ExceptionType {, ExceptionType}
 	}
-	@Override public void exitExceptionTypeList(@NotNull Java8Parser.ExceptionTypeListContext ctx) {
+	@Override public void exitExceptionTypeList(Java8Parser.ExceptionTypeListContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.exceptionType() != null) {
 	        sb.append(reverse(ctx.exceptionType().size() * 2 - 1, " ", 2));
@@ -1557,12 +1556,12 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterAdditiveExpression(@NotNull Java8Parser.AdditiveExpressionContext ctx) { 
+	@Override public void enterAdditiveExpression(Java8Parser.AdditiveExpressionContext ctx) { 
 	    // :	multiplicativeExpression
 	    // |	additiveExpression additiveOperator multiplicativeExpression 
 	    // |	additiveExpression additiveOperator multiplicativeExpression	
 	}
-	@Override public void exitAdditiveExpression(@NotNull Java8Parser.AdditiveExpressionContext ctx) { 
+	@Override public void exitAdditiveExpression(Java8Parser.AdditiveExpressionContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
         String multiplicativeExpression = stack.pop();
 	    if (ctx.additiveExpression() != null) {
@@ -1576,7 +1575,7 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterRelationalExpression(@NotNull Java8Parser.RelationalExpressionContext ctx) {
+	@Override public void enterRelationalExpression(Java8Parser.RelationalExpressionContext ctx) {
 	    // ShiftExpression 
 	    // RelationalExpression RelationalOperator ShiftExpression 
 	    // RelationalExpression RelationalOperator ShiftExpression 
@@ -1584,7 +1583,7 @@ Parser methods follow.
 	    // RelationalExpression RelationalOperator ShiftExpression 
 	    // RelationalExpression RelationalOperator ReferenceType	
 	}
-	@Override public void exitRelationalExpression(@NotNull Java8Parser.RelationalExpressionContext ctx) {
+	@Override public void exitRelationalExpression(Java8Parser.RelationalExpressionContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String shiftExpression = stack.pop();
 	    String operator = "";
@@ -1598,22 +1597,22 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterReferenceType(@NotNull Java8Parser.ReferenceTypeContext ctx) { 
+	@Override public void enterReferenceType(Java8Parser.ReferenceTypeContext ctx) { 
 	    // ClassOrInterfaceType
 	    // TypeVariable
 	    // ArrayType
 	}
-	@Override public void exitReferenceType(@NotNull Java8Parser.ReferenceTypeContext ctx) {
+	@Override public void exitReferenceType(Java8Parser.ReferenceTypeContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterArrayAccess_lf_primary(@NotNull Java8Parser.ArrayAccess_lf_primaryContext ctx) { 
+	@Override public void enterArrayAccess_lf_primary(Java8Parser.ArrayAccess_lf_primaryContext ctx) { 
         // :   (	primaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primary '[' expression ']'
         //     )
         //     (	primaryNoNewArray_lf_primary_lf_arrayAccess_lf_primary '[' expression ']'
         //     )*
 	}
-	@Override public void exitArrayAccess_lf_primary(@NotNull Java8Parser.ArrayAccess_lf_primaryContext ctx) { 
+	@Override public void exitArrayAccess_lf_primary(Java8Parser.ArrayAccess_lf_primaryContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    StringBuilder sh = new StringBuilder();
 	    if (ctx.primaryNoNewArray_lf_primary_lf_arrayAccess_lf_primary() != null) {
@@ -1633,19 +1632,19 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterInferredFormalParameterList(@NotNull Java8Parser.InferredFormalParameterListContext ctx) { 
+	@Override public void enterInferredFormalParameterList(Java8Parser.InferredFormalParameterListContext ctx) { 
 	    // Identifier {, Identifier}	
 	}
-	@Override public void exitInferredFormalParameterList(@NotNull Java8Parser.InferredFormalParameterListContext ctx) {
+	@Override public void exitInferredFormalParameterList(Java8Parser.InferredFormalParameterListContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(reverse(ctx.Identifier().size() * 2 - 1, " ", 2));
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterReturnStatement(@NotNull Java8Parser.ReturnStatementContext ctx) {
+	@Override public void enterReturnStatement(Java8Parser.ReturnStatementContext ctx) {
 	    // return [Expression] ;
 	}
-	@Override public void exitReturnStatement(@NotNull Java8Parser.ReturnStatementContext ctx) {
+	@Override public void exitReturnStatement(Java8Parser.ReturnStatementContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String semi = stack.pop();
 	    String expression = ctx.expression() == null ? "" : stack.pop();
@@ -1657,10 +1656,10 @@ Parser methods follow.
 	    sb.append(semi).append('\n');
 	    stack.push(sb.toString());
 	}
-	@Override public void enterTypeImportOnDemandDeclaration(@NotNull Java8Parser.TypeImportOnDemandDeclarationContext ctx) { 
+	@Override public void enterTypeImportOnDemandDeclaration(Java8Parser.TypeImportOnDemandDeclarationContext ctx) { 
 	    // import PackageOrTypeName . * ;
 	}
-	@Override public void exitTypeImportOnDemandDeclaration(@NotNull Java8Parser.TypeImportOnDemandDeclarationContext ctx) {
+	@Override public void exitTypeImportOnDemandDeclaration(Java8Parser.TypeImportOnDemandDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String semi = stack.pop();
 	    String star = stack.pop();
@@ -1670,10 +1669,10 @@ Parser methods follow.
 	    sb.append(import_).append(' ').append(name).append(dot).append(star).append(semi).append('\n');
 	    stack.push(sb.toString());
 	}
-	@Override public void enterTypeParameters(@NotNull Java8Parser.TypeParametersContext ctx) { 
+	@Override public void enterTypeParameters(Java8Parser.TypeParametersContext ctx) { 
 	    // < TypeParameterList >
 	}
-	@Override public void exitTypeParameters(@NotNull Java8Parser.TypeParametersContext ctx) {
+	@Override public void exitTypeParameters(Java8Parser.TypeParametersContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String rangle = stack.pop();
 	    String list = stack.pop();
@@ -1681,11 +1680,11 @@ Parser methods follow.
 	    sb.append(langle).append(list).append(rangle);
 	    stack.push(sb.toString());
 	}
-	@Override public void enterLastFormalParameter(@NotNull Java8Parser.LastFormalParameterContext ctx) { 
+	@Override public void enterLastFormalParameter(Java8Parser.LastFormalParameterContext ctx) { 
 	    // {VariableModifier} UnannType {Annotation} ... VariableDeclaratorId
 	    // FormalParameter
 	}
-	@Override public void exitLastFormalParameter(@NotNull Java8Parser.LastFormalParameterContext ctx) { 
+	@Override public void exitLastFormalParameter(Java8Parser.LastFormalParameterContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    
 	    // only need to handle the first choice
@@ -1713,7 +1712,7 @@ Parser methods follow.
 	    }
 	}
 
-	@Override public void enterLiteral(@NotNull Java8Parser.LiteralContext ctx) {
+	@Override public void enterLiteral(Java8Parser.LiteralContext ctx) {
 	    // IntegerLiteral
 	    // FloatingPointLiteral
 	    // BooleanLiteral
@@ -1721,24 +1720,24 @@ Parser methods follow.
 	    // StringLiteral
 	    // NullLiteral
 	}
-	@Override public void exitLiteral(@NotNull Java8Parser.LiteralContext ctx) { 
+	@Override public void exitLiteral(Java8Parser.LiteralContext ctx) { 
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterResult(@NotNull Java8Parser.ResultContext ctx) {
+	@Override public void enterResult(Java8Parser.ResultContext ctx) {
 	    // UnannType
 	    // void
 	}
-	@Override public void exitResult(@NotNull Java8Parser.ResultContext ctx) { 
+	@Override public void exitResult(Java8Parser.ResultContext ctx) { 
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterFieldAccess_lfno_primary(@NotNull Java8Parser.FieldAccess_lfno_primaryContext ctx) {
+	@Override public void enterFieldAccess_lfno_primary(Java8Parser.FieldAccess_lfno_primaryContext ctx) {
 	    // :	'super' '.' Identifier
 	    // |	typeName '.' 'super' '.' Identifier
 	
 	}
-	@Override public void exitFieldAccess_lfno_primary(@NotNull Java8Parser.FieldAccess_lfno_primaryContext ctx) { 
+	@Override public void exitFieldAccess_lfno_primary(Java8Parser.FieldAccess_lfno_primaryContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String identifier = stack.pop();
 	    String dot = stack.pop();
@@ -1752,10 +1751,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterVariableDeclarator(@NotNull Java8Parser.VariableDeclaratorContext ctx) {
+	@Override public void enterVariableDeclarator(Java8Parser.VariableDeclaratorContext ctx) {
 	    // VariableDeclaratorId [= VariableInitializer]
 	}
-	@Override public void exitVariableDeclarator(@NotNull Java8Parser.VariableDeclaratorContext ctx) { 
+	@Override public void exitVariableDeclarator(Java8Parser.VariableDeclaratorContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String vi = ctx.variableInitializer() == null ? "" : stack.pop();
 	    String equal = ctx.variableInitializer() == null ? "" : stack.pop();
@@ -1768,10 +1767,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterFinally_(@NotNull Java8Parser.Finally_Context ctx) {
+	@Override public void enterFinally_(Java8Parser.Finally_Context ctx) {
 	    // finally Block
 	}
-	@Override public void exitFinally_(@NotNull Java8Parser.Finally_Context ctx) { 
+	@Override public void exitFinally_(Java8Parser.Finally_Context ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String block = stack.pop();
 	    block = trimFront(block);
@@ -1783,11 +1782,11 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterClassBody(@NotNull Java8Parser.ClassBodyContext ctx) {
+	@Override public void enterClassBody(Java8Parser.ClassBodyContext ctx) {
 	    // '{' classBodyDeclaration* '}'
 	    ++tabCount;
 	}
-	@Override public void exitClassBody(@NotNull Java8Parser.ClassBodyContext ctx) {
+	@Override public void exitClassBody(Java8Parser.ClassBodyContext ctx) {
 	    String rbrace = stack.pop();    // }
 	    StringBuilder sb = new StringBuilder();
 	    String body = "";
@@ -1809,17 +1808,17 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 	
-	@Override public void enterUnannInterfaceType_lfno_unannClassOrInterfaceType(@NotNull Java8Parser.UnannInterfaceType_lfno_unannClassOrInterfaceTypeContext ctx) {
+	@Override public void enterUnannInterfaceType_lfno_unannClassOrInterfaceType(Java8Parser.UnannInterfaceType_lfno_unannClassOrInterfaceTypeContext ctx) {
 	    // unannClassType_lfno_unannClassOrInterfaceType
 	}
-	@Override public void exitUnannInterfaceType_lfno_unannClassOrInterfaceType(@NotNull Java8Parser.UnannInterfaceType_lfno_unannClassOrInterfaceTypeContext ctx) {
+	@Override public void exitUnannInterfaceType_lfno_unannClassOrInterfaceType(Java8Parser.UnannInterfaceType_lfno_unannClassOrInterfaceTypeContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterEnumDeclaration(@NotNull Java8Parser.EnumDeclarationContext ctx) {
+	@Override public void enterEnumDeclaration(Java8Parser.EnumDeclarationContext ctx) {
 	    // classModifiers 'enum' Identifier superinterfaces? enumBody
 	}
-	@Override public void exitEnumDeclaration(@NotNull Java8Parser.EnumDeclarationContext ctx) { 
+	@Override public void exitEnumDeclaration(Java8Parser.EnumDeclarationContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String enumBody = stack.pop();
 	    String superInterfaces = "";
@@ -1830,18 +1829,18 @@ Parser methods follow.
 	    String enum_ = stack.pop();
 	    String modifiers = stack.pop();
 	    sb.append(modifiers);
-	    sb.append(enum_).append(' ').append(identifier);
+	    sb.append(' ').append(enum_).append(' ').append(identifier);
 	    if (!superInterfaces.isEmpty()) {
-	        sb.append(' ').append(superInterfaces).append(' ');    
+	        sb.append(' ').append(superInterfaces);    
 	    }
-	    sb.append(enumBody);
+	    sb.append(' ').append(enumBody);
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterConstantDeclaration(@NotNull Java8Parser.ConstantDeclarationContext ctx) {
+	@Override public void enterConstantDeclaration(Java8Parser.ConstantDeclarationContext ctx) {
 	    // {ConstantModifier} UnannType VariableDeclaratorList ;	
 	}
-	@Override public void exitConstantDeclaration(@NotNull Java8Parser.ConstantDeclarationContext ctx) {
+	@Override public void exitConstantDeclaration(Java8Parser.ConstantDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String semi = stack.pop();
 	    String vdl = stack.pop();
@@ -1854,7 +1853,7 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterPostfixExpression(@NotNull Java8Parser.PostfixExpressionContext ctx) { 
+	@Override public void enterPostfixExpression(Java8Parser.PostfixExpressionContext ctx) { 
 	    //    :	(	primary
 	    //    	|	expressionName
 	    //    	)
@@ -1863,7 +1862,7 @@ Parser methods follow.
 	    //    	)*
 	    //    ;
 	}
-	@Override public void exitPostfixExpression(@NotNull Java8Parser.PostfixExpressionContext ctx) { 
+	@Override public void exitPostfixExpression(Java8Parser.PostfixExpressionContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    // second half
 	    String postfix = "";
@@ -1879,27 +1878,27 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterAnnotation(@NotNull Java8Parser.AnnotationContext ctx) {
+	@Override public void enterAnnotation(Java8Parser.AnnotationContext ctx) {
 	    // :	normalAnnotation
 	    // |	markerAnnotation
 	    // |	singleElementAnnotation
 	}
-	@Override public void exitAnnotation(@NotNull Java8Parser.AnnotationContext ctx) {
+	@Override public void exitAnnotation(Java8Parser.AnnotationContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterVariableInitializer(@NotNull Java8Parser.VariableInitializerContext ctx) {
+	@Override public void enterVariableInitializer(Java8Parser.VariableInitializerContext ctx) {
 	    // Expression
 	    // ArrayInitializer
 	}
-	@Override public void exitVariableInitializer(@NotNull Java8Parser.VariableInitializerContext ctx) {
+	@Override public void exitVariableInitializer(Java8Parser.VariableInitializerContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterStaticImportOnDemandDeclaration(@NotNull Java8Parser.StaticImportOnDemandDeclarationContext ctx) { 
+	@Override public void enterStaticImportOnDemandDeclaration(Java8Parser.StaticImportOnDemandDeclarationContext ctx) { 
 	    // import static TypeName . * ;
 	}
-	@Override public void exitStaticImportOnDemandDeclaration(@NotNull Java8Parser.StaticImportOnDemandDeclarationContext ctx) { 
+	@Override public void exitStaticImportOnDemandDeclaration(Java8Parser.StaticImportOnDemandDeclarationContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String semi = stack.pop();
 	    String star = stack.pop();
@@ -1911,19 +1910,19 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 	
-	@Override public void enterExpression(@NotNull Java8Parser.ExpressionContext ctx) { 
+	@Override public void enterExpression(Java8Parser.ExpressionContext ctx) { 
 	    // LambdaExpression 
 	    // AssignmentExpression	
 	}
-	@Override public void exitExpression(@NotNull Java8Parser.ExpressionContext ctx) { 
+	@Override public void exitExpression(Java8Parser.ExpressionContext ctx) { 
 	    // nothing to do here, one of the choices should already be on the stack.
 	    
 	}
 
-	@Override public void enterThrowStatement(@NotNull Java8Parser.ThrowStatementContext ctx) {
+	@Override public void enterThrowStatement(Java8Parser.ThrowStatementContext ctx) {
 	    // throw Expression ;
 	}
-	@Override public void exitThrowStatement(@NotNull Java8Parser.ThrowStatementContext ctx) {
+	@Override public void exitThrowStatement(Java8Parser.ThrowStatementContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String semi = stack.pop();
 	    String expression = stack.pop();
@@ -1931,7 +1930,7 @@ Parser methods follow.
 	    sb.append(throw_).append(' ').append(expression).append(semi).append('\n');
 	    stack.push(sb.toString());
 	}
-	@Override public void enterMethodInvocation(@NotNull Java8Parser.MethodInvocationContext ctx) { 
+	@Override public void enterMethodInvocation(Java8Parser.MethodInvocationContext ctx) { 
         //                                         methodName '(' argumentList? ')'
         //             typeName '.' typeArguments? Identifier '(' argumentList? ')'
         //       expressionName '.' typeArguments? Identifier '(' argumentList? ')'
@@ -1939,7 +1938,7 @@ Parser methods follow.
         //              'super' '.' typeArguments? Identifier '(' argumentList? ')'
         // typeName '.' 'super' '.' typeArguments? Identifier '(' argumentList? ')'  	    
 	}
-	@Override public void exitMethodInvocation(@NotNull Java8Parser.MethodInvocationContext ctx) {
+	@Override public void exitMethodInvocation(Java8Parser.MethodInvocationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    
 	    // common ending
@@ -1994,10 +1993,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterSingleStaticImportDeclaration(@NotNull Java8Parser.SingleStaticImportDeclarationContext ctx) {
+	@Override public void enterSingleStaticImportDeclaration(Java8Parser.SingleStaticImportDeclarationContext ctx) {
 	    // import static TypeName . Identifier ; 
 	}
-	@Override public void exitSingleStaticImportDeclaration(@NotNull Java8Parser.SingleStaticImportDeclarationContext ctx) { 
+	@Override public void exitSingleStaticImportDeclaration(Java8Parser.SingleStaticImportDeclarationContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String semi = stack.pop();
 	    String identifier = stack.pop();
@@ -2008,12 +2007,12 @@ Parser methods follow.
 	    sb.append(import_).append(' ').append(static_).append(' ').append(name).append(dot).append(identifier).append(semi).append('\n');
 	    stack.push(sb.toString());
 	}
-	@Override public void enterLambdaParameters(@NotNull Java8Parser.LambdaParametersContext ctx) { 
+	@Override public void enterLambdaParameters(Java8Parser.LambdaParametersContext ctx) { 
 	    // Identifier
 	    // ( [FormalParameterList] ) 
 	    // ( InferredFormalParameterList )	
 	}
-	@Override public void exitLambdaParameters(@NotNull Java8Parser.LambdaParametersContext ctx) { 
+	@Override public void exitLambdaParameters(Java8Parser.LambdaParametersContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.Identifier() != null) {
 	        sb.append(stack.pop());
@@ -2030,11 +2029,11 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterConditionalAndExpression(@NotNull Java8Parser.ConditionalAndExpressionContext ctx) {
+	@Override public void enterConditionalAndExpression(Java8Parser.ConditionalAndExpressionContext ctx) {
 	    // InclusiveOrExpression 
 	    // ConditionalAndExpression && InclusiveOrExpression	
 	}
-	@Override public void exitConditionalAndExpression(@NotNull Java8Parser.ConditionalAndExpressionContext ctx) {
+	@Override public void exitConditionalAndExpression(Java8Parser.ConditionalAndExpressionContext ctx) {
 	    
 	    StringBuilder sb = new StringBuilder();
 	    String ioe = stack.pop();
@@ -2047,11 +2046,11 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterMultiplicativeExpression(@NotNull Java8Parser.MultiplicativeExpressionContext ctx) {
+	@Override public void enterMultiplicativeExpression(Java8Parser.MultiplicativeExpressionContext ctx) {
 	    // UnaryExpression 
 	    // MultiplicativeExpression MultiplicativeOperator UnaryExpression 
 	}
-	@Override public void exitMultiplicativeExpression(@NotNull Java8Parser.MultiplicativeExpressionContext ctx) { 
+	@Override public void exitMultiplicativeExpression(Java8Parser.MultiplicativeExpressionContext ctx) { 
 	    
 	    StringBuilder sb = new StringBuilder();
 	    String ue = stack.pop();
@@ -2064,17 +2063,17 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterPackageModifier(@NotNull Java8Parser.PackageModifierContext ctx) {
+	@Override public void enterPackageModifier(Java8Parser.PackageModifierContext ctx) {
 	    // Annotation
 	}
-	@Override public void exitPackageModifier(@NotNull Java8Parser.PackageModifierContext ctx) {
+	@Override public void exitPackageModifier(Java8Parser.PackageModifierContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterConstructorDeclaration(@NotNull Java8Parser.ConstructorDeclarationContext ctx) {
+	@Override public void enterConstructorDeclaration(Java8Parser.ConstructorDeclarationContext ctx) {
 	    // constructorModifiers constructorDeclarator throws_? constructorBody
 	}
-	@Override public void exitConstructorDeclaration(@NotNull Java8Parser.ConstructorDeclarationContext ctx) {
+	@Override public void exitConstructorDeclaration(Java8Parser.ConstructorDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String body = stack.pop();
 	    String throws_ = ctx.throws_() == null ? "" : stack.pop() + ' ';
@@ -2092,7 +2091,7 @@ Parser methods follow.
         stack.push(sb.toString());
 	}
 
-	@Override public void enterPrimaryNoNewArray_lfno_arrayAccess(@NotNull Java8Parser.PrimaryNoNewArray_lfno_arrayAccessContext ctx) { 
+	@Override public void enterPrimaryNoNewArray_lfno_arrayAccess(Java8Parser.PrimaryNoNewArray_lfno_arrayAccessContext ctx) { 
         // :	literal
         // |	typeName (squareBrackets)* '.' 'class'
         // |	'void' '.' 'class'
@@ -2104,7 +2103,7 @@ Parser methods follow.
         // |	methodInvocation
         // |	methodReference
 	}
-	@Override public void exitPrimaryNoNewArray_lfno_arrayAccess(@NotNull Java8Parser.PrimaryNoNewArray_lfno_arrayAccessContext ctx) { 
+	@Override public void exitPrimaryNoNewArray_lfno_arrayAccess(Java8Parser.PrimaryNoNewArray_lfno_arrayAccessContext ctx) { 
 	    if (ctx.literal() != null || 
 	        ctx.classInstanceCreationExpression() != null ||
 	        ctx.fieldAccess() != null ||
@@ -2166,17 +2165,17 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterUnannTypeVariable(@NotNull Java8Parser.UnannTypeVariableContext ctx) { 
+	@Override public void enterUnannTypeVariable(Java8Parser.UnannTypeVariableContext ctx) { 
 	    // Identifier
 	}
-	@Override public void exitUnannTypeVariable(@NotNull Java8Parser.UnannTypeVariableContext ctx) {
+	@Override public void exitUnannTypeVariable(Java8Parser.UnannTypeVariableContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterNormalInterfaceDeclaration(@NotNull Java8Parser.NormalInterfaceDeclarationContext ctx) {
+	@Override public void enterNormalInterfaceDeclaration(Java8Parser.NormalInterfaceDeclarationContext ctx) {
 	    // interfaceModifiers 'interface' Identifier typeParameters? extendsInterfaces? interfaceBody	
 	}
-	@Override public void exitNormalInterfaceDeclaration(@NotNull Java8Parser.NormalInterfaceDeclarationContext ctx) {
+	@Override public void exitNormalInterfaceDeclaration(Java8Parser.NormalInterfaceDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String body = stack.pop();
 	    String ifs = ctx.extendsInterfaces() == null ? "" : stack.pop() + ' ';
@@ -2192,15 +2191,15 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterInterfaceType_lfno_classOrInterfaceType(@NotNull Java8Parser.InterfaceType_lfno_classOrInterfaceTypeContext ctx) {
+	@Override public void enterInterfaceType_lfno_classOrInterfaceType(Java8Parser.InterfaceType_lfno_classOrInterfaceTypeContext ctx) {
 	    // classType_lfno_classOrInterfaceType
 	}
-	@Override public void exitInterfaceType_lfno_classOrInterfaceType(@NotNull Java8Parser.InterfaceType_lfno_classOrInterfaceTypeContext ctx) {
+	@Override public void exitInterfaceType_lfno_classOrInterfaceType(Java8Parser.InterfaceType_lfno_classOrInterfaceTypeContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterConstructorModifiers(@NotNull Java8Parser.ConstructorModifiersContext ctx) { }
-	@Override public void exitConstructorModifiers(@NotNull Java8Parser.ConstructorModifiersContext ctx) {
+	@Override public void enterConstructorModifiers(Java8Parser.ConstructorModifiersContext ctx) { }
+	@Override public void exitConstructorModifiers(Java8Parser.ConstructorModifiersContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.constructorModifier() != null && ctx.constructorModifier().size() > 0) {
 	        sb.append(formatModifiers(ctx.constructorModifier().size()));
@@ -2210,26 +2209,26 @@ Parser methods follow.
             stack.push(sb.toString());
         }
 	}
-	@Override public void enterConstructorModifier(@NotNull Java8Parser.ConstructorModifierContext ctx) {
+	@Override public void enterConstructorModifier(Java8Parser.ConstructorModifierContext ctx) {
 	    // (one of) Annotation public protected private
 	}
-	@Override public void exitConstructorModifier(@NotNull Java8Parser.ConstructorModifierContext ctx) { 
+	@Override public void exitConstructorModifier(Java8Parser.ConstructorModifierContext ctx) { 
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterEnumConstantName(@NotNull Java8Parser.EnumConstantNameContext ctx) {
+	@Override public void enterEnumConstantName(Java8Parser.EnumConstantNameContext ctx) {
 	    // Identifier
 	}
-	@Override public void exitEnumConstantName(@NotNull Java8Parser.EnumConstantNameContext ctx) { 
+	@Override public void exitEnumConstantName(Java8Parser.EnumConstantNameContext ctx) { 
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterClassInstanceCreationExpression(@NotNull Java8Parser.ClassInstanceCreationExpressionContext ctx) {
+	@Override public void enterClassInstanceCreationExpression(Java8Parser.ClassInstanceCreationExpressionContext ctx) {
         // :    'new' typeArguments? annotationIdentifier ('.' annotationIdentifier)* typeArgumentsOrDiamond? '(' argumentList? ')' classBody?
         // |	expressionName '.' 'new' typeArguments? annotationIdentifier          typeArgumentsOrDiamond? '(' argumentList? ')' classBody?
         // |	primary        '.' 'new' typeArguments? annotationIdentifier          typeArgumentsOrDiamond? '(' argumentList? ')' classBody?
 	}
-	@Override public void exitClassInstanceCreationExpression(@NotNull Java8Parser.ClassInstanceCreationExpressionContext ctx) {
+	@Override public void exitClassInstanceCreationExpression(Java8Parser.ClassInstanceCreationExpressionContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    
 	    String classBody = ctx.classBody() == null ? "" : stack.pop();
@@ -2266,10 +2265,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterMethodDeclarator(@NotNull Java8Parser.MethodDeclaratorContext ctx) {
+	@Override public void enterMethodDeclarator(Java8Parser.MethodDeclaratorContext ctx) {
 	    // Identifier ( [FormalParameterList] ) [Dims]
 	}
-	@Override public void exitMethodDeclarator(@NotNull Java8Parser.MethodDeclaratorContext ctx) { 
+	@Override public void exitMethodDeclarator(Java8Parser.MethodDeclaratorContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String dims = ctx.dims() == null ? "" : stack.pop();
 	    String rparen = stack.pop();
@@ -2280,24 +2279,24 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterAnnotationTypeMemberDeclaration(@NotNull Java8Parser.AnnotationTypeMemberDeclarationContext ctx) {
+	@Override public void enterAnnotationTypeMemberDeclaration(Java8Parser.AnnotationTypeMemberDeclarationContext ctx) {
 	    // :	annotationTypeElementDeclaration
 	    // |	constantDeclaration
 	    // |	classDeclaration
 	    // |	interfaceDeclaration
 	    // |	';'                             
 	}
-	@Override public void exitAnnotationTypeMemberDeclaration(@NotNull Java8Parser.AnnotationTypeMemberDeclarationContext ctx) { 
+	@Override public void exitAnnotationTypeMemberDeclaration(Java8Parser.AnnotationTypeMemberDeclarationContext ctx) { 
 	    if (";".equals(stack.peek())) {
 	        String semi = stack.pop() + '\n';
 	        stack.push(semi);
 	    }
 	}
 
-	@Override public void enterPreDecrementExpression(@NotNull Java8Parser.PreDecrementExpressionContext ctx) {
+	@Override public void enterPreDecrementExpression(Java8Parser.PreDecrementExpressionContext ctx) {
 	    // -- UnaryExpression	
 	}
-	@Override public void exitPreDecrementExpression(@NotNull Java8Parser.PreDecrementExpressionContext ctx) {
+	@Override public void exitPreDecrementExpression(Java8Parser.PreDecrementExpressionContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String expression = stack.pop();
 	    String dec = stack.pop();
@@ -2305,18 +2304,18 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterMultiplicativeOperator(@NotNull Java8Parser.MultiplicativeOperatorContext ctx) { 
+	@Override public void enterMultiplicativeOperator(Java8Parser.MultiplicativeOperatorContext ctx) { 
 	    // one of: * / %
 	}
-	@Override public void exitMultiplicativeOperator(@NotNull Java8Parser.MultiplicativeOperatorContext ctx) {
+	@Override public void exitMultiplicativeOperator(Java8Parser.MultiplicativeOperatorContext ctx) {
 	    stack.pop();
 	    stack.push(padOperator(ctx.getText()));
 	}
 	
-	@Override public void enterVariableInitializerList(@NotNull Java8Parser.VariableInitializerListContext ctx) {
+	@Override public void enterVariableInitializerList(Java8Parser.VariableInitializerListContext ctx) {
 	    // variableInitializer (',' variableInitializer)*
 	}
-	@Override public void exitVariableInitializerList(@NotNull Java8Parser.VariableInitializerListContext ctx) { 
+	@Override public void exitVariableInitializerList(Java8Parser.VariableInitializerListContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.variableInitializer() != null) {
 	        String vi = reverse(ctx.variableInitializer().size() * 2 - 1, " ", 2);
@@ -2325,10 +2324,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterExtendsInterfaces(@NotNull Java8Parser.ExtendsInterfacesContext ctx) {
+	@Override public void enterExtendsInterfaces(Java8Parser.ExtendsInterfacesContext ctx) {
 	    // extends InterfaceTypeList
 	}
-	@Override public void exitExtendsInterfaces(@NotNull Java8Parser.ExtendsInterfacesContext ctx) {
+	@Override public void exitExtendsInterfaces(Java8Parser.ExtendsInterfacesContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String list = stack.pop();
 	    String extends_ = stack.pop();
@@ -2336,19 +2335,19 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterElementValue(@NotNull Java8Parser.ElementValueContext ctx) {
+	@Override public void enterElementValue(Java8Parser.ElementValueContext ctx) {
 	    // ConditionalExpression 
 	    // ElementValueArrayInitializer 
 	    // Annotation	
 	}
-	@Override public void exitElementValue(@NotNull Java8Parser.ElementValueContext ctx) {
+	@Override public void exitElementValue(Java8Parser.ElementValueContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterArrayInitializer(@NotNull Java8Parser.ArrayInitializerContext ctx) { 
+	@Override public void enterArrayInitializer(Java8Parser.ArrayInitializerContext ctx) { 
 	    // '{' variableInitializerList? COMMA? '}'
 	}
-	@Override public void exitArrayInitializer(@NotNull Java8Parser.ArrayInitializerContext ctx) { 
+	@Override public void exitArrayInitializer(Java8Parser.ArrayInitializerContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String rbracket = stack.pop().trim();
 	    String vil = ctx.variableInitializerList() == null ? "" : stack.pop().trim();
@@ -2372,7 +2371,7 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 	
-	@Override public void enterArrayAccess(@NotNull Java8Parser.ArrayAccessContext ctx) {
+	@Override public void enterArrayAccess(Java8Parser.ArrayAccessContext ctx) {
         // (	expressionName '[' expression ']'
         // |	primaryNoNewArray_lfno_arrayAccess '[' expression ']'
         // )
@@ -2380,7 +2379,7 @@ Parser methods follow.
         // )* 
     }
     
-	@Override public void exitArrayAccess(@NotNull Java8Parser.ArrayAccessContext ctx) {
+	@Override public void exitArrayAccess(Java8Parser.ArrayAccessContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    
 	    // second half
@@ -2405,8 +2404,8 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterMethodModifiers(@NotNull Java8Parser.MethodModifiersContext ctx) { }
-	@Override public void exitMethodModifiers(@NotNull Java8Parser.MethodModifiersContext ctx) {
+	@Override public void enterMethodModifiers(Java8Parser.MethodModifiersContext ctx) { }
+	@Override public void exitMethodModifiers(Java8Parser.MethodModifiersContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.methodModifier() != null && ctx.methodModifier().size() > 0) {
 	        String modifiers = formatModifiers(ctx.methodModifier().size());
@@ -2417,11 +2416,11 @@ Parser methods follow.
             stack.push(sb.toString());
         }
 	}
-	@Override public void enterMethodModifier(@NotNull Java8Parser.MethodModifierContext ctx) {
+	@Override public void enterMethodModifier(Java8Parser.MethodModifierContext ctx) {
 	    // (one of) Annotation public protected private
 	    // abstract static final synchronized native strictfp
 	}
-	@Override public void exitMethodModifier(@NotNull Java8Parser.MethodModifierContext ctx) {
+	@Override public void exitMethodModifier(Java8Parser.MethodModifierContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	    if (ctx.annotation() != null) {
 	        String ann = indent(stack.pop());
@@ -2429,11 +2428,11 @@ Parser methods follow.
 	    }
 	}
 
-	@Override public void enterUnannClassType(@NotNull Java8Parser.UnannClassTypeContext ctx) {
+	@Override public void enterUnannClassType(Java8Parser.UnannClassTypeContext ctx) {
 	    // Identifier typeArguments?
 	    // unannClassOrInterfaceType '.' annotationIdentifier typeArguments?
 	}
-	@Override public void exitUnannClassType(@NotNull Java8Parser.UnannClassTypeContext ctx) { 
+	@Override public void exitUnannClassType(Java8Parser.UnannClassTypeContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.unannClassOrInterfaceType() == null) {
 	        // have first option
@@ -2461,10 +2460,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterLambdaExpression(@NotNull Java8Parser.LambdaExpressionContext ctx) { 
+	@Override public void enterLambdaExpression(Java8Parser.LambdaExpressionContext ctx) { 
 	    // LambdaParameters -> LambdaBody	
 	}
-	@Override public void exitLambdaExpression(@NotNull Java8Parser.LambdaExpressionContext ctx) {
+	@Override public void exitLambdaExpression(Java8Parser.LambdaExpressionContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String lb = stack.pop();
 	    String pointer = stack.pop();
@@ -2475,19 +2474,19 @@ Parser methods follow.
 
 
 
-	@Override public void enterAssignmentExpression(@NotNull Java8Parser.AssignmentExpressionContext ctx) {
+	@Override public void enterAssignmentExpression(Java8Parser.AssignmentExpressionContext ctx) {
 	    // ConditionalExpression 
 	    // Assignment	
 	}
-	@Override public void exitAssignmentExpression(@NotNull Java8Parser.AssignmentExpressionContext ctx) { 
+	@Override public void exitAssignmentExpression(Java8Parser.AssignmentExpressionContext ctx) { 
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
 
-	@Override public void enterTypeParameterList(@NotNull Java8Parser.TypeParameterListContext ctx) {
+	@Override public void enterTypeParameterList(Java8Parser.TypeParameterListContext ctx) {
 	    // TypeParameter {, TypeParameter}
 	}
-	@Override public void exitTypeParameterList(@NotNull Java8Parser.TypeParameterListContext ctx) { 
+	@Override public void exitTypeParameterList(Java8Parser.TypeParameterListContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.typeParameter() != null) {
 	        sb.append(reverse(ctx.typeParameter().size() * 2 - 1, " ", 2));
@@ -2495,10 +2494,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterNormalClassDeclaration(@NotNull Java8Parser.NormalClassDeclarationContext ctx) {
+	@Override public void enterNormalClassDeclaration(Java8Parser.NormalClassDeclarationContext ctx) {
 	    // classModifiers 'class' Identifier typeParameters? superclass? superinterfaces? classBody
 	}
-	@Override public void exitNormalClassDeclaration(@NotNull Java8Parser.NormalClassDeclarationContext ctx) {
+	@Override public void exitNormalClassDeclaration(Java8Parser.NormalClassDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
         String body = stack.pop();
         body = trimFront(body);
@@ -2530,12 +2529,12 @@ Parser methods follow.
         stack.push(sb.toString());
 	}
 
-	@Override public void enterFormalParameterList(@NotNull Java8Parser.FormalParameterListContext ctx) { 
+	@Override public void enterFormalParameterList(Java8Parser.FormalParameterListContext ctx) { 
 	    // ReceiverParameter
 	    // FormalParameters , LastFormalParameter
 	    // LastFormalParameter
 	}
-	@Override public void exitFormalParameterList(@NotNull Java8Parser.FormalParameterListContext ctx) { 
+	@Override public void exitFormalParameterList(Java8Parser.FormalParameterListContext ctx) { 
 	    // only need to handle 2nd choice, others should already be on the stack
 	    if (ctx.formalParameters() != null) {
 	        String lfp = stack.pop();
@@ -2547,11 +2546,11 @@ Parser methods follow.
 	    }
 	}
 
-	@Override public void enterEnhancedForStatementNoShortIf(@NotNull Java8Parser.EnhancedForStatementNoShortIfContext ctx) {
+	@Override public void enterEnhancedForStatementNoShortIf(Java8Parser.EnhancedForStatementNoShortIfContext ctx) {
 	    // for ( {VariableModifier} UnannType VariableDeclaratorId : Expression ) StatementNoShortIf
 	    
 	}
-	@Override public void exitEnhancedForStatementNoShortIf(@NotNull Java8Parser.EnhancedForStatementNoShortIfContext ctx) {
+	@Override public void exitEnhancedForStatementNoShortIf(Java8Parser.EnhancedForStatementNoShortIfContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String stmt = stack.pop();
 	    stmt = trimEnd(stmt);
@@ -2578,11 +2577,11 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterAnnotationTypeDeclaration(@NotNull Java8Parser.AnnotationTypeDeclarationContext ctx) {
+	@Override public void enterAnnotationTypeDeclaration(Java8Parser.AnnotationTypeDeclarationContext ctx) {
 	    // interfaceModifier* '@' 'interface' Identifier annotationTypeBody
 	    
 	}
-	@Override public void exitAnnotationTypeDeclaration(@NotNull Java8Parser.AnnotationTypeDeclarationContext ctx) {
+	@Override public void exitAnnotationTypeDeclaration(Java8Parser.AnnotationTypeDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String body = stack.pop().trim();
 	    String identifier = stack.pop();
@@ -2603,11 +2602,11 @@ Parser methods follow.
 	/**
  	 * Main entry point.	
  	 */
-	@Override public void enterCompilationUnit(@NotNull Java8Parser.CompilationUnitContext ctx) {
+	@Override public void enterCompilationUnit(Java8Parser.CompilationUnitContext ctx) {
 	    // [PackageDeclaration] {ImportDeclaration} {TypeDeclaration}
 	    init();    // initialize the formatting settings
 	}
-	@Override public void exitCompilationUnit(@NotNull Java8Parser.CompilationUnitContext ctx) {
+	@Override public void exitCompilationUnit(Java8Parser.CompilationUnitContext ctx) {
 	    String end = stack.pop();    // EOF and maybe some comments
 	    end = end.replace("<EOF>", "");
 	    end = removeExcessWhitespace(end);
@@ -2638,11 +2637,11 @@ Parser methods follow.
 	    // all done!
 	}
 
-	@Override public void enterWildcardBounds(@NotNull Java8Parser.WildcardBoundsContext ctx) { 
+	@Override public void enterWildcardBounds(Java8Parser.WildcardBoundsContext ctx) { 
 	    // extends ReferenceType
 	    // super ReferenceType
 	}
-	@Override public void exitWildcardBounds(@NotNull Java8Parser.WildcardBoundsContext ctx) {
+	@Override public void exitWildcardBounds(Java8Parser.WildcardBoundsContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String type = stack.pop();
 	    String word = stack.pop();    // extends or super
@@ -2650,17 +2649,17 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterPrimaryNoNewArray_lf_arrayAccess(@NotNull Java8Parser.PrimaryNoNewArray_lf_arrayAccessContext ctx) {
+	@Override public void enterPrimaryNoNewArray_lf_arrayAccess(Java8Parser.PrimaryNoNewArray_lf_arrayAccessContext ctx) {
 	    // do nothing here
 	}
-	@Override public void exitPrimaryNoNewArray_lf_arrayAccess(@NotNull Java8Parser.PrimaryNoNewArray_lf_arrayAccessContext ctx) { 
+	@Override public void exitPrimaryNoNewArray_lf_arrayAccess(Java8Parser.PrimaryNoNewArray_lf_arrayAccessContext ctx) { 
 	    // do nothing here
 	}
 
-	@Override public void enterEnhancedForStatement(@NotNull Java8Parser.EnhancedForStatementContext ctx) { 
+	@Override public void enterEnhancedForStatement(Java8Parser.EnhancedForStatementContext ctx) { 
 	    // for ( {VariableModifier} UnannType VariableDeclaratorId : Expression ) Statement    
 	}
-	@Override public void exitEnhancedForStatement(@NotNull Java8Parser.EnhancedForStatementContext ctx) {
+	@Override public void exitEnhancedForStatement(Java8Parser.EnhancedForStatementContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String statement = stack.pop().trim();
 	    if (!statement.startsWith("{")) {
@@ -2687,11 +2686,11 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterSwitchBlockStatementGroup(@NotNull Java8Parser.SwitchBlockStatementGroupContext ctx) {
+	@Override public void enterSwitchBlockStatementGroup(Java8Parser.SwitchBlockStatementGroupContext ctx) {
 	    // switchLabels blockStatements
 	    ++ tabCount;
 	}
-	@Override public void exitSwitchBlockStatementGroup(@NotNull Java8Parser.SwitchBlockStatementGroupContext ctx) {
+	@Override public void exitSwitchBlockStatementGroup(Java8Parser.SwitchBlockStatementGroupContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String bs = ctx.blockStatements() == null ? "" : stack.pop();
 	    bs = removeBlankLines(bs, BOTH);
@@ -2703,20 +2702,20 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterTypeVariable(@NotNull Java8Parser.TypeVariableContext ctx) {
+	@Override public void enterTypeVariable(Java8Parser.TypeVariableContext ctx) {
 	    // annotationIdentifier
 	}
-	@Override public void exitTypeVariable(@NotNull Java8Parser.TypeVariableContext ctx) { 
+	@Override public void exitTypeVariable(Java8Parser.TypeVariableContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String identifier = stack.pop();
 	    sb.append(identifier);
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterTypeParameter(@NotNull Java8Parser.TypeParameterContext ctx) { 
+	@Override public void enterTypeParameter(Java8Parser.TypeParameterContext ctx) { 
 	    // typeParameterModifier* Identifier typeBound?
 	}
-	@Override public void exitTypeParameter(@NotNull Java8Parser.TypeParameterContext ctx) { 
+	@Override public void exitTypeParameter(Java8Parser.TypeParameterContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String typeBound = ctx.typeBound() == null ? "" : stack.pop();
 	    String identifier = stack.pop();
@@ -2730,10 +2729,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterMethodDeclaration(@NotNull Java8Parser.MethodDeclarationContext ctx) {
+	@Override public void enterMethodDeclaration(Java8Parser.MethodDeclarationContext ctx) {
 	    // methodModifiers methodHeader methodBody
 	}
-	@Override public void exitMethodDeclaration(@NotNull Java8Parser.MethodDeclarationContext ctx) {
+	@Override public void exitMethodDeclaration(Java8Parser.MethodDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
         String body = stack.pop().trim();
 	    String header = stack.pop();
@@ -2757,11 +2756,11 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterInterfaceBody(@NotNull Java8Parser.InterfaceBodyContext ctx) { 
+	@Override public void enterInterfaceBody(Java8Parser.InterfaceBodyContext ctx) { 
 	    // '{' interfaceMemberDeclaration* '}'
 	    ++tabCount;
 	}
-	@Override public void exitInterfaceBody(@NotNull Java8Parser.InterfaceBodyContext ctx) { 
+	@Override public void exitInterfaceBody(Java8Parser.InterfaceBodyContext ctx) { 
 	    String rbrace = stack.pop();    // }
 	    rbrace = removeBlankLines(rbrace, START);
 	    StringBuilder sb = new StringBuilder();
@@ -2785,23 +2784,23 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterMethodBody(@NotNull Java8Parser.MethodBodyContext ctx) {
+	@Override public void enterMethodBody(Java8Parser.MethodBodyContext ctx) {
 	    // Block
 	    // ;
 	}
-	@Override public void exitMethodBody(@NotNull Java8Parser.MethodBodyContext ctx) {
+	@Override public void exitMethodBody(Java8Parser.MethodBodyContext ctx) {
 	    if (";".equals(stack.peek())) {
 	        String semi = stack.pop() + '\n';
 	        stack.push(semi);
 	    }
 	}
 
-	@Override public void enterDims(@NotNull Java8Parser.DimsContext ctx) { 
+	@Override public void enterDims(Java8Parser.DimsContext ctx) { 
 	    // {Annotation} [ ] {{Annotation} [ ]}
 	    // changed this to:
 	    // annotationDim (annotationDim)*
 	}
-	@Override public void exitDims(@NotNull Java8Parser.DimsContext ctx) {
+	@Override public void exitDims(Java8Parser.DimsContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.annotationDim() != null && ctx.annotationDim().size() > 0) {
             sb.append(reverse(ctx.annotationDim().size(), ""));
@@ -2809,29 +2808,29 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterTypeArgument(@NotNull Java8Parser.TypeArgumentContext ctx) {
+	@Override public void enterTypeArgument(Java8Parser.TypeArgumentContext ctx) {
 	    // ReferenceType
 	    // Wildcard
 	}
-	@Override public void exitTypeArgument(@NotNull Java8Parser.TypeArgumentContext ctx) {
+	@Override public void exitTypeArgument(Java8Parser.TypeArgumentContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterUnannPrimitiveType(@NotNull Java8Parser.UnannPrimitiveTypeContext ctx) {
+	@Override public void enterUnannPrimitiveType(Java8Parser.UnannPrimitiveTypeContext ctx) {
 	    // NumericType 
 	    // boolean
 	}
-	@Override public void exitUnannPrimitiveType(@NotNull Java8Parser.UnannPrimitiveTypeContext ctx) {
+	@Override public void exitUnannPrimitiveType(Java8Parser.UnannPrimitiveTypeContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterExplicitConstructorInvocation(@NotNull Java8Parser.ExplicitConstructorInvocationContext ctx) { 
+	@Override public void enterExplicitConstructorInvocation(Java8Parser.ExplicitConstructorInvocationContext ctx) { 
 	    // [TypeArguments] this                   ( [ArgumentList] ) ;
 	    // [TypeArguments] super                  ( [ArgumentList] ) ;
 	    // ExpressionName . [TypeArguments] super ( [ArgumentList] ) ;
 	    // Primary        . [TypeArguments] super ( [ArgumentList] ) ;
 	}
-	@Override public void exitExplicitConstructorInvocation(@NotNull Java8Parser.ExplicitConstructorInvocationContext ctx) {
+	@Override public void exitExplicitConstructorInvocation(Java8Parser.ExplicitConstructorInvocationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String semi = stack.pop();
 	    String rparen = stack.pop();
@@ -2857,23 +2856,23 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterEnumBody(@NotNull Java8Parser.EnumBodyContext ctx) {
+	@Override public void enterEnumBody(Java8Parser.EnumBodyContext ctx) {
 	    // { [EnumConstantList] [,] [EnumBodyDeclarations] }
 	}
-	@Override public void exitEnumBody(@NotNull Java8Parser.EnumBodyContext ctx) { 
+	@Override public void exitEnumBody(Java8Parser.EnumBodyContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String rbracket = stack.pop();
 	    String body = ctx.enumBodyDeclarations() == null ? "" : stack.pop();
-	    String comma = ctx.COMMA() == null ? "" : stack.pop() + ' ';
+	    String comma = ctx.COMMA() == null ? "" : stack.pop() + ' '; ///
 	    String list = ctx.enumConstantList() == null ? "" : stack.pop();
 	    String lbracket = stack.pop();
-	    sb.append(lbracket).append('\n').append(list).append(comma).append(body).append(rbracket).append('\n');
+	    sb.append(lbracket).append(list).append(comma).append(body).append(rbracket);
 	    stack.push(sb.toString());
 	}
-	@Override public void enterAdditionalBound(@NotNull Java8Parser.AdditionalBoundContext ctx) { 
+	@Override public void enterAdditionalBound(Java8Parser.AdditionalBoundContext ctx) { 
 	    // '&' interfaceType
 	}
-	@Override public void exitAdditionalBound(@NotNull Java8Parser.AdditionalBoundContext ctx) {
+	@Override public void exitAdditionalBound(Java8Parser.AdditionalBoundContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String type = stack.pop();
 	    String amp = stack.pop();
@@ -2881,7 +2880,7 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterPrimaryNoNewArray_lfno_primary(@NotNull Java8Parser.PrimaryNoNewArray_lfno_primaryContext ctx) {
+	@Override public void enterPrimaryNoNewArray_lfno_primary(Java8Parser.PrimaryNoNewArray_lfno_primaryContext ctx) {
         // :	literal
         // |	typeName (squareBrackets)* '.' 'class'
         // |	unannPrimitiveType (squareBrackets)* '.' 'class'
@@ -2895,7 +2894,7 @@ Parser methods follow.
         // |	methodInvocation_lfno_primary
         // |	methodReference_lfno_primary
 	}
-	@Override public void exitPrimaryNoNewArray_lfno_primary(@NotNull Java8Parser.PrimaryNoNewArray_lfno_primaryContext ctx) { 
+	@Override public void exitPrimaryNoNewArray_lfno_primary(Java8Parser.PrimaryNoNewArray_lfno_primaryContext ctx) { 
 	    if (ctx.literal() != null || ctx.classInstanceCreationExpression_lfno_primary() != null ||
 	        ctx.fieldAccess_lfno_primary() != null || ctx.arrayAccess_lfno_primary() != null ||
 	        ctx.methodInvocation_lfno_primary() != null || ctx.methodReference_lfno_primary() != null) {
@@ -2972,7 +2971,7 @@ Parser methods follow.
 	    
 	}
 
-	@Override public void enterUnannClassOrInterfaceType(@NotNull Java8Parser.UnannClassOrInterfaceTypeContext ctx) { 
+	@Override public void enterUnannClassOrInterfaceType(Java8Parser.UnannClassOrInterfaceTypeContext ctx) { 
 	    // :(	unannClassType_lfno_unannClassOrInterfaceType
 	    // |	unannInterfaceType_lfno_unannClassOrInterfaceType
 	    // )
@@ -2980,7 +2979,7 @@ Parser methods follow.
 	    // |	unannInterfaceType_lf_unannClassOrInterfaceType
 	    // )*
 	}
-	@Override public void exitUnannClassOrInterfaceType(@NotNull Java8Parser.UnannClassOrInterfaceTypeContext ctx) {
+	@Override public void exitUnannClassOrInterfaceType(Java8Parser.UnannClassOrInterfaceTypeContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    // second half
 	    String sh = "";
@@ -2996,10 +2995,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterIfThenStatement(@NotNull Java8Parser.IfThenStatementContext ctx) { 
+	@Override public void enterIfThenStatement(Java8Parser.IfThenStatementContext ctx) { 
 	    // 'if' '(' expression ')' statement
 	}
-	@Override public void exitIfThenStatement(@NotNull Java8Parser.IfThenStatementContext ctx) { 
+	@Override public void exitIfThenStatement(Java8Parser.IfThenStatementContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String stmt = stack.pop().trim();
 	    if (!stmt.startsWith("{")) {
@@ -3015,24 +3014,24 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterPostDecrementExpression_lf_postfixExpression(@NotNull Java8Parser.PostDecrementExpression_lf_postfixExpressionContext ctx) {
+	@Override public void enterPostDecrementExpression_lf_postfixExpression(Java8Parser.PostDecrementExpression_lf_postfixExpressionContext ctx) {
 	    // '--'
 	}
-	@Override public void exitPostDecrementExpression_lf_postfixExpression(@NotNull Java8Parser.PostDecrementExpression_lf_postfixExpressionContext ctx) {
+	@Override public void exitPostDecrementExpression_lf_postfixExpression(Java8Parser.PostDecrementExpression_lf_postfixExpressionContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterInterfaceType(@NotNull Java8Parser.InterfaceTypeContext ctx) {
+	@Override public void enterInterfaceType(Java8Parser.InterfaceTypeContext ctx) {
 	    // ClassType
 	}
-	@Override public void exitInterfaceType(@NotNull Java8Parser.InterfaceTypeContext ctx) {
+	@Override public void exitInterfaceType(Java8Parser.InterfaceTypeContext ctx) {
 	    // nothing to do here, class type should already be on the stack.
 	}
 
-	@Override public void enterMethodReference_lf_primary(@NotNull Java8Parser.MethodReference_lf_primaryContext ctx) { 
+	@Override public void enterMethodReference_lf_primary(Java8Parser.MethodReference_lf_primaryContext ctx) { 
 	    // '::' typeArguments? Identifier
 	}
-	@Override public void exitMethodReference_lf_primary(@NotNull Java8Parser.MethodReference_lf_primaryContext ctx) { 
+	@Override public void exitMethodReference_lf_primary(Java8Parser.MethodReference_lf_primaryContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String identifier = stack.pop();
 	    String typeArgs = ctx.typeArguments() == null ? "" : stack.pop() + ' ';
@@ -3041,11 +3040,11 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterAndExpression(@NotNull Java8Parser.AndExpressionContext ctx) { 
+	@Override public void enterAndExpression(Java8Parser.AndExpressionContext ctx) { 
 	    // equalityExpression
 	    // andExpression '&' equalityExpression	
 	}
-	@Override public void exitAndExpression(@NotNull Java8Parser.AndExpressionContext ctx) { 
+	@Override public void exitAndExpression(Java8Parser.AndExpressionContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String equalityExpression = stack.pop();
 	    if (ctx.andExpression() != null) {
@@ -3057,17 +3056,17 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterEnumConstantModifier(@NotNull Java8Parser.EnumConstantModifierContext ctx) { 
+	@Override public void enterEnumConstantModifier(Java8Parser.EnumConstantModifierContext ctx) { 
 	    // Annotation
 	}
-	@Override public void exitEnumConstantModifier(@NotNull Java8Parser.EnumConstantModifierContext ctx) {
+	@Override public void exitEnumConstantModifier(Java8Parser.EnumConstantModifierContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterUnannClassType_lfno_unannClassOrInterfaceType(@NotNull Java8Parser.UnannClassType_lfno_unannClassOrInterfaceTypeContext ctx) {
+	@Override public void enterUnannClassType_lfno_unannClassOrInterfaceType(Java8Parser.UnannClassType_lfno_unannClassOrInterfaceTypeContext ctx) {
 	    // Identifier typeArguments?
 	}
-	@Override public void exitUnannClassType_lfno_unannClassOrInterfaceType(@NotNull Java8Parser.UnannClassType_lfno_unannClassOrInterfaceTypeContext ctx) {
+	@Override public void exitUnannClassType_lfno_unannClassOrInterfaceType(Java8Parser.UnannClassType_lfno_unannClassOrInterfaceTypeContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String typeArgs = ctx.typeArguments() == null ? "" : stack.pop();
 	    String identifier = stack.pop();
@@ -3075,7 +3074,7 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterStatement(@NotNull Java8Parser.StatementContext ctx) {
+	@Override public void enterStatement(Java8Parser.StatementContext ctx) {
 	    // StatementWithoutTrailingSubstatement
 	    // LabeledStatement
 	    // IfThenStatement
@@ -3083,14 +3082,14 @@ Parser methods follow.
 	    // WhileStatement
 	    // ForStatement
 	}
-	@Override public void exitStatement(@NotNull Java8Parser.StatementContext ctx) {
+	@Override public void exitStatement(Java8Parser.StatementContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterFieldModifiers(@NotNull Java8Parser.FieldModifiersContext ctx) { 
+	@Override public void enterFieldModifiers(Java8Parser.FieldModifiersContext ctx) { 
 	    // fieldModifier*
 	}
-	@Override public void exitFieldModifiers(@NotNull Java8Parser.FieldModifiersContext ctx) { 
+	@Override public void exitFieldModifiers(Java8Parser.FieldModifiersContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.fieldModifier() != null && ctx.fieldModifier().size() > 0) {
 	        sb.append(formatModifiers(ctx.fieldModifier().size()));
@@ -3100,18 +3099,18 @@ Parser methods follow.
             stack.push(sb.toString());
         }
 	}
-	@Override public void enterFieldModifier(@NotNull Java8Parser.FieldModifierContext ctx) { 
+	@Override public void enterFieldModifier(Java8Parser.FieldModifierContext ctx) { 
 	    // (one of) Annotation public protected private
 	    // static final transient volatile
 	}
-	@Override public void exitFieldModifier(@NotNull Java8Parser.FieldModifierContext ctx) {
+	@Override public void exitFieldModifier(Java8Parser.FieldModifierContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterMarkerAnnotation(@NotNull Java8Parser.MarkerAnnotationContext ctx) { 
+	@Override public void enterMarkerAnnotation(Java8Parser.MarkerAnnotationContext ctx) { 
 	    // @ TypeName	
 	}
-	@Override public void exitMarkerAnnotation(@NotNull Java8Parser.MarkerAnnotationContext ctx) {
+	@Override public void exitMarkerAnnotation(Java8Parser.MarkerAnnotationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String typename = stack.pop();
 	    String at = stack.pop();
@@ -3119,10 +3118,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterResourceList(@NotNull Java8Parser.ResourceListContext ctx) {
+	@Override public void enterResourceList(Java8Parser.ResourceListContext ctx) {
 	    // resource (';' resource)*	
 	}
-	@Override public void exitResourceList(@NotNull Java8Parser.ResourceListContext ctx) {
+	@Override public void exitResourceList(Java8Parser.ResourceListContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.resource() != null) {
 	        sb.append(reverse(ctx.resource().size() * 2 - 1, " ", 2));
@@ -3130,14 +3129,14 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterArrayAccess_lfno_primary(@NotNull Java8Parser.ArrayAccess_lfno_primaryContext ctx) {
+	@Override public void enterArrayAccess_lfno_primary(Java8Parser.ArrayAccess_lfno_primaryContext ctx) {
         // (	expressionName '[' expression ']'
         // |	primaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primary '[' expression ']'
         // )
         // (	primaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primary '[' expression ']'
         // )*
 	}
-	@Override public void exitArrayAccess_lfno_primary(@NotNull Java8Parser.ArrayAccess_lfno_primaryContext ctx) { 
+	@Override public void exitArrayAccess_lfno_primary(Java8Parser.ArrayAccess_lfno_primaryContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    
 	    // second half
@@ -3162,10 +3161,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterStaticInitializer(@NotNull Java8Parser.StaticInitializerContext ctx) { 
+	@Override public void enterStaticInitializer(Java8Parser.StaticInitializerContext ctx) { 
 	    // static Block
 	}
-	@Override public void exitStaticInitializer(@NotNull Java8Parser.StaticInitializerContext ctx) {
+	@Override public void exitStaticInitializer(Java8Parser.StaticInitializerContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    sb.append('\n');
 	    String block = stack.pop();
@@ -3174,12 +3173,12 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterConditionalExpression(@NotNull Java8Parser.ConditionalExpressionContext ctx) {
+	@Override public void enterConditionalExpression(Java8Parser.ConditionalExpressionContext ctx) {
 	    // ConditionalOrExpression 
 	    // ConditionalOrExpression ? Expression : ConditionalExpression 
 	    // ConditionalOrExpression ? Expression : LambdaExpression 	
 	}
-	@Override public void exitConditionalExpression(@NotNull Java8Parser.ConditionalExpressionContext ctx) { 
+	@Override public void exitConditionalExpression(Java8Parser.ConditionalExpressionContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    // only need to handle the last 2 choices
 	    if (ctx.conditionalExpression() != null || ctx.lambdaExpression() != null) {
@@ -3193,10 +3192,10 @@ Parser methods follow.
 	    }
 	}
 
-	@Override public void enterFieldDeclaration(@NotNull Java8Parser.FieldDeclarationContext ctx) {
+	@Override public void enterFieldDeclaration(Java8Parser.FieldDeclarationContext ctx) {
 	    // fieldModifiers unannType variableDeclaratorList ';'
 	}
-	@Override public void exitFieldDeclaration(@NotNull Java8Parser.FieldDeclarationContext ctx) {
+	@Override public void exitFieldDeclaration(Java8Parser.FieldDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String semi = stack.pop();
 	    String vdl = stack.pop();
@@ -3213,20 +3212,20 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterLeftHandSide(@NotNull Java8Parser.LeftHandSideContext ctx) {
+	@Override public void enterLeftHandSide(Java8Parser.LeftHandSideContext ctx) {
 	    // :	expressionName
 	    // |	fieldAccess
 	    // |	arrayAccess
 	
 	}
-	@Override public void exitLeftHandSide(@NotNull Java8Parser.LeftHandSideContext ctx) {
+	@Override public void exitLeftHandSide(Java8Parser.LeftHandSideContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterBasicForStatement(@NotNull Java8Parser.BasicForStatementContext ctx) { 
+	@Override public void enterBasicForStatement(Java8Parser.BasicForStatementContext ctx) { 
 	    // for ( [ForInit] ; [Expression] ; [ForUpdate] ) Statement
 	}
-	@Override public void exitBasicForStatement(@NotNull Java8Parser.BasicForStatementContext ctx) { 
+	@Override public void exitBasicForStatement(Java8Parser.BasicForStatementContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String stmt = stack.pop().trim();
 	    if (!stmt.startsWith("{")) {
@@ -3250,10 +3249,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterWhileStatement(@NotNull Java8Parser.WhileStatementContext ctx) { 
+	@Override public void enterWhileStatement(Java8Parser.WhileStatementContext ctx) { 
 	    // while ( Expression ) Statement
 	}
-	@Override public void exitWhileStatement(@NotNull Java8Parser.WhileStatementContext ctx) {
+	@Override public void exitWhileStatement(Java8Parser.WhileStatementContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String stmt = stack.pop().trim();
 	    stmt = trimEnd(stmt);
@@ -3274,10 +3273,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterPackageDeclaration(@NotNull Java8Parser.PackageDeclarationContext ctx) { 
+	@Override public void enterPackageDeclaration(Java8Parser.PackageDeclarationContext ctx) { 
 	    // packageModifier* 'package' Identifier ('.' Identifier)* ';'
 	}
-	@Override public void exitPackageDeclaration(@NotNull Java8Parser.PackageDeclarationContext ctx) {
+	@Override public void exitPackageDeclaration(Java8Parser.PackageDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String semi = stack.pop();
 	    String identifiers = "";
@@ -3292,10 +3291,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterLocalVariableDeclaration(@NotNull Java8Parser.LocalVariableDeclarationContext ctx) { 
+	@Override public void enterLocalVariableDeclaration(Java8Parser.LocalVariableDeclarationContext ctx) { 
 	    // variableModifier* unannType variableDeclaratorList
 	}
-	@Override public void exitLocalVariableDeclaration(@NotNull Java8Parser.LocalVariableDeclarationContext ctx) {
+	@Override public void exitLocalVariableDeclaration(Java8Parser.LocalVariableDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
         String vdl = stack.pop();
         String type = stack.pop();
@@ -3306,10 +3305,10 @@ Parser methods follow.
         stack.push(sb.toString());
 	}
 
-	@Override public void enterSuperinterfaces(@NotNull Java8Parser.SuperinterfacesContext ctx) { 
+	@Override public void enterSuperinterfaces(Java8Parser.SuperinterfacesContext ctx) { 
 	    // implements InterfaceTypeList
 	}
-	@Override public void exitSuperinterfaces(@NotNull Java8Parser.SuperinterfacesContext ctx) { 
+	@Override public void exitSuperinterfaces(Java8Parser.SuperinterfacesContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String list = stack.pop();
 	    String implements_ = stack.pop();
@@ -3317,24 +3316,24 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterInterfaceMemberDeclaration(@NotNull Java8Parser.InterfaceMemberDeclarationContext ctx) { 
+	@Override public void enterInterfaceMemberDeclaration(Java8Parser.InterfaceMemberDeclarationContext ctx) { 
 	    // ConstantDeclaration 
 	    // InterfaceMethodDeclaration 
 	    // ClassDeclaration 
 	    // InterfaceDeclaration 
 	    // ;	
 	}
-	@Override public void exitInterfaceMemberDeclaration(@NotNull Java8Parser.InterfaceMemberDeclarationContext ctx) {
+	@Override public void exitInterfaceMemberDeclaration(Java8Parser.InterfaceMemberDeclarationContext ctx) {
 	    if (";".equals(stack.peek())) {
 	        String semi = stack.pop() + '\n';
 	        stack.push(semi);
 	    }
 	}
 
-	@Override public void enterClassInstanceCreationExpression_lf_primary(@NotNull Java8Parser.ClassInstanceCreationExpression_lf_primaryContext ctx) {
+	@Override public void enterClassInstanceCreationExpression_lf_primary(Java8Parser.ClassInstanceCreationExpression_lf_primaryContext ctx) {
 	    // '.' 'new' typeArguments? annotationIdentifier typeArgumentsOrDiamond? '(' argumentList? ')' classBody?
 	}
-	@Override public void exitClassInstanceCreationExpression_lf_primary(@NotNull Java8Parser.ClassInstanceCreationExpression_lf_primaryContext ctx) {
+	@Override public void exitClassInstanceCreationExpression_lf_primary(Java8Parser.ClassInstanceCreationExpression_lf_primaryContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String classBody = ctx.classBody() == null ? "" : stack.pop();
 	    if (!classBody.isEmpty() && brokenBracket && classBody.startsWith("{")) {
@@ -3352,10 +3351,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterSwitchBlock(@NotNull Java8Parser.SwitchBlockContext ctx) { 
+	@Override public void enterSwitchBlock(Java8Parser.SwitchBlockContext ctx) { 
 	    // '{' switchBlockStatementGroup* switchLabel* '}'
 	}
-	@Override public void exitSwitchBlock(@NotNull Java8Parser.SwitchBlockContext ctx) { 
+	@Override public void exitSwitchBlock(Java8Parser.SwitchBlockContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String rbracket = stack.pop().trim();
 	    ++ tabCount;
@@ -3375,18 +3374,18 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterForInit(@NotNull Java8Parser.ForInitContext ctx) { 
+	@Override public void enterForInit(Java8Parser.ForInitContext ctx) { 
 	    // StatementExpressionList
 	    // LocalVariableDeclaration
 	}
-	@Override public void exitForInit(@NotNull Java8Parser.ForInitContext ctx) { 
+	@Override public void exitForInit(Java8Parser.ForInitContext ctx) { 
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterAnnotationDim(@NotNull Java8Parser.AnnotationDimContext ctx) { 
+	@Override public void enterAnnotationDim(Java8Parser.AnnotationDimContext ctx) { 
 	    // annotation* squareBrackets
 	}
-	@Override public void exitAnnotationDim(@NotNull Java8Parser.AnnotationDimContext ctx) { 
+	@Override public void exitAnnotationDim(Java8Parser.AnnotationDimContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String squareBrackets = stack.pop();
 	    if (ctx.annotation() != null) {
@@ -3401,24 +3400,24 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterBlockStatements(@NotNull Java8Parser.BlockStatementsContext ctx) {
+	@Override public void enterBlockStatements(Java8Parser.BlockStatementsContext ctx) {
 	    // BlockStatement {BlockStatement}
 	}
-	@Override public void exitBlockStatements(@NotNull Java8Parser.BlockStatementsContext ctx) { 
+	@Override public void exitBlockStatements(Java8Parser.BlockStatementsContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.blockStatement() != null) {
 	        sb.append(reverse(ctx.blockStatement().size(), ""));
 	    }
 	    trimEnd(sb);
-	    sb.append('\n');
+	    sb.append('\n');    /// TODO: is this where the extra \n before the ; in enum declaration comes from?
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterFormalParameters(@NotNull Java8Parser.FormalParametersContext ctx) { 
+	@Override public void enterFormalParameters(Java8Parser.FormalParametersContext ctx) { 
 	    // FormalParameter {, FormalParameter}
 	    // ReceiverParameter {, FormalParameter}
 	}
-	@Override public void exitFormalParameters(@NotNull Java8Parser.FormalParametersContext ctx) {
+	@Override public void exitFormalParameters(Java8Parser.FormalParametersContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    
 	    if (ctx.formalParameter() != null) {
@@ -3430,15 +3429,15 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterTypeArgumentsOrDiamond(@NotNull Java8Parser.TypeArgumentsOrDiamondContext ctx) {
+	@Override public void enterTypeArgumentsOrDiamond(Java8Parser.TypeArgumentsOrDiamondContext ctx) {
 	    // TypeArguments 
 	    // <>	
 	}
-	@Override public void exitTypeArgumentsOrDiamond(@NotNull Java8Parser.TypeArgumentsOrDiamondContext ctx) {
+	@Override public void exitTypeArgumentsOrDiamond(Java8Parser.TypeArgumentsOrDiamondContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterPrimaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primary(@NotNull Java8Parser.PrimaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primaryContext ctx) { 
+	@Override public void enterPrimaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primary(Java8Parser.PrimaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primaryContext ctx) { 
         // :	literal
         // |	typeName (squareBrackets)* '.' 'class'
         // |	unannPrimitiveType (squareBrackets)* '.' 'class'
@@ -3452,7 +3451,7 @@ Parser methods follow.
         // |	methodReference_lfno_primary
 	
 	}
-	@Override public void exitPrimaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primary(@NotNull Java8Parser.PrimaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primaryContext ctx) { 
+	@Override public void exitPrimaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primary(Java8Parser.PrimaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primaryContext ctx) { 
 	    if (ctx.literal() != null || ctx.classInstanceCreationExpression_lfno_primary() != null ||
 	        ctx.fieldAccess_lfno_primary() != null  ||
 	        ctx.methodInvocation_lfno_primary() != null || ctx.methodReference_lfno_primary() != null) {
@@ -3527,10 +3526,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterDefaultValue(@NotNull Java8Parser.DefaultValueContext ctx) { 
+	@Override public void enterDefaultValue(Java8Parser.DefaultValueContext ctx) { 
 	    // default ElementValue	
 	}
-	@Override public void exitDefaultValue(@NotNull Java8Parser.DefaultValueContext ctx) { 
+	@Override public void exitDefaultValue(Java8Parser.DefaultValueContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String value = stack.pop();
 	    String def = stack.pop();
@@ -3538,18 +3537,18 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterType(@NotNull Java8Parser.TypeContext ctx) {
+	@Override public void enterType(Java8Parser.TypeContext ctx) {
 	    // :	primitiveType
 	    // |	referenceType
 	}
-	@Override public void exitType(@NotNull Java8Parser.TypeContext ctx) {
+	@Override public void exitType(Java8Parser.TypeContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterElementValuePairList(@NotNull Java8Parser.ElementValuePairListContext ctx) { 
+	@Override public void enterElementValuePairList(Java8Parser.ElementValuePairListContext ctx) { 
 	    // ElementValuePair {, ElementValuePair}	
 	}
-	@Override public void exitElementValuePairList(@NotNull Java8Parser.ElementValuePairListContext ctx) {
+	@Override public void exitElementValuePairList(Java8Parser.ElementValuePairListContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.elementValuePair() != null) {
 	        sb.append(reverse(ctx.elementValuePair().size() * 2 - 1, " ", 2));
@@ -3557,10 +3556,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterSynchronizedStatement(@NotNull Java8Parser.SynchronizedStatementContext ctx) {
+	@Override public void enterSynchronizedStatement(Java8Parser.SynchronizedStatementContext ctx) {
 	    // synchronized ( Expression ) Block
 	}
-	@Override public void exitSynchronizedStatement(@NotNull Java8Parser.SynchronizedStatementContext ctx) { 
+	@Override public void exitSynchronizedStatement(Java8Parser.SynchronizedStatementContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String block = stack.pop();
 	    String rparen = stack.pop();
@@ -3571,10 +3570,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterUnannClassType_lf_unannClassOrInterfaceType(@NotNull Java8Parser.UnannClassType_lf_unannClassOrInterfaceTypeContext ctx) { 
+	@Override public void enterUnannClassType_lf_unannClassOrInterfaceType(Java8Parser.UnannClassType_lf_unannClassOrInterfaceTypeContext ctx) { 
 	    // '.' annotationIdentifier typeArguments?
 	}
-	@Override public void exitUnannClassType_lf_unannClassOrInterfaceType(@NotNull Java8Parser.UnannClassType_lf_unannClassOrInterfaceTypeContext ctx) { 
+	@Override public void exitUnannClassType_lf_unannClassOrInterfaceType(Java8Parser.UnannClassType_lf_unannClassOrInterfaceTypeContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String args = ctx.typeArguments() == null ? "" : ' ' + stack.pop();
 	    String ann = stack.pop();
@@ -3583,19 +3582,19 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterAdditiveOperator(@NotNull Java8Parser.AdditiveOperatorContext ctx) { 
+	@Override public void enterAdditiveOperator(Java8Parser.AdditiveOperatorContext ctx) { 
         // :   '+'
         // |   '-'
 	}
-	@Override public void exitAdditiveOperator(@NotNull Java8Parser.AdditiveOperatorContext ctx) {
+	@Override public void exitAdditiveOperator(Java8Parser.AdditiveOperatorContext ctx) {
 	    stack.pop();
 	    stack.push(padOperator(ctx.getText()));
 	}
 
-	@Override public void enterSuperclass(@NotNull Java8Parser.SuperclassContext ctx) { 
+	@Override public void enterSuperclass(Java8Parser.SuperclassContext ctx) { 
 	    // extends ClassType
 	}
-	@Override public void exitSuperclass(@NotNull Java8Parser.SuperclassContext ctx) {
+	@Override public void exitSuperclass(Java8Parser.SuperclassContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String ct = stack.pop();
 	    String ext = stack.pop();
@@ -3603,11 +3602,11 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterBlock(@NotNull Java8Parser.BlockContext ctx) {
+	@Override public void enterBlock(Java8Parser.BlockContext ctx) {
 	    // { [BlockStatements] }
 	    ++tabCount;
 	}
-	@Override public void exitBlock(@NotNull Java8Parser.BlockContext ctx) { 
+	@Override public void exitBlock(Java8Parser.BlockContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String rbracket = stack.pop();
 	    while(rbracket.startsWith("\n")) {
@@ -3637,10 +3636,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterExpressionStatement(@NotNull Java8Parser.ExpressionStatementContext ctx) { 
+	@Override public void enterExpressionStatement(Java8Parser.ExpressionStatementContext ctx) { 
 	    // StatementExpression ;
 	}
-	@Override public void exitExpressionStatement(@NotNull Java8Parser.ExpressionStatementContext ctx) {
+	@Override public void exitExpressionStatement(Java8Parser.ExpressionStatementContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String semi = stack.pop();
 	    String stmt = stack.pop();
@@ -3648,10 +3647,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterPreIncrementExpression(@NotNull Java8Parser.PreIncrementExpressionContext ctx) { 
+	@Override public void enterPreIncrementExpression(Java8Parser.PreIncrementExpressionContext ctx) { 
 	    // ++ UnaryExpression	
 	}
-	@Override public void exitPreIncrementExpression(@NotNull Java8Parser.PreIncrementExpressionContext ctx) {
+	@Override public void exitPreIncrementExpression(Java8Parser.PreIncrementExpressionContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String expr = stack.pop();
 	    String plus = stack.pop();
@@ -3659,10 +3658,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterEnumBodyDeclarations(@NotNull Java8Parser.EnumBodyDeclarationsContext ctx) { 
+	@Override public void enterEnumBodyDeclarations(Java8Parser.EnumBodyDeclarationsContext ctx) { 
 	    // ';' classBodyDeclaration*
 	}
-	@Override public void exitEnumBodyDeclarations(@NotNull Java8Parser.EnumBodyDeclarationsContext ctx) { 
+	@Override public void exitEnumBodyDeclarations(Java8Parser.EnumBodyDeclarationsContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String body = "";
 	    if (ctx.classBodyDeclaration() != null) {
@@ -3673,10 +3672,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterDimExprs(@NotNull Java8Parser.DimExprsContext ctx) { 
+	@Override public void enterDimExprs(Java8Parser.DimExprsContext ctx) { 
 	    // DimExpr {DimExpr}
 	}
-	@Override public void exitDimExprs(@NotNull Java8Parser.DimExprsContext ctx) { 
+	@Override public void exitDimExprs(Java8Parser.DimExprsContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.dimExpr() != null && ctx.dimExpr().size() > 0) {
 	        sb.append(reverse(ctx.dimExpr().size(), " ")).append(' ');
@@ -3684,24 +3683,24 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterForUpdate(@NotNull Java8Parser.ForUpdateContext ctx) { 
+	@Override public void enterForUpdate(Java8Parser.ForUpdateContext ctx) { 
 	    // StatementExpressionList
 	}
-	@Override public void exitForUpdate(@NotNull Java8Parser.ForUpdateContext ctx) { 
+	@Override public void exitForUpdate(Java8Parser.ForUpdateContext ctx) { 
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterEmptyStatement(@NotNull Java8Parser.EmptyStatementContext ctx) {
+	@Override public void enterEmptyStatement(Java8Parser.EmptyStatementContext ctx) {
 	    // ; 
 	}
-	@Override public void exitEmptyStatement(@NotNull Java8Parser.EmptyStatementContext ctx) { 
+	@Override public void exitEmptyStatement(Java8Parser.EmptyStatementContext ctx) { 
 	    if (";".equals(stack.peek())) {
 	        String semi = stack.pop() + '\n';
 	        stack.push(semi);
 	    }
 	}
 
-	@Override public void enterPrimaryNoNewArray_lf_primary(@NotNull Java8Parser.PrimaryNoNewArray_lf_primaryContext ctx) { 
+	@Override public void enterPrimaryNoNewArray_lf_primary(Java8Parser.PrimaryNoNewArray_lf_primaryContext ctx) { 
         // :	classInstanceCreationExpression_lf_primary
         // |	fieldAccess_lf_primary
         // |	arrayAccess_lf_primary
@@ -3709,26 +3708,26 @@ Parser methods follow.
         // |	methodReference_lf_primary
 	
 	}
-	@Override public void exitPrimaryNoNewArray_lf_primary(@NotNull Java8Parser.PrimaryNoNewArray_lf_primaryContext ctx) {
+	@Override public void exitPrimaryNoNewArray_lf_primary(Java8Parser.PrimaryNoNewArray_lf_primaryContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.	
 	}
 
-	@Override public void enterAnnotationTypeElementModifier(@NotNull Java8Parser.AnnotationTypeElementModifierContext ctx) {
+	@Override public void enterAnnotationTypeElementModifier(Java8Parser.AnnotationTypeElementModifierContext ctx) {
 	    // :	annotation
         // |	'public'
         // |	'abstract'
 	}
-	@Override public void exitAnnotationTypeElementModifier(@NotNull Java8Parser.AnnotationTypeElementModifierContext ctx) { 
+	@Override public void exitAnnotationTypeElementModifier(Java8Parser.AnnotationTypeElementModifierContext ctx) { 
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterShiftExpression(@NotNull Java8Parser.ShiftExpressionContext ctx) { 
+	@Override public void enterShiftExpression(Java8Parser.ShiftExpressionContext ctx) { 
 	    // AdditiveExpression 
 	    // ShiftExpression shiftOperator AdditiveExpression 
 	    // ShiftExpression shiftOperator AdditiveExpression 
 	    // ShiftExpression shiftOperator AdditiveExpression	
 	}
-	@Override public void exitShiftExpression(@NotNull Java8Parser.ShiftExpressionContext ctx) { 
+	@Override public void exitShiftExpression(Java8Parser.ShiftExpressionContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String additiveExpression = stack.pop();
 	    if (ctx.shiftExpression() != null) {
@@ -3751,10 +3750,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 	
-	@Override public void enterFieldAccess_lf_primary(@NotNull Java8Parser.FieldAccess_lf_primaryContext ctx) { 
+	@Override public void enterFieldAccess_lf_primary(Java8Parser.FieldAccess_lf_primaryContext ctx) { 
 	    // '.' Identifier
 	}
-	@Override public void exitFieldAccess_lf_primary(@NotNull Java8Parser.FieldAccess_lf_primaryContext ctx) { 
+	@Override public void exitFieldAccess_lf_primary(Java8Parser.FieldAccess_lf_primaryContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String identifier = stack.pop();
 	    String dot = stack.pop();
@@ -3762,36 +3761,36 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterInstanceInitializer(@NotNull Java8Parser.InstanceInitializerContext ctx) { 
+	@Override public void enterInstanceInitializer(Java8Parser.InstanceInitializerContext ctx) { 
 	    // Block
 	}
-	@Override public void exitInstanceInitializer(@NotNull Java8Parser.InstanceInitializerContext ctx) {
+	@Override public void exitInstanceInitializer(Java8Parser.InstanceInitializerContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterUnannType(@NotNull Java8Parser.UnannTypeContext ctx) {
+	@Override public void enterUnannType(Java8Parser.UnannTypeContext ctx) {
 	    // UnannPrimitiveType
 	    // UnannReferenceType
 	}
-	@Override public void exitUnannType(@NotNull Java8Parser.UnannTypeContext ctx) {
+	@Override public void exitUnannType(Java8Parser.UnannTypeContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterIntegralType(@NotNull Java8Parser.IntegralTypeContext ctx) {
+	@Override public void enterIntegralType(Java8Parser.IntegralTypeContext ctx) {
 	    // (one of) byte short int long char
 	}
-	@Override public void exitIntegralType(@NotNull Java8Parser.IntegralTypeContext ctx) { 
+	@Override public void exitIntegralType(Java8Parser.IntegralTypeContext ctx) { 
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterPostIncrementExpression_lf_postfixExpression(@NotNull Java8Parser.PostIncrementExpression_lf_postfixExpressionContext ctx) { 
+	@Override public void enterPostIncrementExpression_lf_postfixExpression(Java8Parser.PostIncrementExpression_lf_postfixExpressionContext ctx) { 
 	    // '++'
 	}
-	@Override public void exitPostIncrementExpression_lf_postfixExpression(@NotNull Java8Parser.PostIncrementExpression_lf_postfixExpressionContext ctx) {
+	@Override public void exitPostIncrementExpression_lf_postfixExpression(Java8Parser.PostIncrementExpression_lf_postfixExpressionContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterClassOrInterfaceType(@NotNull Java8Parser.ClassOrInterfaceTypeContext ctx) {
+	@Override public void enterClassOrInterfaceType(Java8Parser.ClassOrInterfaceTypeContext ctx) {
 	    // (	classType_lfno_classOrInterfaceType
 	    // |	interfaceType_lfno_classOrInterfaceType
 	    // )
@@ -3799,7 +3798,7 @@ Parser methods follow.
 	    // |	interfaceType_lf_classOrInterfaceType
 	    // )*                                               
 	}
-	@Override public void exitClassOrInterfaceType(@NotNull Java8Parser.ClassOrInterfaceTypeContext ctx) { 
+	@Override public void exitClassOrInterfaceType(Java8Parser.ClassOrInterfaceTypeContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    // second half
 	    String sh = "";
@@ -3816,12 +3815,12 @@ Parser methods follow.
 		
 	}
 
-	@Override public void enterEqualityExpression(@NotNull Java8Parser.EqualityExpressionContext ctx) {
+	@Override public void enterEqualityExpression(Java8Parser.EqualityExpressionContext ctx) {
 	    // RelationalExpression 
 	    // EqualityExpression == RelationalExpression 
 	    // EqualityExpression != RelationalExpression	
 	}
-	@Override public void exitEqualityExpression(@NotNull Java8Parser.EqualityExpressionContext ctx) { 
+	@Override public void exitEqualityExpression(Java8Parser.EqualityExpressionContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String re = stack.pop();
 	    if (ctx.equalityExpression() != null) {
@@ -3834,10 +3833,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterNormalAnnotation(@NotNull Java8Parser.NormalAnnotationContext ctx) { 
+	@Override public void enterNormalAnnotation(Java8Parser.NormalAnnotationContext ctx) { 
 	    // @ TypeName ( [ElementValuePairList] )
 	}
-	@Override public void exitNormalAnnotation(@NotNull Java8Parser.NormalAnnotationContext ctx) {
+	@Override public void exitNormalAnnotation(Java8Parser.NormalAnnotationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String rparen = stack.pop();
 	    String list = ctx.elementValuePairList() == null ? "" : stack.pop();
@@ -3848,11 +3847,11 @@ Parser methods follow.
         stack.push(sb.toString());
 	}
 
-	@Override public void enterTypeBound(@NotNull Java8Parser.TypeBoundContext ctx) { 
+	@Override public void enterTypeBound(Java8Parser.TypeBoundContext ctx) { 
 	    // extends TypeVariable
 	    // extends ClassOrInterfaceType {AdditionalBound}
 	}
-	@Override public void exitTypeBound(@NotNull Java8Parser.TypeBoundContext ctx) { 
+	@Override public void exitTypeBound(Java8Parser.TypeBoundContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.typeVariable() != null) {
 	        sb.append(stack.pop()); 
@@ -3872,14 +3871,14 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterPrimary(@NotNull Java8Parser.PrimaryContext ctx) {
+	@Override public void enterPrimary(Java8Parser.PrimaryContext ctx) {
         // 	   (	primaryNoNewArray_lfno_primary
         //     |	arrayCreationExpression
         //     )
         //     (	primaryNoNewArray_lf_primary
         //     )*
 	}
-	@Override public void exitPrimary(@NotNull Java8Parser.PrimaryContext ctx) { 
+	@Override public void exitPrimary(Java8Parser.PrimaryContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    StringBuilder lf_primary = new StringBuilder();
 	    if (ctx.primaryNoNewArray_lf_primary() != null && ctx.primaryNoNewArray_lf_primary().size() > 0) {
@@ -3893,10 +3892,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterClassModifiers(@NotNull Java8Parser.ClassModifiersContext ctx) { 
+	@Override public void enterClassModifiers(Java8Parser.ClassModifiersContext ctx) { 
 	    // classmodifier*
 	}
-	@Override public void exitClassModifiers(@NotNull Java8Parser.ClassModifiersContext ctx) {
+	@Override public void exitClassModifiers(Java8Parser.ClassModifiersContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.classModifier() != null && ctx.classModifier().size() > 0) {
 	        sb.append(formatModifiers(ctx.classModifier().size()));
@@ -3906,20 +3905,20 @@ Parser methods follow.
             stack.push(sb.toString());
         }
 	}
-	@Override public void enterClassModifier(@NotNull Java8Parser.ClassModifierContext ctx) { 
+	@Override public void enterClassModifier(Java8Parser.ClassModifierContext ctx) { 
 	    // (one of) Annotation public protected private
 	    // abstract static final strictfp
 	}
-	@Override public void exitClassModifier(@NotNull Java8Parser.ClassModifierContext ctx) {
+	@Override public void exitClassModifier(Java8Parser.ClassModifierContext ctx) {
 	    // nothing to do here, either an annotation or one of the terminals will be on the stack
 	}
 
-	@Override public void enterFieldAccess(@NotNull Java8Parser.FieldAccessContext ctx) { 
+	@Override public void enterFieldAccess(Java8Parser.FieldAccessContext ctx) { 
 	    // Primary . Identifier
 	    // super . Identifier
 	    // TypeName . super . Identifier
 	}
-	@Override public void exitFieldAccess(@NotNull Java8Parser.FieldAccessContext ctx) { 
+	@Override public void exitFieldAccess(Java8Parser.FieldAccessContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
         String identifier = stack.pop();
         String dot = stack.pop();
@@ -3940,11 +3939,11 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterTypeName(@NotNull Java8Parser.TypeNameContext ctx) {
+	@Override public void enterTypeName(Java8Parser.TypeNameContext ctx) {
 	    // Identifier
 	    // PackageOrTypeName . Identifier 
 	}
-	@Override public void exitTypeName(@NotNull Java8Parser.TypeNameContext ctx) {
+	@Override public void exitTypeName(Java8Parser.TypeNameContext ctx) {
 	    StringBuilder sb = new StringBuilder();                                           
 	    String identifier = stack.pop();
 	    if (ctx.packageOrTypeName() != null) {
@@ -3956,11 +3955,11 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterConstructorBody(@NotNull Java8Parser.ConstructorBodyContext ctx) {
+	@Override public void enterConstructorBody(Java8Parser.ConstructorBodyContext ctx) {
 	    // '{' explicitConstructorInvocation? blockStatements? '}'
 	    ++tabCount;
 	}
-	@Override public void exitConstructorBody(@NotNull Java8Parser.ConstructorBodyContext ctx) {
+	@Override public void exitConstructorBody(Java8Parser.ConstructorBodyContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String rbracket = stack.pop().trim();
 	    String bs = ctx.blockStatements() == null ? "" : stack.pop().trim();
@@ -3976,10 +3975,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterCatchClause(@NotNull Java8Parser.CatchClauseContext ctx) {
+	@Override public void enterCatchClause(Java8Parser.CatchClauseContext ctx) {
 	    // catch ( CatchFormalParameter ) Block	
 	}
-	@Override public void exitCatchClause(@NotNull Java8Parser.CatchClauseContext ctx) { 
+	@Override public void exitCatchClause(Java8Parser.CatchClauseContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String block = stack.pop();
 	    block = trimFront(block);
@@ -3994,17 +3993,17 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterPrimaryNoNewArray_lf_primary_lf_arrayAccess_lf_primary(@NotNull Java8Parser.PrimaryNoNewArray_lf_primary_lf_arrayAccess_lf_primaryContext ctx) { 
+	@Override public void enterPrimaryNoNewArray_lf_primary_lf_arrayAccess_lf_primary(Java8Parser.PrimaryNoNewArray_lf_primary_lf_arrayAccess_lf_primaryContext ctx) { 
 	    // do nothing here
 	}
-	@Override public void exitPrimaryNoNewArray_lf_primary_lf_arrayAccess_lf_primary(@NotNull Java8Parser.PrimaryNoNewArray_lf_primary_lf_arrayAccess_lf_primaryContext ctx) { 
+	@Override public void exitPrimaryNoNewArray_lf_primary_lf_arrayAccess_lf_primary(Java8Parser.PrimaryNoNewArray_lf_primary_lf_arrayAccess_lf_primaryContext ctx) { 
 	    // do nothing here
 	}
 
-	@Override public void enterLabeledStatement(@NotNull Java8Parser.LabeledStatementContext ctx) {
+	@Override public void enterLabeledStatement(Java8Parser.LabeledStatementContext ctx) {
 	    // Identifier : Statement
 	}
-	@Override public void exitLabeledStatement(@NotNull Java8Parser.LabeledStatementContext ctx) {
+	@Override public void exitLabeledStatement(Java8Parser.LabeledStatementContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String stmt = stack.pop();
 	    String colon = stack.pop();
@@ -4013,10 +4012,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterSwitchLabels(@NotNull Java8Parser.SwitchLabelsContext ctx) { 
+	@Override public void enterSwitchLabels(Java8Parser.SwitchLabelsContext ctx) { 
 	    // SwitchLabel {SwitchLabel}
 	}
-	@Override public void exitSwitchLabels(@NotNull Java8Parser.SwitchLabelsContext ctx) {
+	@Override public void exitSwitchLabels(Java8Parser.SwitchLabelsContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.switchLabel() != null && ctx.switchLabel().size() > 0) {
 	        sb.append(reverse(ctx.switchLabel().size(), ""));
@@ -4024,10 +4023,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterFormalParameter(@NotNull Java8Parser.FormalParameterContext ctx) {
+	@Override public void enterFormalParameter(Java8Parser.FormalParameterContext ctx) {
 	    // {VariableModifier} UnannType VariableDeclaratorId
 	}
-	@Override public void exitFormalParameter(@NotNull Java8Parser.FormalParameterContext ctx) { 
+	@Override public void exitFormalParameter(Java8Parser.FormalParameterContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String vdi = stack.pop();
 	    String unannType = stack.pop();
@@ -4037,17 +4036,17 @@ Parser methods follow.
 	    sb.append(unannType).append(' ').append(vdi);
 	    stack.push(sb.toString());
 	}
-	@Override public void enterInterfaceType_lf_classOrInterfaceType(@NotNull Java8Parser.InterfaceType_lf_classOrInterfaceTypeContext ctx) { 
+	@Override public void enterInterfaceType_lf_classOrInterfaceType(Java8Parser.InterfaceType_lf_classOrInterfaceTypeContext ctx) { 
 	    // classType_lf_classOrInterfaceType
 	}
-	@Override public void exitInterfaceType_lf_classOrInterfaceType(@NotNull Java8Parser.InterfaceType_lf_classOrInterfaceTypeContext ctx) {
+	@Override public void exitInterfaceType_lf_classOrInterfaceType(Java8Parser.InterfaceType_lf_classOrInterfaceTypeContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterSingleTypeImportDeclaration(@NotNull Java8Parser.SingleTypeImportDeclarationContext ctx) { 
+	@Override public void enterSingleTypeImportDeclaration(Java8Parser.SingleTypeImportDeclarationContext ctx) { 
 	    // import TypeName ;
 	}
-	@Override public void exitSingleTypeImportDeclaration(@NotNull Java8Parser.SingleTypeImportDeclarationContext ctx) {
+	@Override public void exitSingleTypeImportDeclaration(Java8Parser.SingleTypeImportDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String semi = stack.pop();
 	    String name = stack.pop();
@@ -4056,10 +4055,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterSingleElementAnnotation(@NotNull Java8Parser.SingleElementAnnotationContext ctx) { 
+	@Override public void enterSingleElementAnnotation(Java8Parser.SingleElementAnnotationContext ctx) { 
 	    // @ TypeName ( ElementValue )
 	}
-	@Override public void exitSingleElementAnnotation(@NotNull Java8Parser.SingleElementAnnotationContext ctx) {
+	@Override public void exitSingleElementAnnotation(Java8Parser.SingleElementAnnotationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String rparen = stack.pop();
 	    String ev = stack.pop();
@@ -4070,10 +4069,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterElementValueArrayInitializer(@NotNull Java8Parser.ElementValueArrayInitializerContext ctx) {
+	@Override public void enterElementValueArrayInitializer(Java8Parser.ElementValueArrayInitializerContext ctx) {
 	    // '{' elementValueList? COMMA? '}'	
 	}
-	@Override public void exitElementValueArrayInitializer(@NotNull Java8Parser.ElementValueArrayInitializerContext ctx) { 
+	@Override public void exitElementValueArrayInitializer(Java8Parser.ElementValueArrayInitializerContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String rb = stack.pop();
 	    String comma = ctx.COMMA() == null ? "" : stack.pop();    // TODO: keep this? there is no need for it.
@@ -4083,25 +4082,25 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterConstantExpression(@NotNull Java8Parser.ConstantExpressionContext ctx) { 
+	@Override public void enterConstantExpression(Java8Parser.ConstantExpressionContext ctx) { 
 	    // Expression
 	}
-	@Override public void exitConstantExpression(@NotNull Java8Parser.ConstantExpressionContext ctx) { 
+	@Override public void exitConstantExpression(Java8Parser.ConstantExpressionContext ctx) { 
 	    // nothing to do here, expression should already be on the stack.
 	}
 
-	@Override public void enterForStatement(@NotNull Java8Parser.ForStatementContext ctx) {
+	@Override public void enterForStatement(Java8Parser.ForStatementContext ctx) {
 	    // BasicForStatement
 	    // EnhancedForStatement
 	}
-	@Override public void exitForStatement(@NotNull Java8Parser.ForStatementContext ctx) { 
+	@Override public void exitForStatement(Java8Parser.ForStatementContext ctx) { 
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterTypeArgumentList(@NotNull Java8Parser.TypeArgumentListContext ctx) { 
+	@Override public void enterTypeArgumentList(Java8Parser.TypeArgumentListContext ctx) { 
 	    // TypeArgument {, TypeArgument}
 	}
-	@Override public void exitTypeArgumentList(@NotNull Java8Parser.TypeArgumentListContext ctx) {
+	@Override public void exitTypeArgumentList(Java8Parser.TypeArgumentListContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.typeArgument() != null) {
 	        sb.append(reverse(ctx.typeArgument().size() * 2 - 1, " ", 2));
@@ -4109,10 +4108,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterPostDecrementExpression(@NotNull Java8Parser.PostDecrementExpressionContext ctx) { 
+	@Override public void enterPostDecrementExpression(Java8Parser.PostDecrementExpressionContext ctx) { 
 	    // PostfixExpression --	
 	}
-	@Override public void exitPostDecrementExpression(@NotNull Java8Parser.PostDecrementExpressionContext ctx) { 
+	@Override public void exitPostDecrementExpression(Java8Parser.PostDecrementExpressionContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String minus = stack.pop();
 	    String expr = stack.pop();
@@ -4120,10 +4119,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterReceiverParameter(@NotNull Java8Parser.ReceiverParameterContext ctx) { 
+	@Override public void enterReceiverParameter(Java8Parser.ReceiverParameterContext ctx) { 
 	    // {Annotation} UnannType [Identifier .] this
 	}
-	@Override public void exitReceiverParameter(@NotNull Java8Parser.ReceiverParameterContext ctx) { 
+	@Override public void exitReceiverParameter(Java8Parser.ReceiverParameterContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String t = stack.pop();
 	    String dot = "";
@@ -4141,10 +4140,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterWhileStatementNoShortIf(@NotNull Java8Parser.WhileStatementNoShortIfContext ctx) { 
+	@Override public void enterWhileStatementNoShortIf(Java8Parser.WhileStatementNoShortIfContext ctx) { 
 	    // while ( Expression ) StatementNoShortIf
 	}
-	@Override public void exitWhileStatementNoShortIf(@NotNull Java8Parser.WhileStatementNoShortIfContext ctx) { 
+	@Override public void exitWhileStatementNoShortIf(Java8Parser.WhileStatementNoShortIfContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String stmt = stack.pop();
 	    stmt = trimEnd(stmt);
@@ -4165,21 +4164,21 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterEnumConstantList(@NotNull Java8Parser.EnumConstantListContext ctx) {
+	@Override public void enterEnumConstantList(Java8Parser.EnumConstantListContext ctx) {
 	    // EnumConstant {, EnumConstant}
 	}
-	@Override public void exitEnumConstantList(@NotNull Java8Parser.EnumConstantListContext ctx) { 
+	@Override public void exitEnumConstantList(Java8Parser.EnumConstantListContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.enumConstant() != null) {
-	        sb.append(reverse(ctx.enumConstant().size() * 2 - 1, " ", 2));
+	        sb.append(reverse(ctx.enumConstant().size() * 2 - 1, "", 2));
 	    }
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterDoStatement(@NotNull Java8Parser.DoStatementContext ctx) { 
+	@Override public void enterDoStatement(Java8Parser.DoStatementContext ctx) { 
 	    // 'do' statement 'while' '(' expression ')' ';'
 	}
-	@Override public void exitDoStatement(@NotNull Java8Parser.DoStatementContext ctx) {
+	@Override public void exitDoStatement(Java8Parser.DoStatementContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String semi = stack.pop();
 	    String rparen = stack.pop();
@@ -4198,10 +4197,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterCatchType(@NotNull Java8Parser.CatchTypeContext ctx) {
+	@Override public void enterCatchType(Java8Parser.CatchTypeContext ctx) {
 	    // unannClassType ('|' classType)*
 	}
-	@Override public void exitCatchType(@NotNull Java8Parser.CatchTypeContext ctx) { 
+	@Override public void exitCatchType(Java8Parser.CatchTypeContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String ct = "";
 	    if (ctx.classType() != null && ctx.classType().size() > 0) {
@@ -4215,18 +4214,18 @@ Parser methods follow.
 	    stack.push(sb.toString()); 
 	}
 
-	@Override public void enterForStatementNoShortIf(@NotNull Java8Parser.ForStatementNoShortIfContext ctx) { 
+	@Override public void enterForStatementNoShortIf(Java8Parser.ForStatementNoShortIfContext ctx) { 
 	    // BasicForStatementNoShortIf
 	    // EnhancedForStatementNoShortIf
 	}
-	@Override public void exitForStatementNoShortIf(@NotNull Java8Parser.ForStatementNoShortIfContext ctx) {
+	@Override public void exitForStatementNoShortIf(Java8Parser.ForStatementNoShortIfContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterIfThenElseStatement(@NotNull Java8Parser.IfThenElseStatementContext ctx) { 
+	@Override public void enterIfThenElseStatement(Java8Parser.IfThenElseStatementContext ctx) { 
 	    // if ( Expression ) statementNoShortIf else Statement
 	}
-	@Override public void exitIfThenElseStatement(@NotNull Java8Parser.IfThenElseStatementContext ctx) {
+	@Override public void exitIfThenElseStatement(Java8Parser.IfThenElseStatementContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String stmt = stack.pop().trim();
 	    if (!stmt.startsWith("{") && !stmt.startsWith("if")) {
@@ -4251,18 +4250,18 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterAssignmentOperator(@NotNull Java8Parser.AssignmentOperatorContext ctx) {
+	@Override public void enterAssignmentOperator(Java8Parser.AssignmentOperatorContext ctx) {
 	    // (one of) =  *=  /=  %=  +=  -=  <<=  >>=  >>>=  &=  ^=  |=
 	}
-	@Override public void exitAssignmentOperator(@NotNull Java8Parser.AssignmentOperatorContext ctx) {
+	@Override public void exitAssignmentOperator(Java8Parser.AssignmentOperatorContext ctx) {
 	    stack.pop();
 	    stack.push(padOperator(ctx.getText()));
 	}
 
-	@Override public void enterLabeledStatementNoShortIf(@NotNull Java8Parser.LabeledStatementNoShortIfContext ctx) { 
+	@Override public void enterLabeledStatementNoShortIf(Java8Parser.LabeledStatementNoShortIfContext ctx) { 
 	    // Identifier ':' statementNoShortIf
 	}
-	@Override public void exitLabeledStatementNoShortIf(@NotNull Java8Parser.LabeledStatementNoShortIfContext ctx) { 
+	@Override public void exitLabeledStatementNoShortIf(Java8Parser.LabeledStatementNoShortIfContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String stmt = stack.pop();
 	    String colon = stack.pop();
@@ -4271,10 +4270,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterCatches(@NotNull Java8Parser.CatchesContext ctx) { 
+	@Override public void enterCatches(Java8Parser.CatchesContext ctx) { 
 	    // CatchClause {CatchClause}	
 	}
-	@Override public void exitCatches(@NotNull Java8Parser.CatchesContext ctx) { 
+	@Override public void exitCatches(Java8Parser.CatchesContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.catchClause() != null) {
 	        sb.append(reverse(ctx.catchClause().size(), " "));
@@ -4282,7 +4281,7 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterMethodReference_lfno_primary(@NotNull Java8Parser.MethodReference_lfno_primaryContext ctx) {
+	@Override public void enterMethodReference_lfno_primary(Java8Parser.MethodReference_lfno_primaryContext ctx) {
 	    // :	expressionName '::' typeArguments? Identifier
 	    // |	referenceType '::' typeArguments? Identifier
 	    // |	'super' '::' typeArguments? Identifier
@@ -4291,7 +4290,7 @@ Parser methods follow.
 	    // |	arrayType '::' 'new'
 	
 	}
-	@Override public void exitMethodReference_lfno_primary(@NotNull Java8Parser.MethodReference_lfno_primaryContext ctx) { 
+	@Override public void exitMethodReference_lfno_primary(Java8Parser.MethodReference_lfno_primaryContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    
 	    if (ctx.expressionName() != null || ctx.referenceType() != null) {
@@ -4333,10 +4332,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterVariableDeclaratorList(@NotNull Java8Parser.VariableDeclaratorListContext ctx) { 
+	@Override public void enterVariableDeclaratorList(Java8Parser.VariableDeclaratorListContext ctx) { 
 	    // variableDeclarator (',' variableDeclarator)*
 	}
-	@Override public void exitVariableDeclaratorList(@NotNull Java8Parser.VariableDeclaratorListContext ctx) {
+	@Override public void exitVariableDeclaratorList(Java8Parser.VariableDeclaratorListContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.variableDeclarator() != null && ctx.variableDeclarator().size() > 0) {
 	        sb.append(reverse(ctx.variableDeclarator().size() * 2 - 1, " ", 2));
@@ -4344,19 +4343,19 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterVariableModifier(@NotNull Java8Parser.VariableModifierContext ctx) {
+	@Override public void enterVariableModifier(Java8Parser.VariableModifierContext ctx) {
 	    // (one of) Annotation final
 	}
-	@Override public void exitVariableModifier(@NotNull Java8Parser.VariableModifierContext ctx) {
+	@Override public void exitVariableModifier(Java8Parser.VariableModifierContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterCastExpression(@NotNull Java8Parser.CastExpressionContext ctx) { 
+	@Override public void enterCastExpression(Java8Parser.CastExpressionContext ctx) { 
 	    // '(' primitiveType ')' unaryExpression
 	    // '(' referenceType additionalBound* ')' unaryExpressionNotPlusMinus
 	    // '(' referenceType additionalBound* ')' lambdaExpression                
 	}
-	@Override public void exitCastExpression(@NotNull Java8Parser.CastExpressionContext ctx) { 
+	@Override public void exitCastExpression(Java8Parser.CastExpressionContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.unaryExpression() != null) {
 	        // first choice
@@ -4387,11 +4386,11 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterConditionalOrExpression(@NotNull Java8Parser.ConditionalOrExpressionContext ctx) { 
+	@Override public void enterConditionalOrExpression(Java8Parser.ConditionalOrExpressionContext ctx) { 
 	    // ConditionalAndExpression 
 	    // ConditionalOrExpression || ConditionalAndExpression	
 	}
-	@Override public void exitConditionalOrExpression(@NotNull Java8Parser.ConditionalOrExpressionContext ctx) {
+	@Override public void exitConditionalOrExpression(Java8Parser.ConditionalOrExpressionContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String expr = stack.pop();
 	    if (ctx.conditionalOrExpression() != null) {
@@ -4402,17 +4401,17 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterTypeParameterModifier(@NotNull Java8Parser.TypeParameterModifierContext ctx) { 
+	@Override public void enterTypeParameterModifier(Java8Parser.TypeParameterModifierContext ctx) { 
 	    // Annotation
 	}
-	@Override public void exitTypeParameterModifier(@NotNull Java8Parser.TypeParameterModifierContext ctx) { 
+	@Override public void exitTypeParameterModifier(Java8Parser.TypeParameterModifierContext ctx) { 
 	    // if there is an annotation, it will already be on the stack
 	}
 
-	@Override public void enterElementValuePair(@NotNull Java8Parser.ElementValuePairContext ctx) {
+	@Override public void enterElementValuePair(Java8Parser.ElementValuePairContext ctx) {
 	    // Identifier = ElementValue	
 	}
-	@Override public void exitElementValuePair(@NotNull Java8Parser.ElementValuePairContext ctx) { 
+	@Override public void exitElementValuePair(Java8Parser.ElementValuePairContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String value = stack.pop();
 	    String eq = stack.pop();
@@ -4421,17 +4420,17 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterFloatingPointType(@NotNull Java8Parser.FloatingPointTypeContext ctx) { 
+	@Override public void enterFloatingPointType(Java8Parser.FloatingPointTypeContext ctx) { 
 	    // (one of) float double
 	}
-	@Override public void exitFloatingPointType(@NotNull Java8Parser.FloatingPointTypeContext ctx) { 
+	@Override public void exitFloatingPointType(Java8Parser.FloatingPointTypeContext ctx) { 
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterDimExpr(@NotNull Java8Parser.DimExprContext ctx) {
+	@Override public void enterDimExpr(Java8Parser.DimExprContext ctx) {
 	    // {Annotation} [ Expression ]	
 	}
-	@Override public void exitDimExpr(@NotNull Java8Parser.DimExprContext ctx) {
+	@Override public void exitDimExpr(Java8Parser.DimExprContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String rs = stack.pop();
 	    String expression = ctx.expression() == null ? "" : stack.pop();
@@ -4443,17 +4442,17 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterUnannInterfaceType_lf_unannClassOrInterfaceType(@NotNull Java8Parser.UnannInterfaceType_lf_unannClassOrInterfaceTypeContext ctx) {
+	@Override public void enterUnannInterfaceType_lf_unannClassOrInterfaceType(Java8Parser.UnannInterfaceType_lf_unannClassOrInterfaceTypeContext ctx) {
 	    // unannClassType_lf_unannClassOrInterfaceType
 	}
-	@Override public void exitUnannInterfaceType_lf_unannClassOrInterfaceType(@NotNull Java8Parser.UnannInterfaceType_lf_unannClassOrInterfaceTypeContext ctx) { 
+	@Override public void exitUnannInterfaceType_lf_unannClassOrInterfaceType(Java8Parser.UnannInterfaceType_lf_unannClassOrInterfaceTypeContext ctx) { 
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterResource(@NotNull Java8Parser.ResourceContext ctx) {
+	@Override public void enterResource(Java8Parser.ResourceContext ctx) {
 	    // {VariableModifier} UnannType VariableDeclaratorId = Expression	
 	}
-	@Override public void exitResource(@NotNull Java8Parser.ResourceContext ctx) { 
+	@Override public void exitResource(Java8Parser.ResourceContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String expr = stack.pop().trim();
 	    String eq = stack.pop().trim();
@@ -4466,11 +4465,11 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterInclusiveOrExpression(@NotNull Java8Parser.InclusiveOrExpressionContext ctx) {
+	@Override public void enterInclusiveOrExpression(Java8Parser.InclusiveOrExpressionContext ctx) {
 	    // ExclusiveOrExpression 
 	    // InclusiveOrExpression | ExclusiveOrExpression	
 	}
-	@Override public void exitInclusiveOrExpression(@NotNull Java8Parser.InclusiveOrExpressionContext ctx) { 
+	@Override public void exitInclusiveOrExpression(Java8Parser.InclusiveOrExpressionContext ctx) { 
 	    
 	    StringBuilder sb = new StringBuilder();
 	    String expr = stack.pop();
@@ -4482,18 +4481,18 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterInterfaceMethodModifier(@NotNull Java8Parser.InterfaceMethodModifierContext ctx) { 
+	@Override public void enterInterfaceMethodModifier(Java8Parser.InterfaceMethodModifierContext ctx) { 
 	    // (one of) Annotation public 
 	    // abstract default static strictfp	
 	}
-	@Override public void exitInterfaceMethodModifier(@NotNull Java8Parser.InterfaceMethodModifierContext ctx) { 
+	@Override public void exitInterfaceMethodModifier(Java8Parser.InterfaceMethodModifierContext ctx) { 
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterResourceSpecification(@NotNull Java8Parser.ResourceSpecificationContext ctx) {
+	@Override public void enterResourceSpecification(Java8Parser.ResourceSpecificationContext ctx) {
 	    // '(' resourceList SEMI? ')'	
 	}
-	@Override public void exitResourceSpecification(@NotNull Java8Parser.ResourceSpecificationContext ctx) {
+	@Override public void exitResourceSpecification(Java8Parser.ResourceSpecificationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String rparen = stack.pop();
 	    String semi = ctx.SEMI() == null ? "" : stack.pop();    
@@ -4518,10 +4517,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterInterfaceTypeList(@NotNull Java8Parser.InterfaceTypeListContext ctx) {
+	@Override public void enterInterfaceTypeList(Java8Parser.InterfaceTypeListContext ctx) {
 	    // InterfaceType {, InterfaceType}
 	}
-	@Override public void exitInterfaceTypeList(@NotNull Java8Parser.InterfaceTypeListContext ctx) { 
+	@Override public void exitInterfaceTypeList(Java8Parser.InterfaceTypeListContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.interfaceType() != null) {
 	        sb.append(reverse(ctx.interfaceType().size() * 2 - 1, " ", 2));
@@ -4529,10 +4528,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterIfThenElseStatementNoShortIf(@NotNull Java8Parser.IfThenElseStatementNoShortIfContext ctx) { 
+	@Override public void enterIfThenElseStatementNoShortIf(Java8Parser.IfThenElseStatementNoShortIfContext ctx) { 
 	    // if ( Expression ) StatementNoShortIf else StatementNoShortIf    
 	}
-	@Override public void exitIfThenElseStatementNoShortIf(@NotNull Java8Parser.IfThenElseStatementNoShortIfContext ctx) { 
+	@Override public void exitIfThenElseStatementNoShortIf(Java8Parser.IfThenElseStatementNoShortIfContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String elseStmt = stack.pop().trim();
 	    if (!elseStmt.startsWith("{") && !elseStmt.startsWith("if")) {
@@ -4558,18 +4557,18 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterUnannInterfaceType(@NotNull Java8Parser.UnannInterfaceTypeContext ctx) { 
+	@Override public void enterUnannInterfaceType(Java8Parser.UnannInterfaceTypeContext ctx) { 
 	    // UnannClassType
 	}
-	@Override public void exitUnannInterfaceType(@NotNull Java8Parser.UnannInterfaceTypeContext ctx) { 
+	@Override public void exitUnannInterfaceType(Java8Parser.UnannInterfaceTypeContext ctx) { 
 	    // nothing to do here, class type should already be on the stack.
 	}
 
-	@Override public void enterInterfaceModifiers(@NotNull Java8Parser.InterfaceModifiersContext ctx) { 
+	@Override public void enterInterfaceModifiers(Java8Parser.InterfaceModifiersContext ctx) { 
 	    // interfacemodifier*
 	}
 	
-	@Override public void exitInterfaceModifiers(@NotNull Java8Parser.InterfaceModifiersContext ctx) {
+	@Override public void exitInterfaceModifiers(Java8Parser.InterfaceModifiersContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.interfaceModifier() != null && ctx.interfaceModifier().size() > 0) {
 	        sb.append(formatModifiers(ctx.interfaceModifier().size()));
@@ -4580,19 +4579,19 @@ Parser methods follow.
         }
 	}
 	
-	@Override public void enterInterfaceModifier(@NotNull Java8Parser.InterfaceModifierContext ctx) {
+	@Override public void enterInterfaceModifier(Java8Parser.InterfaceModifierContext ctx) {
 	    // (one of) Annotation public protected private 
 	    // abstract static strictfp	
 	}
-	@Override public void exitInterfaceModifier(@NotNull Java8Parser.InterfaceModifierContext ctx) { 
+	@Override public void exitInterfaceModifier(Java8Parser.InterfaceModifierContext ctx) { 
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterExclusiveOrExpression(@NotNull Java8Parser.ExclusiveOrExpressionContext ctx) {
+	@Override public void enterExclusiveOrExpression(Java8Parser.ExclusiveOrExpressionContext ctx) {
 	    // AndExpression 
 	    // ExclusiveOrExpression ^ AndExpression
 	}
-	@Override public void exitExclusiveOrExpression(@NotNull Java8Parser.ExclusiveOrExpressionContext ctx) {
+	@Override public void exitExclusiveOrExpression(Java8Parser.ExclusiveOrExpressionContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String expr = stack.pop();
         if (ctx.exclusiveOrExpression() != null) {
@@ -4603,11 +4602,11 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterClassType(@NotNull Java8Parser.ClassTypeContext ctx) { 
+	@Override public void enterClassType(Java8Parser.ClassTypeContext ctx) { 
 	    //                          annotationIdentifier typeArguments?
 	    // classOrInterfaceType '.' annotationIdentifier typeArguments?
 	}
-	@Override public void exitClassType(@NotNull Java8Parser.ClassTypeContext ctx) {
+	@Override public void exitClassType(Java8Parser.ClassTypeContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    
 	    // same ending
@@ -4629,10 +4628,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterPostIncrementExpression(@NotNull Java8Parser.PostIncrementExpressionContext ctx) {
+	@Override public void enterPostIncrementExpression(Java8Parser.PostIncrementExpressionContext ctx) {
 	    // PostfixExpression ++	
 	}
-	@Override public void exitPostIncrementExpression(@NotNull Java8Parser.PostIncrementExpressionContext ctx) {
+	@Override public void exitPostIncrementExpression(Java8Parser.PostIncrementExpressionContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String plus = stack.pop().trim();
 	    sb.append(stack.pop());    // postfix expression
@@ -4640,12 +4639,12 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterTryStatement(@NotNull Java8Parser.TryStatementContext ctx) {
+	@Override public void enterTryStatement(Java8Parser.TryStatementContext ctx) {
 	    // try Block Catches 
 	    // try Block [Catches] Finally 
 	    // TryWithResourcesStatement	
 	}
-	@Override public void exitTryStatement(@NotNull Java8Parser.TryStatementContext ctx) {
+	@Override public void exitTryStatement(Java8Parser.TryStatementContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.tryWithResourcesStatement() != null) {
 	        // third option   
@@ -4686,10 +4685,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterAnnotationIdentifier(@NotNull Java8Parser.AnnotationIdentifierContext ctx) { 
+	@Override public void enterAnnotationIdentifier(Java8Parser.AnnotationIdentifierContext ctx) { 
 	    // annotation* Identifier
 	}
-	@Override public void exitAnnotationIdentifier(@NotNull Java8Parser.AnnotationIdentifierContext ctx) {
+	@Override public void exitAnnotationIdentifier(Java8Parser.AnnotationIdentifierContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String identifier = stack.pop();
 	    String annotations = "";
@@ -4701,10 +4700,10 @@ Parser methods follow.
 	}
 	
 	
-	@Override public void enterElementValueList(@NotNull Java8Parser.ElementValueListContext ctx) {
+	@Override public void enterElementValueList(Java8Parser.ElementValueListContext ctx) {
 	    // ElementValue {, ElementValue}
 	}
-	@Override public void exitElementValueList(@NotNull Java8Parser.ElementValueListContext ctx) { 
+	@Override public void exitElementValueList(Java8Parser.ElementValueListContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.elementValue() != null) {
 	        sb.append(reverse(ctx.elementValue().size() * 2 - 1, " ", 2));
@@ -4712,10 +4711,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterBasicForStatementNoShortIf(@NotNull Java8Parser.BasicForStatementNoShortIfContext ctx) { 
+	@Override public void enterBasicForStatementNoShortIf(Java8Parser.BasicForStatementNoShortIfContext ctx) { 
 	    // for ( [ForInit] ; [Expression] ; [ForUpdate] ) StatementNoShortIf
 	}
-	@Override public void exitBasicForStatementNoShortIf(@NotNull Java8Parser.BasicForStatementNoShortIfContext ctx) { 
+	@Override public void exitBasicForStatementNoShortIf(Java8Parser.BasicForStatementNoShortIfContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String statement = stack.pop();
 	    statement = trimEnd(statement);
@@ -4741,30 +4740,30 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterTypeDeclaration(@NotNull Java8Parser.TypeDeclarationContext ctx) {
+	@Override public void enterTypeDeclaration(Java8Parser.TypeDeclarationContext ctx) {
 	    // ClassDeclaration
 	    // InterfaceDeclaration
 	    // ;
 	}
-	@Override public void exitTypeDeclaration(@NotNull Java8Parser.TypeDeclarationContext ctx) { 
+	@Override public void exitTypeDeclaration(Java8Parser.TypeDeclarationContext ctx) { 
 	    if (";".equals(stack.peek())) {
 	        String semi = stack.pop() + '\n';
 	        stack.push(semi);
 	    }
     }
 
-	@Override public void enterSquareBrackets(@NotNull Java8Parser.SquareBracketsContext ctx) { 
+	@Override public void enterSquareBrackets(Java8Parser.SquareBracketsContext ctx) { 
 	    //  '[]'    
 	}
 
-	@Override public void exitSquareBrackets(@NotNull Java8Parser.SquareBracketsContext ctx) { 
+	@Override public void exitSquareBrackets(Java8Parser.SquareBracketsContext ctx) { 
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 	
-	@Override public void enterSwitchStatement(@NotNull Java8Parser.SwitchStatementContext ctx) {
+	@Override public void enterSwitchStatement(Java8Parser.SwitchStatementContext ctx) {
 	    // 'switch' '(' expression ')' switchBlock
 	}
-	@Override public void exitSwitchStatement(@NotNull Java8Parser.SwitchStatementContext ctx) {
+	@Override public void exitSwitchStatement(Java8Parser.SwitchStatementContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String switchBlock = stack.pop();
 	    String rparen = stack.pop().trim();
@@ -4775,10 +4774,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterWildcard(@NotNull Java8Parser.WildcardContext ctx) { 
+	@Override public void enterWildcard(Java8Parser.WildcardContext ctx) { 
 	    // {Annotation} ? [WildcardBounds]
 	}
-	@Override public void exitWildcard(@NotNull Java8Parser.WildcardContext ctx) { 
+	@Override public void exitWildcard(Java8Parser.WildcardContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String wildcardBounds = ctx.wildcardBounds() == null ? "" : ' ' + stack.pop();
 	    String q = stack.pop();
@@ -4790,21 +4789,21 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterClassDeclaration(@NotNull Java8Parser.ClassDeclarationContext ctx) { 
+	@Override public void enterClassDeclaration(Java8Parser.ClassDeclarationContext ctx) { 
 	    // NormalClassDeclaration
 	    // EnumDeclaration
 	}
-	@Override public void exitClassDeclaration(@NotNull Java8Parser.ClassDeclarationContext ctx) {
+	@Override public void exitClassDeclaration(Java8Parser.ClassDeclarationContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterUnaryExpressionNotPlusMinus(@NotNull Java8Parser.UnaryExpressionNotPlusMinusContext ctx) {
+	@Override public void enterUnaryExpressionNotPlusMinus(Java8Parser.UnaryExpressionNotPlusMinusContext ctx) {
 	    // PostfixExpression 
 	    // ~ UnaryExpression 
 	    // ! UnaryExpression 
 	    // CastExpression	
 	}
-	@Override public void exitUnaryExpressionNotPlusMinus(@NotNull Java8Parser.UnaryExpressionNotPlusMinusContext ctx) { 
+	@Override public void exitUnaryExpressionNotPlusMinus(Java8Parser.UnaryExpressionNotPlusMinusContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String expression = stack.pop();
 	    if (ctx.unaryExpression() != null) {
@@ -4814,20 +4813,20 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterUnannReferenceType(@NotNull Java8Parser.UnannReferenceTypeContext ctx) {
+	@Override public void enterUnannReferenceType(Java8Parser.UnannReferenceTypeContext ctx) {
 	    // UnannClassOrInterfaceType
 	    // UnannTypeVariable
 	    // UnannArrayType
 	}
-	@Override public void exitUnannReferenceType(@NotNull Java8Parser.UnannReferenceTypeContext ctx) {
+	@Override public void exitUnannReferenceType(Java8Parser.UnannReferenceTypeContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterMethodHeader(@NotNull Java8Parser.MethodHeaderContext ctx) { 
+	@Override public void enterMethodHeader(Java8Parser.MethodHeaderContext ctx) { 
 	    //                             Result MethodDeclarator [Throws]
 	    // TypeParameters {Annotation} Result MethodDeclarator [throws]
 	}
-	@Override public void exitMethodHeader(@NotNull Java8Parser.MethodHeaderContext ctx) { 
+	@Override public void exitMethodHeader(Java8Parser.MethodHeaderContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    
 	    // common ending
@@ -4852,10 +4851,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterCatchFormalParameter(@NotNull Java8Parser.CatchFormalParameterContext ctx) {
+	@Override public void enterCatchFormalParameter(Java8Parser.CatchFormalParameterContext ctx) {
 	    // {VariableModifier} CatchType VariableDeclaratorId	
 	}
-	@Override public void exitCatchFormalParameter(@NotNull Java8Parser.CatchFormalParameterContext ctx) {
+	@Override public void exitCatchFormalParameter(Java8Parser.CatchFormalParameterContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String vdi = stack.pop();
 	    String type = stack.pop();
@@ -4870,10 +4869,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterEnumConstant(@NotNull Java8Parser.EnumConstantContext ctx) { 
+	@Override public void enterEnumConstant(Java8Parser.EnumConstantContext ctx) { 
 	    // {EnumConstantModifier} Identifier [( [ArgumentList] )] [ClassBody]
 	}
-	@Override public void exitEnumConstant(@NotNull Java8Parser.EnumConstantContext ctx) { 
+	@Override public void exitEnumConstant(Java8Parser.EnumConstantContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String body = ctx.classBody() == null ? "" : stack.pop();
 	    StringBuilder args = new StringBuilder();
@@ -4885,7 +4884,7 @@ Parser methods follow.
 	    }
 	    String identifier = stack.pop();
 	    if (ctx.enumConstantModifier() != null) {
-	        sb.append(reverse(ctx.enumConstantModifier().size(), " ")).append(' ');
+	        sb.append(reverse(ctx.enumConstantModifier().size(), " ")).append(' ');///
 	    }
 	    sb.append(identifier).append(args);
 	    if (!body.isEmpty()) {
@@ -4894,14 +4893,14 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterMethodInvocation_lfno_primary(@NotNull Java8Parser.MethodInvocation_lfno_primaryContext ctx) {
+	@Override public void enterMethodInvocation_lfno_primary(Java8Parser.MethodInvocation_lfno_primaryContext ctx) {
 	    // :	methodName '(' argumentList? ')'
 	    // |	typeName '.' typeArguments? Identifier '(' argumentList? ')'
 	    // |	expressionName '.' typeArguments? Identifier '(' argumentList? ')'
 	    // |	'super' '.' typeArguments? Identifier '(' argumentList? ')'
 	    // |	typeName '.' 'super' '.' typeArguments? Identifier '(' argumentList? ')'
 	}
-	@Override public void exitMethodInvocation_lfno_primary(@NotNull Java8Parser.MethodInvocation_lfno_primaryContext ctx) {
+	@Override public void exitMethodInvocation_lfno_primary(Java8Parser.MethodInvocation_lfno_primaryContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    
 	    // common ending
@@ -4953,11 +4952,11 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterPackageName(@NotNull Java8Parser.PackageNameContext ctx) { 
+	@Override public void enterPackageName(Java8Parser.PackageNameContext ctx) { 
 	    // Identifier
 	    // PackageName . Identifier
 	}
-	@Override public void exitPackageName(@NotNull Java8Parser.PackageNameContext ctx) {
+	@Override public void exitPackageName(Java8Parser.PackageNameContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String identifier = stack.pop();
 	    if (ctx.packageName() != null) {
@@ -4969,21 +4968,21 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterImportDeclaration(@NotNull Java8Parser.ImportDeclarationContext ctx) {
+	@Override public void enterImportDeclaration(Java8Parser.ImportDeclarationContext ctx) {
 	    // SingleTypeImportDeclaration
 	    // TypeImportOnDemandDeclaration
 	    // SingleStaticImportDeclaration
 	    // StaticImportOnDemandDeclaration
 	}
-	@Override public void exitImportDeclaration(@NotNull Java8Parser.ImportDeclarationContext ctx) { 
+	@Override public void exitImportDeclaration(Java8Parser.ImportDeclarationContext ctx) { 
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterPrimitiveType(@NotNull Java8Parser.PrimitiveTypeContext ctx) {
+	@Override public void enterPrimitiveType(Java8Parser.PrimitiveTypeContext ctx) {
 	    // {Annotation} NumericType
 	    // {Annotation} boolean
 	}
-	@Override public void exitPrimitiveType(@NotNull Java8Parser.PrimitiveTypeContext ctx) {
+	@Override public void exitPrimitiveType(Java8Parser.PrimitiveTypeContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String type = stack.pop();
         String annotations = "";
@@ -4994,18 +4993,18 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterInterfaceDeclaration(@NotNull Java8Parser.InterfaceDeclarationContext ctx) { 
+	@Override public void enterInterfaceDeclaration(Java8Parser.InterfaceDeclarationContext ctx) { 
 	    // NormalInterfaceDeclaration 
 	    // AnnotationTypeDeclaration	
 	}
-	@Override public void exitInterfaceDeclaration(@NotNull Java8Parser.InterfaceDeclarationContext ctx) { 
+	@Override public void exitInterfaceDeclaration(Java8Parser.InterfaceDeclarationContext ctx) { 
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterLocalVariableDeclarationStatement(@NotNull Java8Parser.LocalVariableDeclarationStatementContext ctx) {
+	@Override public void enterLocalVariableDeclarationStatement(Java8Parser.LocalVariableDeclarationStatementContext ctx) {
 	    // LocalVariableDeclaration ;
 	}
-	@Override public void exitLocalVariableDeclarationStatement(@NotNull Java8Parser.LocalVariableDeclarationStatementContext ctx) { 
+	@Override public void exitLocalVariableDeclarationStatement(Java8Parser.LocalVariableDeclarationStatementContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String semi = stack.pop();
 	    String decl = stack.pop();
@@ -5017,18 +5016,18 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterBlockStatement(@NotNull Java8Parser.BlockStatementContext ctx) {
+	@Override public void enterBlockStatement(Java8Parser.BlockStatementContext ctx) {
 	    // LocalVariableDeclarationStatement
 	    // ClassDeclaration
 	    // Statement
 	}
-	@Override public void exitBlockStatement(@NotNull Java8Parser.BlockStatementContext ctx) {
+	@Override public void exitBlockStatement(Java8Parser.BlockStatementContext ctx) {
 	}
 
-	@Override public void enterClassType_lf_classOrInterfaceType(@NotNull Java8Parser.ClassType_lf_classOrInterfaceTypeContext ctx) { 
+	@Override public void enterClassType_lf_classOrInterfaceType(Java8Parser.ClassType_lf_classOrInterfaceTypeContext ctx) { 
 	    // '.' annotationIdentifier typeArguments?
 	}
-	@Override public void exitClassType_lf_classOrInterfaceType(@NotNull Java8Parser.ClassType_lf_classOrInterfaceTypeContext ctx) {
+	@Override public void exitClassType_lf_classOrInterfaceType(Java8Parser.ClassType_lf_classOrInterfaceTypeContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String typeArgs = ctx.typeArguments() == null ? "" : stack.pop();
 	    String ai = stack.pop();
@@ -5040,11 +5039,11 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterPackageOrTypeName(@NotNull Java8Parser.PackageOrTypeNameContext ctx) {
+	@Override public void enterPackageOrTypeName(Java8Parser.PackageOrTypeNameContext ctx) {
         // Identifier 
         // PackageOrTypeName . Identifier	    
 	}
-	@Override public void exitPackageOrTypeName(@NotNull Java8Parser.PackageOrTypeNameContext ctx) {
+	@Override public void exitPackageOrTypeName(Java8Parser.PackageOrTypeNameContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String identifier = stack.pop();
 	    if (ctx.packageOrTypeName() != null) {
@@ -5056,10 +5055,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterAssignment(@NotNull Java8Parser.AssignmentContext ctx) {
+	@Override public void enterAssignment(Java8Parser.AssignmentContext ctx) {
 	    // LeftHandSide AssignmentOperator Expression	
 	}
-	@Override public void exitAssignment(@NotNull Java8Parser.AssignmentContext ctx) {
+	@Override public void exitAssignment(Java8Parser.AssignmentContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String expression = stack.pop();
 	    String operator = stack.pop();
@@ -5068,14 +5067,14 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterMethodName(@NotNull Java8Parser.MethodNameContext ctx) {
+	@Override public void enterMethodName(Java8Parser.MethodNameContext ctx) {
 	    // Identifier
 	}
-	@Override public void exitMethodName(@NotNull Java8Parser.MethodNameContext ctx) {
+	@Override public void exitMethodName(Java8Parser.MethodNameContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterStatementExpression(@NotNull Java8Parser.StatementExpressionContext ctx) {
+	@Override public void enterStatementExpression(Java8Parser.StatementExpressionContext ctx) {
         // Assignment 
         // PreIncrementExpression 
         // PreDecrementExpression 
@@ -5084,14 +5083,14 @@ Parser methods follow.
         // MethodInvocation 
         // ClassInstanceCreationExpression	    
 	}
-	@Override public void exitStatementExpression(@NotNull Java8Parser.StatementExpressionContext ctx) {
+	@Override public void exitStatementExpression(Java8Parser.StatementExpressionContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterBreakStatement(@NotNull Java8Parser.BreakStatementContext ctx) {
+	@Override public void enterBreakStatement(Java8Parser.BreakStatementContext ctx) {
 	    // break [Identifier] ;
 	}
-	@Override public void exitBreakStatement(@NotNull Java8Parser.BreakStatementContext ctx) { 
+	@Override public void exitBreakStatement(Java8Parser.BreakStatementContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String semi = stack.pop();
 	    String identifier = ctx.Identifier() == null ? "" : ' ' + stack.pop();
@@ -5100,11 +5099,11 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterAmbiguousName(@NotNull Java8Parser.AmbiguousNameContext ctx) { 
+	@Override public void enterAmbiguousName(Java8Parser.AmbiguousNameContext ctx) { 
 	    // :	Identifier
 	    // |	ambiguousName '.' Identifier
 	}
-	@Override public void exitAmbiguousName(@NotNull Java8Parser.AmbiguousNameContext ctx) {
+	@Override public void exitAmbiguousName(Java8Parser.AmbiguousNameContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String identifier = stack.pop();
 	    if (ctx.ambiguousName() != null) {
@@ -5116,10 +5115,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterStatementExpressionList(@NotNull Java8Parser.StatementExpressionListContext ctx) { 
+	@Override public void enterStatementExpressionList(Java8Parser.StatementExpressionListContext ctx) { 
 	    // StatementExpression {, StatementExpression}
 	}
-	@Override public void exitStatementExpressionList(@NotNull Java8Parser.StatementExpressionListContext ctx) {
+	@Override public void exitStatementExpressionList(Java8Parser.StatementExpressionListContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.statementExpression() != null) {
 	        sb.append(reverse(ctx.statementExpression().size() * 2 - 1, " ", 2));
@@ -5127,10 +5126,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterInterfaceMethodDeclaration(@NotNull Java8Parser.InterfaceMethodDeclarationContext ctx) {
+	@Override public void enterInterfaceMethodDeclaration(Java8Parser.InterfaceMethodDeclarationContext ctx) {
 	    // interfaceMethodModifier* methodHeader methodBody	
 	}
-	@Override public void exitInterfaceMethodDeclaration(@NotNull Java8Parser.InterfaceMethodDeclarationContext ctx) {
+	@Override public void exitInterfaceMethodDeclaration(Java8Parser.InterfaceMethodDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String methodBody = stack.pop();
 	    String methodHeader = stack.pop().trim();
@@ -5143,10 +5142,10 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterThrows_(@NotNull Java8Parser.Throws_Context ctx) { 
+	@Override public void enterThrows_(Java8Parser.Throws_Context ctx) { 
 	    // 'throws' exceptionTypeList
 	}
-	@Override public void exitThrows_(@NotNull Java8Parser.Throws_Context ctx) { 
+	@Override public void exitThrows_(Java8Parser.Throws_Context ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String list = stack.pop();
 	    String throws_ = stack.pop();
@@ -5154,12 +5153,12 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterSwitchLabel(@NotNull Java8Parser.SwitchLabelContext ctx) { 
+	@Override public void enterSwitchLabel(Java8Parser.SwitchLabelContext ctx) { 
         // 'case' constantExpression ':'
         // 'case' enumConstantName ':'
         // 'default' ':' 
 	}
-	@Override public void exitSwitchLabel(@NotNull Java8Parser.SwitchLabelContext ctx) { 
+	@Override public void exitSwitchLabel(Java8Parser.SwitchLabelContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String colon = stack.pop();
 	    if (ctx.constantExpression() != null || ctx.enumConstantName() != null) {
@@ -5175,7 +5174,7 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterMethodReference(@NotNull Java8Parser.MethodReferenceContext ctx) {
+	@Override public void enterMethodReference(Java8Parser.MethodReferenceContext ctx) {
         // :	expressionName '::' typeArguments? Identifier
         // |	referenceType '::' typeArguments? Identifier
         // |	primary '::' typeArguments? Identifier
@@ -5184,7 +5183,7 @@ Parser methods follow.
         // |	classType '::' typeArguments? 'new'
         // |	arrayType '::' 'new'                               	    
 	}
-	@Override public void exitMethodReference(@NotNull Java8Parser.MethodReferenceContext ctx) { 
+	@Override public void exitMethodReference(Java8Parser.MethodReferenceContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.expressionName() != null || ctx.referenceType() != null || ctx.primary() != null ) {
 	        String identifier = stack.pop();
@@ -5224,7 +5223,7 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterPrimaryNoNewArray(@NotNull Java8Parser.PrimaryNoNewArrayContext ctx) { 
+	@Override public void enterPrimaryNoNewArray(Java8Parser.PrimaryNoNewArrayContext ctx) { 
         // :	literal
         // |	typeName (squareBrackets)* '.' 'class'
         // |	'void' '.' 'class'
@@ -5237,7 +5236,7 @@ Parser methods follow.
         // |	methodInvocation
         // |	methodReference
 	}
-	@Override public void exitPrimaryNoNewArray(@NotNull Java8Parser.PrimaryNoNewArrayContext ctx) { 
+	@Override public void exitPrimaryNoNewArray(Java8Parser.PrimaryNoNewArrayContext ctx) { 
 	    if (ctx.literal() != null || ctx.classInstanceCreationExpression() != null ||
 	        ctx.fieldAccess() != null || ctx.arrayAccess() != null || 
 	        ctx.methodInvocation() != null || ctx.methodReference() != null ) {
@@ -5297,18 +5296,18 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 
-	@Override public void enterNumericType(@NotNull Java8Parser.NumericTypeContext ctx) {
+	@Override public void enterNumericType(Java8Parser.NumericTypeContext ctx) {
 	    // IntegerType
 	    // FloatingPointType
 	}
-	@Override public void exitNumericType(@NotNull Java8Parser.NumericTypeContext ctx) {
+	@Override public void exitNumericType(Java8Parser.NumericTypeContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
-	@Override public void enterContinueStatement(@NotNull Java8Parser.ContinueStatementContext ctx) { 
+	@Override public void enterContinueStatement(Java8Parser.ContinueStatementContext ctx) { 
 	    // continue [Identifier] ;
 	}
-	@Override public void exitContinueStatement(@NotNull Java8Parser.ContinueStatementContext ctx) {
+	@Override public void exitContinueStatement(Java8Parser.ContinueStatementContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String semi = stack.pop();
 	    String identifier = ctx.Identifier() == null ? "" : stack.pop();
@@ -5318,20 +5317,20 @@ Parser methods follow.
 	}
 
 
-	@Override public void enterEveryRule(@NotNull ParserRuleContext ctx) {
+	@Override public void enterEveryRule(ParserRuleContext ctx) {
 	}
 	
-	@Override public void exitEveryRule(@NotNull ParserRuleContext ctx) { 
+	@Override public void exitEveryRule(ParserRuleContext ctx) { 
 	}
 
-	@Override public void visitTerminal(@NotNull TerminalNode node) { 
+	@Override public void visitTerminal(TerminalNode node) { 
         String terminalText = node.getText();
         stack.push(terminalText);
         processComments(node);
         processWhitespace(node);
 	}
 	
-	@Override public void visitErrorNode(@NotNull ErrorNode node) { 
+	@Override public void visitErrorNode(ErrorNode node) { 
 	}
 //}}}	
 }

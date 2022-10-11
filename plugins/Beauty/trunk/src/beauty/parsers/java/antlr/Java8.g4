@@ -1834,22 +1834,22 @@ ELLIPSIS : '...';
 // Whitespace and comments
 //
 
-WS  :  [ \t\r\n\u000C]+ -> channel(WHITESPACE)
+WS  :  [ \t\r\n\u000C]+ -> channel(1)   // was WHITESPACE
     ;
 
 DOC_COMMENT
-    : '/**' .*? '*/' -> channel(COMMENTS)
+    : '/**' .*? '*/' -> channel(2)  // was COMMENT
     ;
     
 COMMENT
-    :   '/*' .*? '*/' -> channel(COMMENTS)
+    :   '/*' .*? '*/' -> channel(2)  // was COMMENT
     ;
 
 JEDIT_FOLD_MARKER
-    :   '//' [ ]* '}}}' -> channel(COMMENTS)
+    :   '//' [ ]* '}}}' -> channel(2)  // was COMMENT
     ;
 
 LINE_COMMENT
-    :   '//' ~[\r\n]* -> channel(COMMENTS)
+    :   '//' ~[\r\n]* -> channel(2)  // was COMMENT
     ;
     

@@ -1,4 +1,10 @@
 
+/* Well now, it's 2022 and this code hasn't been maintained in forever. 
+It's been bypassed by a better parser generator, see the newer code.
+
+Read and weep! 
+
+*/
 /*
 Per Sreenivasa Viswanadha (as posted on the javacc user mailing list), the
 original java 1.5 grammar is licensed under the BSD license, so this modified

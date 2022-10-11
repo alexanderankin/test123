@@ -1,6 +1,7 @@
 
 package beauty.parsers.java.java;
 
+import beauty.parsers.ErrorListener;
 import beauty.parsers.ParserException;
 
 import org.antlr.v4.runtime.*;
@@ -325,7 +326,7 @@ Parser methods follow.
 	    }
 	    body = removeBlankLines(body, BOTH);
 	    if (bracketStyle == BROKEN) {
-	        body = '\n' + body;   
+	        body = '\n' + body;   // NOPMD
 	    }
 	    
 	    String identifier = pop();
@@ -802,7 +803,7 @@ Parser methods follow.
 	    }
 	    classBody = removeBlankLines(classBody, BOTH);
 	    if (bracketStyle == BROKEN) {
-	        classBody = "\n" + classBody;   
+	        classBody = "\n" + classBody;   // NOPMD
 	    }
 	    StringBuilder permitsList = new StringBuilder();
 	    if (ctx.PERMITS() != null && ctx.typeList() != null) {
@@ -2650,7 +2651,7 @@ Parser methods follow.
 	    }
 	    methodBody = removeBlankLines(methodBody, BOTH);
 	    if (bracketStyle == BROKEN) {
-	        methodBody = "\n" + methodBody;   
+	        methodBody = "\n" + methodBody;       // NOPMD
 	    }
 	    
 	    String throwsList = "";
@@ -4858,6 +4859,7 @@ Formatting methods.
 	    // check to the left of the current token for line. regular, and doc comments
         commentTokens = tokens.getHiddenTokensToLeft(tokenIndex, 2);
         if (commentTokens != null && commentTokens.size() > 0) {
+            System.out.println("+++++ there are " + commentTokens.size() + " comment tokens");
             // there could be multiple line comments
             // like this comment is on two lines
             Collections.reverse(commentTokens);
@@ -4923,12 +4925,6 @@ Formatting methods.
                             else {
                                 comment = formatComment(comment);   
                             }
-                            String last = stack.peek();
-                            if (last != null && last.indexOf(comment) == -1) {
-                                last = pop();
-                                last = new StringBuilder(comment).append(last).toString();
-                                push(last);
-                            }
                             break;
                         case JavaLexer.DOC_COMMENT: 
                             comment = '\n'+ formatDocComment(comment);
@@ -4939,7 +4935,7 @@ Formatting methods.
                     }
                     else {
                         String last = stack.peek();
-                        if (last != null && last.indexOf(comment) == -1) {
+                        if (last != null) { 
                             last = pop();
                             if (!comment.endsWith("\n")) {
                                 comment += '\n';    // NOPMD
