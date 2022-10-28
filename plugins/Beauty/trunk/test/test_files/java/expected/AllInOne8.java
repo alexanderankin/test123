@@ -207,11 +207,11 @@ public class Annos {
             public void test() {
                 I.super.<Long>fn1();    // fix #2454
 
-                I.super.fn1();    //ok
+                I.super.fn1();    // ok
 
                 I.super.<List<Integer>, Byte, Map<Long, String>>fn2();    // fix #2454
 
-                I.super.fn2();    //ok
+                I.super.fn2();    // ok
             }
 
         }

@@ -267,5 +267,6 @@ class Tests {
     }
 
 /*
+ * why are there no comments in this file?
  */
 }

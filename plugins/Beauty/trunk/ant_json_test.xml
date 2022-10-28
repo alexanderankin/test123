@@ -1,4 +1,11 @@
-<project name="java_test" default="test" basedir="." xmlns:if="ant:if" xmlns:unless="ant:unless">
+<project name="json_test" default="test" basedir="." xmlns:if="ant:if" xmlns:unless="ant:unless">
+
+    <echo>
+================================================================================    
+    JSON Tests
+================================================================================    
+    </echo>
+    
    <!-- ========================================================================
       Target: set classpath
    ========================================================================= -->
@@ -39,7 +46,7 @@
             <equals arg1="${test1diff}" arg2=""/> 
         </condition>
        <echo if:set="test1">test1 passed</echo>
-       <echo unless:set="test1">test1 failed: ${test1diff}</echo>
+       <fail unless:set="test1">test1 failed: ${test1diff}</fail>
     </target>
 
     <target name="test2" depends="setClasspath">
@@ -55,7 +62,7 @@
             <equals arg1="${test2diff}" arg2=""/> 
         </condition>
        <echo if:set="test2">test2 passed</echo>
-       <echo unless:set="test2">test2 failed: ${test2diff}</echo>
+       <fail unless:set="test2">test2 failed: ${test2diff}</fail>
     </target>
 
     <target name="test3" depends="setClasspath">
@@ -71,7 +78,7 @@
             <equals arg1="${test3diff}" arg2=""/> 
         </condition>
        <echo if:set="test3">test3 passed</echo>
-       <echo unless:set="test3">test3 failed: ${test3diff}</echo>
+       <fail unless:set="test3">test3 failed: ${test3diff}</fail>
     </target>
 
     <target name="test4" depends="setClasspath">
@@ -87,7 +94,7 @@
             <equals arg1="${test4diff}" arg2=""/> 
         </condition>
        <echo if:set="test4">test4 passed</echo>
-       <echo unless:set="test4">test4 failed: ${test4diff}</echo>
+       <fail unless:set="test4">test4 failed: ${test4diff}</fail>
     </target>
 
 </project>

@@ -964,7 +964,7 @@ Parser methods follow.
             output.append(packageDeclaration);
             output.append(importDeclarations);
             output.append(typeDeclarations);
-            
+            trim(output);
         }
 	    // all done!
 	}
@@ -4699,6 +4699,20 @@ Formatting methods.
     }
     
     /**
+     * StringBuilder doesn't have a "trim" method. This trims whitespace from
+     * both ends of the string builder. There are two ways to use this, pass in a StringBuilder then use the same
+     * StringBuilder, it's start will have been trimmed, or pass in a StringBuilder
+     * and use the returned String.
+     * @param sb The StringBuilder to trim.
+     * @return The trimmed string.
+     */
+    public String trim(StringBuilder sb) {
+        trimFront(sb);
+        trimEnd(sb);
+        return sb.toString();
+    }
+    
+    /**
      * Pops the first item off the top of the stack.    
      */
     public String pop() {
@@ -4786,43 +4800,32 @@ Formatting methods.
 	private void processComments(TerminalNode node) {
         Token token = node.getSymbol(); 
         int tokenIndex = token.getTokenIndex();
-
+        
         // ...
         // End of Line Comments
         // ...
 	    // check to the right of the current token for an end of line comment,
-	    // this handles both // and /* end of line comments. Only end of line
+	    // this handles both //  and /* */ end of line comments. Only end of line
 	    // comments are handled in this section, and such comments are appended
-	    // to the end of the previous stack item. All other comments are handled
+	    // to the end of the top stack item. All other comments are handled
 	    // by looking to the left of the current token and are prepended to the
-	    // previous stack item.
+	    // top stack item.
         List<Token> commentTokens = tokens.getHiddenTokensToRight(tokenIndex, 2);
         if (commentTokens != null && commentTokens.size() > 0 && token.getType() != Token.EOF) {
             // get the very next comment
             Token nextCommentToken = commentTokens.get(0);
-            
-            int commentIndex = nextCommentToken.getTokenIndex();
-            
-            // get the hidden tokens between the current token and the next non-hidden token
-            List<Token> hiddenTokens = tokens.getHiddenTokensToRight(tokenIndex);
-            
-            // check if there is a line ender between the current token and the comment token
-            // is it "token \n comment" or "token comment \n"?
-            boolean hasLineEnder = false;
-            if (hiddenTokens != null && hiddenTokens.size() > 0) {
-                for (int i = 0; i < commentIndex - tokenIndex; i++) {
-                    Token t = hiddenTokens.get(i);
-                    String tokenText = t.getText();
-                    if (t.getChannel() == 1 && //JavaLexer.WS &&
-                        (tokenText.indexOf('\n') > -1 || tokenText.indexOf('\r') > -1)) {
-                        hasLineEnder = true;
-                        break;
-                    }
-                }
-                if (!hasLineEnder) {
-                    // have 'token comment' now check for line ender after the comment
-                    hasLineEnder = false;
-                    for (int i = commentIndex - tokenIndex; i < hiddenTokens.size(); i++) {
+            String nextCommentTokenText = nextCommentToken.getText();
+            if (nextCommentToken.getType() == JavaLexer.LINE_COMMENT || (nextCommentToken.getType() == JavaLexer.COMMENT && nextCommentTokenText.lines().count() == 1)) {
+                int commentIndex = nextCommentToken.getTokenIndex();
+                
+                // get the hidden tokens between the current token and the next non-hidden token
+                List<Token> hiddenTokens = tokens.getHiddenTokensToRight(tokenIndex);
+                
+                // check if there is a line ender between the current token and the comment token
+                // is it "token \n // comment" or "token // comment \n"?
+                boolean hasLineEnder = false;
+                if (hiddenTokens != null && hiddenTokens.size() > 0) {
+                    for (int i = 0; i < commentIndex - tokenIndex; i++) {
                         Token t = hiddenTokens.get(i);
                         String tokenText = t.getText();
                         if (t.getChannel() == 1 && //JavaLexer.WS &&
@@ -4831,16 +4834,30 @@ Formatting methods.
                             break;
                         }
                     }
-                    if (hasLineEnder) {
-                        // have "token comment \n", append this comment to the end
-                        // of the token.
-                        StringBuilder item = new StringBuilder(pop());
-                        String comment = nextCommentToken.getText();
-                        if (item.indexOf(comment) == -1) {
-                            item.append(tab).append(comment);
-                            push(item);
-                            tokens.seek(commentIndex + 1);
-                            return;
+                    if (!hasLineEnder) {
+                        // have 'token comment' now check for line ender after the comment
+                        hasLineEnder = false;
+                        for (int i = commentIndex - tokenIndex; i < hiddenTokens.size(); i++) {
+                            Token t = hiddenTokens.get(i);
+                            String tokenText = t.getText();
+                            if (t.getChannel() == 1 && //JavaLexer.WS &&
+                                (tokenText.indexOf('\n') > -1 || tokenText.indexOf('\r') > -1)) {
+                                hasLineEnder = true;
+                                break;
+                            }
+                        }
+                        if (hasLineEnder) {
+                            // have "token comment \n", append this comment to the end
+                            // of the top stack item.
+                            StringBuilder item = new StringBuilder(pop());
+                            String comment = nextCommentToken.getText();
+                            comment = formatLineComment(comment).trim();
+                            if (item.indexOf(comment) == -1) {
+                                item.append(tab).append(comment);
+                                push(item);
+                                tokens.seek(commentIndex + 1);
+                                return;
+                            }
                         }
                     }
                 }
@@ -4857,11 +4874,29 @@ Formatting methods.
 	    //  */
 	    // ...
 	    // check to the left of the current token for line. regular, and doc comments
+	    // TODO: check on in-line comments, e.g. word /+ comment +/ more words
+	    // Need to check for new lines, see BasicClass3, class Dummy at around line 
+	    // 624. The annotation is split on two lines, but the comment on the second
+	    // line is added to the first line rather than staying with the second line.
         commentTokens = tokens.getHiddenTokensToLeft(tokenIndex, 2);
         if (commentTokens != null && commentTokens.size() > 0) {
-            System.out.println("+++++ there are " + commentTokens.size() + " comment tokens");
             // there could be multiple line comments
             // like this comment is on two lines
+            int commentTokenType = commentTokens.get(0).getType();
+            if (commentTokenType == JavaLexer.LINE_COMMENT || commentTokenType == JavaLexer.COMMENT) {
+                // it might already be attached to the previous token, if there is a previous token
+                String current = pop();
+                String previous = stack.peek();
+                if (previous != null) {
+                    previous = previous.trim();
+                    String previousComment = commentTokens.get(0).getText().trim();
+                    previousComment = commentTokenType == JavaLexer.LINE_COMMENT ? formatLineComment(previousComment).trim() : formatComment(previousComment).trim();
+                    if (previous.endsWith(previousComment)) {
+                        commentTokens.remove(0);
+                    }
+                }
+                push(current);
+            }
             Collections.reverse(commentTokens);
             for (Token commentToken : commentTokens) {
                 if ( commentToken != null) {
@@ -4869,15 +4904,13 @@ Formatting methods.
                     String current = pop();
                     String previous = stack.peek();
                     push(current);
-                    if (previous != null && previous.indexOf(comment) > -1 && previous.trim().endsWith(comment.trim())) { 
-                        // already have this comment added as an end of line comment to the right of the previous token.
-                        // It's unlikely there would be two comments in a row with the exact same comment. If that were
-                        // to actually happen, the second one will be dropped.
-                        continue;        
-                    }
                     switch(commentToken.getType()) {
                         case JavaLexer.LINE_COMMENT:
                             comment = formatLineComment(comment);
+                            current = pop();
+                            StringBuilder sb = new StringBuilder(comment);
+                            sb.append('\n').append(current);
+                            push(sb);
                             break;
                         case JavaLexer.JEDIT_FOLD_MARKER:
                             comment = formatJEditFoldMarkerComment(comment);
@@ -4891,58 +4924,30 @@ Formatting methods.
                             push(current);
                             continue;
                         case JavaLexer.COMMENT:
-                            // check if this is an in-line  or trailing comment, e.g.
-                            // something /star comment star/ more things or
-                            // something /star comment star/\n
-                            // In the first case, there is no way to tell if the comment goes with
-                            // the preceding token or the trailing token.
-                            int commentTokenIndex = commentToken.getTokenIndex();
-                            boolean tokenOnLeft = true;
-                            boolean tokenOnRight = true;
-                            List<Token> wsTokens = tokens.getHiddenTokensToLeft(commentTokenIndex, 1); //JavaLexer.WS);
-                            if (wsTokens != null && wsTokens.size() > 0) {
-                                for (Token wsToken : wsTokens) {
-                                    String wsText = wsToken.getText();
-                                    if (wsText.indexOf('\n') > -1 || wsText.indexOf('\r') > -1) {
-                                        tokenOnLeft = false;
-                                        break;
-                                    }
+                            // already handled the case where this could be an end of line comment
+                            // so prepend this comment to the previous stack item. Need to check
+                            // if there is a new line between the comment and the token
+                            boolean hasNL = false;
+                            List<Token> wsTokens = tokens.getHiddenTokensToRight(commentToken.getTokenIndex(), 1);   // JavaLexer.WS
+                            for (Token wsToken : wsTokens) {
+                                String ws = wsToken.getText();
+                                if (ws.indexOf('\n') > -1 || ws.indexOf('\r') > -1) {
+                                    hasNL = true;    
                                 }
                             }
-                            wsTokens = tokens.getHiddenTokensToRight(commentTokenIndex, 1); //JavaLexer.WS);
-                            if (wsTokens != null && wsTokens.size() > 0) {
-                                for (Token wsToken : wsTokens) {
-                                    String wsText = wsToken.getText();
-                                    if (wsText.indexOf('\n') > -1 || wsText.indexOf('\r') > -1) {
-                                        tokenOnRight = false;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (tokenOnLeft && tokenOnRight) {
-                                comment += " ";     // NOPMD
-                            }
-                            else {
-                                comment = formatComment(comment);   
-                            }
+                            current = pop();
+                            comment = formatComment(comment).trim();
+                            sb = new StringBuilder();
+                            sb.append(comment).append(hasNL ? '\n' : ' ').append(current);
+                            push(sb);
+                            continue;
+                        case JavaLexer.DOC_COMMENT:
+                            sb = new StringBuilder();
+                            sb.append('\n').append(formatDocComment(comment));
+                            current = pop();
+                            sb.append(current);
+                            push(sb);
                             break;
-                        case JavaLexer.DOC_COMMENT: 
-                            comment = '\n'+ formatDocComment(comment);
-                            break;
-                    }
-                    if (stack.size() == 0) {
-                        push(comment);
-                    }
-                    else {
-                        String last = stack.peek();
-                        if (last != null) { 
-                            last = pop();
-                            if (!comment.endsWith("\n")) {
-                                comment += '\n';    // NOPMD
-                            }
-                            last = new StringBuilder(comment).append(last).toString();
-                            push(last);
-                        }
                     }
                 }
             }
@@ -4950,17 +4955,22 @@ Formatting methods.
 	}
 	
 	/**
- 	 * Formats a line comment. Current rule is to ensure there is a space following the
+ 	 * Formats a line comment. The rule is to ensure there is a space following the
  	 * slashes, so "//comment" becomes "// comment". Also handle the case where there
  	 * are more than 2 slashes the same way, so "////comment" becomes "//// comment".
  	 * @param comment An end of line comment.
  	 * @return The formatted comment.
  	 */
 	private String formatLineComment(String comment) {
+	    String c = comment.trim();
+	    // easy check:
+	    
+	    if (!c.startsWith("//")) {
+	        return comment;
+	    }
 	    // ensure there is a space after the comment start. Handle the case
 	    // of multiple /, e.g. ////this is a comment
 	    // should look like    //// this is a comment
-	    String c = comment.trim();
 	    int slashCount = 0;
 	    for (int i = 0; i < c.length(); i++) {
 	        if (c.charAt(i) == '/') {
@@ -4975,7 +4985,7 @@ Formatting methods.
 	    for (int i = 0; i < slashCount; i++) {
 	        sb.append('/');
 	    }
-	    sb.append(' ').append(c);
+	    sb.append(' ').append(c).append('\n');
 	    c = sb.toString();
 	    return indent(c);
 	}
@@ -5024,18 +5034,27 @@ Formatting methods.
 	    if (comment == null || comment.isEmpty()) {
 	        return "";
 	    }
+	    comment = comment.trim();
         String[] lines = comment.split("\n");
+        if (lines.length > 1) {
+            String lastLine = lines[lines.length - 1];
+            lastLine = lastLine.replace("*/", "\n*/");
+            lines[lines.length - 1] = lastLine;
+        }   
         StringBuilder sb = new StringBuilder();
         for (String line : lines) {
             line = line.trim();
             if (line.startsWith("/*")) {
-                sb.append(line).append('\n');    
+                sb.append(line);    
             }
             else if (line.startsWith("*")) {
-                sb.append(' ').append(line).append('\n');
+                sb.append(' ').append(line);
             }
             else {
-                sb.append(" * ").append(line).append('\n');    
+                sb.append(" * ").append(line);    
+            }
+            if (lines.length > 1) {
+                sb.append('\n');    
             }
         }
         return sb.toString();
