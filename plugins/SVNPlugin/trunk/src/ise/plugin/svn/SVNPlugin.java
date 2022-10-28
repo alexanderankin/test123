@@ -79,6 +79,7 @@ public class SVNPlugin extends EBPlugin {
     }
 
     public void start() {
+        System.setProperty("svnkit.ssh.client", "apache");
     }
     
     public static File getSvnStorageDir() {
