@@ -24,7 +24,7 @@
     <mkdir dir="${src.dir}"/>
 
     <!-- java source and target version for compile -->
-    <property name="target" value="1.6"/>
+    <property name="target" value="11"/>
 
     <!-- library directory, location for third party jars -->
     <property name="lib.dir" location="lib"/>
@@ -97,8 +97,7 @@
                 target="${target}"
                 source="${target}"
                 bootclasspath="${bootclasspath}"
-                includeantruntime="false"
-                extdirs="${extdirs}">
+                includeantruntime="false">
             <classpath refid="classpathref" />
             <compilerarg value="-Xlint:unchecked"/>
         </javac>
