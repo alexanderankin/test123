@@ -233,7 +233,7 @@ class MyTableModel extends AbstractTableModel {
     }
 
     // Entry class
-    class Entry implements Comparable {
+    class Entry implements Comparable<Entry> {
         String mode;
         String beautifier = null;
 
@@ -254,7 +254,7 @@ class MyTableModel extends AbstractTableModel {
 
         }
 
-        public int compareTo( Object a ) {
+        public int compareTo( Entry a ) {
             return this.mode.compareToIgnoreCase( ( ( Entry ) a ).mode );
         }
     }

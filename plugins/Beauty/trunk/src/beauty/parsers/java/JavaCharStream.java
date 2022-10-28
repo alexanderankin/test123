@@ -444,7 +444,7 @@ public class JavaCharStream
   public JavaCharStream(java.io.InputStream dstream, int startline,
   int startcolumn, int buffersize)
   {
-     this(new java.io.InputStreamReader(dstream), startline, startcolumn, 4096);
+     this(new java.io.InputStreamReader(dstream), startline, startcolumn, buffersize);
   }
 
   public JavaCharStream(java.io.InputStream dstream, String encoding, int startline,

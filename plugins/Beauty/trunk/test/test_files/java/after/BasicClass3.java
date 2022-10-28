@@ -1,7 +1,8 @@
 // Source: https://en.wikipedia.org/wiki/Java_syntax
 // Source: https://docs.oracle.com/javase/tutorial/java/nutsandbolts/index.html
 /* This is a multi-line comment.
- * It may occupy more than one line. */
+ * It may occupy more than one line.
+*/
 // This is an end-of-line comment
 
 /**
@@ -14,7 +15,7 @@ package myapplication.mylibrary;
 import java.util.Random;    // Single type declaration
 
 import java.*;
-import static java.lang.System.out;    //'out' is a static field in java.lang.System
+import static java.lang.System.out;    // 'out' is a static field in java.lang.System
 import java.util.*;
 
 import static screen.ColorName.*;
@@ -146,7 +147,8 @@ public class ImportsTest {
     public static void main(String [] args) {
         /* The following line is equivalent to
          * java.util.Random random = new java.util.Random();
-         * It would've been incorrect without the import declaration */
+         * It would've been incorrect without the import declaration
+         */
         Random random = new Random();
     }
 
@@ -156,7 +158,8 @@ public class HelloWorld {
     public static void main(String [] args) {
         /* The following line is equivalent to:
          * System.out.println("Hello World!");
-         * and would have been incorrect without the import declaration. */
+         * and would have been incorrect without the import declaration.
+         */
         out.println("Hello World!");
 
         // Conditional statements -------------------
@@ -343,7 +346,7 @@ public class HelloWorld {
         int [] [] numbers = new int[3][3];
         numbers[1][2] = 2;
         int [] [] numbers2 = {{2, 3, 2}, {1, 2, 6}, {2, 4, 5}};
-        int [] [] numbers = new int[2][];    //Initialization of the first dimension only
+        int [] [] numbers = new int[2][];    // Initialization of the first dimension only
         numbers[0] = new int[3];
         numbers[1] = new int[2];
         // Prefix & postfix
@@ -466,7 +469,7 @@ class Foo {
     }
 
     // Varargs
-    void printReport(String header, int... numbers) {    //numbers represents varargs
+    void printReport(String header, int... numbers) {    // numbers represents varargs
         System.out.println(header);
 
         for ( int num : numbers) {
@@ -532,7 +535,7 @@ public class CustomClass extends AbstractClass {
     public static void main(String [] args) {
         CustomClass nc = new CustomClass();
         hello();
-        AbstractClass.hello();    //also valid
+        AbstractClass.hello();    // also valid
     }
 
 }
@@ -605,10 +608,14 @@ class ActionHandler implements ActionListener, RequestListener {
 class Dummy {
     public void dummy() {
         // Calling method defined by interface
-        RequestListener listener = new ActionHandler();    /*ActionHandler can be
-                                           represented as RequestListener...*/
-        listener.requestReceived();    /*...and thus is known to implement
-                                    requestReceived() method*/
+        RequestListener listener = new ActionHandler();
+        /*ActionHandler can be
+         * represented as RequestListener...
+         */
+        listener.requestReceived();
+    /*...and thus is known to implement
+     * requestReceived() method
+     */
     }
 
 }
@@ -630,9 +637,8 @@ class Dummy {
     boolean networkOperations() default false;
 }
 class Dummy {
-    @BlockingOperations(/*mandatory*/ fileSystemOperations = true, /*optional*/
-    networkOperations = true)
-    void openOutputStream() {    //Annotated method
+    @BlockingOperations(/*mandatory*/ fileSystemOperations = true, /*optional*/ networkOperations = true)
+    void openOutputStream() {    // Annotated method
     }
 
     @Unused    // Shorthand for @Unused()

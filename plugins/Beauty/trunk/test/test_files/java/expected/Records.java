@@ -71,7 +71,7 @@ class Records {
             }
 
             // private int c = 1; not allowed
-            private static final int C = 1;    //allowed
+            private static final int C = 1;    // allowed
 
             static class C {
             }

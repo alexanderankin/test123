@@ -1,4 +1,4 @@
-<project name="Beauty" default="dist" basedir=".">
+<project name="Beauty" default="dist" basedir="." xmlns:if="ant:if" xmlns:unless="ant:unless">
     <echo>${java.home}</echo>
     <!-- read build.props to override properties set below -->
 
@@ -74,12 +74,49 @@
     <target name="compile"
             description="Compile"
             depends="init,setClasspath">
+            
+        <!-- this is to use google's ErrorProne compiler plugin, which turns out 
+        to be less useful than PMD.
+        <path id="processorpath.ref">
+          <pathelement location="${user.home}/apps/apache-ant-1.10.12/lib/error_prone_core-2.16-with-dependencies.jar"/>
+          <pathelement location="${user.home}/apps/apache-ant-1.10.12/lib/dataflow-errorprone-3.15.0.jar"/>
+        </path>
+        
         <javac deprecation="on"
                 debug="on"
                 nowarn="on"
+                fork="yes"
                 destdir="${classes.dir}"
                 srcdir="${src.dir}"
-                includeantruntime="false"
+                includeantruntime="no"
+                target="${target.version}"
+                source="${target.version}">
+           <classpath refid="classpathref" />
+          <compilerarg value="-XDcompilePolicy=simple"/>
+          <compilerarg value="-processorpath"/>
+          <compilerarg pathref="processorpath.ref"/>
+          <compilerarg value="-Xplugin:ErrorProne -Xep:DeadException:ERROR" />
+          should be dashJdashdashadd but of course dashdash isn't allowed in comments, because WTF, that would make sense
+          <compilerarg value="-J- -add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED" />
+          <compilerarg value="-J- -add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED" />
+          <compilerarg value="-J- -add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED" />
+          <compilerarg value="-J- -add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED" />
+          <compilerarg value="-J- -add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED" />
+          <compilerarg value="-J- -add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED" />
+          <compilerarg value="-J- -add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED" />
+          <compilerarg value="-J- -add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED" />
+          <compilerarg value="-J- -add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED" />
+          <compilerarg value="-J- -add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED" />
+        </javac>            
+        -->
+        
+        <javac deprecation="on"
+                debug="on"
+                nowarn="on"
+                fork="yes"
+                destdir="${classes.dir}"
+                srcdir="${src.dir}"
+                includeantruntime="no"
                 target="${target.version}"
                 source="${target.version}">
             <classpath refid="classpathref" />
@@ -130,7 +167,7 @@
    ========================================================================= -->
     <target name="dist"
             description="Compiles, jars, puts the jar in the jEdit jars directory."
-            depends="init,compile,prep_files">
+            depends="clean,init,compile,prep_files,test">
 
 
         <!-- make the plugin jar file -->
@@ -258,7 +295,7 @@
 
 
 
-
+    <!-- this is for testing -->
     <target name="run"
             description="Run the application."
             depends="setClasspath">
@@ -274,9 +311,12 @@
     <target name="all" depends="javacc,dist"/>
     
     <target name="test">
-        <!--
-        <ant antfile="ant_java_test.xml" />
-        -->
-        <ant antfile="ant_json_test.xml" />
+        <property environment="env" /> 
+        <available file="diff"  
+             filepath="${env.PATH}"  
+             property="diff.present"/>    
+        <ant if:true="${diff.present}" antfile="ant_java_test.xml" />
+        <ant if:true="${diff.present}" antfile="ant_json_test.xml" />
+        <echo unless:true="${diff.present}">Diff not available, no tests run.</echo>
     </target>
 </project>
