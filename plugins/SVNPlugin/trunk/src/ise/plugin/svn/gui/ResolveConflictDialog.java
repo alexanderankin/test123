@@ -114,8 +114,8 @@ public class ResolveConflictDialog extends JDialog implements EBComponent {
         }
         Arrays.sort( files, new Comparator<File>() {
                     public int compare( File a, File b ) {
-                        Integer first = new Integer( a.getName().substring( toMatch.length() ) );
-                        Integer second = new Integer( b.getName().substring( toMatch.length() ) );
+                        Integer first = Integer.parseInt( a.getName().substring( toMatch.length() ) );
+                        Integer second = Integer.parseInt( b.getName().substring( toMatch.length() ) );
                         return first.compareTo( second );
                     }
                 }

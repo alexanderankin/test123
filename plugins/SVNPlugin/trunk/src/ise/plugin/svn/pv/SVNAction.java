@@ -111,7 +111,7 @@ public class SVNAction extends projectviewer.action.Action {
             }
             JMenuItem item = null;
             try {
-                NodeActor action = ( NodeActor ) Class.forName( classname ).newInstance();
+                NodeActor action = ( NodeActor ) Class.forName( classname ).getDeclaredConstructor().newInstance();
                 item = new JMenuItem( label );
                 item.addActionListener( ( ActionListener ) action );
                 menu.add( item );
