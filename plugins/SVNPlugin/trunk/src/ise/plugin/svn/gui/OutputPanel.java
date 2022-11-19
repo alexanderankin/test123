@@ -72,7 +72,7 @@ public class OutputPanel extends JPanel {
         tabs = new JTabbedPane();
         //Icon close_icon = GUIUtilities.loadIcon( "closebox.gif" );
         //tabs.setCloseIcons(close_icon, close_icon, close_icon);
-        tabs.addTab( "SVN Console", getConsolePanel() );
+        tabs.addTab( jEdit.getProperty("subversion.console.label", "SVN Console"), getConsolePanel() );
         add( tabs );
 
         // add a mouse listener to be able to close results tabs

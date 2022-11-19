@@ -1,13 +1,15 @@
 #-----------------------------------
 # Properties for SVNPlugin
 #-----------------------------------
+
+# workaround for old trident library
 svnkit.ssh.client=apache
 
 # general plugin properties
 plugin.ise.plugin.svn.SVNPlugin.activate=defer
 plugin.ise.plugin.svn.SVNPlugin.name=SVNPlugin
 plugin.ise.plugin.svn.SVNPlugin.author=Dale Anson
-plugin.ise.plugin.svn.SVNPlugin.version=1.10.8
+plugin.ise.plugin.svn.SVNPlugin.version=1.10.9
 plugin.ise.plugin.svn.SVNPlugin.description=Subversion plugin
 
 # docs
@@ -21,7 +23,6 @@ plugin.ise.plugin.svn.SVNPlugin.depend.3=plugin CommonControlsPlugin 1.7.4
 plugin.ise.plugin.svn.SVNPlugin.depend.4=plugin jdiff.JDiffPlugin 3.3.0
 plugin.ise.plugin.svn.SVNPlugin.depend.5=plugin infoviewer.InfoViewerPlugin 1.6.3
 plugin.ise.plugin.svn.SVNPlugin.depend.6=plugin jnaplugin.JNAPlugin 3.5.2
-#plugin.ise.plugin.svn.SVNPlugin.jars=antlr-runtime-3.4.jar jsch.agentproxy.connector-factory-0.0.7.jar jsch.agentproxy.core-0.0.7.jar jsch.agentproxy.pageant-0.0.7.jar jsch.agentproxy.sshagent-0.0.7.jar jsch.agentproxy.svnkit-trilead-ssh2-0.0.7.jar jsch.agentproxy.usocket-jna-0.0.7.jar jsch.agentproxy.usocket-nc-0.0.7.jar sequence-library-1.0.3.jar sqljet-1.1.10.jar svnkit-1.8.12.jar svnkit-cli-1.8.12.jar trilead-ssh2-1.0.0-build220.jar 
 plugin.ise.plugin.svn.SVNPlugin.jars=antlr-runtime-3.4.jar eddsa-0.3.0.jar jcl-over-slf4j-1.7.32.jar lz4-java-1.4.1.jar sequence-library-1.0.4.jar slf4j-api-1.7.32.jar sqljet-1.1.14.jar sshd-common-2.8.0.jar sshd-core-2.8.0.jar svnkit-1.10.8.jar svnkit-cli-1.10.8.jar svnkit-javahl16-1.10.8.jar
 
 # titles for DockableWindowManager
@@ -48,9 +49,8 @@ ise.plugin.svn.pv.username.label=Username:
 ise.plugin.svn.pv.password.label=Password:
 
 # plugin menu items
-plugin.ise.plugin.svn.SVNPlugin.menu.label=Subversion
-plugin.ise.plugin.svn.SVNPlugin.menu=subversion subversion.browser
-subversion.label=SVN Console
+plugin.ise.plugin.svn.SVNPlugin.menu.code=new ise.plugin.svn.gui.PluginMenu()
+subversion.console.label=SVN Console
 
 # action labels
 svn.action.add.label=Add
@@ -171,6 +171,7 @@ ise.plugin.svn.gui.br.label.21=Unlock
 ise.plugin.svn.gui.br.code.21=ise.plugin.svn.gui.br.Unlock
 
 # pre-defined svn property names.  Do not remove the leading comma from these values, it is important.
+# -- this is pretty lame, just check for the comment in the code and add it if it's missing.
 ise.plugin.svn.gui.PropertyEditor.defaultFilePropNames=,svn:executable,svn:mime-type,svn:ignore,svn:keywords,svn:eol-style,svn:externals,svn:special
 ise.plugin.svn.gui.PropertyEditor.defaultDirPropNames=,svn:mime-type,svn:ignore,svn:keywords,svn:eol-style,svn:externals,svn:special,bugtraq:url,bugtraq:warnifnoissue,bugtraq:label,bugtraq:message,bugtraq:number,bugtraq:append,bugtraq:logregex,tsvn:logtemplate
 
