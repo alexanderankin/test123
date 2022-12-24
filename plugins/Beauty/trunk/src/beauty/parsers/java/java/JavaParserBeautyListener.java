@@ -1435,7 +1435,7 @@ Parser methods follow.
   	*     | expression bop='|' expression
   	*     | expression bop='&&' expression
   	*     | expression bop='||' expression
-  	*     | <assoc=right> expression bop='?' expression ':' expression
+  	*     | <assoc=right> expression bop='?' expression ':' expression (ternary expression)
   	*     | <assoc=right> expression
   	*       bop=('=' | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '^=' | '>>=' | '>>>=' | '<<=' | '%=')
   	*       expression
@@ -1738,12 +1738,12 @@ Parser methods follow.
             return;
 	    }
 	    else if (expressionCount == 3) {
-	        // only have one case with 3 expressions
+	        // only have one case with 3 expressions, this is a ternary expression
 	        //<assoc=right> expression bop='?' expression ':' expression
-	        String exp2 = pop();
-	        String colon = pop();    // :
-	        String exp1 = pop();
-	        String question = pop();    // ?
+	        String exp2 = trimFront( pop() );
+	        String colon = pop().trim();    // :
+	        String exp1 = pop().trim();
+	        String question = pop().trim();    // ?
 	        StringBuilder expression = new StringBuilder(pop());
 	        expression.append(padOperator(question)).append(exp1).append(padOperator(colon)).append(exp2);
 	        push(expression);
@@ -4162,7 +4162,6 @@ Parser methods follow.
 	            // get the brackets
 	            endPart.insert(0, pop());    // ]
 	            endPart.insert(0, pop());    // [
-                endPart.insert(0, ' ');
 	            
                 // any annotations?
                 if (ctx.annotation() != null) {
@@ -5025,7 +5024,7 @@ Formatting methods.
 	
 	/**
  	 * Formats a regular block comment. This method splits the 
- 	 * given comment into lines, indents each line, and ensures there is a * at the
+ 	 * given comment into lines, indents each line, and ensures there is a * and space at the
  	 * start of each line.
  	 * @param comment A block comment.
  	 * @return The formatted comment.
