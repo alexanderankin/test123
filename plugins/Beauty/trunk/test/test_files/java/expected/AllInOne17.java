@@ -267,7 +267,7 @@ class PatternMatching4switchExp {
         switch (obj) {
             case null -> f(0);
             case String s -> f(1);
-            case int [] a -> f(2);
+            case int[] a -> f(2);
             default -> f(-1);
         }
     }
@@ -277,7 +277,7 @@ class PatternMatching4switchExp {
             case null -> f(0);
             case Long l -> f(1);
             case Integer i -> f(1);
-            case int [] a -> f(2);
+            case int[] a -> f(2);
             default -> f(-1);
         }
     }

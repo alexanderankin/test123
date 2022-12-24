@@ -27,7 +27,7 @@ public enum ColorName {
 
 // See http://docs.oracle.com/javase/7/docs/technotes/guides/language/underscores-literals.html
 public class LexerTest {
-    static void main(String [] args) {
+    static void main(String[] args) {
         long creditCardNumber = 1234_5678_9012_3456L;
         long socialSecurityNumber = 999_99_9999L;
         float pi = 3.14_15F;
@@ -132,7 +132,7 @@ public class LexerTest {
     public static void methodCalls() {
         new Object().getClass().hashCode();
         new String[]{"test"}[0].getLength();
-        String [] strings;
+        String[] strings;
         (strings = new String[]{"test"})[0].charAt(0);
         strings[0].length();
         Foo foo = new Foo().new Bar();
@@ -144,7 +144,7 @@ public class LexerTest {
 }
 
 public class ImportsTest {
-    public static void main(String [] args) {
+    public static void main(String[] args) {
         /* The following line is equivalent to
          * java.util.Random random = new java.util.Random();
          * It would've been incorrect without the import declaration
@@ -155,7 +155,7 @@ public class ImportsTest {
 }
 
 public class HelloWorld {
-    public static void main(String [] args) {
+    public static void main(String[] args) {
         /* The following line is equivalent to:
          * System.out.println("Hello World!");
          * and would have been incorrect without the import declaration.
@@ -260,7 +260,7 @@ public class HelloWorld {
 
     outer:
         for ( String str : stringsArr) {
-            char [] strChars = str.toCharArray();
+            char[] strChars = str.toCharArray();
 
             for ( char ch : strChars) {
                 if (ch == ' ') {
@@ -334,19 +334,19 @@ public class HelloWorld {
         assert n != 0 : "n was equal to zero";
         // Reference types -------------------
         // Arrays
-        int [] numbers = new int[5];
+        int[] numbers = new int[5];
         numbers[0] = 2;
         int x = numbers[0];
         // Initializers -------------------
         // Long syntax
-        int [] XXXXXXXnumbers = new int[]{999, 888, 777, 666, 555};
+        int[] XXXXXXXnumbers = new int[]{999, 888, 777, 666, 555};
         // Short syntax
-        int [] numbers2 = {20, 1, 42, 15, 34};
+        int[] numbers2 = {20, 1, 42, 15, 34};
         // Multi-dimensional arrays
-        int [] [] numbers = new int[3][3];
+        int[][] numbers = new int[3][3];
         numbers[1][2] = 2;
-        int [] [] numbers2 = {{2, 3, 2}, {1, 2, 6}, {2, 4, 5}};
-        int [] [] numbers = new int[2][];    // Initialization of the first dimension only
+        int[][] numbers2 = {{2, 3, 2}, {1, 2, 6}, {2, 4, 5}};
+        int[][] numbers = new int[2][];    // Initialization of the first dimension only
         numbers[0] = new int[3];
         numbers[1] = new int[2];
         // Prefix & postfix
@@ -532,7 +532,7 @@ public class CustomClass extends AbstractClass {
         System.out.println(CustomClass.class.getName() + ": constructor runtime");
     }
 
-    public static void main(String [] args) {
+    public static void main(String[] args) {
         CustomClass nc = new CustomClass();
         hello();
         AbstractClass.hello();    // also valid

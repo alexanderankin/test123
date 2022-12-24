@@ -295,7 +295,7 @@
 
 
 
-    <!-- this is for testing -->
+    <!-- this is for testing, note hard-coded path to test file -->
     <target name="run"
             description="Run the application."
             depends="setClasspath">

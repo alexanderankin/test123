@@ -2,7 +2,7 @@
 // Source: https://docs.oracle.com/javase/tutorial/java/nutsandbolts/index.html
 // Lambdas
 public class Lambdas {
-    public static void main(String [] args) {
+    public static void main(String[] args) {
         // use predicate composition to remove matching names
         List<Name> list = new ArrayList<>();
 
@@ -64,8 +64,8 @@ public class For {
         autodetect(this.beans, ((AutodetectCapableMBeanInfoAssembler) this.assembler) :: includeBean);
         TriFunction<Integer, String, Integer, Computer> c6Function = Computer :: new;
         Computer c3 = c6Function.apply(2008, "black", 90);
-        Function<Integer, Computer []> computerCreator = Computer [] :: new;
-        Computer [] computerArray = computerCreator.apply(5);
+        Function<Integer, Computer[]> computerCreator = Computer[] :: new;
+        Computer[] computerArray = computerCreator.apply(5);
     }
 
 }
@@ -91,11 +91,11 @@ public interface RouterFunction <T extends ServerResponse> {
 
 // Instanceof
 class InstanceOf {
-    public static void main(String [] args) {
-        if (args instanceof String []) {
+    public static void main(String[] args) {
+        if (args instanceof String[]) {
         }
 
-        if (args instanceof a.String []) {
+        if (args instanceof a.String[]) {
         }
     }
 
@@ -103,7 +103,7 @@ class InstanceOf {
 
 // Unicode
 class Unicode {
-    public static void main(String [] args) {
+    public static void main(String[] args) {
         System.out.println("A = \uuu0041");
     }
 
@@ -112,21 +112,21 @@ class Unicode {
 // More Annotations
 public class Annos {
     public @interface Dummy4 {
-        String [] value();
+        String[] value();
     }
 
     @Documented
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.TYPE_USE, ElementType.TYPE_PARAMETER})
     public @interface Dummy03 {
-        Dummy3 [] value();
+        Dummy3[] value();
     }
 
     @Documented
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.TYPE_USE, ElementType.TYPE_PARAMETER})
     public @interface Dummy01 {
-        Dummy1 [] value();
+        Dummy1[] value();
     }
 
     @Documented
@@ -152,13 +152,13 @@ public class Annos {
     @Dummy4("#1")
     @Dummy1
     @Dummy3
-    public static <T extends @Dummy2 @Dummy3 Object> @Dummy1 @Dummy3 T @Dummy1 @Dummy3 [] foo(@Dummy1 T @Dummy2 @Dummy3 [] arr, @Dummy1 @Dummy3 T @Dummy1 @Dummy3... t) {
-        return (@Dummy1 @Dummy3 T []) null;
+    public static <T extends @Dummy2 @Dummy3 Object> @Dummy1 @Dummy3 T @Dummy1 @Dummy3[] foo(@Dummy1 T @Dummy2 @Dummy3[] arr, @Dummy1 @Dummy3 T @Dummy1 @Dummy3... t) {
+        return (@Dummy1 @Dummy3 T[]) null;
     }
 
     @Dummy4("")
-    public static <@Dummy1 @Dummy2 T extends @Dummy1 @Dummy3 Object> @Dummy1 @Dummy3 T @Dummy1 @Dummy3 [] @Dummy1 @Dummy2 [] foo2(@Dummy1 T @Dummy2 @Dummy3 [] @Dummy1 @Dummy3 [] arr) {
-        return (@Dummy1 @Dummy2 T [] @Dummy1 @Dummy2 []) null;
+    public static <@Dummy1 @Dummy2 T extends @Dummy1 @Dummy3 Object> @Dummy1 @Dummy3 T @Dummy1 @Dummy3[] @Dummy1 @Dummy2[] foo2(@Dummy1 T @Dummy2 @Dummy3[] @Dummy1 @Dummy3[] arr) {
+        return (@Dummy1 @Dummy2 T[] @Dummy1 @Dummy2[]) null;
     }
 
     @Documented
@@ -179,12 +179,12 @@ public class Annos {
     public static <@Dummy3 T> void foo33(T t, Gen<@Dummy1 @Dummy3 ?> c) {
     }
 
-    public static <@Dummy3 T, @Dummy1 S> void foo333(T t, Gen<@Dummy1 @Dummy3 T @Dummy1 []> c) {
+    public static <@Dummy3 T, @Dummy1 S> void foo333(T t, Gen<@Dummy1 @Dummy3 T @Dummy1[]> c) {
     }
 
     @Dummy3
-    public static <@Dummy3 T extends @Dummy3 Gen<@Dummy1 ? super @Dummy1 T>> @Dummy3 T @Dummy3 [] f(@Dummy3 T @Dummy3... t) {
-        return (@Dummy3 T @Dummy3 []) null;
+    public static <@Dummy3 T extends @Dummy3 Gen<@Dummy1 ? super @Dummy1 T>> @Dummy3 T @Dummy3[] f(@Dummy3 T @Dummy3... t) {
+        return (@Dummy3 T @Dummy3[]) null;
     }
 
     interface TI1 {
