@@ -3803,9 +3803,7 @@ Parser methods follow.
 	    }
 	    else {
 	        // it's several statements
-	        ++tabCount;
-	        blockStatements = indent(blockStatements);
-	        --tabCount;
+	        blockStatements = indentAgain(blockStatements);
 	    }
 	    if (!switchLabels.endsWith("\n")) {
 	        switchLabels = switchLabels + '\n';      // NOPMD
