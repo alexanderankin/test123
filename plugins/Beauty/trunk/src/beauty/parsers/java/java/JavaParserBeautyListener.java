@@ -476,14 +476,7 @@ Parser methods follow.
 	    if (lines.length > 1) {
 	        // if it's multiple lines, just indent them, don't wrap because the lines
 	        // are probably already arranged 
-	        StringBuilder indented = new StringBuilder();
-	        ++tabCount;
-	        for (String line : lines) {
-	            indented.append(indent(line)).append('\n');
-	        }
-	        --tabCount;
-	        indented.insert(0, '\n');
-	        variableInitializer = indented.toString();
+	        variableInitializer = indentAgain(variableInitializer);
 	        rb = indent(rb);
 	    }
 	    else {
