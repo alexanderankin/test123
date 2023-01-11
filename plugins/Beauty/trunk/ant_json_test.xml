@@ -24,74 +24,56 @@
         </path>
     </target>
 
-    <!-- =======================================================================
-            NOTE: THESE TESTS EXEC THE SYSTEM DIFF!!! THEY WILL FAIL IF DIFF IS
-            NOT INSTALLED OR NOT ON THE PATH!!!
-            
-            TODO: change out the echos with a fail.
-    ======================================================================== -->
     <target name="test" depends="test1, test2, test3, test4">
     </target>
 
     <target name="test1" depends="setClasspath">
-        <java classname="beauty.parsers.json.JSONBeautyListener" fork="true" output="/home/danson/src/jedit/plugins/Beauty/test/test_files/json/after/test1.json">
+        <java classname="beauty.parsers.json.JSONBeautyListener" fork="true" output="./test/test_files/json/after/test1.json">
             <classpath refid="classpathref"/>
-            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/json/before/test1.json"/>
+            <arg file="./test/test_files/json/before/test1.json"/>
         </java>
-        <exec executable="diff" outputproperty="test1diff">
-            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/json/after/test1.json"/>
-            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/json/expected/test1.json"/>
-        </exec>
         <condition property="test1" value="true">
-            <equals arg1="${test1diff}" arg2=""/> 
+            <filesmatch file1="./test/test_files/java/after/test1.java" 
+                file2="./test/test_files/java/expected/test1.java" />
         </condition>
        <echo if:set="test1">test1 passed</echo>
        <fail unless:set="test1">test1 failed: ${test1diff}</fail>
     </target>
 
     <target name="test2" depends="setClasspath">
-        <java classname="beauty.parsers.json.JSONBeautyListener" fork="true" output="/home/danson/src/jedit/plugins/Beauty/test/test_files/json/after/test2.json" >
+        <java classname="beauty.parsers.json.JSONBeautyListener" fork="true" output="./test/test_files/json/after/test2.json" >
             <classpath refid="classpathref"/>
-            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/json/before/test2.json"/>
+            <arg file="./test/test_files/json/before/test2.json"/>
         </java>
-        <exec executable="diff" outputproperty="test2diff">
-            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/json/after/test2.json"/>
-            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/json/expected/test2.json"/>
-        </exec>
         <condition property="test2" value="true">
-            <equals arg1="${test2diff}" arg2=""/> 
+            <filesmatch file1="./test/test_files/java/after/test2.java" 
+                file2="./test/test_files/java/expected/test2.java" />
         </condition>
        <echo if:set="test2">test2 passed</echo>
        <fail unless:set="test2">test2 failed: ${test2diff}</fail>
     </target>
 
     <target name="test3" depends="setClasspath">
-        <java classname="beauty.parsers.json.JSONBeautyListener" fork="true" output="/home/danson/src/jedit/plugins/Beauty/test/test_files/json/after/test3.json">
+        <java classname="beauty.parsers.json.JSONBeautyListener" fork="true" output="./test/test_files/json/after/test3.json">
             <classpath refid="classpathref"/>
-            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/json/before/test3.json"/>
+            <arg file="./test/test_files/json/before/test3.json"/>
         </java>
-        <exec executable="diff" outputproperty="test3diff">
-            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/json/after/test3.json"/>
-            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/json/expected/test3.json"/>
-        </exec>
         <condition property="test3" value="true">
-            <equals arg1="${test3diff}" arg2=""/> 
+            <filesmatch file1="./test/test_files/java/after/test3.java" 
+                file2="./test/test_files/java/expected/test3.java" />
         </condition>
        <echo if:set="test3">test3 passed</echo>
        <fail unless:set="test3">test3 failed: ${test3diff}</fail>
     </target>
 
     <target name="test4" depends="setClasspath">
-        <java classname="beauty.parsers.json.JSONBeautyListener" fork="true" output="/home/danson/src/jedit/plugins/Beauty/test/test_files/json/after/test4.json" >
+        <java classname="beauty.parsers.json.JSONBeautyListener" fork="true" output="./test/test_files/json/after/test4.json" >
             <classpath refid="classpathref"/>
-            <arg file="/home/danson/src/jedit/plugins/Beauty/test/test_files/json/before/test4.json"/>
+            <arg file="./test/test_files/json/before/test4.json"/>
         </java>
-        <exec executable="diff" outputproperty="test4diff">
-            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/json/after/test4.json"/>
-            <arg value="/home/danson/src/jedit/plugins/Beauty/test/test_files/json/expected/test4.json"/>
-        </exec>
         <condition property="test4" value="true">
-            <equals arg1="${test4diff}" arg2=""/> 
+            <filesmatch file1="./test/test_files/java/after/test4.java" 
+                file2="./test/test_files/java/expected/test4.java" />
         </condition>
        <echo if:set="test4">test4 passed</echo>
        <fail unless:set="test4">test4 failed: ${test4diff}</fail>

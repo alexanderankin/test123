@@ -295,7 +295,7 @@
 
 
 
-    <!-- this is for testing, note hard-coded path to test file -->
+    <!-- this is for local testing of individual files, note hard-coded path to test file -->
     <target name="run"
             description="Run the application."
             depends="setClasspath">
@@ -311,12 +311,7 @@
     <target name="all" depends="javacc,dist"/>
     
     <target name="test">
-        <property environment="env" /> 
-        <available file="diff"  
-             filepath="${env.PATH}"  
-             property="diff.present"/>    
-        <ant if:true="${diff.present}" antfile="ant_java_test.xml" />
-        <ant if:true="${diff.present}" antfile="ant_json_test.xml" />
-        <echo unless:true="${diff.present}">Diff not available, no tests run.</echo>
+        <ant antfile="ant_java_test.xml" />
+        <ant antfile="ant_json_test.xml" />
     </target>
 </project>
