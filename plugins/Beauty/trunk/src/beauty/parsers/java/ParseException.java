@@ -11,6 +11,7 @@ package beauty.parsers.java;
  * mechanisms so long as you retain the public fields.
  */
 public class ParseException extends Exception {
+
     /**
      * This constructor is used by the method "generateParseException"
      * in the generated parser.  Calling this constructor generates
@@ -23,7 +24,7 @@ public class ParseException extends Exception {
      * print the error message in the form:
      *     ParseException: <result of getMessage>
      */
-    public ParseException(Token currentTokenVal, int [] [] expectedTokenSequencesVal, String [] tokenImageVal) {
+    public ParseException(Token currentTokenVal, int[][] expectedTokenSequencesVal, String[] tokenImageVal) {
         super("");
         specialConstructor = true;
         currentToken = currentTokenVal;
@@ -49,7 +50,6 @@ public class ParseException extends Exception {
         super(message);
         specialConstructor = false;
     }
-
     /**
      * This variable determines which constructor was used to create
      * this object and thereby affects the semantics of the
@@ -69,14 +69,15 @@ public class ParseException extends Exception {
      * of integers represents a sequence of tokens (by their ordinal
      * values) that is expected at this point of the parse.
      */
-    public int [] [] expectedTokenSequences;
+    public int[][] expectedTokenSequences;
 
     /**
      * This is a reference to the "tokenImage" array of the generated
      * parser within which the parse error occurred.  This array is
      * defined in the generated ...Constants interface.
      */
-    public String [] tokenImage;
+    public String[] tokenImage;
+
 
     /**
      * This method has the standard behavior when this object has been
@@ -136,11 +137,11 @@ public class ParseException extends Exception {
         retval += expected.toString();
         return retval;
     }
-
     /**
      * The end of line string for this machine.
      */
     protected String eol = System.getProperty("line.separator", "\n");
+
 
     /**
      * Used to convert raw characters to their escaped version
@@ -183,16 +184,15 @@ public class ParseException extends Exception {
                 default:
 
                     if ((ch = str.charAt(i)) < 0x20 || ch > 0x7e) {
-                    String s = "0000" + Integer.toString(ch, 16);
-                    retval.append("\\u" + s.substring(s.length() - 4, s.length()));
+                        String s = "0000" + Integer.toString(ch, 16);
+                        retval.append("\\u" + s.substring(s.length() - 4, s.length()));
                     }
                     else {
-                    retval.append(ch);
+                        retval.append(ch);
                     }
                     continue;
             }
         }
         return retval.toString();
     }
-
 }
