@@ -1,0 +1,1669 @@
+/*!
+\target rgs-qtconvenience
+
+\page qt-convenience-api.html
+\title Qt Convenience API
+
+\previouspage {macOS Convenience API}
+\nextpage {Tk Convenience API}
+
+\note The Qt Convenience API is \e {only} available for \SQUISH for Qt editions.
+
+\target qt-convenience.function.parameters
+\section1 Qt Convenience Function Parameters
+
+Some of Qt's convenience functions can take a
+\c {modifierState} argument which indicates which
+special keys are pressed at the time of a mouse click. And some of the
+functions can also take a \c {button} argument which
+indicates which mouse button was clicked.
+
+The \c {modifierState} can be one or more of the following:
+\c {Qt.NoModifier}, \c {Qt.AltModifier}, \c {Qt.ControlModifier},
+\c {Qt.KeypadModifier}, \c {Qt.MetaModifier}, \c {Qt.ShiftModifier}.
+If more than one is used they must be \c {OR}-d together, for example,
+\c {Qt.AltModifier|Qt.ShiftModifier}. The form shown here works
+for Python and JavaScript. For Perl and Ruby replace the period with two
+colons, e.g., \c {Qt::ControlModifier}, and for Tcl use the
+\c {enum} function, e.g., \c {enum Qt ControlModifier}.
+
+The \c {button} can be any one of:
+\c {Qt.NoButton}, \c {Qt.LeftButton}, \c {Qt.MidButton}, \c {Qt.RightButton}.
+
+\list
+    \li For Perl use the following syntax: \c {Qt::LeftButton}.
+    \li For Ruby use the following syntax: \c {Qt::LEFT_BUTTON}.
+    \li For Tcl use the following syntax: \c {enum Qt LeftButton}.
+\endlist
+
+\target qt-native.dialogs.on.kde
+\section1 Native Dialogs on KDE
+
+To ensure the most reliable recording and replaying of tests, \SQUISH
+uses Qt's own dialogs (e.g., for choosing colors, files, and fonts),
+rather than the underlying platform's native dialogs.
+
+Unfortunately, on KDE, Qt uses the KDE dialogs and this can cause problems
+when developing cross-platform test scripts. The solution is to set the
+\c {QT_PLATFORM_PLUGIN} environment variable to an invalid value, such as
+\c {QT_PLATFORM_PLUGIN=nonesuch}. This can be done, for instance, in the
+\squishide's \l {ide.the-settings.view}{Test Suite Settings view}'s
+Environment section.
+
+\section1 Qt Convenience Functions
+
+Here are some quick links to the Qt Convenience API's functions:
+
+\table
+    \row
+        \li \list
+            \li \l {qt-activateItem-function} {activateItem(itemObject)}
+            \li \l {qt-activateLink-function} {activateLink(objectOrName, Url)}
+            \li \l {qt-castToQMenuData-function} {QMenuData castToQMenuData(object)}
+            \li \l {qt-castToQObject-function} {QObject castToQObject(object)}
+            \li \l {qt-clickButton-function} {clickButton(objectOrName)}
+            \li \l {qt-clickItem-function}
+                   {clickItem(objectOrName, itemOrIndex, x, y, modifierState, button)}
+            \li \l {qt-clickTab-function} {clickTab(objectOrName, tabText)}
+            \li \l {qt-doubleClick-function}
+                   {doubleClick(objectOrName)}
+            \li \l {qt-doubleClick-function}
+                   {doubleClick(objectOrName, x, y, modifierState, button)}
+            \li \l {qt-doubleClickItem-function}
+                   {doubleClickItem(objectOrName, itemText, x, y, modifierState, button)}
+            \li \l {qt-doubleTap-function} {doubleTap(objectOrName)}
+            \li \l {qt-dragAndDrop-function}
+                   {dragAndDrop(source_­object­Or­Name, sx, sy, target_­object­Or­Name, tx, ty, action)}
+            \li \l {qt-dragItemBy-function}
+                   {dragItemBy(objectOrName, x, y, dx, dy, modifierState, button)}
+            \li \l {qt-dropOn-function}{dropOn(target_objectOrName, tx, ty, action)}
+            \li \l {qt-flick-function}{flick(objectOrName, x, y, dx, dy, cdx, cdy)}
+            \li \l {qt-gesture-function} {gesture(objectOrName, touches)}
+            \li \l {qt-hideKeyboard-function} {hideKeyboard()}
+        \endlist
+
+        \li \list
+            \li \l {qt-installEventHandler-function}
+                   {installEventHandler(eventName, handlerFunctionName)}
+            \li \l {qt-installLazySignalHandler-function}
+                   {installLazySignalHandler(name, signalSignature, handlerFunctionName)}
+            \li \l {qt-installSignalHandler-function}
+                   {installSignalHandler(objectOrName, signalSignature, handlerFunctionName)}
+            \li \l {qt-longMouseClick-function}
+                   {longMouseClick(objectOrName, x, y, modifierState, button)}
+            \li \l {qt-longMouseDrag-function}
+                   {longMouseDrag(objectOrName, x, y, dx, dy, modifierState, button)}
+            \li \l {qt-mouseClick-function}
+                   {mouseClick(objectOrName, x, y, modifierState, button)}
+            \li \l {qt-mouseDrag-function}
+                   {mouseDrag(objectOrName, x, y, dx, dy, modifierState, button)}
+            \li \l {qt-mouseWheel-function}
+                   {mouseWheel(objectOrName, x, y, xdegrees, ydegrees)}
+            \li \l {qt-nativeMouseClick-function}
+                   {nativeMouseClick(objectOrName, x, y, modifierState, button)}
+            \li \l {qt-openContextMenu-function}
+                   {openContextMenu(objectOrName, x, y, modifierState)}
+            \li \l {qt-openItemContextMenu-function}
+                   {openItemContextMenu(objectOrName, itemText, x, y, modifierState)}
+            \li \l {qt-pressAndHold-function} {pressAndHold(objectOrName, x, y)}
+            \li \l {qt-qmlContext-function} {qmlContext(object)}
+            \li \l {qt-qmlEngine-function} {qmlEngine(object)}
+            \li \l {qt-readGesture-function} {readGesture(gesture-file)}
+            \li \l {qt-scrollTo-function} {scrollTo(objectOrName, position)}
+        \endlist
+
+        \li \list
+            \li \l {qt-sendEvent-function} {sendEvent(eventName, objectOrName, ...)}
+            \li \l {qt-setFocus-function} {setFocus(objectOrName)}
+            \li \l {qt-setMouseTracking-function} {setMouseTracking(className, onOrOff)}
+            \li \l {qt-setRecordMouseDrag-function}
+                   {setRecordMouseDrag(className, onOrOff)}
+            \li \l {qt-setWindowState-function} {setWindowState(objectOrName, windowState)}
+            \li \l {qt-spinUp-function} {spinUp(objectOrName)}
+            \li \l {qt-spinDown-function} {spinDown(objectOrName)}
+            \li \l {qt-startDrag-function} {startDrag(source_objectOrName, sx, sy)}
+            \li \l {qt-tapObject-function} {tapObject(objectOrName)}
+            \li \l {qt-touchAndDrag-function} {touchAndDrag(objectOrName, x, y, dx, dy)}
+            \li \l {qt-touchPress-function} {touchPress(objectOrName, x, y)}
+            \li \l {qt-touchRelease-function} {touchRelease(objectOrName, x, y)}
+            \li \l {qt-type-function} {type(objectOrName, text)}
+            \li \l {qt-uninstallEventHandler-function}
+                   {uninstallEventHandler(eventName, handlerFunctionName)}
+            \li \l {qt-uninstallLazySignalHandler-function}
+                   {uninstallLazySignalHandler(name, signalSignature, handlerFunctionName)}
+            \li \l {qt-uninstallSignalHandler-function}
+                   {uninstallSignalHandler(objectOrName, signalSignature, handlerFunctionName)}
+            \li \l {qt-waitForSignal-function} {waitForSignal(object, signalSignature)}
+        \endlist
+
+\endtable
+
+\target qt-activateItem-function
+\section2 activateItem(itemObject)
+
+\section2 activateItem(objectOrName, itemText)
+
+This function activates the specified \c{itemObject},
+or the item specified by \c {itemText} in the
+popup menu, context menu, or menu bar denoted by
+\c {objectOrName}.
+
+The ampersand characters (&) that indicate keyboard shortcuts should not be
+included in the item text. If a character in a string is formatted with an
+underscore (_), meaning that the text inside the program contains an &,
+write the text without special characters or formatting. For example, for
+\e "&Add", write \e "Add".
+
+\target qt-activateLink-function
+\section2 activateLink(objectOrName, Url)
+
+This function activates the link with the URL address specified
+\c {Url} inside the
+\c {objectOrName} widget. The function works for
+QTextBrowser and QLabel and its subclasses.
+
+\target qt-castToQMenuData-function
+\section2 QMenuData castToQMenuData(object)
+
+This function casts the \c {object} of type
+QMenuBar, QPopupMenu, or one of their subclasses, to an object of type
+QMenuData. The reason the function is needed at all is that test scripts
+for Qt 2 and Qt 3 AUTs often need to access a QPopupMenu
+or QMenuBar's QMenuData, but due to squishidl's limitation of single
+inheritance this is not possible. Nor can \SQUISH's \l {cast-function}
+{Object cast(object, type)} function be used in this case because it
+only supports casting up or down in the inheritance chain. Qt 4
+uses a different menu inheritance structure that only uses
+single-inheritance, so Qt 4 menus can be handled directly.
+
+\note The \c {castToQMenuData} function is for testing Qt 2 and Qt 3
+applications. It is neither needed nor available for Qt 4 applications.
+
+\target qt-castToQObject-function
+\section2 QObject castToQObject(object)
+
+This function casts the \c {object} to a QObject.
+The \c {object} must be a subclass of QObject and
+QGraphicsItem—or a class derived from QGraphicsItem—and
+where QObject is inherited first. It is not necessary to use this
+function for QGraphicsObjects and QGraphicsWidgets since \SQUISH
+already knows that these are both QObjects and QGraphicsItems at the
+same time.
+
+\note If this function is called on an object that is \e {not}
+derived from QObject and QGraphicsItem—or a class derived from
+QGraphicsItem—with QObject inherited first, \SQUISH will
+crash.
+
+\note The \c {castToQObject} function is only available for
+applications using Qt 4.2 or later since the graphics/view APIs
+were only introduced in that version of Qt.
+
+Unfortunately QGraphicsItem does not provide support for introspection.
+This means that although \SQUISH provides full access to all the
+built-in QGraphicsItem classes and their properties and
+methods—including their QObject properties and methods if they
+inherit QObject and the \c {castToQObject} function is
+used—none of the properties or methods you add to your own
+QGraphicsItem subclasses can be accessed by \SQUISH.
+
+For examples of testing Qt's graphics/view classes see \l {ugsqtw-gfxview}
+{How to Test Graphics Views, Graphics Scenes and Graphics Items}.
+
+\target qt-clickButton-function
+\section2 clickButton(objectOrName)
+
+This function clicks the specified \c{objectOrName}
+button.
+
+\target qt-clickItem-function
+
+\section2 clickItem(objectOrName, itemOrIndex, x, y, modifierState, button)
+
+This function clicks the mouse on the item with the specified
+\c {itemOrIndex} inside the given
+\c {objectOrName} view widget. This function is
+typically used to access items inside views such as lists, tables,
+and trees.
+
+For tables the \c {itemOrIndex}
+is a string with the format \e {row/column}, e.g.,
+\c {"4/21"}. For the tree views the \c {itemOrIndex}
+is a list of segments separated by the \e {"."}
+character. Each segment may optionally contain a
+\e {_X} suffix where \e {X} is
+interpreted as 1-base occurrence index. If any of the involved tree
+items contains the \c {"."},\c {"_"} or \c {"\"
+} characters in its text, these characters need to be escaped in
+the \c {itemOrIndex} as \c {"\."},\c {
+"\_"} and \c {"\\"} respectively in order to avoid being
+iterpreted as special characters. (Note that the script interpreter
+may require additional escaping for the \c {"\"} character.)
+The sequence of the segments corresponds to the tree path of the
+returned item. For example the \c {"Item1.Sub\.ItemX_3.Leaf"}
+finds an item with text \c {"Leaf" } that is a direct child of
+the third item with the text \c {"Sub.ItemX"} among the
+children of the root node with text \c {"Item1"}. For other
+views it is the relevant item's text.
+
+The click is made at position \c {x} and
+\c {y} (in the \c
+{itemOrIndex} item's coordinates) using the specified
+\c {button} and with the
+\c {modifierState} modifier state. It is
+safe to pass 0 for the coordinates and for the state. Normally, we
+would pass \c {Qt.LeftButton} for the button.
+
+\SQUISH supports this function for view widgets
+of type \l {https://doc.qt.io/qt-5/qabstractitemview.html} {QAbstractItemView},
+and its subclasses, including \l {https://doc.qt.io/qt-5/qlistview.html} {QListView}, \l {https://doc.qt.io/qt-5/qtableview.html} {QTableView}, and
+\l {https://doc.qt.io/qt-5/qtreeview.html} {QTreeView},
+and also older Qt 3 classes such as \l {https://doc.qt.io/qt-4.8/q3iconview.html} {Q3IconView},
+\l {https://doc.qt.io/qt-4.8/q3listbox.html} {Q3ListBox},
+\l {https://doc.qt.io/qt-4.8/q3table.html} {Q3Table}, and
+also classes derived from these types.
+
+\l {qt-convenience.function.parameters} {Qt Convenience Function Parameters}
+lists valid values for the \c {modifierState} and
+the \c {button} arguments.
+
+\target qt-clickTab-function
+
+\section2 clickTab(objectOrName, tabText)
+
+This function clicks on the tab that has the specified
+\c {tabText} on the
+\c {objectOrName} tab widget. (Note that &'s
+should not be included in the \c {tabText}, so if the
+tab's text is, say, "\e {A}dvanced"—meaning that the text
+inside the program is really "&Advanced"—we just
+write plain "Advanced".)
+
+\target qt-doubleClick-function
+
+\section2 doubleClick(objectOrName)
+
+\section2 doubleClick(objectOrName, x, y, modifierState, button)
+
+This overload double-clicks the mouse on the
+\c {objectOrName} widget at position
+\c {x} and \c {y} (in the
+\c {objectOrName} widget's coordinates) using the
+specified \c {button} and the
+\c {modifierState} modifier.
+
+If the single-argument overload is used, the \c {Qt.LeftButton} without
+modifiers is used to double-click on the center of \c {objectOrName}.
+
+\l {qt-convenience.function.parameters} {Qt Convenience Function Parameters}
+lists valid values for the \c {modifierState} and
+the \c {button} arguments.
+
+\target qt-doubleClickItem-function
+
+\section2 doubleClickItem(objectOrName, itemText, x, y, modifierState, button)
+
+This function double-clicks the mouse on the item with the specified
+\c {itemText} inside the given
+\c {objectOrName} view widget. The click is made at
+position \c {x} and
+\c {y} (in the
+\c {itemText} item's coordinates) using the specified
+\c {button} and with the
+\c {modifierState} modifier state.
+
+\SQUISH supports this function for view widgets of
+type
+\l {https://doc.qt.io/qt-4.8/qabstractitemview.html} {QAbstractItemView},
+and its subclasses, including
+\l {https://doc.qt.io/qt-4.8/qlistview.html} {QListView},
+\l {https://doc.qt.io/qt-4.8/qtableview.html} {QTableView},
+and
+\l {https://doc.qt.io/qt-4.8/qtreeview.html} {QTreeView},
+and also older Qt 3 classes such as
+\l {https://doc.qt.io/qt-4.8/q3iconview.html} {Q3IconView},
+\l {https://doc.qt.io/qt-4.8/q3listbox.html} {Q3ListBox},
+\l {https://doc.qt.io/qt-4.8/q3table.html} {Q3Table}, and
+also classes derived from these types.
+
+\l {qt-convenience.function.parameters} {Qt Convenience Function Parameters}
+lists valid values for the \c {modifierState} and
+the \c {button} arguments.
+
+\target qt-doubleTap-function
+
+\section2 doubleTap(objectOrName)
+
+\section2 doubleTap(objectOrName, x, y)
+
+\section2 doubleTap(objectOrName, x, y, modifiers)
+
+This function double-taps on the \c {objectOrName} widget.
+
+If \c{x} and \c{y}
+arguments (in the \c{objectOrName} widget's
+coordinates) have been provided, the taps will happen there, otherwise replay
+will happen at the center of the widget.
+
+If the \c{modifiers} argument has been provided,
+the taps will happen with keyboard modifiers pressed, otherwise replay will happen
+without any keyboard modifiers being pressed.
+
+Tapping is supported on objects of type
+\l {https://doc.qt.io/qt-5/qquickitem.html} {QQuickItem} and
+\l {https://doc.qt.io/qt-5/qwindow.html} {QWindow}.
+
+\target qt-dragAndDrop-function
+
+\section2 dragAndDrop(source_­object­Or­Name, sx, sy, target_­object­Or­Name, tx, ty, action)
+
+This function performs a drag and drop operation. It begins by
+initiating a drag on the \c {source_objectOrName}
+widget starting at position \c {sx} and
+\c {sy} (in the
+\c {source_objectOrName} widget's coordinates), and
+then it does the drop on the \c {target_objectOrName}
+widget at position \c {tx} and
+\c {ty} (in the
+\c {target_objectOrName} widget's coordinates).
+The \c {action} is an integer (enum)—for
+Qt 4 it can be \c {Qt::CopyAction} or
+\c {Qt::LinkAction}, and for Qt 3 it can be
+\c {QDropEvent::Copy} or \c {QDropEvent::Link}.
+
+\target qt-dragItemBy-function
+
+\section2 dragItemBy(objectOrName, x, y, dx, dy, modifierState, button)
+
+This function performs a drag operation. It initiates a drag of the
+specified \c{objectOrName} widget starting at
+position \c{x} and \c
+{y} (in the
+\c {objectOrName} widget's coordinates), using the
+specified \c {button} and with the
+\c {modifierState} modifier state. The
+\c {objectOrName} widget is dragged by
+\c {dx} pixels horizontally and by
+\c {dy} pixels vertically.
+
+\target qt-dropOn-function
+
+\section2 dropOn(target_objectOrName, tx, ty, action)
+
+This function performs a drop that was initiated by a call to the
+\l {qt-startDrag-function} {startDrag(source_objectOrName, sx, sy)} function.
+It does the drop on the
+\c {target_objectOrName} widget at position
+\c {tx} and \c {ty}
+(in the
+\c {target_objectOrName} widget's coordinates).
+See \l {qt-dragAndDrop-function}
+{dragAndDrop(source_­object­Or­Name, sx, sy, target_­object­Or­Name, tx, ty, action)}
+for possible values of
+the \c {action} parameter.
+
+Normally the \l {qt-dragAndDrop-function}
+{dragAndDrop(source_­object­Or­Name, sx, sy, target_­object­Or­Name, tx, ty, action)} function is
+used to perform a drag and drop in a single action. However, in some
+situations it may be necessary to move the mouse over a different object
+before the drop can take place. In such cases the test code would look
+something like this:
+
+\code
+    startDrag(sourceObject, sx, sy)
+    mouseMove(otherObject, x, y)
+    dropOn(targetObject, tx, ty, action)
+\endcode
+
+\target qt-flick-function
+\section2 flick(objectOrName, x, y, dx, dy, cdx, cdy)
+
+This function performs a "flick" operation (a
+move or scroll on a QML \c {Flickable}). It initiates a flick
+of the specified \c {objectOrName} item—which
+\e {must} be a QML \c {Flickable}—starting
+with the mouse at position \c {x} and
+\c {y} (in the \c
+{objectOrName}
+item's coordinates) and moving the mouse by \c {dx}
+pixels horizontally and by \c {dy} pixels vertically.
+At the same time the position of the \c {objectOrName}
+item's contents is moved relative to its previous position by
+\c {cdx} pixels horizontally and by
+\c {cdy} pixels vertically.
+
+\target qt-gesture-function
+\section2 gesture(objectOrName, touches)
+
+This function plays a gesture. The specified
+\c {objectOrName} can refer to any object that is
+visible and serves for synchronization only.
+The specified \c {touches} refers to a
+\l {qt-GestureBuilder-class} {GestureBuilder} object, which can be
+retrieved using \l {qt-readGesture-function} {readGesture(gesture-file)}.
+
+Gesture replay is supported on objects of type
+\l {https://doc.qt.io/qt-5/qwindow.html} {QWindow} and
+\l {https://doc.qt.io/qt-5/qwidget.html} {QWidget}.
+
+\target qt-hideKeyboard-function
+\section2 hideKeyboard()
+
+This function hides the on-screen keyboard when it is showing.
+
+\target qt-installEventHandler-function
+
+\section2 installEventHandler(eventName, handlerFunctionName)
+
+\section2 installEventHandler(className, eventName, handlerFunctionName)
+
+\section2 installEventHandler(object, eventName, handlerFunctionName)
+
+This function installs an event handler that is applied to all objects
+of the \c {className} class or to the specified
+\c {object} or globally (if no
+\c {className} or \c
+{object} is specified). The script function named in
+\c {handlerFunctionName} (which can be passed
+as a string or as a function reference), will be called when an event of
+the \c {eventName} type occurs on an object of the
+\c {className} class, or to the specified
+\c {object}, or globally.
+
+The \c {eventName} can be the name any standard Qt
+event type such as \c {QKeyEvent} event or \c {QMouseEvent}, or one of the
+\SQUISH convenience event types listed below:
+
+\list
+    \li \b {Crash}:
+        This event occurs if the AUT crashes.
+    \li \b {DialogOpened}:
+        This event occurs when a top-level QDialog is shown.
+    \li \b {MainWindowOpened}:
+        This event occurs when a top-level QMainWindow is shown.
+    \li \b {MessageBoxOpened}:
+        This event occurs when a top-level QMessageBox is shown.
+    \li \b {Timeout}:
+        This event occurs when the \SQUISH response timeout is
+        reached.
+    \li \b {ToplevelWidgetOpened}:
+        This event occurs when any other kind of top-level widget is
+        shown.
+\endlist
+
+
+The function named in \c {handlerFunctionName} is
+called with a single argument—the object on which the event occurred.
+
+\note In Python scripts, you can specify the callback function to invoke by
+passing an actual function or a lambda function.
+
+For examples, see \l {ugs-eventhandlers} {How to Use Event Handlers}.
+
+\note The \c {installEventHandler} function will only work if it is called
+\e {after} the AUT has been started by using the \l {startApplication-function}
+{ApplicationContext startApplication(autName)} function, for example.
+
+\target qt-installLazySignalHandler-function
+\section2 installLazySignalHandler(name, signalSignature, handlerFunctionName)
+
+This function installs a Qt (not Unix) signal handler that eavesdrops
+on the object identified by the given symbolic or real
+\c {name}. The \c
+{signalSignature} must be the exact signature used in C++ with no parameter
+names—for example, \c {"activated(int)"} or
+\c {"triggered(QAction*)"}. The
+\c {handlerFunctionName} (which must be passed as a
+string, not as a function reference), will be called whenever the
+specified widget emits the specified signal and will be passed a
+reference to the object that emitted the signal, followed by all the
+signal's arguments (if there are any).
+
+This function is very flexible in that the object identified by the
+\c {name} does \e {not} have to exist
+at the time the function is called, since the object will be looked for
+whenever the signal is emitted. The price to be paid for this
+flexibility is that the use of this function can significantly slow down
+playback if the signal is emitted a lot. If possible it is better to use
+the less flexible \l {qt-installSignalHandler-function}
+{installSignalHandler(objectOrName, signalSignature, handlerFunctionName)}
+function instead.
+
+Where possible the signal's arguments are passed as types that can be
+handled normally such as numbers, strings, or their actual Qt types such
+as \c {QAction} or \c {QTableWidgetItem}. However, some
+types are sent as plain \SQUISH \c {Object}s; custom types
+and other unrecognized types are passed as strings.
+
+\target qt-installSignalHandler-function
+
+\section2 installSignalHandler(objectOrName, signalSignature, handlerFunctionName)
+
+This function installs a Qt (not Unix!) signal handler that eavesdrops
+on the specified \c {objectOrName} widget.
+The \c {signalSignature} must be the exact signature
+used in C++ with no parameter names—for example,
+\c {"activated(int)"} or \c {"triggered(QAction*)"}. The
+\c {handlerFunctionName} (which must be passed as a
+string, not as a function reference), will be called whenever the
+specified widget emits the specified signal and will be passed a
+reference to the object that emitted the signal, followed by all the
+signal's arguments (if there are any).
+
+\note When defining signal handlers of QML signals, the argument types
+still must be the C++ types. In particular, this means that for a
+\c {real} QML argument, you must use the C++ \c {double} type,
+and for a \c {string} QML type, you must use \c {QString}.
+
+As is usual with \SQUISH functions, the
+\c {objectOrName} widget \e {must}
+exist at the time this function is called. This requirement is relaxed
+by the \l {qt-installLazySignalHandler-function}
+{installLazySignalHandler(name, signalSignature, handlerFunctionName)} function
+which can only accept a symbolic or real name, but of an object that
+need not exist when the function is called. Nonetheless, it is best to
+use this \c {installSignalHandler} function whenever possible
+since it is potentially a lot faster than the
+\l {qt-installLazySignalHandler-function}
+{installLazySignalHandler(name, signalSignature, handlerFunctionName)} function.
+
+Where possible the signal's arguments are passed as types that can be
+handled normally such as numbers, strings, or their actual Qt types such
+as \c {QAction} or \c {QTableWidgetItem}. However, some
+types are sent as plain \SQUISH \c {Object}s; custom types
+and other unrecognized types are passed as strings.
+
+For an example, see \l {ugs-qt-signal-handlers} {How to Use Qt Signal Handlers}.
+
+\target qt-longMouseClick-function
+\section2 longMouseClick(objectOrName, x, y, modifierState, button)
+
+\section2 longMouseClick(objectOrName, x, y, button)
+
+\section2 longMouseClick(objectOrName, modifierState, button)
+
+\section2 longMouseClick(objectOrName, button)
+
+\section2 longMouseClick(objectOrName)
+
+This function clicks the mouse on the specified
+\c {objectOrName} widget with a fixed delay of about one
+second between pressing and releasing the mouse button. Apart from the delay
+this function behaves identical to mouseClick, see \l {qt-mouseClick-function}
+{mouseClick(objectOrName, x, y, modifierState, button)} for more details.
+
+The \c {longMouseClick} function is supported on
+objects of type \l {https://doc.qt.io/qt-5/qquickitem.html}{QQuickItem} and
+\l {https://doc.qt.io/qt-5/qwindow.html}{QWindow}.
+
+\target qt-longMouseDrag-function
+\section2 longMouseDrag(objectOrName, x, y, dx, dy, modifierState, button)
+
+This function performs a mouse drag operation with a fixed delay of about one
+second between pressing the mouse button and starting to move the mouse cursor.
+Apart from the delay this function behaves identical to
+\c {mouseDrag}. See \l {qt-mouseDrag-function}
+{mouseDrag(objectOrName, x, y, dx, dy, modifierState, button)}.
+
+The \c {longMouseDrag} function is supported on
+objects of type \l {https://doc.qt.io/qt-5/qquickitem.html}{QQuickItem} and
+\l {https://doc.qt.io/qt-5/qwindow.html}{QWindow}.
+
+\target qt-mouseClick-function
+\section2 mouseClick(objectOrName, x, y, modifierState, button)
+
+\section2 mouseClick(objectOrName)
+
+This function clicks the mouse on the specified
+\c {objectOrName} widget. The click is made at
+position \c {x} and
+\c {y} (in the
+\c {objectOrName} widget's coordinates) using the
+specified \c {button} and with the
+\c {modifierState} modifier state.
+
+If only the \c{objectOrName} is specified,
+the object is clicked in the middle by the \c {Qt::LeftButton} button and with no
+keyboard modifiers pressed.
+
+If this function is used to click \c {Q3ListView}
+objects, \c {Q3TableItem} objects, or web objects inside
+\c {QtWebKit} objects, the \c {modifierState}
+and \c {button} parameters are optional.
+
+\l {qt-convenience.function.parameters} {Qt Convenience Function Parameters}
+lists valid values for the \c {modifierState} and
+the \c {button} arguments.
+
+\target qt-mouseDrag-function
+\section2 mouseDrag(objectOrName, x, y, dx, dy, modifierState, button)
+
+This function performs a mouse drag operation. It initiates a mouse drag
+of the specified \c {objectOrName} widget starting at
+position \c {x} and
+\c {y} (in the
+\c {objectOrName} widget's coordinates), using the
+specified \c {button} and with the
+\c {modifierState} modifier state. The
+\c {objectOrName} widget is dragged by
+\c {dx} pixels horizontally and by
+\c {dy} pixels vertically.
+
+See \l {qt-longMouseDrag-function}
+{longMouseDrag(objectOrName, x, y, dx, dy, modifierState, button)} when the mouse drag
+needs to be executed "more slowly", with more delay in between the
+individual steps of the drag.
+
+\l {qt-convenience.function.parameters} {Qt Convenience Function Parameters}
+lists valid values for the \c {modifierState} and
+the \c {button} arguments.
+
+\target qt-mouseWheel-function
+\section2 mouseWheel(objectOrName, x, y, xdegrees, ydegrees)
+
+This function performs a mouse wheel operation, emulating rotation of the
+horizontal and/or vertical wheel of a mouse. Replay happens on the specified
+\c {objectOrName} object at position
+\c {x} and \c {y}
+(in the \c {objectOrName} objects's coordinates),
+using the specified \c {xdegrees} and
+\c {ydegrees} values for the amount of wheel rotation.
+
+The \c {mouseWheel} function is supported on
+objects of type \l {https://doc.qt.io/qt-5/qquickitem.html} {QQuickItem} and
+\l {https://doc.qt.io/qt-5/qwindow.html} {QWindow}.
+
+\target qt-nativeMouseClick-function
+\section2 nativeMouseClick(objectOrName, x, y, modifierState, button)
+
+This function simulates a native mouse click on the specified
+\c {objectOrName} widget at position
+\c {x} and \c {y} (in the
+\c {objectOrName} widget's coordinates), using the
+specified \c {button} and with the
+\c {modifierState} modifier state.
+
+\l {qt-convenience.function.parameters} {Qt Convenience Function Parameters}
+lists valid values for the \c {modifierState} and
+the \c {button} arguments.
+
+\target qt-openContextMenu-function
+
+\section2 openContextMenu(objectOrName, x, y, modifierState)
+
+This function simulates the user opening a context menu by clicking the
+specified \c {objectOrName} widget at position
+\c {x} and \c {y} (in the
+\c {objectOrName} widget's coordinates), and with the
+\c {modifierState} modifier state.
+
+\l {qt-convenience.function.parameters} {Qt Convenience Function Parameters}
+lists valid values for the \c {modifierState}
+argument.
+
+\target qt-openItemContextMenu-function
+
+\section2 openItemContextMenu(objectOrName, itemText, x, y, modifierState)
+
+This function simulates the user opening a context menu by clicking the
+menu option with the specified \c {itemText} inside the
+\c {objectOrName} view widget at position
+\c {x} and \c {y} (in the
+\c {itemText} item's coordinates), and with the
+\c {modifierState} modifier state.
+
+\SQUISH supports this function for view widgets of type
+\l {https://doc.qt.io/qt-4.8/qabstractitemview.html} {QAbstractItemView},
+and its subclasses, including \l {https://doc.qt.io/qt-4.8/qlistview.html}
+{QListView}, \l {https://doc.qt.io/qt-4.8/qtableview.html} {QTableView}, and
+\l {https://doc.qt.io/qt-4.8/qtreeview.html} {QTreeView},
+and also older Qt 3 classes such as \l {https://doc.qt.io/qt-4.8/q3iconview.html}
+{Q3IconView}, \l {https://doc.qt.io/qt-4.8/q3listbox.html} {Q3ListBox},
+\l {https://doc.qt.io/qt-4.8/q3table.html} {Q3Table}, and
+also classes derived from these types.
+
+\l {qt-convenience.function.parameters} {Qt Convenience Function Parameters}
+lists valid values for the \c {modifierState}
+argument.
+
+\target qt-pressAndHold-function
+
+\section2 pressAndHold(objectOrName, x, y)
+
+\section2 pressAndHold(objectOrName, x, y, dx, dy)
+
+This function performs a press and hold operation on the specified
+\c {objectOrName} item—starting with the mouse
+at position \c {x} and
+\c {y} (in
+the \c {objectOrName} item's coordinates) and
+optionally moving the mouse by \c {dx} pixels
+horizontally and by \c {dy} pixels vertically if these
+offsets are specified. (Note that \c {dx} and
+\c {dy} are relative to the starting mouse position in
+QML scene coordinates, not in \c {objectOrName} item
+coordinates which is normally the case.)
+
+The \c {pressAndHold} function is supported on
+objects of type \l {https://doc.qt.io/archives/qt-4.8/qdeclarativeitem.html}
+{QDeclarativeItem}.
+
+The press and hold operation performed by this function is similar to
+what the \l {qt-dragItemBy-function}
+{dragItemBy(objectOrName, x, y, dx, dy, modifierState, button)} function does,
+except for the \e hold (the initial pause when the mouse is first
+pressed down). QML scenes support press and hold by using an invisible
+\c {MouseArea} item that is overlaid on top of one or more of
+the scene's QML items. \SQUISH doesn't record actions for invisible
+items so for a press and hold it records the item at the mouse (or
+finger for touch screens) position that is actually under the
+\c {MouseArea}.
+
+\section3 Other Object Types
+
+For objects of type \l {https://doc.qt.io/qt-5/qquickitem.html}{QQuickItem},
+you can use either \l {qt-longMouseClick-function}
+{longMouseClick(objectOrName, x, y, modifierState, button)} or
+\l {qt-longMouseDrag-function}
+{longMouseDrag(objectOrName, x, y, dx, dy, modifierState, button)}.
+
+For other objects it should be possible to emulate the effect of \c {pressAndHold()}
+by using a combination of the following functions:
+
+\list
+    \li \l {snooze-function} {snooze(seconds)}
+    \li \l {mouseMove-function} {mouseMove(x, y)}
+    \li \l {mousePress-function} {mousePress()}
+    \li \l {mouseRelease-function} {mouseRelease()}
+\endlist
+
+For example:
+
+\code
+    function main()
+    {
+        //...
+
+        mouseMove(waitForObject(":target_object_name"), 5, 5);
+        mousePress(waitForObject(":target_object_name"));
+        snooze(3);
+        mouseRelease(waitForObject(":target_object_name"));
+
+        //...
+    }
+\endcode
+
+\target qt-qmlContext-function
+\section2 qmlContext(object)
+
+This function returns the \c {QQmlContext} for the
+object, or 0 if no context has been set. This is equivalent to calling the
+C++ function \c {QQmlEngine::contextForObject}.
+A QML Context is a container for properties and allows
+data to be exposed to QML from C++. For an example of its use,
+see
+\l {https://www.froglogic.com/blog/tip-of-the-week/accessing-qqmlcontext-properties-in-squish-test-scripts/} {this blog post}.
+
+\target qt-qmlEngine-function
+
+\section2 qmlEngine(object)
+
+Returns the \c {QQmlEngine} associated with object, if
+any. This is equivalent to
+\c {QQmlEngine::contextForObject(object)->engine()}, but more
+efficient. The \c {QQmlEngine} class provides an environment
+for instantiating QML components.
+
+\target qt-readGesture-function
+
+\section2 readGesture(gesture-file)
+
+This function opens a gesture file from a test suite directory and returns
+a \l {qt-GestureBuilder-class} {GestureBuilder} object.
+This can then be passed to \l {qt-gesture-function} {gesture(objectOrName, touches)}.
+The specified \c {gesture-file} refers to the filename.
+
+\target qt-scrollTo-function
+
+\section2 scrollTo(objectOrName, position)
+
+This function scrolls the \c {objectOrName} widget to
+the given \c {position}. The
+\c {position} is an absolute value (i.e., a pixel
+offset).
+
+\target qt-sendEvent-function
+
+\section2 sendEvent(eventName, objectOrName, ...)
+
+This function sends an event of type \c {eventName} to
+the \c {objectOrName} widget. All the other arguments
+(\c {...}) are passed on to the event
+constructor—they are typically coordinates, button states, and
+similar. The \c {eventName} is any of the Qt events
+supported by \SQUISH — this includes all the most commonly used
+ones, such as,
+\c {"QCloseEvent"},
+\c {"QHideEvent"},
+\c {"QKeyEvent"},
+\c {"QMouseEvent"},
+\c {"QMoveEvent"},
+\c {"QShowEvent"},
+\c {"QTabletEvent"},
+and
+\c {"QWheelEvent"}.
+
+\target qt-setFocus-function
+
+\section2 setFocus(objectOrName)
+
+This method changes the keyboard input focus to the object specified by
+\c {objectOrName}.
+
+Changing the keyboard input focus is currently supported on objects of type
+\l {https://doc.qt.io/qt-5/qquickitem.html} {QQuickItem},
+\l {https://doc.qt.io/qt-5/qwidget.html} {QWidget} and
+\l {https://doc.qt.io/qt-5/qwindow.html} {QWindow}.
+
+\target qt-setMouseTracking-function
+
+\section2 setMouseTracking(className, onOrOff)
+
+This function can be used in \c {init} files to disable
+or enable the recording of \c {MouseMove} events for certain
+widget classes. The class to disable or enable mouse tracking for is
+specified by the \c {className} parameter. Pass an
+\c {onOrOff} parameter value of \c {true} to
+enable mouse tracking or of \c {false} to disable mouse
+tracking. (By default mouse tracking is off.)
+
+\section3 Wrapper-Specific Initialization
+
+The \c {init} files are Tcl scripts that are registered
+with the squishrunner and then read before starting any tests. The
+registration process is explained in \l {rg-squishrunner-cli--config}
+{Configuring squishrunner}.
+Although \c {init} files must be written in Tcl, this
+does not affect the scripting language used for test suites, which may
+be in any of the scripting languages that \SQUISH supports.
+
+We can have as many \c {init} scripts as we like for each
+GUI toolkit or we can put all the initialization statements in a single
+Tcl script per toolkit. However many \c {init} scripts we use,
+they must all be registered with the squishrunner.
+
+\section3 Example
+
+\code
+    setMouseTracking ScribbleArea true
+\endcode
+
+This sets mouse tracking on for an AUT's custom \c {ScribbleArea} class.
+
+To make this work, we must tell \SQUISH to execute a file that contains
+this Tcl script at startup when it is used to test a Qt-based AUT:
+
+\code
+    squishrunner --config addInitScript Qt /home/harri/qt_init1.tcl
+\endcode
+
+An absolute path must be used.
+
+\target qt-setRecordMouseDrag-function
+\section2 setRecordMouseDrag(className, onOrOff)
+
+This function can be used in \c {init} files to disable
+or enable the recording of \c {mouseDrag} statements for certain
+widget classes. The class to disable mouse dragging for is specified by
+the \c {className} parameter. Pass an
+\c {onOrOff} parameter value of \c {true} to
+enable mouse drag recording or of \c {false} to disable mouse
+drag recording. (By default mouse drag recording is on.)
+
+See also \l{Wrapper-Specific Initialization}.
+
+The \c {init} files are Tcl scripts that are registered
+with the server and then read before starting any tests. The
+registration process is explained in \l {rg-squishrunner-cli--config}
+{Configuring squishrunner}.
+
+\section3 Example
+
+\code
+    setRecordMouseDrag ScribbleArea false
+\endcode
+
+This switches off mouse drag recording for an AUT's custom \c {ScribbleArea}
+class.
+
+To make this work, we must tell \SQUISH to execute a file that contains
+this Tcl script at startup when it is used to test a Qt-based AUT:
+
+\code
+    squishrunner --config addInitScript Qt /home/harri/qt_init2.tcl
+\endcode
+
+An absolute path must be used.
+
+\target qt-setWindowState-function
+\section2 setWindowState(objectOrName, windowState)
+
+This function sets the state of the given
+\c {objectOrName} window to that specified by the
+\c {windowState} enumeration.
+
+Note that using this function only makes sense for
+top-level windows.
+
+Valid window state values are:
+\c {WindowState.Fullscreen},
+\c {WindowState.Maximize},
+\c {WindowState.Minimize}, and
+\c {WindowState.Normal}.
+
+The form shown above works for Python and JavaScript.
+
+For Perl use this: \c {WindowState::Maximize}, etc.
+
+For Ruby use this: \c {WindowState::MAXIMIZE}, etc.
+
+For Tcl use this: \c {enum WindowState Maximize}, etc.
+
+\target qt-spinUp-function
+
+\section2 spinUp(objectOrName)
+
+This function clicks the "up" button on the
+\c {objectOrName} spinbox. The function works for
+\l {https://doc.qt.io/qt-4.8/qabstractspinbox.html} {QAbstractSpinBox}
+and its subclasses, such as \l {https://doc.qt.io/qt-4.8/qspinbox.html}
+{QSpinBox} and \l {https://doc.qt.io/qt-4.8/qdoublespinbox.html} {QDoubleSpinBox}.
+
+\target qt-spinDown-function
+
+\section2 spinDown(objectOrName)
+
+This function clicks the "down" button on the
+\c {objectOrName} spinbox. The function works for
+\l {https://doc.qt.io/qt-4.8/qabstractspinbox.html} {QAbstractSpinBox}
+and its subclasses, such as \l {https://doc.qt.io/qt-4.8/qspinbox.html}
+{QSpinBox} and \l {https://doc.qt.io/qt-4.8/qdoublespinbox.html}{QDoubleSpinBox}.
+
+\target qt-startDrag-function
+
+\section2 startDrag(source_objectOrName, sx, sy)
+
+This function initiates a drag on the
+\c {source_objectOrName} widget starting at position
+\c {sx} and \c {sy}
+(in the \c {source_objectOrName} widget's coordinates).
+The drop can be done using the
+\l {qt-dropOn-function} {dropOn(target_objectOrName, tx, ty, action)} function.
+
+\target qt-tapObject-function
+\section2 tapObject(objectOrName)
+
+\section2 tapObject(objectOrName, x, y)
+
+\section2 tapObject(objectOrName, x, y, modifiers)
+
+This function taps on the specified \c {objectOrName} widget.
+The \c {x} and \c {y}
+coordinates as well
+as the \c {modifiers} keyboard modifiers are optional. If
+they are not specified, the tap is made in the center of the widget using no
+keyboard modifiers. On the other hand, if the additional coordinate parameters
+are given, the tap is made at position \c {x} and
+\c {y} in the \c
+{objectOrName} widget's coordinates.
+
+Tapping is supported on objects of type
+\l {https://doc.qt.io/qt-5/qquickitem.html} {QQuickItem},
+\l {https://doc.qt.io/qt-5/qwindow.html} {QWindow} and
+\l {https://doc.qt.io/qt-5/qwidget.html} {QWidget}.
+
+\target qt-touchAndDrag-function
+\section2 touchAndDrag(objectOrName, x, y, dx, dy)
+
+\section2 touchAndDrag(objectOrName, x, y, dx, dy, modifiers)
+
+\section2 touchAndDrag(objectOrName, x, y, dx, dy, modifiers, delayAfterPress)
+
+This function performs a touch-based drag operation. It initiates a touch drag
+of the specified \c {objectOrName} widget starting at
+position \c {x} and \c
+{y} (in the
+\c {objectOrName} widget's coordinates). The
+\c {objectOrName} widget is dragged by
+\c {dx} pixels horizontally and by
+\c {dy} pixels vertically.
+
+If specified, the keyboard modifiers provided in
+\c {modifiers} are set while performing the drag.
+
+If specified, the number of milliseconds provided in
+\c {delayAfterPress} is waited before the drag
+starts.
+
+Touch-based dragging is supported on objects of type
+\l {https://doc.qt.io/qt-5/qquickitem.html} {QQuickItem} and
+\l {https://doc.qt.io/qt-5/qwindow.html} {QWindow}.
+
+\target qt-touchPress-function
+\section2 touchPress(objectOrName, x, y)
+
+\section2 touchPress(objectOrName, x, y, modifiers)
+
+This function performs a touch-based press operation. It replays a touch press
+on the specified \c {objectOrName} widget at position
+\c {x} and \c {y} (in the
+\c {objectOrName} widget's coordinates).
+
+If specified, the keyboard modifiers provided in
+\c {modifiers} are set while performing the operation.
+
+Since the object and Qt itself rely on press and release operations to always
+happen in pairs a call to \c {touchPress} should always be
+paired with a call to \c {touchRelease} to ensure a consistent
+state. For most cases using just \c {tapObject} is sufficient.
+
+A single touch press can be performed on objects of type
+\l {https://doc.qt.io/qt-5/qquickitem.html} {QQuickItem} and
+\l {https://doc.qt.io/qt-5/qwindow.html} {QWindow}.
+
+\target qt-touchRelease-function
+\section2 touchRelease(objectOrName, x, y)
+
+\section2 touchRelease(objectOrName, x, y, modifiers)
+
+This function performs a touch-based release operation. It replays a touch
+release on the specified \c {objectOrName} widget at position
+\c {x} and \c {y} (in the
+\c {objectOrName} widget's coordinates).
+
+If specified, the keyboard modifiers provided in
+\c {modifiers} are set while performing the operation.
+
+Since the object and Qt itself rely on press and release operations to always
+happen in pairs a call to \c {touchRelease} should always be
+preceded by a call to \c {touchPress} to ensure a consistent
+state. For most cases using just \c {tapObject} is sufficient.
+
+A single touch release can be performed on objects of type
+\l {https://doc.qt.io/qt-5/qquickitem.html} {QQuickItem} and
+\l {https://doc.qt.io/qt-5/qwindow.html} {QWindow}.
+
+\target qt-type-function
+\section2 type(objectOrName, text)
+
+This function types the specified \c {text} (as if the
+user had used the keyboard) into the \c {objectOrName}
+editable widget. If the text is surrounded by angle brackets (<>),
+it is interpreted as a key combination, e.g
+\c {"<Ctrl+Return>"}. The input is case-sensitive, so
+\c {type(object, "R")} is different from
+\c {type(object, "r")}. (For a list of the
+supported special keys see the \l {nativeType-function} {nativeType(keys)}
+function's documentation.)
+
+Unlike \l {nativeType-function} {nativeType(keys)}, \c {type()} treats
+\c {Ctrl} and \c {Command} as the same key
+on all platforms. This means that you can write \c {type("<Ctrl+c>")}
+in a test script and it will result in \c {Ctrl+r} on Linux and
+Windows and in \c {Command+r} on macOS. In turn, to make \SQUISH press
+the actual \c {Ctrl} key on macOS, you need to use Qt terminology:
+\c {type("<Meta+r>")}.
+
+\note In Qt 3, if the key combination is surrounded by an additional pair of
+angle brackets, an accelerator event is sent instead of a key event. For example,
+\c {"<<Alt+A>>"}.
+
+\target qt-uninstallEventHandler-function
+\section2 uninstallEventHandler(eventName, handlerFunctionName)
+
+\section2 uninstallEventHandler(className, eventName, handlerFunctionName)
+
+\section2 uninstallEventHandler(object, eventName, handlerFunctionName)
+
+This function uninstalls an event handler that has been previously
+installed using \l {qt-installEventHandler-function}
+{installEventHandler(eventName, handlerFunctionName)}.
+
+\target qt-uninstallSignalHandler-function
+\section2 uninstallSignalHandler(objectOrName, signalSignature, handlerFunctionName)
+
+This function uninstalls a signal handler that has been previously
+installed using \l {qt-installSignalHandler-function}
+{installSignalHandler(objectOrName, signalSignature, handlerFunctionName)}.
+\target qt-uninstallLazySignalHandler-function
+
+\section2 uninstallLazySignalHandler(name, signalSignature, handlerFunctionName)
+
+This function uninstalls a signal handler that has been previously
+installed using \l {qt-installLazySignalHandler-function}
+{installLazySignalHandler(name, signalSignature, handlerFunctionName)}.
+
+\target qt-waitForSignal-function
+\section2 waitForSignal(object, signalSignature)
+
+\section2 waitForSignal(object, signalSignature, timeoutMSec)
+
+This function waits for Qt (not Unix!) signal to be emitted by
+the given object. The \c {object} is a reference
+to object and can be obtained from one of the functions returning
+object references (e.g. \l {waitForObject-function} {Object waitForObject(objectOrName)}
+or \l {findObject-function} {Object findObject(objectName)}. The
+\c {signalSignature}
+must be a string, and contain the exact signature used in C++ with no parameter
+names (see \l {qt-installSignalHandler-function}
+{installSignalHandler(objectOrName, signalSignature, handlerFunctionName)} for examples
+of valid signatures). The duration of the waiting loop is defined by the
+\l {testSettings.waitForObjectTimeout-property} {testSettings.waitForObjectTimeout}
+property or if the
+optional \c {timeoutMSec} parameter is used, that many
+milliseconds. If the signal doesn't arrive within the given timeout, (catchable)
+\c {RuntimeError} exception is raised.
+
+\tab {tab-418} {tab-418-python} {python} {checked}
+\tab {tab-418} {tab-418-javascript} {javascript} {}
+\tab {tab-418} {tab-418-perl} {perl} {}
+\tab {tab-418} {tab-418-ruby} {ruby} {}
+\tab {tab-418} {tab-418-tcl} {tcl} {}
+\tabcontent {tab-418-python}
+\code
+    waitForSignal(waitForObject(names.window_Window), "titleChanged()")
+\endcode
+
+\endtabcontent
+
+\tabcontent {tab-418-javascript}
+\code
+    waitForSignal(waitForObject(names.windowWindow), "titleChanged()")
+\endcode
+
+\endtabcontent
+
+\tabcontent {tab-418-perl}
+\code
+    waitForSignal(waitForObject($Names::window_window), "titleChanged()");
+\endcode
+
+\endtabcontent
+
+\tabcontent {tab-418-ruby}
+\code
+    waitForSignal(waitForObject(Names::Window_Window), "titleChanged()")
+\endcode
+
+\endtabcontent
+
+\tabcontent {tab-418-tcl}
+\code
+    invoke waitForSignal [waitForObject $names::window_Window] "titleChanged()"
+\endcode
+
+\endtabcontent
+
+\target qwebview
+\section2 QWebView Class
+
+\SQUISH provides additional support for the \c {QWebView}
+class in the form of three additional methods.
+
+\target qt-QWebView.clearObjectCache-function
+\section2 Object QWebView.clearObjectCache()
+
+This function clears the cache of objects that are being looked up using
+hierarchical names like DOCUMENT.HTML1.BODY1.DIV2.
+See also \l {web-clearObjectCache-function}{clearObjectCache()}.
+
+\target qt-QWebView.evalJS-function
+\section2 Object QWebView.evalJS(code)
+
+This function evaluates the JavaScript \c {code}
+string in the \c {QWebView}'s context (i.e., in the context of
+the active \c {QWebView} page). The result of the last statement
+in the \c {code} is returned as a string.
+See also \l {ugsweb-evaljs}{How to Use evalJS}.
+
+\target qt-QWebView.retrieveJSObject-function
+\section2 Object QWebView.retrieveJSObject(code)
+
+This function evaluates the JavaScript \c {code}
+string in the \c {QWebView}'s context (i.e., in the context of
+the active \c {QWebView} page). The result of the last statement
+in the \c {code} is returned as a primitive value, like
+a string or number, or a reference to a
+\l {web-JsObject-class} {JsObject} in the page.
+(See also \l {ugsweb-retrieveJSObject} {How to Use retrieveJSObject} and
+\l {web-retrieveJSObject-function} {JsObject retrieveJSObject(javascriptcode)}.)
+
+\target qt-QWebView.isPageLoaded-function
+\section2 Boolean QWebView.isPageLoaded()
+
+This function returns \c {true} if the page has been completely
+loaded; otherwise it returns \c {false}. A complete and successful
+load implies that all of the page's objects can
+\e {potentially} be accessed. This function can be used
+with the \l {waitFor-function} {Boolean waitFor(condition)} function to wait for a
+page to be loaded before accessing it from a test script.
+
+Since page loading, HTTP requests, and so on, are asynchronous, even
+after a call to the \c {isPageLoaded} function returns
+\c {true} it is \e {essential} that the \l {waitForObject-function}
+{Object waitForObject(objectOrName)} function (or another wait function)
+is used to ensure that the specific object or objects of interest are
+ready to be accessed. Also, it may be necessary to pass a longer timeout
+to the \l {waitForObject-function} {Object waitForObject(objectOrName)}
+function than the default 20 seconds (20 000 milliseconds).
+See also \l {ugsweb-sync}{How to Synchronize Web Page Loading for Testing}.
+
+\target qt-QWebView.loadUrl-function
+\section2 QWebView.loadUrl(url)
+
+This function changes the \c {QWebView}'s current page to the
+new \c {url}.
+
+\target how.to.use.the.qml.extension.api
+\section2 QML Extension API
+
+Qt applications that utilize QtQuick can dynamically load QML code, including
+custom QML objects, so it is quite possible that AUTs that use QML will have
+QML objects that are unknown to \SQUISH. This isn't a problem since \SQUISH
+can still record and playback interactions with such objects, but will do so in
+terms of the primitives they are built from (e.g. Rectangle or Text items),
+rather than with the actual (logical) item types (e.g., CustomButton).
+
+The QML Extension API introduced with \SQUISH 4.1 makes it
+possible to make \SQUISH aware of custom QML object types so that
+recording and playback can work at a high level (i.e., in terms of the
+custom objects themselves rather than with the primitives that they are
+built from). \SQUISH comes with a small example that makes use of some
+of the QML Extension APIs and that shows how to implement a
+\c {SquishHook} for a custom Calculator \c {Button} type:
+\c {SQUISHDIR/examples/qt5/calqlatr/extension/Calqlatr.qml}.
+
+\SQUISH  also includes a more substantial QML Extension for support of
+QtQuick Controls, located in
+\c {SQUISHDIR/lib/extensions/qt/qtquick/ControlsExt.qml}.
+
+\target the.format.of.a.qml.extension
+\section3 The Format of a QML Extension
+
+QML Extensions are standard QML scripts in \c {.qml}
+files (using the UTF-8 encoding), and using some additional
+functionality provided by \SQUISH.
+For QtQuick 1.x the structure of a \SQUISH QML extension looks like this:
+
+\code
+    import Qt 4.7
+    import com.froglogic.squish.qml 0.1
+
+    SquishHook {
+        // extension code...
+    }
+\endcode
+
+
+For QtQuick 2.x the basic structure of a   QML extension is:
+
+\code
+    import QtQuick 2.0
+    import com.froglogic.squish.qtquick 0.1
+
+    SquishHook {
+        // extension code...
+    }
+\endcode
+
+
+\target installing.qml.extensions
+\section3 Installing QML Extensions
+
+\SQUISH automatically looks in the
+\c {SQUISHDIR/lib/extensions/qt/qml} directory for extension
+files targeting QtQuick 1.x and into the
+\c {SQUISHDIR/lib/extensions/qt/qtquick} directory for
+QtQuick 2.x extension files. All that is needed to "install"
+a new QML extension is to move or copy it into one of these directories. It is
+also possible add an additional directory for \SQUISH to search for QML
+extensions: Set the \c {SQUISH_QML_EXTENSION_PATH} environment
+variable (which you may need to create) to the directory where you want to keep
+your QtQuick 1.x QML extensions. For QtQuick 2.x rather set the
+\c {SQUISH_QTQUICK_EXTENSION_PATH} environment variable to the
+directory where you keep your QML extensions.
+
+\target qml.extension.api.documentation
+\section3 QML Extension API Documentation
+
+\SQUISH's QML Extension API consists of a single item of type
+\c {SquishHook}. This item provides various properties and
+functions which are listed below. A custom QML extension can make use of
+these properties and functions—and in some cases override them.
+In addition, \SQUISH provides some helper functions to make writing QML
+extensions easier.
+
+The QtQuick 1.x API uses the QML
+\l {https://doc.qt.io/qt-4.8/qdeclarativebasictypes.html}{basic types} and
+\l {https://doc.qt.io/qt-4.8/qdeclarativeelements.html}{elements} specified
+in the Qt 4.8 Reference Documentation.
+
+The QtQuick 2.x API uses the QML
+\l {https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html}{basic types}
+and \l {https://doc.qt.io/qt-5/qml-qtquick-item.html}{items} specified in the
+Qt 5.x Reference Documentation.
+
+\target qml-isCustomQmlType-function
+\section2 bool isCustomQmlType(item)
+
+This function returns whether the given \c{item} of
+type \c {Item} is a custom type. (Every QML item that introduces
+new properties is considered to be a custom QML type by Qt—and by
+this function.)
+
+\target qml-isQmlType-function
+\section2 bool isQmlType(item, className)
+
+This function returns whether the given \c{item} of
+type \c {Item} inherits the class specified by the
+\c {className} string.
+
+\target qml-itemHasContents-function
+\section2 bool itemHasContents(item)
+
+\note This function is \e {only} available in QtQuick 2.x QML Extensions.
+
+This function returns whether the given \c{item} of
+type \c {Item} has the \c {QQuickItem::ItemHasContents} flag set.
+This is a helper function to access this particular flag from within QML. It
+can serve as a hint whether an item should be ignored by default. See also
+\l {https://doc.qt.io/qt-5/qquickitem.html#Flag-enum}{Flag enum}.
+
+\target qml-qmlId-function
+\section2 String qmlId(item)
+
+This function returns the id for the given \c{item}
+or an empty string if \c {item} has no id set.
+
+\target qml-qmlType-function
+\section2 String qmlType(item)
+
+This function returns the given \c {item} of type
+\c {Item}'s class name if it is a declarative type; otherwise
+it returns an empty string.
+
+\target qml-source-function
+
+\section2 String source(item)
+
+This function returns the given \c {item} of type
+\c {Item}'s URL if the item was loaded from a local file or
+remotely; otherwise it returns the \c {item}'s containing
+component's URL (which might be an empty string).
+
+\target qml-SquishHook.containerFor-function
+\section2 Item SquishHook.containerFor(item)
+
+This function returns the container the given
+\c {item} of type \c {Item} is in (itself of
+type \c {Item}, e.g., a \c {ListView} or a
+\c {GridView}) which is normally also the
+\c {item}'s parent; otherwise it returns
+\c {null} if the \c {item} isn't in a
+container.
+
+You can implement your own version of this function in your QML
+extension, in which case for any given \c {item} you
+\e {must} return one of the following three values: An
+\c {Item} (possibly of your own custom type) which contains the
+given \c {item}. Or \c {null}, if you
+don't want the given \c {item} to have a container (in
+which case the view will be considered to be the
+\c {item}'s container). Or, the special value,
+\c {unhandled}, if you don't want to handle the given
+\c {item} (e.g., because it is a standard
+\c {Item} type that you want \SQUISH to handle), since
+\c {unhandled} tells \SQUISH to handle the
+\c {item} itself.
+
+\target qml-SquishHook.extraPropertiesFor-function
+\section2 StringList SquishHook.extraPropertiesFor(item)
+
+This function returns a list of the property \e {names}
+for the given \c {item} of type \c {Item} that
+should be taken into account when generating a \SQUISH object name for
+the \c {item}. (This function can be used to achieve
+the same kind of control over \SQUISH's naming as editing the Qt
+wrapper descriptor file—for which see, \l {rg-namingconfig}
+{Object Name Generation}—but with finer control possible since
+property names can be considered on a per-item basis, not just on a
+per-type basis.)
+
+You can implement your own version of this function in your QML
+extension, in which case for any given \c {item} you
+\e {must} return either: A list
+of property names (as an array of strings) whose values should be used
+to create the \SQUISH object name for the given
+\c {item}. Or, the special value,
+\c {unhandled}, if you don't want to handle the given
+\c {item} (e.g., because it is a standard
+\c {Item} type that you want \SQUISH to handle), since
+\c {unhandled} tells \SQUISH to handle the
+\c {item} itself.
+
+\target qml-SquishHook.isIgnored-function
+\section2 bool SquishHook.isIgnored(item)
+
+This function returns \c {false} if the given
+\c {item} of type \c {Item} should be taken
+notice of by \SQUISH — for example, visible and available for
+picking in the Spy and recorded.
+
+You can implement your own version of this function in your QML
+extension, in which case for any given \c {item} you
+\e {must} return one of the following three values: The
+value \c {false} if you want \SQUISH to take notice of the
+given \c {item}, or \c {true} if you want
+\SQUISH to ignore the \c {item}, or the special
+value, \c {unhandled}, if you don't want to handle the given
+\c {item} (e.g., because it is a standard
+\c {Item} type that you want \SQUISH to handle), since
+\c {unhandled} tells \SQUISH to handle the
+\c {item} itself.
+
+\target qml-SquishHook.isItemReady-function
+\section2 bool SquishHook.isItemReady(item)
+
+This function returns \c {true} if the given
+\c {item} of type \c {Item} is ready to be
+interacted with, that is, is visible, enabled, and is in a stable state
+(e.g., it is not being or about to be animated).
+
+You can implement your own version of this function in your QML
+extension, in which case for any given \c {item} you
+\e {must} return one of the following three values: The
+value \c {true} if the given \c {item} is
+ready for interaction, or \c {false} the
+\c {item} isn't ready, or the special value,
+\c {unhandled}, if you don't want to handle the given
+\c {item} (e.g., because it is a standard
+\c {Item} type that you want \SQUISH to handle), since
+\c {unhandled} tells \SQUISH to handle the
+\c {item} itself.
+
+\target qml-SquishHook.priority-property
+\section3 int SquishHook.priority
+
+This property holds a priority value for the QML extension and has a
+default value of 0. \SQUISH accesses QML extensions in priority order
+from highest to lowest.
+
+You can implement your own version of this property in your QML
+extension to give your extension a priority value higher than 0, e.g.,
+to increase its priority.
+
+\target qml-SquishHook.propertyFor-function
+\section2 String SquishHook.propertyFor(item, property)
+
+\important This function is \e {only} available in QtQuick 1.x QML Extensions.
+
+This function returns a property value (as a string) for the given
+\c {item} of type \c {Item}'s
+\c {property} (specified as a string).
+
+You can implement your own version of this function in your QML
+extension, in which case for any given \c {item} and
+\c {property} you \e {must} return
+either: A string property value, or the special value,
+\c {unhandled}, if you don't want to handle the given
+\c {item} (e.g., because it is a standard
+\c {Item} type that you want \SQUISH to handle), since
+\c {unhandled} tells \SQUISH to handle the
+\c {item} itself.
+
+Note that this function is \e {not} called when the
+\c {object.property("propertyName")}
+function is used inside a test script.
+
+\target qt-GestureBuilder-class
+\section2 GestureBuilder
+
+Objects of this type hold the touch strokes information needed to
+replay \l {qt-gesture-function} {gesture(objectOrName, touches)}.
+An instance of this class is returned by
+\l {qt-readGesture-function} {readGesture(gesture-file)}.
+Strokes are defined by screen coordinates points, pressure and
+touch size.
+
+\target qt-GestureBuilder-areaWidth-property
+\section3 int GestureBuilder.areaWidth
+
+The width of the area in which this gesture is defined. This will be
+the device or emulator screen width.
+
+\target qt-GestureBuilder-areaHeight-property
+\section3 int GestureBuilder.areaHeight
+
+The height of the area in which this gesture is defined. This will be
+the device or emulator screen height.
+
+All \l {qt-GestureBuilder-class} {GestureBuilder} methods listed in the
+\l {qt-GestureBuilder-create-functions} {Gesture creation} and
+\l {qt-GestureBuilder-manipulate-functions} {Gesture manipulation} section,
+return the \l {qt-GestureBuilder-class} {GestureBuilder} object
+itself, unless specified differently.
+
+\target qt-GestureBuilder-create-functions
+\section3 Gesture creation
+
+This section lists the methods for manually creating a
+\l {qt-GestureBuilder-class} {GestureBuilder} object.
+
+\section2 GestureBuilder(width, height, unit)
+
+\section2 GestureBuilder(xml)
+
+Two constructor functions for creating a
+\l {qt-GestureBuilder-class} {GestureBuilder} object. The
+\c {width} and \c {height} are
+the target screen size. The \c {unit} can be either
+0 or 1, meaning respectively in pixels or millimeters. The constants
+\c {GestureBuilder.Pixel} and
+\c {GestureBuilder.MilliMeter} can be used as well.
+
+The second constructor function constructs a
+\l {qt-GestureBuilder-class} {GestureBuilder} object by passing a
+string containing XML, which should be in the same
+format as the recorded gesture files.
+
+\section2 Object GestureBuilder.addStroke(x, y)
+
+\section2 Object GestureBuilder.addStroke(startTime, x, y)
+
+\section2 Object GestureBuilder.addStroke(startTime, x, y, pressure)
+
+\section2 Object GestureBuilder.addStroke(startTime, x, y, pressure, size)
+
+Starts a new stroke. The whole movement of one finger or pen from
+touch down to releasing the screen is called a stroke. The touch down
+coordinate is (\c {x}, \c {y}).
+For the non-first stroke, a time offset can be specified in milliseconds using
+the \c {startTime} argument. Strokes cannot be disjointed
+in time, at least one finger or pen has to be down during the whole gesture.
+The maximum simultaneous touches is device dependent
+(See \c {QTouchDevice::maximumTouchPoints()}).
+
+Finally, the \c {pressure} and
+\c {size} are relative messure values for
+respectively pen or finger pressure and size. These should be between
+0.0 and 1.0 and when omitted defaults to 0.25.
+
+\section2 Object GestureBuilder.curveTo(duration, controlX, controlY, endX, endy)
+
+\section2 Object GestureBuilder.curveTo(duration, control1X, control1Y, control2X, control2Y, endX, endy)
+
+Adds a bézier curve movement to the latest added stroke in
+\c {duration} milliseconds.
+The curve starts with the end coordinate of the last added movement or, if
+none added to the stroke, the stroke touch down coordinate. The end coordinate
+is specified with \c {endX} and
+\c{endY}. One or two so called control points
+can be used.
+
+\section2 Object GestureBuilder.lineTo(duration, endX, endy)
+
+Adds a line movement to the latest added stroke in
+\c {duration} milliseconds.
+The line starts with the end coordinate of the last added movement or, if none
+added to the stroke, the stroke touch down coordinate. The end coordinate is
+specified with \c {endX} and
+\c {endY}.
+
+\section2 Object GestureBuilder.build()
+
+Creates the gesture from the added strokes and movements. After calling this
+method, no strokes or movements can be added.
+
+\target qt-GestureBuilder-manipulate-functions
+\section3 Gesture manipulation
+
+\section2 Object GestureBuilder.accelerate(factor)
+
+Changes stroke speed given a factor. A factor between 0.0 and 1.0
+slows down the gesture, above 1.0 will speed it up.
+
+\section2 Object GestureBuilder.rotate(degrees)
+
+\section2 Object GestureBuilder.rotate(degrees, originX, originY)
+
+Rotates the strokes. The \c {degrees}
+is the agle in degrees in a counter clockwise direction.
+The \c {originX} and
+\c {originY} define
+the origin of the rotate operation. If omitted, the area center is
+taken as origin.
+
+\section2 Object GestureBuilder.scale(scale)
+
+\section2 Object GestureBuilder.scale(scaleX, scaleY)
+
+\target qt-GestureBuilder.scale-function
+\section2 Object GestureBuilder.scale(scaleX, scaleY, originX, originY)
+
+Changes the size of the strokes. The \c {scaleX}
+is the scale factor in the horizontal direction and
+\c {scaleY} in the vertical direction.
+The \c {originX} and
+\c {originY} define
+the origin of the scale operation. If omitted, the area center is
+taken as origin. When also \c {scaleY} is omitted, then
+the scaling is homogeneous in both directions.
+
+\target qt-GestureBuilder.translate-function
+\section2 Object GestureBuilder.translate(x, y)
+
+Moves the strokes. The \c {x} and
+\c {y} specifies the movement. A positive value for
+\c {x} moves the strokes to the right and a positive
+value for \c {y} moves the strokes downwards.
+*/

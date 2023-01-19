@@ -1,0 +1,17 @@
+# Basic Plugin Information
+plugin.sidekick.qdoc.QdocSideKickPlugin.activate=defer
+plugin.sidekick.qdoc.QdocSideKickPlugin.author=Dale Anson
+plugin.sidekick.qdoc.QdocSideKickPlugin.description=qdoc sidekick
+plugin.sidekick.qdoc.QdocSideKickPlugin.docs=docs/qdoc.html
+plugin.sidekick.qdoc.QdocSideKickPlugin.longdescription=description.html
+plugin.sidekick.qdoc.QdocSideKickPlugin.name=Qdoc
+plugin.sidekick.qdoc.QdocSideKickPlugin.usePluginHome=false
+plugin.sidekick.qdoc.QdocSideKickPlugin.version=1.0
+
+# Dependencies
+plugin.qdoc.Qdoc.depend.0=jedit 05.04.00.00
+plugin.qdoc.Qdoc.depend.1=jdk 11
+
+# set mode to 'qdoc' for this sidekick
+sidekick.parser.qdoc.label=qdoc
+mode.qdoc.sidekick.parser=qdoc
