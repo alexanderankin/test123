@@ -92,8 +92,10 @@ public class QdocSideKickParser extends SideKickParser {
             if (buffer.getLength() <= 0) {
                 return parsedData;
             }
-            // parse the buffer
             int lineCount = buffer.getLineCount();
+            // end of buffer location/position
+            Location eofLocation = new Location(lineCount - 1, buffer.getLineEndOffset(lineCount - 1));
+            SideKickPosition eofPosition = new SideKickPosition(buffer.getLineEndOffset(lineCount - 1));
             List<QdocNode> nodes = new ArrayList<QdocNode>();
             Location startLocation;
             SideKickPosition startPosition;
@@ -102,6 +104,7 @@ public class QdocSideKickParser extends SideKickParser {
             // doesn't enforce that, and doesn't require that there is a title node.
             QdocNode titleNode = null;
 
+            // parse the buffer
             for (int lineNumber = 0; lineNumber < lineCount; lineNumber++) {
                 String lineText = buffer.getLineText(lineNumber);
                 int index = lineText.indexOf("\\section");
@@ -120,8 +123,8 @@ public class QdocSideKickParser extends SideKickParser {
                     QdocNode node = new QdocNode(title);
                     node.setStartLocation(startLocation);
                     node.setStartPosition(startPosition);
-                    node.setEndLocation(new Location(lineNumber, buffer.getLineEndOffset(lineNumber)));
-                    node.setEndPosition(new SideKickPosition(buffer.getLineEndOffset(lineNumber)));
+                    node.setEndLocation(eofLocation);
+                    node.setEndPosition(eofPosition);
                     switch (section) {
                         case "\\title":
                             node.setIcon(null);
@@ -146,6 +149,26 @@ public class QdocSideKickParser extends SideKickParser {
                             break;
                     }
                     nodes.add(node);
+                }
+            }
+
+            // reset the end location/position of the nodes
+            for (int i = 0; i < nodes.size(); i++) {
+                QdocNode node = nodes.get(i);
+                // get the ordinal of the current node
+                int ordinal = node.getOrdinal();
+
+                // go down the list to find the next node with the same or smaller ordinal
+                for (int j = i + 1; j < nodes.size(); j++) {
+                    QdocNode nextNode = nodes.get(j);
+
+                    if (nextNode.getOrdinal() <= ordinal) {
+                        // set the end location/position of the current node to be the same as the 
+                        // start location/position of the next node.
+                        node.setEndLocation(nextNode.getStartLocation());
+                        node.setEndPosition(nextNode.getStartPosition());
+                        break;
+                    }
                 }
             }
 
@@ -208,20 +231,20 @@ public class QdocSideKickParser extends SideKickParser {
                     titleNode = new QdocNode(title);
                     titleNode.setStartLocation(startLocation);
                     titleNode.setStartPosition(startPosition);
-                    titleNode.setEndLocation(new Location(0,0));
+                    titleNode.setEndLocation(new Location(0, 0));    // TODO: set end to end of buffer
                     titleNode.setEndPosition(new SideKickPosition(0));
                 }
-                
                 // make a tree for sidekick out of the nodes
                 DefaultMutableTreeNode root = parsedData.root;
                 DefaultMutableTreeNode titleTreeNode = new DefaultMutableTreeNode(titleNode);
                 root.add(titleTreeNode);
-                
-                for (QdocNode node : deck) {
+
+                for ( QdocNode node : deck) {
                     DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(node);
                     titleTreeNode.add(treeNode);
+
                     if (node.hasChildren()) {
-                        addChildNodes(treeNode);   
+                        addChildNodes(treeNode);
                     }
                 }
             }
@@ -231,12 +254,14 @@ public class QdocSideKickParser extends SideKickParser {
         }
         return parsedData;
     }
-    
+
     private void addChildNodes(DefaultMutableTreeNode parent) {
-        QdocNode node = (QdocNode)parent.getUserObject();
-        for (QdocNode child : node.getChildren()) {
+        QdocNode node = (QdocNode) parent.getUserObject();
+
+        for ( QdocNode child : node.getChildren()) {
             DefaultMutableTreeNode childTreeNode = new DefaultMutableTreeNode(child);
             parent.add(childTreeNode);
+
             if (child.hasChildren()) {
                 addChildNodes(childTreeNode);
             }
