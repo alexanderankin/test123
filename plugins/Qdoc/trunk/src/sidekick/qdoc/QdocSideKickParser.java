@@ -102,6 +102,8 @@ public class QdocSideKickParser extends SideKickParser {
             int length;
             // there should only be one title node, but of course, the qdoc spec
             // doesn't enforce that, and doesn't require that there is a title node.
+            // Alan says there can be multiple titles, they should immediately follow
+            // a \page
             QdocNode titleNode = null;
 
             // parse the buffer
@@ -127,9 +129,12 @@ public class QdocSideKickParser extends SideKickParser {
                     node.setEndPosition(eofPosition);
                     switch (section) {
                         case "\\title":
-                            node.setIcon(null);
-                            node.setOrdinal(TITLE);
-                            titleNode = node;
+
+                            if (titleNode == null) {
+                                node.setIcon(null);
+                                node.setOrdinal(TITLE);
+                                titleNode = node;
+                            }
                             break;
                         case "\\section1":
                             node.setIcon(section1Icon);
@@ -163,7 +168,7 @@ public class QdocSideKickParser extends SideKickParser {
                     QdocNode nextNode = nodes.get(j);
 
                     if (nextNode.getOrdinal() <= ordinal) {
-                        // set the end location/position of the current node to be the same as the 
+                        // set the end location/position of the current node to be the same as the
                         // start location/position of the next node.
                         node.setEndLocation(nextNode.getStartLocation());
                         node.setEndPosition(nextNode.getStartPosition());
@@ -175,19 +180,26 @@ public class QdocSideKickParser extends SideKickParser {
             // arrange the parent/child relationship of the nodes
             if (nodes.size() > 0) {
                 Deque<QdocNode> deck = new ArrayDeque<QdocNode>();
+                QdocNode previous0 = null;
                 QdocNode previous1 = null;
                 QdocNode previous2 = null;
                 QdocNode previous3 = null;
 
                 for ( QdocNode node : nodes) {
                     if (node.getOrdinal() == TITLE) {
-                        // there should only be one title and it's already captured
+                        previous0 = node;
+                        deck.add(node);
                         continue;
                     }
 
                     if (node.getOrdinal() == SECTION1) {
+                        if (previous0 != null) {
+                            previous0.addChild(node);
+                        }
+                        else {
+                            deck.add(node);
+                        }
                         previous1 = node;
-                        deck.add(node);
                         continue;
                     }
 
@@ -231,17 +243,14 @@ public class QdocSideKickParser extends SideKickParser {
                     titleNode = new QdocNode(title);
                     titleNode.setStartLocation(startLocation);
                     titleNode.setStartPosition(startPosition);
-                    titleNode.setEndLocation(new Location(0, 0));    // TODO: set end to end of buffer
-                    titleNode.setEndPosition(new SideKickPosition(0));
+                    titleNode.setEndLocation(eofLocation);    
+                    titleNode.setEndPosition(eofPosition);
                 }
                 // make a tree for sidekick out of the nodes
                 DefaultMutableTreeNode root = parsedData.root;
-                DefaultMutableTreeNode titleTreeNode = new DefaultMutableTreeNode(titleNode);
-                root.add(titleTreeNode);
-
                 for ( QdocNode node : deck) {
                     DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(node);
-                    titleTreeNode.add(treeNode);
+                    root.add(treeNode);
 
                     if (node.hasChildren()) {
                         addChildNodes(treeNode);
