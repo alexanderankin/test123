@@ -4,7 +4,7 @@ plugin.sidekick.qdoc.QdocSideKickPlugin.author=Dale Anson
 plugin.sidekick.qdoc.QdocSideKickPlugin.description=qdoc sidekick
 plugin.sidekick.qdoc.QdocSideKickPlugin.docs=docs/qdoc.html
 plugin.sidekick.qdoc.QdocSideKickPlugin.longdescription=description.html
-plugin.sidekick.qdoc.QdocSideKickPlugin.name=Qdoc
+plugin.sidekick.qdoc.QdocSideKickPlugin.name=QDoc
 plugin.sidekick.qdoc.QdocSideKickPlugin.usePluginHome=false
 plugin.sidekick.qdoc.QdocSideKickPlugin.version=1.0
 
