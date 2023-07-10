@@ -16,7 +16,11 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.*;
 import org.gjt.sp.jedit.jEdit;
 
-// This is a newer parser based on Antlr and supports java 8 language. 
+/**
+ * This is the old Antlr parser for java 8 and below.
+ * @deprecated The new parser for Java 17 handles all versions of java code for Java 17 and below.
+ */
+@Deprecated
 public class Java8Beautifier extends Beautifier {
 
     private int bracketStyle = 1;    // JavaParser.ATTACHED;

@@ -9,7 +9,7 @@ plugin.beauty.BeautyPlugin.version=1.1
 plugin.beauty.BeautyPlugin.docs=docs/index.html
 plugin.beauty.BeautyPlugin.depend.0=jdk 11
 plugin.beauty.BeautyPlugin.depend.1=jedit 05.06.00.00
-plugin.beauty.BeautyPlugin.depend.2=plugin CommonControlsPlugin 1.7.4
+plugin.beauty.BeautyPlugin.depend.2=plugin CommonControlsPlugin 1.7.5
 plugin.beauty.BeautyPlugin.depend.3=plugin antlr.AntlrPlugin 4.10
 plugin.beauty.BeautyPlugin.usePluginHome=true
 

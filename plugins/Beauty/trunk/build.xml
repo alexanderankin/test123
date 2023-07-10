@@ -1,7 +1,5 @@
 <project name="Beauty" default="dist" basedir="." xmlns:if="ant:if" xmlns:unless="ant:unless">
-    <echo>${java.home}</echo>
     <!-- read build.props to override properties set below -->
-
     <property file="../build.properties"/>
     <property file="build.properties"/>
 

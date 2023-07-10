@@ -1,6 +1,5 @@
 package beauty.parsers;
 
-
 import java.util.*;
 
 import org.antlr.v4.runtime.*;
@@ -8,6 +7,7 @@ import org.antlr.v4.runtime.*;
 
 public class ErrorListener extends BaseErrorListener {
     private List<ParserException> errors = new ArrayList<ParserException>();
+
 
     public List<ParserException> getErrors() {
         return errors;
@@ -28,9 +28,12 @@ public class ErrorListener extends BaseErrorListener {
 
     /**
      * The antlr output is sometimes very verbose, so this method
-     * takes a long line as input, splits it into lines of no more than80 characters.
+     * takes a long line as input, splits it into lines of no more than 80 characters.
      */
     private String wrapLongLine(String s) {
+        if (s.length() <= 80) {
+            return s;
+        }
         StringTokenizer st = new StringTokenizer(s, " ");
         StringBuilder sb = new StringBuilder(s.length());
         sb.append('\n');    // it's a long line so start it on a new line
@@ -47,6 +50,4 @@ public class ErrorListener extends BaseErrorListener {
         }
         return sb.toString();
     }
-
-    
 }

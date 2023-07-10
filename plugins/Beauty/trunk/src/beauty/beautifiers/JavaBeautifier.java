@@ -8,7 +8,11 @@ import beauty.parsers.java.*;
 
 import org.gjt.sp.jedit.jEdit;
 
-// This is the old parser for java 7 and below, it uses the javacc parser.
+/**
+ * This is the old parser for java 7 and below, it uses the javacc parser.
+ * @deprecated The new parser for Java 17 handles all versions of java code for Java 17 and below.
+ */
+@Deprecated
 public class JavaBeautifier extends Beautifier {
 
     private static JavaParser parser = null;
