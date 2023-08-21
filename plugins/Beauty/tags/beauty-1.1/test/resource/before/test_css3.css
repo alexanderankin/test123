@@ -1,0 +1,35 @@
+
+li,p { background-color : lime }
+address { background-color: lime }
+* { color : lime }
+ul, p { color : red }
+*.t1 { color : lime }
+#foo { background-color : lime }
+p { background-color : red }
+
+p { background-color : red }
+p[title] { background-color : lime }
+
+address { background-color : red }
+address[title="foo"] { background-color : lime }
+span[title="a"] { background-color : red }
+
+p { background-color : red }
+p[class~="b"] { background-color : lime }
+address { background-color : red }
+address[title~="foo"] { background-color : lime }
+span[class~="b"] { background-color : red }
+
+p { background: lime; }
+[title~="hello world"] { background: red; }
+/* Section 6.3.1: Represents the att attribute whose value is a
+space-separated list of words, one of which is exactly "val". If this
+selector is used, the words in the value must not contain spaces
+(since they are separated by spaces). */
+
+p { background-color : red }
+p[lang|="en"] { background-color : lime }
+address { background-color : red }
+address[lang="fi"] { background-color : lime }
+span[lang|="fr"] { background-color : red }
+

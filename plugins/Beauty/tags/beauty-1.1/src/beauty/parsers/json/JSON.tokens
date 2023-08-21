@@ -1,0 +1,17 @@
+T__0=1
+T__1=2
+STRING=3
+NUMBER=4
+WS=5
+LBRACE=6
+RBRACE=7
+LSQUARE=8
+RSQUARE=9
+DQUOTE=10
+','=1
+':'=2
+'{'=6
+'}'=7
+'['=8
+']'=9
+'"'=10
