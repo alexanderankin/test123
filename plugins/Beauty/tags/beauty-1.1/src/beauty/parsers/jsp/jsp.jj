@@ -1,0 +1,1803 @@
+/* JSP Parser for PMD.
+ * It supports supports more-or-less well written JSP files.
+ * The JSP Document style is supported, except for inline DTD.
+ * The JSP Page style (<% ... %>) is supported.
+ * Java code is not parsed.
+ * Script code inside <script> ... </script> is not parsed. The tag body is 
+ * captured as a single token, which means the token image can be passed off to
+ * a javascript beautifier.
+ *
+ * DONE: check that code inside <style> ... </style> is not parsed. -- Need to
+ * to the same with <style> as with <script> so that the tag body is parsed as
+ * a single token, then the token image can be passed off to the css beautifier.
+ *
+ * Options:
+ * DONE: wrap attributes, but only if there is more than 1 attribute
+ * DONE: indent multi-line attribute
+ * DONE: space before slashend
+ * DONE: fix scriptlet indenting (pass to java line parser)
+ * DONE: fix script indenting (pass to javascript parser)
+ * DONE: fix style indenting (pass to css parser)
+ * DONE: currently removes all blank lines.  Need to collapse multiple blank lines
+ * into a single blank line.
+ * DONE: multi-line comments don't align with the opening comment tag, they are
+ * too far left.
+ * DONE: if a comment is the first item in the file, the following tag will always
+ * be on the same line as the end of the comment, e.g. --%> <%@ include
+ */
+
+options { 
+	UNICODE_INPUT=true;
+	IGNORE_CASE = true; 
+	STATIC = false; 
+	//DEBUG_PARSER=true;
+	//DEBUG_TOKEN_MANAGER=true;
+} 
+
+PARSER_BEGIN(JspParser)
+package beauty.parsers.jsp;
+
+import java.io.*;
+import java.util.*;
+
+import beauty.beautifiers.*;
+import beauty.parsers.ParserException;
+
+/** 
+ * JSP Parser for PMD.
+ * @author Pieter, Application Engineers NV/SA, http://www.ae.be
+ * @author Dale Anson, modifications for jEdit beautifier.
+ */
+public class JspParser {
+
+    Token t;
+    
+    // option to put a space before a closing />
+    boolean padSlashEnd = false;
+    
+    // option to put a space before a closing >
+    boolean padTagEnd = false;
+    
+    // option to wrap attributes.  Attributes are wrapped only if there is 
+    // more than one attribute.
+    boolean wrapAttributes = false;
+    
+    public void setPadSlashEnd(boolean b) {
+        padSlashEnd = b;   
+    }
+    
+    public void setPadTagEnd(boolean b) {
+        padTagEnd = b;   
+    }
+    
+    public void setWrapAttributes(boolean b) {
+        wrapAttributes = b;   
+    }
+    
+    public void setCollapseBlankLines(boolean b) {
+        token_source.collapseBlankLines = b;   
+    }
+
+    // shouldn't use this, a specific line separator should be set based on
+    // buffer settings.  Of course, it may be the same as what the buffer
+    // uses anyway.
+    String ls = System.getProperty("line.separator");
+
+    // one of these is inserted at every place in a line that qualifies as a
+    // good place to break a line if it needs wrapped.  You can't type one of
+    // these from the keyboard,
+    char wrapSep = '\u001c';
+
+    int indentWidth = 0;
+    int tabSize = 0;
+    boolean useSoftTabs = true;
+    
+    public void setIndentWidth(int i) {
+        token_source.setIndentWidth(i);
+        indentWidth = i;
+    }
+
+    public void setTabSize(int size) {
+        jj_input_stream.setTabSize(size);
+        tabSize = size;
+    }
+
+    public int getTabSize() {
+        // this really isn't necessary for this beautifier.  Setting the tab
+        // size on the input stream makes the token locations more accurate
+        // is all.
+        return jj_input_stream.getTabSize(0);
+    }
+
+    public void setUseSoftTabs(boolean b) {
+        token_source.setUseSoftTabs(b);
+        useSoftTabs = true;
+    }
+
+    public String getText() {
+        return token_source.getText();
+    }
+
+    public void resetTokenSource() {
+        token_source.reset();
+    }
+
+    private void add(Token t) {
+        token_source.add(t);
+    }
+
+    private void add(String s) {
+        token_source.add(s);
+    }
+
+    private void trim() {
+        token_source.trim();
+    }
+    
+    private void trimNL() {
+        token_source.trimNL();   
+    }
+    
+    private void trimNL(String s) {
+        token_source.trimNL(s);   
+    }
+
+    private void trimWhitespace() {
+        token_source.trimWhitespace();
+    }
+
+    private void write() {
+        token_source.write();
+    }
+
+    private void writeln() {
+        token_source.writeln();
+    }
+    
+    private void writePre(String s) {
+        token_source.writePre(s);
+    }
+    
+    /**
+     * All special tokens in this parser are whitespace tokens only.
+     * This method gathers all the special tokens preceeding the given
+     * token, removes all spaces and tabs, and collapses multiple
+     * line separators based on the <code>collapseBlankLines</code>
+     * setting.
+     */
+    private String getSpecial(Token token) {
+        if (token.specialToken == null) {
+            return "";   
+        }
+        StringBuilder sb = new StringBuilder();
+        Token special = token.specialToken;
+        while(special.specialToken != null) {
+            special = special.specialToken;
+        }
+        while (special != null) {
+            sb.append(special.image);
+            special = special.next;
+        }
+        String s = sb.toString();
+        s = s.replaceAll(" ", "");
+        s = s.replaceAll("\t", "");
+        StringTokenizer st = new StringTokenizer(s, ls, true);
+        int count = st.countTokens();
+        if (token_source.collapseBlankLines) {
+            count = Math.min(2, count);   
+        }
+        sb.setLength(0);
+        for (int i = 0; i < count; i++) {
+            sb.append(ls);
+        }
+        return sb.toString();
+    }
+
+    public void setLineSeparator(String le) {
+        ls = le;
+        token_source.setLineSeparator(le);
+    }
+    
+    public void parse() throws ParseException {
+        CompilationUnit();   
+    }
+    
+    public static void main(String args[]) {
+        JspParser parser;
+        if (args.length == 0) {
+            System.out.println("Jsp Parser:  Reading from standard input . . .");
+            parser = new JspParser(System.in);
+        } else{
+            if (args.length == 1) {
+                System.out.println("Jsp Parser:  Reading from file " + args[0] + " . . .");
+                try {
+                    parser = new JspParser(new java.io.FileInputStream(args[0]));
+                } catch (java.io.FileNotFoundException e) {
+                    System.out.println("Jsp Parser:  File " + args[0] + " not found.");
+                    return;
+                }
+            } else {
+                System.out.println("Jsp Parser:  Usage is one of:");
+                System.out.println("         java JspParser < inputfile");
+                System.out.println("OR");
+                System.out.println("         java JspParser inputfile");
+                return;
+            }
+        }
+
+        try {
+            parser.CompilationUnit();
+            System.out.println("Jsp Parser:  Java program parsed successfully.");
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+            System.out.println("Jsp Parser:  Encountered errors during parse.");
+        }
+    }
+}
+
+PARSER_END(JspParser)
+
+
+/** ******************************************************************** */
+/** *************************  JSP LEXICON  **************************** */
+/** ******************************************************************** */
+
+
+/* This JavaCC lexicon has the following states:
+ * - StartTagState : this is the state entered after the "<" of a tag, until a
+ *    non-whitespace is found.
+ *    This is only for tags, not for xml-comments, declarations, etc.
+ * - AfterTagState : this is the state entered after the closing ">" of a tag,
+ *    or xml-comment or declaration, until some non-whitespace is found.
+ * - CommentState : the state between "<!--" and "-->"
+ * - DeclarationState : the state between "<?" or "<!" and ">"
+ * - CDataState : the state between "<![DATA[" and "]]>"
+ * - InTagState : the state when inside a tag
+ * - AttrValueStatue : the state when starting an attribute value, before the starting single or double quote
+ * - DocTypeState : the state when inside a doctype declaration
+ * - ElExpressionState : the state when inside a ElExpression
+ * - DocTypeState : inside a document type declaration
+ * - DocTypeExternalIdState : inside an "external id" part of a dtd
+ * - AttrValueBetweenSingleQuotesState : inside an attribute that is surrounded by single quotes (')
+ * - AttrValueBetweenDoubleQuotesState : inside an attribute that is surrounded by double quotes (")
+ * - JspDirectiveState : inside a JSP directive not yet reaching the attributes of the directive
+ * - JspDirectiveAttributesState : inside the attributes part of a directive
+ * - JspScriptletState : inside a scriptlet <% ... %>
+ * - JspExpressionState : inside an expression <%= ... %>
+ * - JspDeclarationState : inside a declaration <%! ... %>
+ * - JspCommentState : inside a comment <%-- ... --%>
+ * - HtmlScriptContentState : inside an HTML script <script> ... </script> or a <style> ... </style>
+ */
+
+
+<*> TOKEN :
+{
+  <#ALPHA_CHAR: [
+       "\u0024",
+       "\u0041"-"\u005a",
+       "\u005f",
+       "\u0061"-"\u007a",
+       "\u00c0"-"\u00d6",
+       "\u00d8"-"\u00f6",
+       "\u00f8"-"\u00ff"
+      ] >
+| <#NUM_CHAR:   [
+       "\u0030"-"\u0039"
+      ] >
+| <#ALPHANUM_CHAR: ( <ALPHA_CHAR> | <NUM_CHAR> ) >
+| <#IDENTIFIER_CHAR: ( <ALPHANUM_CHAR> | [ "_", "-", ".", ":" ] ) >
+| <#IDENTIFIER: <ALPHA_CHAR> (<IDENTIFIER_CHAR>)* >
+| <#XMLNAME: (<ALPHA_CHAR> | "_" | ":") (<IDENTIFIER_CHAR>)* >
+| <#QUOTED_STRING_NO_BREAKS: ( "'" ( ~["'", "\r", "\n"] )* "'" ) 
+                    | ( "\"" ( ~["\"", "\r", "\n"] )* "\"" ) >
+| <#QUOTED_STRING: ( "'" ( ~["'"] )* "'" ) | ( "\"" ( ~["\""] )* "\"" ) >
+| <#WHITESPACE: ( " " | "\t" | "\n" | "\r" ) >
+| <#NEWLINE:    ( "\r\n" | "\r" | "\n" ) >
+| <#QUOTE:      ( "'" | "\"" )>
+| <#NO_WHITESPACE_OR_LT_OR_DOLLAR: (~[" ", "\t", "\n", "\r", "<", "$"])>
+| <#NO_LT_OR_DOLLAR: (~["<", "$"])>
+| <#DOLLAR: ("$")>
+| <#NO_OPENBRACE_OR_LT: (~["<", "{"]) >
+| <#TEXT_IN_EL: (~["}", "'", "\""])+ >
+| <#EL_ESCAPE: ("\\${" | "\\#{") >
+
+	// anything but --%>
+| <#NO_JSP_COMMENT_END: (~["-"] | "-" ~["-"] | "--" ~["%"] | "--%" ~[">"])+ > 
+	// anything but -->
+| <#NO_HTML_COMMENT_END: (~["-"] | "-" ~["-"] | "--" ~[">"] )+ > 
+    // anything but %>
+| <#NO_JSP_TAG_END: ( ~["%"] | ("%" ~[">"]) )+ >
+}
+
+<DEFAULT> SPECIAL_TOKEN :
+{
+    < (<WHITESPACE>)+ >
+}
+
+<JspDirectiveState, JspDirectiveAttributesState> SKIP :
+{
+    < (<WHITESPACE>)+ > 
+}
+
+<AttrValueState, InTagState> SPECIAL_TOKEN :
+{
+    < (<WHITESPACE>)+ > 
+}
+
+<AfterTagState> SPECIAL_TOKEN :
+{
+    < (<WHITESPACE>)+ > 
+}
+
+<DEFAULT, AfterTagState> TOKEN : 
+{
+  <TAG_START:      			"<"       	> 	: StartTagState
+| <ENDTAG_START:   			"</"      	> 	: StartTagState
+| <COMMENT_START:  			"<!--"    	> 	: CommentState
+| <DECL_START:     			"<?"	  	>	: StartTagState
+| <DOCTYPE_DECL_START: 		"<!DOCTYPE" >	: DocTypeState
+| <CDATA_START:    			"<![CDATA[" >   : CDataState
+| <JSP_COMMENT_START:		"<%--" 		>   : JspCommentState
+| <JSP_DECLARATION_START: 	"<%!" 		>   : JspDeclarationState
+| <JSP_EXPRESSION_START: 	"<%=" 		>   : JspExpressionState
+| <JSP_SCRIPTLET_START:		"<%" 		>	: JspScriptletState
+| <JSP_DIRECTIVE_START:		"<%@"		> 	: JspDirectiveState
+}
+
+<AfterTagState> TOKEN :
+{
+	<EL_EXPRESSION: "${" (<QUOTED_STRING> | <TEXT_IN_EL>)* "}" >
+	|	<UNPARSED_TEXT: (<NO_LT_OR_DOLLAR>|<DOLLAR>(~["{"])|<EL_ESCAPE>)+ >
+}
+
+<JspDirectiveState> TOKEN :
+{
+	<JSP_DIRECTIVE_NAME: <IDENTIFIER> > : JspDirectiveAttributesState
+}
+
+<JspDirectiveAttributesState> TOKEN :
+{
+	<JSP_DIRECTIVE_ATTRIBUTE_NAME: 		<IDENTIFIER> >
+|	<JSP_DIRECTIVE_ATTRIBUTE_EQUALS: 	"=" >
+|	<JSP_DIRECTIVE_ATTRIBUTE_VALUE: 	<QUOTED_STRING> >
+|	<JSP_DIRECTIVE_END: 				"%>" > : AfterTagState
+}
+
+<JspScriptletState> TOKEN :
+{
+	<JSP_SCRIPTLET_END: "%>" > : AfterTagState
+|	<JSP_SCRIPTLET: <NO_JSP_TAG_END> >
+}
+
+<JspExpressionState> TOKEN :
+{
+	<JSP_EXPRESSION_END: "%>" > : AfterTagState
+|	<JSP_EXPRESSION: <NO_JSP_TAG_END> >
+}
+
+<JspDeclarationState> TOKEN :
+{
+	<JSP_DECLARATION_END: "%>" > : AfterTagState
+|	<JSP_DECLARATION: <NO_JSP_TAG_END> >
+}
+
+<JspCommentState> TOKEN : 
+{
+	<JSP_COMMENT_END: "--%>" > : AfterTagState
+|	<JSP_COMMENT_CONTENT: <NO_JSP_COMMENT_END> >
+}
+
+<DocTypeState, DocTypeExternalIdState> TOKEN : 
+{
+	<WHITESPACES: (<WHITESPACE>)+ >
+}
+
+<DocTypeState> TOKEN:
+{
+	<NAME: (<XMLNAME>) > : DocTypeExternalIdState
+}
+
+<DocTypeExternalIdState> TOKEN:
+{
+	<PUBLIC: "PUBLIC">
+|	<SYSTEM: "SYSTEM">
+|	<DOCTYPE_DECL_END: ">" > : AfterTagState
+|	<QUOTED_LITERAL: (<QUOTED_STRING>) >
+}
+
+
+<CDataState> TOKEN :
+{
+	<UNPARSED: 		(~[])  >
+  | <CDATA_END:		("]]>") > : AfterTagState
+}
+
+<StartTagState> TOKEN :
+{
+  <TAG_NAME: <IDENTIFIER> > : InTagState
+| <LST_ERROR: ~[]>          : DEFAULT
+}
+
+<InTagState> TOKEN :
+{
+  <ATTR_NAME: <IDENTIFIER> >
+| <TAG_END: ">" >                       : AfterTagState
+| <DECL_END: ("?>" | "!>") >            : AfterTagState
+| <TAG_SLASHEND: "/>" >                 : AfterTagState
+| <ATTR_EQ: "=" >                       : AttrValueState
+| <IN_TAG_ERROR: ~[]>
+}
+
+<AttrValueState> TOKEN :
+{
+	<SINGLE_QUOTE: "'"> : AttrValueBetweenSingleQuotesState
+|	<DOUBLE_QUOTE: "\""> : AttrValueBetweenDoubleQuotesState
+}
+
+<AttrValueBetweenSingleQuotesState, AttrValueBetweenDoubleQuotesState> TOKEN:
+{
+	<EL_EXPRESSION_IN_ATTRIBUTE: "${" (<QUOTED_STRING> | <TEXT_IN_EL>)* "}" >
+|	<VALUE_BINDING_IN_ATTRIBUTE: "#{" (<QUOTED_STRING> | <TEXT_IN_EL>)* "}" >
+|	<JSP_EXPRESSION_IN_ATTRIBUTE: "<%=" <NO_JSP_TAG_END> "%>" >
+}
+
+<AttrValueBetweenSingleQuotesState> TOKEN :
+{
+	<ENDING_SINGLE_QUOTE: "'"> : InTagState
+|	<UNPARSED_TEXT_NO_SINGLE_QUOTES: 
+		( (~["$", "#", "'"]) | (["$", "#"] ~["{", "'"]) | <EL_ESCAPE> )+ >
+|	<DOLLAR_OR_HASH_SINGLE_QUOTE: ["$", "#"] "'" > : InTagState
+}
+
+<AttrValueBetweenDoubleQuotesState> TOKEN :
+{
+	<ENDING_DOUBLE_QUOTE: "\""> : InTagState
+|	<UNPARSED_TEXT_NO_DOUBLE_QUOTES: 
+		( (~["$", "#", "\""]) | (["$", "#"] ~["{", "\""]) | <EL_ESCAPE> )+ >
+|	<DOLLAR_OR_HASH_DOUBLE_QUOTE: ["$", "#"] "\"" > : InTagState
+}
+
+<CommentState> TOKEN : 
+{
+  < COMMENT_END:  ("--" (" ")* ">" | "->") > : AfterTagState 
+| < COMMENT_TEXT: <NO_HTML_COMMENT_END> >
+}
+
+<HtmlScriptContentState> TOKEN :
+{
+	<HTML_SCRIPT_CONTENT: (~[]) >
+	| <HTML_SCRIPT_END_TAG : "</script" | "</Script" | "</SCRIPT">
+	{
+		// We've done a custom lookahead for the closing </script> and found it.
+		// Put it back into the input stream, so it can be processed normally.
+		input_stream.backup(8);
+		image.setLength(image.length() - 8); // kill the "</script"
+		matchedToken.image = image.toString();
+	} : AfterTagState
+}
+
+<HtmlStyleContentState> TOKEN :
+{
+	<HTML_STYLE_CONTENT: (~[]) >
+	| <HTML_STYLE_END_TAG : "</style" | "</Style" | "</STYLE">
+	{
+		// We've done a custom lookahead for the closing </style> and found it.
+		// Put it back into the input stream, so it can be processed normally.
+		input_stream.backup(7);
+		image.setLength(image.length() - 7); // kill the "</style"
+		matchedToken.image = image.toString();
+	} : AfterTagState
+}
+
+// Handle <pre> tag so tag body is not altered.
+<PreTagContentState> TOKEN :
+{
+	<PRE_TAG_CONTENT: (~[]) >
+	| <PRE_TAG_END_TAG : "</pre" | "</Pre" | "</PRE">
+	{
+		// We've done a custom lookahead for the closing </pre> and found it.
+		// Put it back into the input stream, so it can be processed normally.
+		input_stream.backup(5);
+		image.setLength(image.length() - 5); // kill the "</pre"
+		matchedToken.image = image.toString();
+	} : AfterTagState
+}
+
+/** ******************************************************************** */
+/** *************************  JSP GRAMMAR  **************************** */
+/** ******************************************************************** */
+
+/**
+ * Main entry point
+ */
+void CompilationUnit() :
+{}
+{
+  Prolog()
+  
+  Content() <EOF> 
+  
+  {
+      trimWhitespace();
+      write();   
+  }
+}
+
+/**
+ * The optional prolog of a JSP, including (xml) declarations and DTD.
+ */
+void Prolog() :
+{}
+{
+	(
+    	LOOKAHEAD( ( CommentTag() | JspComment() )* 	Declaration() )
+    	( CommentTag() | JspComment() )*
+	  	Declaration()
+	)?
+	
+    (
+    	LOOKAHEAD( ( CommentTag() | JspComment() )* 	DoctypeDeclaration() )
+    	( CommentTag() | JspComment() )*
+	    DoctypeDeclaration()
+	)?
+}
+
+/**
+ * Everything between a start-tag and the corresponding end-tag of an element.
+ */
+void Content() :
+{}
+{
+	( Text() | ContentElementPossiblyWithText()	)
+	( ContentElementPossiblyWithText() )*
+}
+
+/**
+ * A single (non-text) element that can occur between a start- and end-tag of an element.
+ * Possibly followed by text.
+ */
+void ContentElementPossiblyWithText() :
+{}
+{
+	( 
+		CommentTag() 
+	  |	Element() 
+	  | CData() 
+	  | JspComment() 
+	  | JspDeclaration() 
+	  | JspExpression() 
+	  | JspScriptlet()
+	  | JspDirective()
+	)
+	( Text() )?
+}
+
+// <%@
+void JspDirective() :
+{ }
+{
+	t=<JSP_DIRECTIVE_START> 
+	{ 
+	    writePre(getSpecial(t));
+	    add(t); 
+	} 
+	t=<JSP_DIRECTIVE_NAME> { trim(); add(" "); add(t); add(" "); }  
+	
+	(
+		JspDirectiveAttributes()
+	)
+	t=<JSP_DIRECTIVE_END> { trim(); add(t); write(); } 
+}
+
+void JspDirectiveAttributes() : 
+{
+    boolean haveAttrs = false;
+}
+{
+    (
+        haveAttrs=JspDirectiveAttribute() 
+        {
+            if (haveAttrs) {
+                add(" ");   
+            }
+        }
+    )*   
+}
+
+boolean JspDirectiveAttribute() : 
+{ 
+    boolean added = false;
+}
+{
+	t=<JSP_DIRECTIVE_ATTRIBUTE_NAME> { add(t); added=true; }  
+	t=<JSP_DIRECTIVE_ATTRIBUTE_EQUALS> { add(t); } 
+	t=<JSP_DIRECTIVE_ATTRIBUTE_VALUE> 
+	{ 
+	    String s = t.image;
+	    String[] parts = s.split(",");
+	    if (parts.length > 1) {
+	        for (int i = 0; i < parts.length; i++) {
+	            String part = parts[i].trim();
+	            if (i == 0) {
+	                add(part + "," + ls);
+	            }
+	            else if (i == parts.length - 1) {
+	                add(token_source.indent + part + ls);
+	            }
+	            else {
+	                add(token_source.indent + part + "," + ls);
+	            }
+	        }
+	    }
+	    else {
+	        add(s);
+	    }
+	} 
+	{
+	     return added;   
+	}
+}
+
+void JspScriptlet() :
+{
+    Token start;
+    Token content;
+    Token end;
+}
+{
+	start=<JSP_SCRIPTLET_START> 
+	content=<JSP_SCRIPTLET> 
+	end=<JSP_SCRIPTLET_END> 
+	
+	{
+	     String ws = getSpecial(start);
+	     String java = null;
+	     boolean multiline = false;
+	     try {
+            if (content != null && content.image.trim().length() > 0) {
+                Beautifier beautifier = new JavaLineBeautifier();
+                beautifier.setInitialIndentLevel(token_source.level);
+                java = beautifier.beautify(content.image.trim());
+                if (java == null || java.length() == 0) {
+                   return; // no need to include empty scriptlet tags   
+                }
+                multiline = java.indexOf(ls) > 0;
+            }
+         }
+         catch(ParserException pe) {
+             throw new ParseException(pe.getMessage());
+         }
+         
+	     if (ws != null && ws.length() > 0) {
+	         writePre(ws);
+	     }
+	     else if (multiline) {
+	         writeln();   
+	     }
+	     
+         add(start);
+         if (multiline) {
+             writeln();
+             ++token_source.level;
+         }
+         
+         // TODO: adjust leading whitespace:
+         // find line with shortest amount of whitespace, minding tabs
+         // subtract that amount from all lines
+         // add indent to all lines
+         if (multiline) {
+             writePre(java);
+             --token_source.level;
+         }
+         else {
+            add(" ");
+            add(java);
+            add(" ");   
+         }
+	     add(end);
+	     
+	     if (multiline) {
+	         writeln();   
+	     }
+	     else {
+	         write();
+	     }
+	}
+}
+
+void JspExpression() :
+{ }
+{
+	t=<JSP_EXPRESSION_START> 
+	    { 
+	        writePre(getSpecial(t));
+	        add(t); 
+	    } 
+	t=<JSP_EXPRESSION> { add(t); } 
+	t=<JSP_EXPRESSION_END> { add(t); writeln(); } 
+}
+
+void JspDeclaration() :
+{ }
+{
+	t=<JSP_DECLARATION_START> 
+	    { 
+	        writePre(getSpecial(t));
+	        add(t); 
+	    } 
+	t=<JSP_DECLARATION> { add(t); } 
+	t=<JSP_DECLARATION_END> { add(t); writeln(); } 
+}
+
+void JspComment() :
+{
+    List<String> lines = new ArrayList<String>();
+}
+{
+	t=<JSP_COMMENT_START> 
+	    { 
+	        writePre(getSpecial(t));
+	        lines.add(t.image); 
+	    } 
+	t=<JSP_COMMENT_CONTENT> 
+	{ 
+	    String s = t.image.trim();
+	    if (token_source.collapseBlankLines) {
+            String lsep;
+            if ("\r".equals(ls)) {
+                lsep = "\\r";
+            }
+            else if ("\r\n".equals(ls)) {
+                lsep = "\\r\\n";
+            }
+            else {
+                lsep = "\\n";
+            }
+            String regex = "(([ ]|[\\t])*(" + lsep + ")){2,}";
+            s = s.replaceAll(regex, ls + ls);
+        }
+        String[] parts = s.split(ls);
+        for (String line : parts) {
+            lines.add(line);
+        }
+	} 
+	t=<JSP_COMMENT_END> 
+	{ 
+        if (lines.size() > 2 && !lines.get(lines.size() - 1).trim().isEmpty()) {
+          lines.add(token_source.indent);   
+        }
+	    lines.add(t.image);
+	    StringBuilder sb = new StringBuilder();
+	    switch(lines.size()) {
+            case 0:
+            case 1:
+                return;
+            case 2:
+                // empty comment
+                sb.append(lines.get(0));
+                sb.append(" ");
+                sb.append(lines.get(1));
+                add(sb.toString());
+                write();
+                break;
+            case 3:
+                // single line comment
+                sb.append(lines.get(0));
+                sb.append(" ");
+                sb.append(lines.get(1));
+                sb.append(" ");
+                sb.append(lines.get(2));
+                add(sb.toString());
+                write();
+                break;
+            default:
+                // multi-line comment
+                add(lines.get(0));
+                writeln();
+                ++token_source.level;
+                for (int i = 1; i < lines.size() - 2; i++) {
+                    add(lines.get(i));
+                    writeln();
+                }
+                --token_source.level;
+                add(lines.get(lines.size() - 1));
+                write();
+	    }
+	} 
+}
+
+/**
+ * This production groups all characters between two tags, where
+ * tag is an xml-tag "<...>" or a jsp-page-tag "<%...%>" or CDATA "<![CDATA[...]]>".
+ * Text consists of unparsed text and/or Expression Language expressions.
+ */
+void Text() :
+{
+}
+{
+	(	
+	    UnparsedText()
+	  |	ElExpression()
+	)+
+}
+
+void UnparsedText() :
+{ }
+{
+    t=<UNPARSED_TEXT> 
+        { 
+            // unparsed text will contain all whitespace, regardless of the 
+            // current lexing state, so need to deal with it here.
+            String s = t.image;
+
+            if (token_source.collapseBlankLines) {
+                String lsep;
+                if ("\r".equals(ls)) {
+                    lsep = "\\r";
+                }
+                else if ("\r\n".equals(ls)) {
+                    lsep = "\\r\\n";
+                }
+                else {
+                    lsep = "\\n";
+                }
+                String regex = "(([ ]|[\\t])*(" + lsep + ")){2,}";
+                s = s.replaceAll(regex, ls + ls);
+            }
+
+            StringTokenizer st = new StringTokenizer(s, ls, true);
+            while(st.hasMoreTokens()) {
+                String token = st.nextToken();
+                if (token.equals(ls)) {
+                    writeln();   
+                }
+                else {
+                    add(token);    
+                }
+            }
+        } 
+}
+
+/**
+ * Text that contains no single quotes, and that does not contain the start
+ * of a EL expression or value binding.
+ */
+void UnparsedTextNoSingleQuotes() : 
+{ }
+{
+	t=<UNPARSED_TEXT_NO_SINGLE_QUOTES>  { add(t); } 
+}
+
+/**
+ * Text that contains no double quotes, and that does not contain the start
+ * of a EL expression or value binding.
+ */
+void UnparsedTextNoDoubleQuotes() : 
+{ }
+{
+	t=<UNPARSED_TEXT_NO_DOUBLE_QUOTES>  { add(t); } 
+}
+
+/**
+ * An EL expression, not within an attribute value.
+ */
+void ElExpression() :
+{ }
+{
+	t=<EL_EXPRESSION>  
+	{ 
+	    add(t); 
+	} 
+}
+
+void ValueBindingInAttribute() :
+{ }
+{
+	t=<VALUE_BINDING_IN_ATTRIBUTE>  { add(t); } 
+}
+
+void ElExpressionInAttribute() :
+{ }
+{
+	t=<EL_EXPRESSION_IN_ATTRIBUTE>  { add(t); } 
+}
+
+void CData() :
+{
+}
+{
+	t=<CDATA_START> 
+	    { 
+	        writePre(getSpecial(t));
+            add(t); 
+        }  
+    ( t=<UNPARSED>  { add(t); }  )* 
+    t=<CDATA_END> { add(t); } 
+}
+
+/**
+ * A XML element, either with a single empty tag, or with a starting and closing tag
+ * with optional contained content.
+ */
+void Element() :
+{
+	Token startTagName;
+	Token endTagName;
+	String tagName;
+	boolean inPreTag = false;
+}
+{
+    t=<TAG_START>  
+        { 
+            String s = getSpecial(t);   // s will have only line separators or be empty
+            // the getText check handles the case of the first line in the file, without
+            // the check, a blank line will be inserted.
+            if (!s.contains(ls) && getText().length() > 0) {
+                trimNL();
+                writeln();   
+            }
+            else {
+                writePre(s);
+            }
+            add(t); 
+        } 
+    startTagName = <TAG_NAME> { tagName = startTagName.image; add(startTagName); }
+    (Attributes())
+    ( 
+    	(t=<TAG_END> 
+    		{
+    		    trimWhitespace();
+    		    if (padTagEnd) {
+    		      add(" ");   
+    		    }
+    		    add(t);
+    		    write();
+    		    ++token_source.level;
+    		    
+		    	// Content in a <script> element needs special treatment (like a comment or CDataSection).
+		    	// Tell the TokenManager to start looking for the body of a script element.  In this
+		    	// state all text will be consumed by the next token up to the closing </script> tag.
+		    	// This is a context sensitive switch for the token manager, not something one can
+		    	// express using normal JavaCC syntax.  Hence the hoop jumping.
+				if ("script".equalsIgnoreCase(startTagName.image)) {
+				    writeln();
+					token_source.SwitchTo(HtmlScriptContentState);
+				}
+				else if ("style".equalsIgnoreCase(startTagName.image)) {
+				    writeln();
+					token_source.SwitchTo(HtmlStyleContentState);
+				}
+				else if ("pre".equalsIgnoreCase(startTagName.image)) {
+				    token_source.SwitchTo(PreTagContentState);
+				    inPreTag = true;
+				    trimNL();
+				}
+    		}
+    	
+   		(HtmlScript() | HtmlStyle() | PreTag() | Content())?
+    	
+   		t=<ENDTAG_START>  
+   		   { 
+   		       writePre(getSpecial(t));
+   		       --token_source.level; 
+   		       add(t); 
+   		   } 
+    	endTagName = <TAG_NAME> 
+    		{ 
+    		    add(endTagName);
+    			if (! tagName.equalsIgnoreCase(endTagName.image)) {
+    			    throw new ParseException("Mismatch end tag: start tag '" + tagName + "' at " + 
+    			        startTagName.beginLine + ":" + startTagName.beginColumn + 
+    			        " does not match end tag '" + endTagName + "' at " +
+    			        endTagName.beginLine + ":" + endTagName.beginColumn);
+    			}
+    		}
+    	t=<TAG_END>
+            { 
+               trimWhitespace(); 
+               if (padTagEnd) {
+                    add(" ");   
+               }
+               add(t); 
+               //writeln();
+               write();
+            } 
+    	)
+    	
+     	| 
+     	
+     	(t=<TAG_SLASHEND> 
+            { 
+              trimWhitespace();
+              if (padSlashEnd) {
+                add(" ");   
+              }
+              add(t);
+              //writeln();
+              write();
+            }  
+     	)
+    )
+}
+
+void Attributes() :
+{
+    boolean first = true;
+}
+{
+    (
+        Attribute(wrapAttributes && !first)
+        {
+            first = false;   
+            add(" ");
+        }
+    )*
+    {
+        trimWhitespace();
+        write();
+    }
+}
+
+void Attribute(boolean onNextLine) : 
+{
+}
+
+{
+  t=<ATTR_NAME> 
+  { 
+      // there is always whitespace in front of an attribute, either the
+      // attribute starts on a new line or it needs a space between the
+      // attribute and the previous token.
+      if (onNextLine) {
+        writeln();
+        token_source.level += 2;
+      }
+      else {
+        add(" ");   
+      }
+      
+      add(t); 
+      
+  } 
+  (
+  	t=<ATTR_EQ>  { add(t); } 
+  	AttributeValue()
+  )
+  {
+      //write();   
+      if (onNextLine) {
+          token_source.level -= 2;
+      }
+  }
+}
+
+/**
+ * The value of an attribute of an element.
+ * EL expressions, JSF value bindings, and JSP expressions
+ * are parsed as sub-nodes of the AttributeValue node.
+ */
+void AttributeValue() : 
+{
+}
+{
+  	(
+	  	( 	t=<DOUBLE_QUOTE> { add(t); } 
+		  	( (	UnparsedTextNoDoubleQuotes() 
+			  |	QuoteIndependentAttributeValueContent()
+			) )*
+			( 	t=<ENDING_DOUBLE_QUOTE>  { add(t); } 
+			  |	t=<DOLLAR_OR_HASH_DOUBLE_QUOTE> { add(t); } 
+			) 
+		)
+		|
+	  	( 	t=<SINGLE_QUOTE> { add(t); } 
+		  	( ( UnparsedTextNoSingleQuotes()
+			  |	QuoteIndependentAttributeValueContent()
+			) )*
+			( 	t=<ENDING_SINGLE_QUOTE>  { add(t); } 
+			  | t=<DOLLAR_OR_HASH_SINGLE_QUOTE> { add(t); } 
+			 ) 
+		)
+	)
+}
+
+/**
+ * Partial content of an attribute value that can contain all quotes.
+ * This groups EL expressions, value bindings, and JSP expressions.
+ */
+void QuoteIndependentAttributeValueContent() :
+{ }
+{
+	(	ElExpressionInAttribute()
+	| 	ValueBindingInAttribute()
+  	| 	JspExpressionInAttribute()
+	)
+}
+
+void JspExpressionInAttribute() : 
+{ }
+{
+	t=<JSP_EXPRESSION_IN_ATTRIBUTE>  { add(t); } 
+}
+
+void CommentTag() :
+{
+    List<String> lines = new ArrayList<String>();
+}
+{
+  t=<COMMENT_START> 
+    { 
+        writePre(getSpecial(t));
+        lines.add(t.image); 
+    } 
+  ( t=<COMMENT_TEXT> 
+      { 
+	    String s = t.image;
+	    String[] parts = s.split(ls);
+	    for (String line : parts) {
+	        lines.add(line);
+	    }
+      }  
+  ) 
+  t=<COMMENT_END> 
+  { 
+        if (lines.size() > 2 && !lines.get(lines.size() - 1).trim().isEmpty()) {
+          lines.add(token_source.indent);   
+        }
+	    lines.add(t.image);
+	    StringBuilder sb = new StringBuilder();
+	    switch(lines.size()) {
+            case 0:
+            case 1:
+                return;
+            case 2:
+                // empty comment
+                sb.append(lines.get(0));
+                sb.append(" ");
+                sb.append(lines.get(1));
+                add(sb.toString());
+                write();
+                break;
+            case 3:
+                // have start tag, one line of text, and end tag, so put these all on one line
+                sb.append(lines.get(0));
+                sb.append(" ");
+                sb.append(lines.get(1));
+                sb.append(" ");
+                sb.append(lines.get(2));
+                add(sb.toString());
+                write();
+                break;
+            default:
+                // multiple line comment
+                add(lines.get(0));
+                write();
+                ++token_source.level;
+                for (int i = 1; i < lines.size() - 2; i++) {
+                    add(lines.get(i));
+                    writeln();
+                }
+                --token_source.level;
+                add(lines.get(lines.size() - 1));
+                write();
+	    }
+  } 
+}
+  
+void Declaration() :
+{ }
+{
+  t=<DECL_START>  
+    { 
+        writePre(getSpecial(t));
+        add(t); 
+    } 
+  (Attribute(false))* 
+  t=<DECL_END> { add(t); } 
+}
+
+void DoctypeDeclaration() :
+{ }
+{
+	t=<DOCTYPE_DECL_START> { add(t); } 
+	 t=<WHITESPACES> { add(t); } 
+	 t=<NAME> { add(t); } 
+	 (t=<WHITESPACES> { add(t); } )?
+	 (DoctypeExternalId() 	 (t=<WHITESPACES>  { add(t); } )?)? 
+ 	t=<DOCTYPE_DECL_END> { add(t); } 
+}
+
+void DoctypeExternalId() :
+{
+}
+{
+		(	t=<SYSTEM> { add(t); } 
+			t=<WHITESPACES> { add(t); }  
+			t=<QUOTED_LITERAL> { add(t); }  
+		)  
+	| 	    
+		(	t=<PUBLIC> { add(t); } 
+			t=<WHITESPACES> { add(t); }  
+			t=<QUOTED_LITERAL> { add(t); }  
+			t=<WHITESPACES> { add(t); }  
+			t=<QUOTED_LITERAL> { add(t); }  
+		)
+}
+
+// Handle <pre> tag content and end tag.
+void PreTag() :
+{
+    StringBuilder sb = new StringBuilder();
+}
+{
+    (
+        t=<PRE_TAG_CONTENT> 
+        { 
+            sb.append(t.image); 
+        } 
+    )*
+    t=<PRE_TAG_END_TAG> 
+    { 
+        writePre(sb.toString());
+    }
+}
+
+void HtmlScript() :
+{
+    Token scriptToken = null;
+    Token endToken = null;
+    StringBuilder script = new StringBuilder();
+}
+{
+	(scriptToken=<HTML_SCRIPT_CONTENT> 
+	    { 
+	        if (scriptToken != null) {
+	            script.append(scriptToken.image);   
+	        }
+	    } 
+	)*
+	endToken=<HTML_SCRIPT_END_TAG>
+	{
+        try {
+            if (script.length() > 0) {
+                Beautifier beautifier = new DefaultBeautifier("javascript");
+                beautifier.setInitialIndentLevel(token_source.level);
+                String js = beautifier.beautify(script.toString().trim());
+                writePre(js);
+            }
+            else if (scriptToken != null) {
+                add(scriptToken);   
+            }
+        }
+        catch(ParserException pe) {
+            throw new ParseException(pe.getMessage());
+        }
+        if (endToken != null) {
+            add(endToken);   
+        }
+	}
+}
+
+void HtmlStyle() :
+{
+    Token styleToken = null;
+    Token endToken = null;
+    StringBuilder style = new StringBuilder();
+}
+{
+    (styleToken=<HTML_STYLE_CONTENT> 
+        {  
+            // have the css beautifier clean up the contents of a style block
+            if (styleToken != null) {
+                style.append(styleToken.image);
+            }
+        } 
+    )*
+    endToken=<HTML_STYLE_END_TAG>
+	{
+	    String ws = getSpecial(styleToken);
+	    boolean multiline = false;
+        try {
+            if (style.length() > 0) {
+                Beautifier beautifier = new CSSBeautifier();
+                beautifier.setInitialIndentLevel(token_source.level);
+                String css = beautifier.beautify(style.toString().trim());
+                if (css == null || css.length() ==0) {
+                    return; // no need to include empty style tags   
+                }
+                multiline = css.indexOf(ls) > 0;
+                
+                if (ws != null && ws.length() > 0) {
+                    writePre(ws);   
+                }
+                if (multiline) {
+                      writePre(css); 
+                }
+                else {
+                    add(" ");
+                    add(css);
+                    add(" ");
+                }
+                add(endToken);
+            }
+            else if (styleToken != null) {
+                add(styleToken);   
+                if (endToken != null) {
+                    add(endToken);   
+                }
+            }
+        }
+        catch(ParserException pe) {
+            throw new ParseException(pe.getMessage());
+        }
+	}
+}
+
+
+/*
+    A lot of work happens in the token manager.  All code in this section is
+    added to a file named JspParserTokenManager.java.  Some accessor are
+    duplicated in the PARSER section above to make it a little easier to write
+    code for the productions.
+*/
+TOKEN_MGR_DECLS :
+{
+
+    // line buffer, text is accumulated here, then written to the output stream
+    // on end of line marker.
+    static StringBuilder b = new StringBuilder();
+
+    // all text is accumulated here.  When processing is complete, this buffer
+    // will contain the final beautified text.
+    static StringBuilder outputBuffer = new StringBuilder();
+
+    // accumulate pieces a token or string at a time.  The objects in this array
+    // will be ocnverted to strings, padded as appropriate, and added to the
+    // line buffer b.  This is the "accumulator".
+    static ArrayList a = new ArrayList();
+
+    // where to write the completely beautified code.
+    private static PrintWriter out = null;
+
+    // level of indentation
+    static int level = 0;
+
+    // width of indent
+    static int indent_width = 4;
+    static String indent = "    ";
+    static String double_indent = indent + indent;
+
+    // the soft tab setting from jEdit, use soft tabs by default.
+    static boolean useSoftTabs = true;
+
+    // line separator, defaults to system line separator, but can be set to
+    // a specific separator
+    static String ls = System.getProperty("line.separator");
+    
+    static boolean collapseBlankLines = true;
+
+    static void reset() {
+        b = new StringBuilder();
+        outputBuffer = new StringBuilder();
+        a.clear();
+        level = 0;
+    }
+
+    static String getText() {
+        return outputBuffer.toString();
+    }
+
+    static void setLineSeparator(String le) {
+        ls = le;
+    }
+
+    static void setIndentWidth(int w) {
+        indent_width = w;
+        if (indent_width <= 0) {
+            indent_width = 4;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < w; i++) {
+            sb.append(' ');
+        }
+        indent = sb.toString();
+        double_indent = indent + indent;
+    }
+
+    static void setUseSoftTabs(boolean b) {
+        useSoftTabs = b;
+        if (b) {
+            setIndentWidth(indent_width);
+        }
+        else {
+            indent = "\t";
+            double_indent = "\t\t";
+        }
+    }
+
+    // add a token to the accumulator
+    static void add(Token t) {
+        if (t != null) {
+            a.add(t);
+        }
+    }
+
+    // add a string to the accumulator
+    static void add(String s) {
+        if (s != null) {
+            a.add(s);
+        }
+    }
+
+    // trim spaces from the last item in the accumulator
+    static void trim() {
+        if (a.size() == 0)
+            return;
+        Object o = a.get(a.size() - 1);
+        StringBuilder sb = new StringBuilder();
+        if (o instanceof Token)
+            sb.append( ((Token)o).image );
+        else
+            sb.append((String)o);
+        while(sb.length() > 0 && sb.charAt(sb.length() - 1) == ' ')
+            sb.deleteCharAt(sb.length() - 1);
+        a.set(a.size() - 1, sb.toString() );
+    }
+
+    // trim a single new line from the end of the output buffer
+    static void trimNL() {
+        if(outputBuffer.length() > 0 && outputBuffer.charAt(outputBuffer.length() - 1) == '\n')
+            outputBuffer.deleteCharAt(outputBuffer.length() - 1);
+        if(outputBuffer.length() > 0 && outputBuffer.charAt(outputBuffer.length() - 1) == '\r')
+            outputBuffer.deleteCharAt(outputBuffer.length() - 1);
+    }
+
+    // trim all \n and/or \r from the end of the given string
+    static void trimNL(String s) {
+        StringBuilder sb = new StringBuilder(s);
+        while(sb.length() > 0 && (sb.charAt(sb.length() - 1) == '\r' || sb.charAt(sb.length() - 1) == '\n'))
+            sb.deleteCharAt(sb.length() - 1);
+    }
+
+    // trim all whitespace (\r, \n, space, \t) from the start of the given string
+    static String trimStart(String s) {
+        StringBuilder sb = new StringBuilder(s);
+        while(sb.length() > 0 && (sb.charAt(0) == '\r'
+                || sb.charAt(0) == '\n'
+                || sb.charAt(0) == '\t'
+                || sb.charAt(0) == ' ')) {
+            sb.deleteCharAt(0);
+        }
+        return sb.toString();
+    }
+
+    // trim up to max whitespace (\r, \n, space, \t) from the start of the given string
+    static String trimStart(String s, int max) {
+        StringBuilder sb = new StringBuilder(s);
+        int trimmed = 0;
+        while(sb.length() > 0 && Character.isWhitespace(sb.charAt(0)) && trimmed < max) {
+            sb.deleteCharAt(0);
+            ++trimmed;
+        }
+        return sb.toString();
+    }
+
+    // trims whitespace (\r, \n, space, \t) from the last items in the
+    // accumulator.  If the last item is all whitespace, continues on to the
+    // previous until a non-whitespace character is encountered.  If the
+    // entire accumulator is whitespace, continues to trim whitespace from the
+    // outputBuffer.
+    static void trimWhitespace() {
+        for (int i = a.size() - 1; i >= 0; i-- ) {
+            Object o = a.get(i);
+            StringBuilder sb = new StringBuilder();
+            if (o instanceof Token)
+                sb.append( ((Token)o).image );
+            else
+                sb.append((String)o);
+            while(sb.length() > 0 && (sb.charAt(sb.length() - 1) == '\r'
+                    || sb.charAt(sb.length() - 1) == '\n'
+                    || sb.charAt(sb.length() - 1) == '\t'
+                    || sb.charAt(sb.length() - 1) == ' ')) {
+                sb.deleteCharAt(sb.length() - 1);
+            }
+            if (sb.length() == 0) {
+                a.remove(i);
+            }
+            else {
+                a.set(i, sb.toString());
+                break;
+            }
+        }
+        if (a.size() == 0) {
+            while(outputBuffer.length() > 0 && (outputBuffer.charAt(outputBuffer.length() - 1) == '\r'
+                    || outputBuffer.charAt(outputBuffer.length() - 1) == '\n'
+                    || outputBuffer.charAt(outputBuffer.length() - 1) == '\t'
+                    || outputBuffer.charAt(outputBuffer.length() - 1) == ' ')) {
+                outputBuffer.deleteCharAt(outputBuffer.length() - 1);
+            }
+        }
+    }
+
+    // writes the contents of the accumulator to the outputBuffer.  The line
+    // buffer (b) is used to build the line.
+    static void write() {
+        try {
+            b.setLength(0); // clear the line buffer
+
+            // this next section builds the output string while protecting
+            // string literals.  All extra spaces are removed from the output
+            // string, except that string literals are left as is.
+            ArrayList list = new ArrayList();
+            String s = new String("");
+            for (int i = 0; i < a.size(); i++) {
+                Object o = a.get(i);
+                if (o instanceof Token) {
+                    Token token = (Token)o;
+                    if (token.kind == JspParserConstants.QUOTED_STRING) {
+                        s = s.replaceAll("[ ]+", " ");
+                        list.add(s);
+                        s = new String("");
+                        list.add(token.image);
+                    }
+                    else {
+                        s += ((Token)o).image;
+                        s = s.replaceAll("[ ]+", " ");
+                    }
+                }
+                else {
+                    s += (String)o;
+                    s = s.replaceAll("[ ]+", " ");
+                }
+            }
+            for (int i = 0; i < list.size(); i++) {
+                b.append((String)list.get(i));
+            }
+
+            b.append(s);
+            s = b.toString();
+
+            // check for blank line(s)
+            String maybe_blank = new String(s);
+            if (maybe_blank.trim().length() == 0) {
+                // yep, it's a blank, so just print out a line separator
+                outputBuffer.append(ls);
+                a.clear();
+                return;
+            }
+
+            // indent --
+            s = s.trim();
+            for (int i = 0; i < level; i++) {
+                s = indent + s;
+            }
+                    
+            // check if the output buffer does NOT end with a new line.  If it
+            // doesn't, remove any leading whitespace from this line
+            if (!endsWith(outputBuffer, "\n") && !endsWith(outputBuffer, "\r")) {
+                s = trimStart(s);
+            }
+
+            // check that there aren't extra spaces in the buffer already --
+            // this handles the case where the output buffer ends with a space
+            // and the new string starts with a space, don't want 2 spaces.
+            if (s.startsWith(" ") && endsWith(outputBuffer, " ")) {
+                s = s.substring(1);
+            }
+
+            // check that there is one space between the end of the output
+            // buffer and this line -- this handles the case where the output
+            // buffer does not end in a space and the new string does not start
+            // with a space, want one space in between.
+            // TODO: I don't think the above is true for jsp, need to confirm
+            // that removing this check is okay.
+            /*
+            if (!s.startsWith(" ")
+                    && !endsWith(outputBuffer, " ")
+                    && !endsWith(outputBuffer, "\r")
+                    && !endsWith(outputBuffer, "\n")
+                    && outputBuffer.length() > 0) {
+                outputBuffer.append(" ");
+            }
+            */
+
+            // by the Sun standard, there is no situation where '(' is followed
+            // by a space or ')' is preceded with by a space
+            s = s.replaceAll("[(][ ]", "(");
+            s = s.replaceAll("[ ][)]", ")");
+            
+            // there should be no situation where a comma is preceded by a space,
+            // although that seems to happen when formatting string arrays.
+            s = s.replaceAll("\\s+[,]", ",");
+
+            // finally! add the string to the output buffer
+            // check for line length, may need to wrap.  Sun says to avoid lines
+            // longer than 80 characters.  This doesn't work well yet, so I've 
+            // commented out the wrapping code.  Still need to clean out the
+            // wrapping markers.
+            //s = s.replaceAll("[\u001c]", "");
+            outputBuffer.append(s);
+            /*
+            int wrap_sep_count = countWrapSep(s);
+            if (s.length() - wrap_sep_count > 80) {
+                String[] lines = wrapLines(s);
+                if ( lines != null ) {
+                    for (int i = 0; i < lines.length; i++) {
+                        outputBuffer.append(lines[i]).append(ls);
+                    }
+                }
+                else {
+                    // whack any remaining \u001c characters
+                    s = s.replaceAll("[\u001c]", "");
+                    outputBuffer.append(s);
+                }
+            }
+            else {
+                // whack any remaining \u001c characters
+                s = s.replaceAll("[\u001c]", "");
+                outputBuffer.append(s);
+            }
+            */
+            // clear the accumulator for the next line
+            a.clear();
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    static void writeln() {
+        write();
+        trimNL();
+        outputBuffer.append(ls);
+    }
+    
+    // write out some preformatted text
+    static void writePre(String s) {
+        outputBuffer.append(s);
+    }
+
+    static int countWrapSep(String s) {
+        int count = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '\u001c') {
+                ++count;
+            }
+        }
+        return count;
+    }
+
+    // needs work, does a wrap, but not per spec
+    static String[] wrapLines(String s) {
+        if (s.length() <= 80) {
+            return new String[]{s};
+        }
+        int wc = countWrapSep(s);
+        if (wc > 0) {
+            int[] break_points = new int[wc];
+            int offset = 0;
+            for (int i = 0; i < wc; i++) {
+                int index = s.indexOf('\u001c', offset);
+                break_points[i] = index;
+                offset = index + 1;
+            }
+
+            int first_break = -1;
+            for (int i = 0; i < break_points.length; i++) {
+                int possible = break_points[i];
+                if (possible > 80) {
+                    break;
+                }
+                first_break = possible;
+            }
+            if ( first_break == -1 ) {
+                first_break = s.length();
+            }
+
+            int ws_length = 0;
+            for (int i = 0; i < s.length(); i++) {
+                if (s.charAt(i) == ' ')
+                    ++ws_length;
+                else
+                    break;
+            }
+            String leading_ws = s.substring(0, ws_length);
+            String head = s.substring(0, first_break);
+            String tail = s.substring(first_break);
+            //head = head.replaceAll("[\u001c]", "");
+            //tail = tail.replaceAll("[\u001c]", "");
+            return new String[]{head, leading_ws + double_indent + tail};
+        }
+        return null;
+    }
+
+    // StringBuilder doesn't have an "endsWith" method
+    static boolean endsWith(StringBuilder sb, String s) {
+        if (sb == null && s == null)
+            return true;
+        if (sb == null && s != null)
+            return false;
+        if (sb.length() < s.length())
+            return false;
+        String end = sb.substring(sb.length() - s.length());
+        return end.equals(s);
+    }
+    
+    static void writeJavadocComment(String s) {
+        String[] lines = s.split("\r\n|\r|\n");
+        
+        // indent the first line.  It won't have any leading whitespace, but
+        // may have trailing whitespace
+        String line = lines[0].trim();
+        for (int j = 0; j < level; j++) {
+            line = indent + line;
+        }
+        outputBuffer.append(line).append(ls);
+        
+        // handle the remaining lines, put stars in front of them.
+        // TODO: this needs work.  Need to preserve whitespace after
+        // the star.
+        for (int i = 1; i < lines.length; i++) {
+            line = lines[i].trim();
+            
+            // apply padding. All javadoc lines start with a *.
+            if (line.startsWith("*")) {
+                line = " " + line;
+            }
+            else {
+                line = " * " + line;   
+            }
+
+            // apply indenting. The Sun rule is 4 spaces.
+            for (int j = 0; j < level; j++) {
+                line = indent + line;
+            }
+            
+            outputBuffer.append(line);
+            if (i < lines.length - 1) {
+                outputBuffer.append(ls);
+            }
+        }
+    }
+
+    // comments of the /* ... */ variety.  This sort of comment is commonly
+    // used to "comment out" a block of code, so I don't want to modify the
+    // existing indenting within the block.
+    static void writeBlockComment(String s) {
+        String[] lines = s.split("\r\n|\r|\n");
+
+        // indent the first line.  It won't have any leading whitespace, but
+        // may have trailing whitespace
+        String line = lines[0].trim();
+        for (int j = 0; j < level; j++) {
+            line = indent + line;
+        }
+        outputBuffer.append(line).append(ls);
+        
+        // output body of comment without change
+        for (int i = 1; i < lines.length - 1; i++) {
+            line = lines[i];    // trimStart(lines[i], level * 4);
+            outputBuffer.append(line).append(ls);
+        }
+        
+        // output the last line.  It will probably have leading whitespace, so
+        // trim it then indent it the same as the first line.
+        line = lines[lines.length - 1].trim();
+        for (int j = 0; j < level; j++) {
+            line = indent + line;
+        }
+        outputBuffer.append(line);
+    }
+    
+
+    // handle comments like this one
+    static void writeEndOfLineComment(String s) {
+        String line = s.trim();
+        for (int j = 0; j < level; j++) {
+            line = indent + line;
+        }
+        outputBuffer.append(line).append(ls);
+    }
+
+}
+
