@@ -1,0 +1,21 @@
+# Basic Plugin Information
+plugin.sidekick.json.JsonSideKickPlugin.activate=defer
+plugin.sidekick.json.JsonSideKickPlugin.author=Dale Anson
+plugin.sidekick.json.JsonSideKickPlugin.description=A SideKick for working with JSON files.
+plugin.sidekick.json.JsonSideKickPlugin.docs=docs/index.html
+plugin.sidekick.json.JsonSideKickPlugin.longdescription=description.html
+plugin.sidekick.json.JsonSideKickPlugin.name=JsonSideKick
+plugin.sidekick.json.JsonSideKickPlugin.usePluginHome=false
+plugin.sidekick.json.JsonSideKickPlugin.version=4.10
+
+# Dependencies
+plugin.sidekick.json.JsonSideKickPlugin.depend.0=jedit 05.04.00.00
+plugin.sidekick.json.JsonSideKickPlugin.depend.1=jdk 11
+plugin.sidekick.json.JsonSideKickPlugin.depend.2=plugin antlr.AntlrPlugin 4.10
+plugin.sidekick.json.JsonSideKickPlugin.depend.3=plugin eclipseicons.EclipseIconsPlugin 1.0
+plugin.sidekick.json.JsonSideKickPlugin.depend.4=plugin sidekick.SideKickPlugin 1.7
+
+# set mode antlr4 for this sidekick
+sidekick.parser.json.label=json
+mode.json.sidekick.parser=json
+
