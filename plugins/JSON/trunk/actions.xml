@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+    <ACTION NAME="minify">
+        <CODE>
+            if (buffer.getMode().getName().equals("json")) {
+                json.JSONPlugin.minify(buffer, view);
+            }
+            else {
+                javax.swing.JOptionPane.showMessageDialog(view, "Error: not a JSON file.", "Minify Error", JOptionPane.ERROR_MESSAGE);    
+            }
+        </CODE>
+    </ACTION>
+</ACTIONS>
