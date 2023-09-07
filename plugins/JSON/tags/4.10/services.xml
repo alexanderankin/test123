@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+
+<SERVICES>
+    <SERVICE CLASS="sidekick.SideKickParser" NAME="JSON">
+        new json.JSONSideKickParser();
+    </SERVICE>
+    <SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="json:JSON">
+        new json.JSONBeautyParser();
+    </SERVICE>
+</SERVICES>
