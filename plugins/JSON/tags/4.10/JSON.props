@@ -1,0 +1,35 @@
+# Basic Plugin Information
+plugin.json.JSONPlugin.activate=defer
+plugin.json.JSONPlugin.author=Dale Anson
+plugin.json.JSONPlugin.description=A SideKick and Beautifier for working with JSON files.
+plugin.json.JSONPlugin.docs=docs/index.html
+plugin.json.JSONPlugin.longdescription=description.html
+plugin.json.JSONPlugin.name=JSON
+plugin.json.JSONPlugin.usePluginHome=false
+plugin.json.JSONPlugin.version=4.10
+
+# Dependencies
+plugin.json.JSONPlugin.depend.0=jedit 05.04.00.00
+plugin.json.JSONPlugin.depend.1=jdk 11
+plugin.json.JSONPlugin.depend.2=plugin antlr.AntlrPlugin 4.10
+plugin.json.JSONPlugin.depend.3=plugin eclipseicons.EclipseIconsPlugin 1.0
+plugin.json.JSONPlugin.depend.4=plugin sidekick.SideKickPlugin 1.7
+plugin.json.JSONPlugin.depend.5=plugin beauty.BeautyPlugin 1.1
+plugin.json.JSONPlugin.depend.6=plugin CommonControlsPlugin 1.7.4
+
+# set mode antlr4 for this sidekick
+sidekick.parser.json.label=JSON
+mode.json.sidekick.parser=json
+
+# Menu/Action properties
+minify.label=Minify JSON
+plugin.json.JSONPlugin.menu=minify
+
+# mode handler
+mode.json.beauty.beautifier=JSON
+
+# option pane settings
+plugin.json.JSONPlugin.option-pane=jsonplugin
+options.jsonplugin.title=JSON
+options.jsonplugin.label=JSON
+options.jsonplugin.code=new json.options.JSONOptionPane();
