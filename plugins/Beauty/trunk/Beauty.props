@@ -9,7 +9,7 @@ plugin.beauty.BeautyPlugin.version=1.1
 plugin.beauty.BeautyPlugin.docs=docs/index.html
 plugin.beauty.BeautyPlugin.depend.0=jdk 11
 plugin.beauty.BeautyPlugin.depend.1=jedit 05.06.00.00
-plugin.beauty.BeautyPlugin.depend.2=plugin CommonControlsPlugin 1.7.5
+plugin.beauty.BeautyPlugin.depend.2=plugin CommonControlsPlugin 1.7.4
 plugin.beauty.BeautyPlugin.depend.3=plugin antlr.AntlrPlugin 4.10
 plugin.beauty.BeautyPlugin.usePluginHome=true
 
@@ -27,7 +27,7 @@ beauty.toggleSplitAttributes.label=Split/Unsplit Attributes
 #
 # Option pane properties
 #
-plugin.beauty.BeautyPlugin.option-group=beauty.general beauty.beautifiers beauty.custom beauty.css beauty.jsp beauty.java beauty.json
+plugin.beauty.BeautyPlugin.option-group=beauty.general beauty.beautifiers beauty.custom beauty.css beauty.jsp beauty.java
 
 options.beauty.general.title=General
 options.beauty.general.label=General
@@ -55,10 +55,6 @@ options.beauty.java.title=Java Beautifier
 options.beauty.java.label=Java Beautifier
 options.beauty.java.code=new beauty.options.JavaOptionPane();
 
-options.beauty.json.title=JSON Beautifier
-options.beauty.json.label=JSON Beautifier
-options.beauty.json.code=new beauty.options.JsonOptionPane();
-
 # mode handlers
 mode.html.beauty.beautifier=html
 mode.asp.beauty.beautifier=html
@@ -72,7 +68,6 @@ mode.java.beauty.beautifier=java
 mode.java.beauty.beautifier=java8
 mode.javacc.beauty.beautifier=javacc
 mode.csv.beauty.beautifier=csv
-mode.json.beauty.beautifier=json
 
 # Menus
 plugin.beauty.BeautyPlugin.menu=make_it_pretty
