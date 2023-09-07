@@ -23,7 +23,6 @@ import org.gjt.sp.jedit.msg.*;
 */
 public class JSONOptionPane extends AbstractOptionPane {
 
-    private JLabel beautifierLabel;
     private JRadioButton attachedBrackets;
     private JRadioButton brokenBrackets;
     private int bracketStyle;
@@ -44,7 +43,7 @@ public class JSONOptionPane extends AbstractOptionPane {
         setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
 
         // create the components
-        beautifierLabel = new JLabel("<html><strong>JSON Beautifier");
+        JLabel beautifierLabel = new JLabel("<html><strong>JSON Beautifier");
         
         // Note that the Beauty plugin is a dependency, so it's okay to use
         // these properties from that plugin
