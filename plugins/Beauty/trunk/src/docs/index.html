@@ -36,7 +36,7 @@
          <li>CSS: works very well.  The JSP beautifier delegates to this beautifier to clean up style blocks within JSP files.</li>
          <li>Java: works very well, supports all Java versions through 17. Formats closely to Sun's formatting standard, with some formatting options available in the plugin settings.</li>
          <li>JavaCC: needs work, formats to a combination of Sun's Java formatting standard and my own style for javacc files.</li>
-         <li>JSON: works very well.  JSON files are usually machine-generated in a single long line, so it is nice to be able to format them quickly to a more human-readable format.</li>
+         <li>JSON: Moved to a separate plugin, look for "JSON" in the PluginManager.</li>
          <li>Beanshell: Works very well.  It generally follows Sun's formatting standard for java files, although beanshell code is slightly different from java code, so there are some minor differences.</li>
          <li>CSV: Works very well. All this one does is align the columns to make them easier to read, or collapses the columns if they are already aligned. Note this is only for COMMA separated files, other separators (e.g. tab or semi-colon) are not supported at this time.</li>
       </ul>
@@ -46,6 +46,7 @@
          <li>AStyle: a nice, configurable beautifier for Java, C, and C++ code.</li>
          <li>CLangBeauty: supports formatting C, C++, and Objective-C code.</li>
          <li>JSBeautifierBeauty: formats Javascript/Ecmascript, HTML, and CSS.</li>
+         <li>JSON: formats json files, also provides a SideKick and a json  minimizer.</li>
          <li>XmlIndenter: part of the XML plugin, this beautifier works on all xml-based files. Use this for well-formed xml dialects like docbook files, Ant files, and so on, use the HTML beautifier for those xml-like files that are not necessarily well-formed.</li>
       </ul>
       <p>
@@ -404,7 +405,7 @@
             <br>
             &lt;SERVICES&gt;
             <br>
-            &nbsp;&nbsp;&lt;SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="lispy"&gt;
+            &nbsp;&nbsp;&lt;SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="lisp:lispy"&gt;
             <br>
             &nbsp;&nbsp;&nbsp;&nbsp;new lisp.lispy.Beautify();
             <br>
@@ -417,7 +418,8 @@
          <code>
             NAME
          </code>
-         , either use the name of the editing mode that the beautifier supports, or a unique name for your plugin. The beanshell code must return an object that can be cast to
+         , either use the name of the editing mode that the beautifier supports, or a <strong>unique</strong> name for your plugin. The preferred naming scheme is mode_name:plugin_name, like "lisp:lispy" above. 
+         This allows the user to choose their desired plugin for formatting, for example, the astyle, beauty, and clang plugins all provide beautifying for java code. The beanshell code must return an object that can be cast to
          <code>
             beauty.beautifiers.Beautifier
          </code>
