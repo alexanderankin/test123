@@ -37,6 +37,7 @@
 		<pathelement location="${install.dir}/antlr-4.10.1-complete.jar"/>
 		<pathelement location="${install.dir}/EclipseIcons.jar"/>
 		<pathelement location="${install.dir}/Beauty.jar"/>
+        <pathelement location="${jedit.plugins.dir}/kappalayout.jar"/>
 	</path>
    
 

@@ -15,6 +15,7 @@ plugin.json.JSONPlugin.depend.2=plugin antlr.AntlrPlugin 4.10
 plugin.json.JSONPlugin.depend.3=plugin eclipseicons.EclipseIconsPlugin 1.0
 plugin.json.JSONPlugin.depend.4=plugin sidekick.SideKickPlugin 1.7
 plugin.json.JSONPlugin.depend.5=plugin beauty.BeautyPlugin 1.1
+plugin.json.JSONPlugin.depend.6=plugin CommonControlsPlugin 1.7.4
 
 # set mode antlr4 for this sidekick
 sidekick.parser.json.label=JSON
@@ -26,3 +27,9 @@ plugin.json.JSONPlugin.menu=minify
 
 # mode handler
 mode.json.beauty.beautifier=JSON
+
+# option pane settings
+plugin.json.JSONPlugin.option-pane=jsonplugin
+options.jsonplugin.title=JSON
+options.jsonplugin.label=JSON
+options.jsonplugin.code=new json.options.JSONOptionPane();
