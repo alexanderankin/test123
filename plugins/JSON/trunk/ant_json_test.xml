@@ -28,7 +28,7 @@
         </path>
     </target>
 
-    <target name="test" depends="test1, test2, test3, test4, test5, test6"></target>
+    <target name="test" depends="test1, test2, test3, test4, test5, test6, test7, test8, test9, test10"></target>
 
     <target name="test1" depends="setClasspath">
         <delete file="${basedir}/test/json/after/test1.json" quiet="true"/>
@@ -109,6 +109,62 @@
         </condition>
         <echo if:true="${test6}">test6 passed</echo>
         <fail unless:true="${test6}">test6 failed</fail>
+    </target>
+
+    <target name="test7" depends="setClasspath">
+        <delete file="${basedir}/test/json/after/test7.json" quiet="true"/>
+        <java classname="json.parser.JSONBeautyListener" fork="true" output="${basedir}/test/json/after/test7.json">
+            <classpath refid="classpathref"/>
+            <arg file="${basedir}/test/json/before/test7.json"/>
+        </java>
+        
+        <condition property="test7">
+            <filesmatch file1="${basedir}/test/json/after/test7.json" file2="${basedir}/test/json/expected/test7.json"/>
+        </condition>
+        <echo if:true="${test7}">test7 passed</echo>
+        <fail unless:true="${test7}">test7 failed</fail>
+    </target>
+
+    <target name="test8" depends="setClasspath">
+        <delete file="${basedir}/test/json/after/test8.json" quiet="true"/>
+        <java classname="json.parser.JSONBeautyListener" fork="true" output="${basedir}/test/json/after/test8.json">
+            <classpath refid="classpathref"/>
+            <arg file="${basedir}/test/json/before/test8.json"/>
+        </java>
+        
+        <condition property="test8">
+            <filesmatch file1="${basedir}/test/json/after/test8.json" file2="${basedir}/test/json/expected/test8.json"/>
+        </condition>
+        <echo if:true="${test8}">test8 passed</echo>
+        <fail unless:true="${test8}">test8 failed</fail>
+    </target>
+
+    <target name="test9" depends="setClasspath">
+        <delete file="${basedir}/test/json/after/test9.json" quiet="true"/>
+        <java classname="json.parser.JSONBeautyListener" fork="true" output="${basedir}/test/json/after/test9.json">
+            <classpath refid="classpathref"/>
+            <arg file="${basedir}/test/json/before/test9.json"/>
+        </java>
+        
+        <condition property="test9">
+            <filesmatch file1="${basedir}/test/json/after/test9.json" file2="${basedir}/test/json/expected/test9.json"/>
+        </condition>
+        <echo if:true="${test9}">test9 passed</echo>
+        <fail unless:true="${test9}">test9 failed</fail>
+    </target>
+
+    <target name="test10" depends="setClasspath">
+        <delete file="${basedir}/test/json/after/test10.json" quiet="true"/>
+        <java classname="json.parser.JSONBeautyListener" fork="true" output="${basedir}/test/json/after/test10.json">
+            <classpath refid="classpathref"/>
+            <arg file="${basedir}/test/json/before/test10.json"/>
+        </java>
+        
+        <condition property="test10">
+            <filesmatch file1="${basedir}/test/json/after/test10.json" file2="${basedir}/test/json/expected/test10.json"/>
+        </condition>
+        <echo if:true="${test10}">test10 passed</echo>
+        <fail unless:true="${test10}">test10 failed</fail>
     </target>
 
 </project>
